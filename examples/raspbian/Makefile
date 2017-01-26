@@ -8,11 +8,8 @@ ifneq ("$(wildcard /opt/vc/include/bcm_host.h)","")
     PLATFORM = Raspbian GNU/Linux
 endif
 
-#$(info Platform is $(PLATFORM))
 
-
-
-
+#	set the basic per-platform compile options
 ifeq ($(PLATFORM),Raspbian GNU/Linux)
 	CXX = g++
 	
@@ -42,55 +39,30 @@ else ifeq ($(PLATFORM),Darwin)
 	LDFLAGS += -framework Foundation -framework ImageIO -framework OpenGL -framework IOSurface -framework CoreGraphics -framework CoreVideo
 endif
 
-# we want to link against the VVISF static library
+
+#	the GL_DEBUG flag enables a call to glGetError() after every call to GL
+#CPPFLAGS += -DGL_DEBUG
+#OBJCPPFLAGS += -DGL_DEBUG
+
+
+# link against and include the VVISF library
 LDFLAGS += -L./../../VVISF/bin -lVVISF
 CPPFLAGS += -I./../../VVISF/include
 OBJCPPFLAGS += -I./../../VVISF/include
-# we want to link against the VVGL static library
+# link against and include the VVGL library
 LDFLAGS += -L./../../VVGL/bin -lVVGL
 CPPFLAGS += -I./../../VVGL/include
 OBJCPPFLAGS += -I./../../VVISF/include
 
 
-#CPPFLAGS += -Dexprtk_disable_enhanced_features
-#OBJCPPFLAGS += -Dexprtk_disable_enhanced_features
-#CPPFLAGS += -DGL_DEBUG
-#OBJCPPFLAGS += -DGL_DEBUG
-
-
-OUTPUT = ./bin/TestExecutable
-
+#	rules that define object files for source files
 OBJS := $(patsubst ./src/%.cpp,./obj/%.o,$(wildcard ./src/*.cpp))
 ifeq ($(PLATFORM),Darwin)
 OBJS += $(patsubst ./src/%.mm,./obj/%.mm.o,$(wildcard ./src/*.mm))
 endif
 
-#$(info OBJS are $(OBJS))
-#$(info CPPFLAGS are $(CPPFLAGS))
-#$(info LDFLAGS are $(LDFLAGS))
 
-
-.PHONY : all clean
-
-
-all : $(OUTPUT)
-
-clean:
-	rm -f ./obj/*.o
-	rm -f $(OUTPUT)
-	$(MAKE) -C ./../../VVISF clean
-	$(MAKE) -C ./../../VVGL clean
-
-
-$(OUTPUT) : $(OBJS)
-	$(MAKE) -C ./../../VVGL
-	$(MAKE) -C ./../../VVISF
-	$(shell mkdir -p ./bin)
-	$(CXX) $(OBJS) $(LDFLAGS) -o $@
-
-
-
-
+#	targets are object files, recipe compiles them
 ifeq ($(PLATFORM),Darwin)
 ./obj/%.mm.o : ./src/%.mm
 	$(shell mkdir -p ./obj)
@@ -99,6 +71,36 @@ endif
 ./obj/%.o : ./src/%.cpp
 	$(shell mkdir -p ./obj)
 	$(CXX) $(CPPFLAGS) -c $< -o $@
+
+
+#$(info Platform is $(PLATFORM))
+#$(info OBJS are $(OBJS))
+#$(info CPPFLAGS are $(CPPFLAGS))
+#$(info LDFLAGS are $(LDFLAGS))
+
+
+#	the output file is an executable
+OUTPUT = ./bin/TestExecutable
+#	recipe to create the dependencies, output file and the directory it goes in
+$(OUTPUT) : $(OBJS)
+	$(MAKE) -C ./../../VVGL
+	$(MAKE) -C ./../../VVISF
+	$(shell mkdir -p ./bin)
+	$(CXX) $(OBJS) $(LDFLAGS) -o $@
+
+
+#administrative targets
+.PHONY : all clean clean_all
+
+all : $(OUTPUT)
+
+clean:
+	rm -f ./obj/*.o
+	rm -f $(OUTPUT)
+
+clean_all : clean
+	$(MAKE) -C ./../../VVISF clean_all
+	$(MAKE) -C ./../../VVGL clean_all
 
 
 

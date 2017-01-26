@@ -8,11 +8,8 @@ ifneq ("$(wildcard /opt/vc/include/bcm_host.h)","")
     PLATFORM = Raspbian GNU/Linux
 endif
 
-#$(info Platform is $(PLATFORM)) 
 
-
-
-
+#	set the basic per-platform compile options
 ifeq ($(PLATFORM),Raspbian GNU/Linux)
 	CXX = g++
 	
@@ -44,39 +41,19 @@ else ifeq ($(PLATFORM),Darwin)
 endif
 
 
-#CPPFLAGS += -Dexprtk_disable_enhanced_features
-#OBJCPPFLAGS += -Dexprtk_disable_enhanced_features
+#	the GL_DEBUG flag enables a call to glGetError() after every call to GL
 #CPPFLAGS += -DGL_DEBUG
 #OBJCPPFLAGS += -DGL_DEBUG
 
 
-OUTPUT = ./bin/libVVGL.a
-
+#	rules that define object files for source files
 OBJS := $(patsubst ./src/%.cpp,./obj/%.o,$(wildcard ./src/*.cpp))
 ifeq ($(PLATFORM),Darwin)
 OBJS += $(patsubst ./src/%.mm,./obj/%.mm.o,$(wildcard ./src/*.mm))
 endif
 
-#$(info OBJS are $(OBJS))
-#$(info CPPFLAGS are $(CPPFLAGS))
-#$(info LDFLAGS are $(LDFLAGS))
 
-
-.PHONY : all clean
-
-
-all : $(OUTPUT)
-
-clean:
-	rm -f ./obj/*.o
-	rm -f ./bin/*.a
-
-
-$(OUTPUT) : $(OBJS)
-	$(shell mkdir -p ./bin)
-	ar crv $(OUTPUT) $(OBJS)
-
-
+#	targets are object files, recipe compiles them
 ifeq ($(PLATFORM),Darwin)
 ./obj/%.mm.o : ./src/%.mm
 	$(shell mkdir -p ./obj)
@@ -85,6 +62,34 @@ endif
 ./obj/%.o : ./src/%.cpp
 	$(shell mkdir -p ./obj)
 	$(CXX) $(CPPFLAGS) -c $< -o $@
+
+
+#$(info Platform is $(PLATFORM))
+#$(info OBJS are $(OBJS))
+#$(info CPPFLAGS are $(CPPFLAGS))
+#$(info LDFLAGS are $(LDFLAGS))
+
+
+#	the output file is a static lib
+OUTPUT = ./bin/libVVGL.a
+#	recipe to create the output file and the directory it goes in
+$(OUTPUT) : $(OBJS)
+	$(shell mkdir -p ./bin)
+	ar crv $(OUTPUT) $(OBJS)
+
+
+#administrative targets
+.PHONY : all clean clean_all
+
+all : $(OUTPUT)
+
+clean:
+	rm -f ./obj/*.o
+	rm -f ./bin/*.a
+
+clean_all : clean
+
+
 
 
 

@@ -8,11 +8,8 @@ ifneq ("$(wildcard /opt/vc/include/bcm_host.h)","")
     PLATFORM = Raspbian GNU/Linux
 endif
 
-#$(info Platform is $(PLATFORM)) 
 
-
-
-
+#	set the basic per-platform compile options
 ifeq ($(PLATFORM),Raspbian GNU/Linux)
 	CXX = g++
 	
@@ -42,50 +39,34 @@ else ifeq ($(PLATFORM),Darwin)
 	LDFLAGS += -framework Foundation -framework ImageIO -framework OpenGL -framework IOSurface -framework CoreGraphics -framework CoreVideo
 endif
 
-#CPPFLAGS += -I./include/exprtk/
-#CPPFLAGS += -I./include/nlohmann_json/
 
-# we want to link against the VVGL static library
-LDFLAGS += -L./../VVGL/bin -lVVGL
-CPPFLAGS += -I./../VVGL/include
-OBJCPPFLAGS += -I./../VVGL/include
-
-#CPPFLAGS += -Dexprtk_disable_enhanced_features
-#OBJCPPFLAGS += -Dexprtk_disable_enhanced_features
+#	the GL_DEBUG flag enables a call to glGetError() after every call to GL
 #CPPFLAGS += -DGL_DEBUG
 #OBJCPPFLAGS += -DGL_DEBUG
 
 
-OUTPUT = ./bin/libVVISF.a
+#CPPFLAGS += -I./include/exprtk/
+#CPPFLAGS += -I./include/nlohmann_json/
 
+
+#	un-comment the following line when compiling on embedded hardware or wherever resources will be limited (compiling exprtk takes a comparatively huge amount of resources)
+#.NOTPARALLEL : 
+
+
+# link against and include the VVGL library
+LDFLAGS += -L./../VVGL/bin -lVVGL
+CPPFLAGS += -I./../VVGL/include
+OBJCPPFLAGS += -I./../VVGL/include
+
+
+#	rules that define object files for source files
 OBJS := $(patsubst ./src/%.cpp,./obj/%.o,$(wildcard ./src/*.cpp))
 ifeq ($(PLATFORM),Darwin)
 OBJS += $(patsubst ./src/%.mm,./obj/%.mm.o,$(wildcard ./src/*.mm))
 endif
 
-#$(info OBJS are $(OBJS))
-#$(info CPPFLAGS are $(CPPFLAGS))
-#$(info LDFLAGS are $(LDFLAGS))
 
-
-.NOTPARALLEL : 
-.PHONY : all clean
-
-
-all : $(OUTPUT)
-
-clean:
-	rm -f ./obj/*.o
-	rm -f ./bin/*.a
-	$(MAKE) -C ./../VVGL clean
-
-
-$(OUTPUT) : $(OBJS)
-	$(MAKE) -C ./../VVGL
-	$(shell mkdir -p ./bin)
-	ar crv $(OUTPUT) $(OBJS)
-
-
+#	targets are object files, recipe compiles them
 ifeq ($(PLATFORM),Darwin)
 ./obj/%.mm.o : ./src/%.mm
 	$(shell mkdir -p ./obj)
@@ -96,7 +77,32 @@ endif
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 
-.PHONY : clean
+#$(info Platform is $(PLATFORM))
+#$(info OBJS are $(OBJS))
+#$(info CPPFLAGS are $(CPPFLAGS))
+#$(info LDFLAGS are $(LDFLAGS))
+
+
+#	the output file is a static lib
+OUTPUT = ./bin/libVVISF.a
+#	recipe to create the dependencies, output file and the directory it goes in
+$(OUTPUT) : $(OBJS)
+	$(MAKE) -C ./../VVGL
+	$(shell mkdir -p ./bin)
+	ar crv $(OUTPUT) $(OBJS)
+
+
+#administrative targets
+.PHONY : all clean clean_all
+
+all : $(OUTPUT)
+
+clean:
+	rm -f ./obj/*.o
+	rm -f ./bin/*.a
+
+clean_all : clean
+	$(MAKE) -C ./../VVGL clean_all
 
 
 
