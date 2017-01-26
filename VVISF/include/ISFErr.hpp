@@ -2,7 +2,7 @@
 #define ISFErr_h
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 

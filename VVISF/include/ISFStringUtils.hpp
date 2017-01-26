@@ -8,7 +8,7 @@
 #include "VVGL.hpp"
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 

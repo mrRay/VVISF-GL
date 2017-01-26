@@ -12,7 +12,7 @@ using json = nlohmann::json;
 
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 

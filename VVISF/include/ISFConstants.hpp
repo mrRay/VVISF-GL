@@ -2,7 +2,7 @@
 #define ISFConstants_h
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 

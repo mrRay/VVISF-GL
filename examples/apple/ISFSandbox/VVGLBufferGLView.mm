@@ -28,13 +28,13 @@
 		pthread_mutex_init(&renderLock, &attr);
 		pthread_mutexattr_destroy(&attr);
 		initialized = NO;
-		sizingMode = VVISFKit::SizingMode_Fit;
+		sizingMode = VVISF::SizingMode_Fit;
 		retainDraw = NO;
 		retainDrawLock = OS_SPINLOCK_INIT;
 		retainDrawBuffer = nullptr;
 		onlyDrawNewStuff = NO;
 		onlyDrawNewStuffLock = OS_SPINLOCK_INIT;
-		onlyDrawNewStuffTimestamp = VVISFKit::Timestamp();
+		onlyDrawNewStuffTimestamp = VVISF::Timestamp();
 		return self;
 	}
 	if (self != nil)
@@ -49,13 +49,13 @@
 		pthread_mutex_init(&renderLock, &attr);
 		pthread_mutexattr_destroy(&attr);
 		initialized = NO;
-		sizingMode = VVISFKit::SizingMode_Fit;
+		sizingMode = VVISF::SizingMode_Fit;
 		retainDraw = NO;
 		retainDrawLock = OS_SPINLOCK_INIT;
 		retainDrawBuffer = nullptr;
 		onlyDrawNewStuff = NO;
 		onlyDrawNewStuffLock = OS_SPINLOCK_INIT;
-		onlyDrawNewStuffTimestamp = VVISFKit::Timestamp();
+		onlyDrawNewStuffTimestamp = VVISF::Timestamp();
 		return self;
 	}
 	if (self != nil)
@@ -76,7 +76,7 @@
 	
 	pthread_mutex_lock(&renderLock);
 		if (!initialized)	{
-			using namespace VVISFKit;
+			using namespace VVISF;
 			
 			VVGLBufferPoolRef		bp = GetGlobalBufferPool();
 			if (bp != nullptr)	{
@@ -89,7 +89,7 @@
 	
 }
 - (void) redraw	{
-	using namespace VVISFKit;
+	using namespace VVISF;
 	
 	VVGLBufferRef	lastBuffer = nullptr;
 	OSSpinLockLock(&retainDrawLock);
@@ -98,7 +98,7 @@
 	
 	[self drawBuffer:lastBuffer];
 }
-- (void) drawBuffer:(VVISFKit::VVGLBufferRef)b	{
+- (void) drawBuffer:(VVISF::VVGLBufferRef)b	{
 	//NSLog(@"%s",__func__);
 	
 	BOOL			bail = NO;
@@ -167,8 +167,8 @@
 			
 			if (b != nil)	{
 				NSRect			bounds = [self bounds];
-				VVISFKit::Rect	boundsRect = { bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height };
-				VVISFKit::Rect	destRect = VVISFKit::ResizeRect(b->srcRect, boundsRect, VVISFKit::SizingMode_Fit);
+				VVISF::Rect	boundsRect = { bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height };
+				VVISF::Rect	destRect = VVISF::ResizeRect(b->srcRect, boundsRect, VVISF::SizingMode_Fit);
 				
 				/*
 				b->draw(destRect);
@@ -184,7 +184,7 @@
 					(float)MinX(destRect), (float)MaxY(destRect), 0.0
 				};
 				bool			flipped = b->flipped;
-				VVISFKit::Rect			src = b->glReadySrcRect();
+				VVISF::Rect			src = b->glReadySrcRect();
 				float			texs[] = {
 					(float)MinX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
 					(float)MaxX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
@@ -215,7 +215,7 @@
 	if (c == nullptr)
 		return;
 	pthread_mutex_lock(&renderLock);
-		CGLPixelFormatObj	rawPxlFmt = VVISFKit::CreateDefaultPixelFormat();
+		CGLPixelFormatObj	rawPxlFmt = VVISF::CreateDefaultPixelFormat();
 		NSOpenGLPixelFormat	*pxlFmt = [[[NSOpenGLPixelFormat alloc] initWithCGLPixelFormatObj:rawPxlFmt] autorelease];
 		NSOpenGLContext		*sharedCtx = [[NSOpenGLContext alloc] initWithCGLContextObj:c];
 		
@@ -253,7 +253,7 @@
 @synthesize initialized;
 @synthesize sizingMode;
 - (void) setOnlyDrawNewStuff:(BOOL)n	{
-	using namespace VVISFKit;
+	using namespace VVISF;
 	OSSpinLockLock(&onlyDrawNewStuffLock);
 	onlyDrawNewStuff = n;
 	onlyDrawNewStuffTimestamp = Timestamp();
@@ -264,7 +264,7 @@
 	retainDraw = n;
 	OSSpinLockUnlock(&retainDrawLock);
 }
-- (void) setRetainDrawBuffer:(VVISFKit::VVGLBufferRef)n	{
+- (void) setRetainDrawBuffer:(VVISF::VVGLBufferRef)n	{
 	OSSpinLockLock(&retainDrawLock);
 	retainDrawBuffer = n;
 	OSSpinLockUnlock(&retainDrawLock);

@@ -3,7 +3,7 @@
 
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 
@@ -62,7 +62,7 @@ ISFPassTarget::~ISFPassTarget()	{
 #pragma mark --------------------- getters/setters
 
 void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResize, const bool & inCreateNewBuffer)	{
-	//using namespace VVISFKit;
+	//using namespace VVISF;
 	
 	targetWidth = inSize.width;
 	targetHeight = inSize.height;

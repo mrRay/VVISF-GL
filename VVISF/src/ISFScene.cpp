@@ -4,7 +4,7 @@
 
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 

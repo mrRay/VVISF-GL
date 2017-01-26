@@ -26,7 +26,7 @@ std::atomic<bool>		quitFlag(false);
 int main(int argc, const char *argv[])	{
 	using namespace std;
 	using namespace VVGL;
-	using namespace VVISFKit;
+	using namespace VVISF;
 	cout << "****************************************\n";
 	cout << __PRETTY_FUNCTION__ << endl;
 	cout << "****************************************\n";

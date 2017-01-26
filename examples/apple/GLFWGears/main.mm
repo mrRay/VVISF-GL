@@ -17,7 +17,7 @@
 
 
 VVGL::VVGLScene			*displayScene = nullptr;
-VVISFKit::ISFScene		*isfScene = nullptr;
+VVISF::ISFScene		*isfScene = nullptr;
 //	create the texture variable we're eventually going to render into
 VVGL::VVGLBufferRef		targetTex = nullptr;
 
@@ -67,7 +67,7 @@ void reshape( GLFWwindow* window, int width, int height )	{
 int main(int argc, char *argv[])	{
 	using namespace std;
 	using namespace VVGL;
-	using namespace VVISFKit;
+	using namespace VVISF;
 	
 	
 	if (!glfwInit())	{

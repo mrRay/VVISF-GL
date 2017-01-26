@@ -14,7 +14,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 
 
 - (id) init	{
-	using namespace VVISFKit;
+	using namespace VVISF;
 	using namespace std;
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
@@ -55,7 +55,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	using namespace std;
-	using namespace VVISFKit;
+	using namespace VVISF;
 	
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
@@ -106,7 +106,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 - (void) timerCallback:(NSTimer *)t	{
 	//NSLog(@"%s",__func__);
 	
-	using namespace VVISFKit;
+	using namespace VVISF;
 	using namespace std;
 	
 	//cout << __PRETTY_FUNCTION__ << std::endl;
@@ -118,7 +118,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	[glView drawBuffer:newFrame];
 	*/
 	
-	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISFKit::Size(1920.,1080.));
+	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
 	//cout << "\tdrawing " << *newFrame << endl;
 	[glView drawBuffer:newFrame];
 	
@@ -161,12 +161,12 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 
 - (IBAction) buttonClicked:(id)sender	{
 	using namespace std;
-	using namespace VVISFKit;
+	using namespace VVISF;
 	cout << __PRETTY_FUNCTION__ << std::endl;
 	
 	//cout << __PRETTY_FUNCTION__ << std::endl;
 	
-	//VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISFKit::Size(1920.,1080.));
+	//VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
 	//cout << "\tnewFrame is " << *newFrame << endl;
 	//[glView drawBuffer:newFrame];
 	
@@ -191,18 +191,18 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 }
 - (IBAction) flushClicked:(id)sender	{
 	using namespace std;
-	using namespace VVISFKit;
+	using namespace VVISF;
 	cout << __PRETTY_FUNCTION__ << std::endl;
 	//GetGlobalBufferPool()->flush();
 	/*
-	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISFKit::Size(1920.,1080.));
+	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
 	//cout << "\trendered frame is " << *newFrame << endl;
 	[glView drawBuffer:newFrame];
 	*/
 }
 - (IBAction) renderToTexture:(id)sender	{
 	isfScene->getContext()->makeCurrent();
-	newTex = isfScene->createAndRenderABuffer(VVISFKit::Size(1920.,1080.));
+	newTex = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
 }
 - (IBAction) drawInOutput:(id)sender	{
 	[glView drawBuffer:newTex];

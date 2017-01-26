@@ -8,7 +8,7 @@ using namespace VVGL;
 
 
 
-namespace VVISFKit
+namespace VVISF
 {
 
 
