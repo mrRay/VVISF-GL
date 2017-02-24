@@ -1,4 +1,5 @@
 #include "ISFPassTarget.hpp"
+#include "ISFScene.hpp"
 
 
 
@@ -25,16 +26,17 @@ void ExpressionUpdater(string ** exprString, expression<double> ** expr, const m
 /*	========================================	*/
 #pragma mark --------------------- factory/creation
 
-ISFPassTargetRef ISFPassTarget::Create(const string & inName)	{
-	return make_shared<ISFPassTarget>(inName);
+ISFPassTargetRef ISFPassTarget::Create(const string & inName, const ISFDoc * inParentDoc)	{
+	return make_shared<ISFPassTarget>(inName, inParentDoc);
 }
 
 /*	========================================	*/
 #pragma mark --------------------- constructor/destructor
 
-ISFPassTarget::ISFPassTarget(const string & inName)	{
+ISFPassTarget::ISFPassTarget(const string & inName, const ISFDoc * inParentDoc)	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
 	name = string(inName);
+	parentDoc = (ISFDoc *)inParentDoc;
 }
 ISFPassTarget::~ISFPassTarget()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
@@ -66,13 +68,30 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	
 	targetWidth = inSize.width;
 	targetHeight = inSize.height;
-	VVGLBufferCopierRef		copier = GetGlobalBufferCopier();
+	
+	
+	//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
+	VVGLBufferPoolRef		bp = nullptr;
+	VVGLBufferCopierRef		copier = nullptr;
+	if (parentDoc != nullptr)	{
+		ISFScene		*parentScene = parentDoc->getParentScene();
+		if (parentScene != nullptr)	{
+			bp = parentScene->getPrivatePool();
+			copier = parentScene->getPrivateCopier();
+		}
+	}
+	//	if that didn't work, use the globals...
+	if (bp == nullptr)
+		bp = GetGlobalBufferPool();
+	if (copier == nullptr)
+		copier = GetGlobalBufferCopier();
+	
 	
 	//	if the buffer's currently nil
 	if (buffer == nullptr)	{
 		if (inCreateNewBuffer)	{
-			buffer = (floatFlag) ? CreateRGBAFloatTex(inSize) : CreateRGBATex(inSize);
-			//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize) : CreateBGRATex(inSize);
+			buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+			//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
 			copier->copyBlackFrameTo(buffer);
 		}
 	}
@@ -82,8 +101,8 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 		if (inSize != buffer->srcRect.size)	{
 			//	if i'm supposed to resize, do so
 			if (inResize)	{
-				VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize) : CreateRGBATex(inSize);
-				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize) : CreateBGRATex(inSize);
+				VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
 				copier->sizeVariantCopy(buffer, newBuffer);
 				buffer = newBuffer;
 			}
@@ -91,8 +110,8 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 			else	{
 				//	if i'm supposed to create a new buffer
 				if (inCreateNewBuffer)	{
-					buffer = (floatFlag) ? CreateRGBAFloatTex(inSize) : CreateRGBATex(inSize);
-					//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize) : CreateBGRATex(inSize);
+					buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+					//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
 				}
 				//	else i'm not supposed to create a new buffer
 				else	{
@@ -158,11 +177,27 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		return;
 	floatFlag = n;
 	if (buffer != nullptr)	{
-		VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize()) : CreateRGBATex(targetSize());
-		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize()) : CreateBGRATex(targetSize());
+		//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
+		VVGLBufferPoolRef		bp = nullptr;
+		VVGLBufferCopierRef		copier = nullptr;
+		if (parentDoc != nullptr)	{
+			ISFScene		*parentScene = parentDoc->getParentScene();
+			if (parentScene != nullptr)	{
+				bp = parentScene->getPrivatePool();
+				copier = parentScene->getPrivateCopier();
+			}
+		}
+		//	if that didn't work, use the globals...
+		if (bp == nullptr)
+			bp = GetGlobalBufferPool();
+		if (copier == nullptr)
+			copier = GetGlobalBufferCopier();
+		
+		VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
 		if (newBuffer != nullptr)	{
-			auto		copier = GetGlobalBufferCopier();
-			copier->ignoreSizeCopy(buffer, newBuffer);
+			if (copier != nullptr)
+				copier->ignoreSizeCopy(buffer, newBuffer);
 			buffer = newBuffer;
 		}
 	}

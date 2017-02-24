@@ -46,6 +46,9 @@ class ISFScene : public VVGLShaderScene	{
 		
 		//	access to these vars should be restricted by the 'renderLock' var inherited from VVGLScene
 		VVGLBufferRef		geoXYVBO = nullptr;
+		
+		VVGLBufferPoolRef	privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
+		VVGLBufferCopierRef	privateCopier = nullptr;	//	by default this is null and the scene will try to use the global buffer copier to create interim resources.  if non-null, the scene will use this copier to create interim resources.
 	
 	public:
 		ISFScene();
@@ -63,6 +66,11 @@ class ISFScene : public VVGLShaderScene	{
 		ISFFileType getFileType();
 		vector<string> getFileCategories();
 		
+		void setPrivatePool(const VVGLBufferPoolRef & n) { privatePool=n; }
+		VVGLBufferPoolRef getPrivatePool() { return privatePool; }
+		void setPrivateCopier(const VVGLBufferCopierRef & n) { privateCopier=n; }
+		VVGLBufferCopierRef getPrivateCopier() { return privateCopier; }
+		
 		void setBufferForInputNamed(const VVGLBufferRef & inBuffer, const string & inName);
 		void setFilterInputBuffer(const VVGLBufferRef & inBuffer);
 		void setBufferForInputImageKey(const VVGLBufferRef & inBuffer, const string & inString);
@@ -75,7 +83,8 @@ class ISFScene : public VVGLShaderScene	{
 		void setValueForInputNamed(const ISFVal & inVal, const string & inName);
 		ISFVal valueForInputNamed(const string & inName);
 		
-		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), const VVGLBufferPoolRef & inPool=GetGlobalBufferPool());
+		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), const VVGLBufferPoolRef & inPoolRef=nullptr);
+		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef=nullptr);
 		
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime);

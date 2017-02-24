@@ -31,8 +31,10 @@ using namespace VVGL;
 #pragma mark --------------------- constructor/destructor
 
 
-ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
+ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	parentScene = inParentScene;
 	
 	//	set the local path and name variables
 	path = new string(inPath);
@@ -86,6 +88,16 @@ ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
 		credit = new string(anObj.get<string>());
 	}
 	
+	//	parse the categories
+	anObj = jblob.value("CATEGORIES",json());
+	if (!anObj.is_null() && anObj.is_array())	{
+		for (auto catIt = anObj.begin(); catIt != anObj.end(); ++catIt)	{
+			json		catValue = catIt.value();
+			if (catValue.is_string())
+				categories.push_back(catValue.get<string>());
+		}
+	}
+	
 	//	parse the persistent buffers from the JSON dict (ISF v1, deprecated and no longer in use now)
 	anObj = jblob.value("PERSISTENT_BUFFERS",json());
 	if (!anObj.is_null())	{
@@ -94,7 +106,7 @@ ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
 			//for (auto const & it : anObj)	{
 			for (auto & it : anObj)	{
 				if (it.type() == json::value_t::string)	{
-					persistentBuffers.emplace_back(ISFPassTarget::Create(it.get<string>()));
+					persistentBuffers.emplace_back(ISFPassTarget::Create(it.get<string>(), this));
 				}
 			}
 		}
@@ -104,7 +116,7 @@ ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
 				string				bufferName = it.key();
 				json				bufferDescription = it.value();
 				if (bufferDescription.type() == json::value_t::object)	{
-					ISFPassTargetRef		newTargetBuffer = ISFPassTarget::Create(bufferName);
+					ISFPassTargetRef		newTargetBuffer = ISFPassTarget::Create(bufferName, this);
 					json				tmpObj = bufferDescription.value("WIDTH",json());
 					if (tmpObj != nullptr)	{
 						if (tmpObj.type() == json::value_t::string)	{
@@ -260,7 +272,7 @@ ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
 				//	if i couldn't find a persistent buffer...
 				if (targetBuffer == nullptr)	{
 					//	create a new target buffer, set its name
-					targetBuffer = ISFPassTarget::Create(tmpBufferName);
+					targetBuffer = ISFPassTarget::Create(tmpBufferName, this);
 					//	check for PERSISTENT flag as per the ISF 2.0 spec
 					json				persistentObj = rawPassDict.value("PERSISTENT",json());
 					ISFVal				persistentVal = ISFNullVal();
@@ -436,6 +448,12 @@ ISFDoc::ISFDoc(const string & inPath) throw(ISFErr)	{
 				}
 				if (defVal.isNullVal())
 					defVal = ISFFloatVal((maxVal.getDoubleVal()-minVal.getDoubleVal())/2. + minVal.getDoubleVal());
+				else	{
+					if (defVal.getDoubleVal()<minVal.getDoubleVal())
+						defVal = minVal;
+					else if (defVal.getDoubleVal()>maxVal.getDoubleVal())
+						defVal = maxVal;
+				}
 			}
 			else if (typeStringJ == "bool")	{
 				newAttribType = ISFValType_Bool;

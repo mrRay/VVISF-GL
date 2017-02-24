@@ -20,7 +20,7 @@ using namespace std;
 
 VVGLShaderScene::VVGLShaderScene()
 : VVGLScene()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 }
 VVGLShaderScene::VVGLShaderScene(const VVGLContext * inCtx)
 : VVGLScene(inCtx)	{

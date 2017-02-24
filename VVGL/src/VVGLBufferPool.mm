@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 //#import <CoreGraphics/CoreGraphics.h>
+#import <CoreVideo/CoreVideo.h>
 
 #if ISF_TARGET_IOS
 	#import <UIKit/UIKit.h>
@@ -429,6 +430,103 @@ VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRe
 	
 	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize);
 	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
+VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	//	look up the surface for the ID i was passed, bail if i can't
+	IOSurfaceRef		newSurface = IOSurfaceLookup(inID);
+	if (newSurface == NULL)
+		return nullptr;
+	
+	//	figure out how big the IOSurface is and what its pixel format is
+	Size			newAssetSize(IOSurfaceGetWidth(newSurface), IOSurfaceGetHeight(newSurface));
+	uint32_t		pixelFormat = IOSurfaceGetPixelFormat(newSurface);
+	//	make the buffer i'll be returning, set up as much of it as i can
+	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
+	inPoolRef->timestampThisBuffer(returnMe);
+	returnMe->desc.type = VVGLBuffer::Type_Tex;
+	returnMe->desc.target = VVGLBuffer::Target_Rect;
+	
+	switch (pixelFormat)	{
+	case kCVPixelFormatType_32BGRA:	//	'BGRA'
+	case VVGLBuffer::PF_BGRA:
+		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
+		returnMe->desc.pixelFormat = VVGLBuffer::PF_BGRA;
+		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		break;
+	case kCVPixelFormatType_32RGBA:	//	'RGBA'
+	case VVGLBuffer::PF_RGBA:
+		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
+		returnMe->desc.pixelFormat = VVGLBuffer::PF_RGBA;
+		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		break;
+	case kCVPixelFormatType_422YpCbCr8:	//	'2vuy'
+	case VVGLBuffer::PF_YCbCr_422:
+		returnMe->desc.internalFormat = VVGLBuffer::IF_RGB;
+		returnMe->desc.pixelFormat = VVGLBuffer::PF_YCbCr_422;
+		returnMe->desc.pixelType = VVGLBuffer::PT_UShort88;
+		break;
+	default:
+		cout << "\tERR: unknown pixel format (" << pixelFormat << ") in " << __PRETTY_FUNCTION__ << endl;
+		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
+		returnMe->desc.pixelFormat = VVGLBuffer::PF_BGRA;
+		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		break;
+	}
+	
+	returnMe->desc.cpuBackingType = VVGLBuffer::Backing_None;
+	returnMe->desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	returnMe->desc.texRangeFlag = false;
+	returnMe->desc.texClientStorageFlag = false;
+	returnMe->desc.msAmount = 0;
+	returnMe->desc.localSurfaceID = inID;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = newAssetSize;
+	returnMe->srcRect = Rect(0,0,newAssetSize.width,newAssetSize.height);
+	//returnMe->flipped = 
+	returnMe->backingSize = newAssetSize;
+	//returnMe->backingReleaseCallback = 
+	//returnMe->backingContext = 
+	returnMe->backingID = VVGLBuffer::BackingID_RemoteIOSrf;
+	
+	returnMe->setRemoteSurfaceRef(newSurface);
+	
+	//	we can free the surface now that the buffer we'll be returning has retained it
+	CFRelease(newSurface);
+	
+	//	...now that i've created and set up the VVGLBuffer, take care of the GL resource setup...
+	
+	//	grab a context lock so we can do stuff with the GL context
+	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
+	VVGLContext						*context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
+	if (context!=nullptr)	{
+		context->makeCurrentIfNotCurrent();
+		glEnable(returnMe->desc.target);
+		glGenTextures(1,&(returnMe->name));
+		glBindTexture(returnMe->desc.target, returnMe->name);
+		CGLError		err = CGLTexImageIOSurface2D(context->ctx,
+			returnMe->desc.target,
+			returnMe->desc.internalFormat,
+			newAssetSize.width,
+			newAssetSize.height,
+			returnMe->desc.pixelFormat,
+			returnMe->desc.pixelType,
+			newSurface,
+			0);
+		if (err != noErr)
+			cout << "\tERR: " << err << " at CGLTexImageIOSurface2D() in " << __PRETTY_FUNCTION__ << endl;
+		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFlush();
+	}
 	
 	return returnMe;
 }

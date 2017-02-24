@@ -19,10 +19,10 @@ using namespace std;
 
 
 	
+	class ISFDoc;
 	//	ISFPassTargetRef is a shared pointer to an ISFPassTarget- this is what you should use
 	class ISFPassTarget;
 	using ISFPassTargetRef = std::shared_ptr<ISFPassTarget>;
-	
 	
 	
 	
@@ -37,6 +37,7 @@ using namespace std;
 		private:
 			string			name;
 			VVGLBufferRef		buffer = nullptr;
+			ISFDoc			*parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
 			
 			mutex			targetLock;
 			
@@ -54,9 +55,9 @@ using namespace std;
 			int32_t			uniformLocation[4] = { -1, -1, -1, -1 };	//	the location of this attribute in the compiled GLSL program. cached here because lookup times are costly when performed every frame.  there are 4 because images require four uniforms (one of the texture name, one for the size, one for the img rect, and one for the flippedness)
 		public:
 			//	"class method" that creates a buffer ref
-			static ISFPassTargetRef Create(const string & inName);
-	
-			ISFPassTarget(const string & inName);
+			static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
+			
+			ISFPassTarget(const string & inName, const ISFDoc * inParentDoc);
 			~ISFPassTarget();
 			ISFPassTarget(const ISFPassTarget & n) = default;
 			ISFPassTarget(ISFPassTarget && n) = default;

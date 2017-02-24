@@ -76,6 +76,8 @@ OUTPUT = ./bin/libVVGL.a
 $(OUTPUT) : $(OBJS)
 	$(shell mkdir -p ./bin)
 	ar crv $(OUTPUT) $(OBJS)
+#	ar rcs $(OUTPUT) $(OBJS)
+#	libtool static $(OUTPUT) -o $(OBJS)
 
 
 #administrative targets
@@ -84,8 +86,8 @@ $(OUTPUT) : $(OBJS)
 all : $(OUTPUT)
 
 clean:
-	rm -f ./obj/*.o
-	rm -f ./bin/*.a
+	rm -rf ./obj
+	rm -rf ./bin
 
 clean_all : clean
 

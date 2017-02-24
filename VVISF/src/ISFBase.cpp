@@ -2,7 +2,7 @@
 
 //#include "VVGLBuffer.hpp"
 //#include "VVGLBufferPool.hpp"
-
+#include "ISFDoc.hpp"
 
 
 
@@ -26,8 +26,17 @@ vector<string> * createArrayOfISFsForPath(const string & inPath, const ISFFileTy
 vector<string> * createArrayOfDefaultISFs(const ISFFileType & inType)	{
 	return nullptr;
 }
-bool fileIsProbablyAnISF(const string & pathToFile)	{
-	return false;
+bool FileIsProbablyAnISF(const string & pathToFile)	{
+	//return false;
+	bool		returnMe = false;
+	try	{
+		ISFDoc		tmpDoc(pathToFile);
+		returnMe = true;
+	}
+	catch (ISFErr)	{
+	
+	}
+	return returnMe;
 }
 string ISFFileTypeString(const ISFFileType & n)	{
 	switch (n)	{

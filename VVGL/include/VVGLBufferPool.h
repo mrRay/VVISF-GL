@@ -21,21 +21,6 @@ namespace VVGL
 
 
 
-/*
-VVGLBufferRef CreateTexFromImage(const string & inPath, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-
-VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inPaths, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-
-VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-
-
-void CGBitmapContextUnpremultiply(CGContextRef ctx);
-*/
-
-
-
 }
 
 

@@ -10,6 +10,9 @@
 #endif
 
 
+#define IDLEBUFFERCOUNT 30
+
+
 
 
 namespace VVGL
@@ -64,6 +67,8 @@ VVGLBufferPool::~VVGLBufferPool()	{
 
 VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, const Size & s, const void * b, const Size & bs)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	if (deleted)
+		return nullptr;
 	
 	VVGLBufferRef		returnMe = nullptr;
 	
@@ -407,14 +412,16 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 
 VVGLBufferRef VVGLBufferPool::fetchMatchingFreeBuffer(const VVGLBuffer::Descriptor & desc, const Size & size)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	if (deleted)
+		return nullptr;
 	
 	//	get a lock on the array of free buffers
 	lock_guard<mutex>		lock(freeBuffersLock);
 	
-	VVGLBufferRef					returnMe = nullptr;
+	VVGLBufferRef			returnMe = nullptr;
 	
 	vector<VVGLBufferRef>::iterator		it;
-	int					tmpIndex = 0;
+	int						tmpIndex = 0;
 	for (it=freeBuffers.begin(); it!=freeBuffers.end(); ++it)	{
 		//	if this buffer is comparable to the passed descriptor and can be used for recycling...
 		VVGLBuffer			*bufferPtr = (*it).get();
@@ -474,19 +481,25 @@ void VVGLBufferPool::housekeeping()	{
 	
 	lock_guard<mutex>		lock(freeBuffersLock);
 	
-	int				idleLimit = 30;
 	bool			needsToClearStuff = false;
 	for_each(freeBuffers.begin(), freeBuffers.end(), [&](const VVGLBufferRef & n)	{
 		(*n).idleCount++;
-		if ((*n).idleCount >= idleLimit)
+		if ((*n).idleCount >= IDLEBUFFERCOUNT)
 			needsToClearStuff = true;
 	});
 	
 	//	if there are indices that need to be removed...
 	if (needsToClearStuff)	{
-		auto		removeIt = remove_if(freeBuffers.begin(), freeBuffers.end(), [&](VVGLBufferRef n){ return (*n).idleCount >= idleLimit; });
+		auto		removeIt = remove_if(freeBuffers.begin(), freeBuffers.end(), [&](VVGLBufferRef n){ return (*n).idleCount >= IDLEBUFFERCOUNT; });
 		freeBuffers.erase(removeIt, freeBuffers.end());
 	}
+}
+void VVGLBufferPool::purge()	{
+	lock_guard<mutex>		lock(freeBuffersLock);
+	for_each(freeBuffers.begin(), freeBuffers.end(), [&](const VVGLBufferRef & n)	{
+		n->idleCount = (IDLEBUFFERCOUNT+1);
+	});
+	housekeeping();
 }
 ostream & operator<<(ostream & os, const VVGLBufferPool & n)	{
 	os << "<VVGLBufferPool " << &n << ">";
@@ -514,6 +527,12 @@ void VVGLBufferPool::returnBufferToPool(VVGLBuffer * inBuffer)	{
 	
 	if (inBuffer == nullptr)
 		return;
+	
+	//	if we've been flagged for deletion we're just waiting for the buffers still "in the wild" to get released, and as such we should just release this regardless.
+	if (deleted)	{
+		releaseBufferResources(inBuffer);
+		return;
+	}
 	
 	//	get a lock for the freeBuffers array
 	lock_guard<mutex>		lock(freeBuffersLock);
@@ -586,7 +605,7 @@ void VVGLBufferPool::releaseBufferResources(VVGLBuffer * inBuffer)	{
 
 
 VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContext * inShareCtx)	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	VVGLBufferPoolRef		returnMe = make_shared<VVGLBufferPool>(inShareCtx);
 	if (_globalBufferPool != nullptr)	{
@@ -601,6 +620,9 @@ VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContext * inShareCtx)	{
 	return returnMe;
 }
 VVGLBufferPoolRef GetGlobalBufferPool()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (_globalBufferPool==nullptr)
+		return nullptr;
 	return *_globalBufferPool;
 }
 
@@ -815,7 +837,7 @@ VVGLBufferRef CreateDepthBuffer(const Size & size, const VVGLBufferPoolRef & inP
 	return returnMe;
 }
 
-VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const VVGLBuffer::BackingReleaseCallback & inReleaseCallback)	{
+VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const VVGLBuffer::BackingReleaseCallback & inReleaseCallback, const VVGLBufferPoolRef & inPoolRef)	{
 	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>();
 	returnMe->desc.type = VVGLBuffer::Type_Tex;
 	returnMe->desc.target = static_cast<VVGLBuffer::Target>(inTexTarget);
@@ -832,7 +854,8 @@ VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32
 	returnMe->backingReleaseCallback = inReleaseCallback;
 	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	
-	GetGlobalBufferPool()->timestampThisBuffer(returnMe);
+	if (inPoolRef != nullptr)
+		inPoolRef->timestampThisBuffer(returnMe);
 	
 	return returnMe;
 }

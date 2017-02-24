@@ -52,8 +52,10 @@ void ISFScene::useFile(const string & inPath)	{
 	try	{
 		lock_guard<recursive_mutex> rlock(renderLock);
 		lock_guard<mutex>	plock(propertyLock);
+		if (doc != nullptr)
+			doc->setParentScene(nullptr);
 		doc = nullptr;
-		ISFDocRef			newDoc = make_shared<ISFDoc>(inPath);
+		ISFDocRef			newDoc = make_shared<ISFDoc>(inPath, this);
 		doc = newDoc;
 		
 		//	reset the timestamper and render frame index
@@ -227,7 +229,10 @@ vector<ISFAttrRef> ISFScene::getImageImports()	{
 #pragma mark --------------------- public rendering interface
 
 
-VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const VVGLBufferPoolRef & inPool)	{
+VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
+	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), inPoolRef);
+}
+VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef)	{
 	ISFDocRef		tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -242,18 +247,22 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 			lastPass = tmpDoc->getTempTargetForKey(lastPassName);
 	}
 	
-	returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
-		? CreateRGBAFloatTex(inSize, inPool)
-		: CreateRGBATex(inSize, inPool);
-	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
-	//	? CreateBGRAFloatTex(inSize, inPool)
-	//	: CreateBGRATex(inSize, inPool);
+	VVGLBufferPoolRef		bp = inPoolRef;
+	if (bp == nullptr && privatePool!=nullptr) bp = privatePool;
+	if (bp == nullptr) bp = GetGlobalBufferPool();
 	
-	renderToBuffer(returnMe);
+	returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
+		? CreateRGBAFloatTex(inSize, bp)
+		: CreateRGBATex(inSize, bp);
+	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
+	//	? CreateBGRAFloatTex(inSize, bp)
+	//	: CreateBGRATex(inSize, bp);
+	
+	renderToBuffer(returnMe, inSize, inRenderTime);
 	
 	return returnMe;
 	/*
-	VVGLBufferRef		returnMe = CreateRGBATex(inSize);
+	VVGLBufferRef		returnMe = CreateRGBATex(inSize, bp);
 	renderToBuffer(returnMe);
 	return returnMe;
 	*/
@@ -830,7 +839,7 @@ void ISFScene::_renderCleanup()	{
 }
 void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,VVGLBufferRef> * outPassDict)	{
 	//cout << __FUNCTION__ << ", self is " << getFileName() << ", time is " << inTime << endl;
-	//cout << "\tinSize is " << inSize << ", inTargetBuffer is " << inTargetBuffer << endl;
+	//cout << "\tinSize is " << inSize << ", inTargetBuffer is " << *inTargetBuffer << endl;
 	//if (inTargetBuffer != nullptr)
 	//	cout << "/" << *inTargetBuffer << endl;
 	//else
@@ -859,6 +868,12 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 		//	clear the passed dict of render passes (we'll be placing the rendered content from each pass in it as we progress)
 		if (outPassDict != nullptr)
 			outPassDict->clear();
+		
+		//	get the buffer pool we're going to use to generate the buffers
+		VVGLBufferPoolRef		bp = privatePool;
+		if (bp==nullptr && inTargetBuffer!=nullptr) bp = inTargetBuffer->parentBufferPool;
+		if (bp==nullptr) bp = GetGlobalBufferPool();
+		
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->getRenderPasses();
 		passIndex = 1;
@@ -872,7 +887,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			//RenderTarget			tmpRenderTarget = RenderTarget(CreateFBO(), nullptr, nullptr);
 			RenderTarget			tmpRenderTarget;
 			if (inTargetBuffer != nullptr)	{
-				tmpRenderTarget.fbo = CreateFBO();
+				tmpRenderTarget.fbo = CreateFBO(bp);
 				context->makeCurrentIfNotCurrent();
 			}
 			
@@ -897,8 +912,8 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			if (passIndex >= passes.size())
 				tmpRenderTarget.color = inTargetBuffer;
 			else	{
-				tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize) : CreateRGBATex(targetBufferSize);
-				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize) : CreateBGRATex(targetBufferSize);
+				tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
+				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
 				context->makeCurrentIfNotCurrent();
 			}
 			//cout << "\ttargetBufferSize is " << targetBufferSize << ", and has target color buffer " << tmpRenderTarget.color << " and size " << targetBufferSize << endl;

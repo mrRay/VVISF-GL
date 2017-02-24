@@ -95,8 +95,8 @@ $(OUTPUT) : $(OBJS)
 all : $(OUTPUT)
 
 clean:
-	rm -f ./obj/*.o
-	rm -f $(OUTPUT)
+	rm -rf ./obj
+	rm -rf ./bin
 
 clean_all : clean
 	$(MAKE) -C ./../../VVISF clean_all

@@ -73,7 +73,18 @@ struct ISFVal	{
 		void setImageBuffer(const VVGLBufferRef & n);
 		string getTypeString() const;
 		string getValString() const;
+		
 		inline bool isNullVal() const { return (type == ISFValType_None); }
+		inline bool isEventVal() const { return (type == ISFValType_Event); }
+		inline bool isBoolVal() const { return (type == ISFValType_Bool); }
+		inline bool isLongVal() const { return (type == ISFValType_Long); }
+		inline bool isFloatVal() const { return (type == ISFValType_Float); }
+		inline bool isPoint2DVal() const { return (type == ISFValType_Point2D); }
+		inline bool isColorVal() const { return (type == ISFValType_Color); }
+		inline bool isCubeVal() const { return (type == ISFValType_Cube); }
+		inline bool isImageVal() const { return (type == ISFValType_Image); }
+		inline bool isAudioVal() const { return (type == ISFValType_Audio); }
+		inline bool isAudioFFTVal() const { return (type == ISFValType_AudioFFT); }
 		
 		friend ostream & operator<<(ostream & os, const ISFVal & n) { os << FmtString("<ISFVal %s/%s>", n.getTypeString().c_str(), n.getValString().c_str()); return os; }
 };

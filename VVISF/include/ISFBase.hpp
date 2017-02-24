@@ -47,7 +47,7 @@ enum ISFFileType	{
 vector<string> * createArrayOfISFsForPath(const string & inPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
 vector<string> * createArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
 //	returns a true if the passed file is probably an ISF file
-bool fileIsProbablyAnISF(const string & pathToFile);
+bool FileIsProbablyAnISF(const string & pathToFile);
 //	creates a string describing the ISFFileType
 string ISFFileTypeString(const ISFFileType & n);
 

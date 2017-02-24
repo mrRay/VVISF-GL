@@ -73,6 +73,7 @@ class ISFAttr	{
 		inline void clearUniformLocations() { for (int i=0; i<4; ++i) uniformLocation[i]=0; }
 		inline void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0 || inIndex>3) return; uniformLocation[inIndex] = inNewVal; }
 		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return uniformLocation[inIndex]; }
+		//inline bool isNullVal() { return (type==ISFValType_None); }
 		
 		friend ostream & operator<<(ostream & os, const ISFAttr & n);
 		void lengthyDescription();

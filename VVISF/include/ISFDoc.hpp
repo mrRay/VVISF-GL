@@ -17,6 +17,8 @@ namespace VVISF
 
 using namespace std;
 
+class ISFScene;
+
 
 
 
@@ -52,8 +54,10 @@ class ISFDoc	{
 		string			*vertShaderSource = nullptr;	//	the raw vert shader source before being find-and-replaced
 		string			*fragShaderSource = nullptr;	//	the raw frag shader source before being find-and-replaced
 		
+		ISFScene		*parentScene = nullptr;	//	nil by default, weak ref to the scene that "owns" me.  only non-nil when an ISFScene is using the doc to render.
+		
 	public:
-		ISFDoc(const string & inPath) throw(ISFErr);
+		ISFDoc(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr);
 		~ISFDoc();
 		
 		string getPath() const { return (path==nullptr) ? string("") : string(*path); }
@@ -87,6 +91,9 @@ class ISFDoc	{
 		void getJSONString(string & outStr);
 		void getVertShaderSource(string & outStr);
 		void getFragShaderSource(string & outStr);
+		
+		void setParentScene(ISFScene * n) { parentScene=n; }
+		ISFScene * getParentScene() { return parentScene; }
 		
 		ISFAttrRef getInput(const string & inAttrName);
 		vector<ISFAttrRef> getInputs(const ISFValType & n);

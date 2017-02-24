@@ -63,7 +63,7 @@ VVGLContext::VVGLContext(const CGLContextObj & inCtx, const CGLContextObj & inSh
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	sharedCtx = (inShareCtx==nullptr) ? nullptr : CGLRetainContext(inShareCtx);
-	pxlFmt = (inPxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(pxlFmt);
+	pxlFmt = (inPxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(inPxlFmt);
 	ctx = (inCtx==nullptr) ? nullptr : CGLRetainContext(inCtx);
 	
 	generalInit();
@@ -229,7 +229,7 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_TARGET_MAC
+#pragma mark ******************************************** ISF_TARGET_GLFW
 #elif ISF_TARGET_GLFW
 
 

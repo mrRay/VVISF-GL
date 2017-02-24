@@ -533,7 +533,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 
 
 VVGLBufferCopierRef CreateGlobalBufferCopier()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	//	if there's already a global buffer copier, delete it
 	if (_globalBufferCopier != nullptr)	{
 		delete _globalBufferCopier;

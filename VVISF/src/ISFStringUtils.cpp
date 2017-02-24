@@ -145,5 +145,11 @@ void FindAndReplaceInPlace(const char * inSearch, const char * inReplace, string
 }
 
 
+string FullPath(const string & inRelativePath)	{
+	char		*outPath = realpath(inRelativePath.c_str(), NULL);
+	return std::string(outPath);
+}
+
+
 }
 

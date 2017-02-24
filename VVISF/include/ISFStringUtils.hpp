@@ -34,6 +34,8 @@ string TrimWhitespace(const string & inBaseStr);
 void FindAndReplaceInPlace(string & inSearch, string & inReplace, string & inBase);
 void FindAndReplaceInPlace(const char * inSearch, const char * inReplace, string & inBase);
 
+string FullPath(const string & inRelativePath);
+
 
 }
 
