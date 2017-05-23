@@ -11,7 +11,7 @@
 @interface VVGLBufferGLView()	{
 	
 }
-- (void) setSharedGLContext:(const VVGLContext *)n;
+- (void) setSharedGLContext:(const VVGLContextRef)n;
 @end
 
 
@@ -134,6 +134,7 @@
 			glDisable(GL_DEPTH_TEST);
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			
+			glActiveTexture(GL_TEXTURE0);
 			glEnable(target);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			
@@ -200,6 +201,7 @@
 				glBindTexture(b->desc.target, b->name);
 				glDrawArrays(GL_QUADS, 0, 4);
 				glBindTexture(b->desc.target, 0);
+				glDisable(b->desc.target);
 				
 			}
 			//	flush!
@@ -232,7 +234,7 @@
 	pthread_mutex_unlock(&renderLock);
 }
 */
-- (void) setSharedGLContext:(const VVGLContext *)n	{
+- (void) setSharedGLContext:(const VVGLContextRef)n	{
 	pthread_mutex_lock(&renderLock);
 		NSOpenGLContext		*tmpSharedCtx = (n->sharedCtx==nullptr) ? nil : [[[NSOpenGLContext alloc] initWithCGLContextObj:n->sharedCtx] autorelease];
 		NSOpenGLContext		*newContext = [[NSOpenGLContext alloc]

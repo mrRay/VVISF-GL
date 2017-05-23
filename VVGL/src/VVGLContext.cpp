@@ -123,7 +123,7 @@ VVGLContext::~VVGLContext()	{
 VVGLContext::VVGLContext(const VVGLContext * n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	sharedCtx = (n->sharedCtx==nullptr) ? nullptr : CGLRetainContext(sharedCtx);
+	sharedCtx = (n->sharedCtx==nullptr) ? nullptr : CGLRetainContext(n->sharedCtx);
 	pxlFmt = (n->pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n->pxlFmt);
 	ctx = (n->ctx==nullptr) ? nullptr : CGLRetainContext(n->ctx);
 	
@@ -132,9 +132,18 @@ VVGLContext::VVGLContext(const VVGLContext * n)	{
 VVGLContext::VVGLContext(const VVGLContext & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	sharedCtx = (n.sharedCtx==nullptr) ? nullptr : CGLRetainContext(sharedCtx);
+	sharedCtx = (n.sharedCtx==nullptr) ? nullptr : CGLRetainContext(n.sharedCtx);
 	pxlFmt = (n.pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n.pxlFmt);
 	ctx = (n.ctx==nullptr) ? nullptr : CGLRetainContext(n.ctx);
+	
+	generalInit();
+}
+VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	sharedCtx = (n->sharedCtx==nullptr) ? nullptr : CGLRetainContext(n->sharedCtx);
+	pxlFmt = (n->pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n->pxlFmt);
+	ctx = (n->ctx==nullptr) ? nullptr : CGLRetainContext(n->ctx);
 	
 	generalInit();
 }
@@ -142,6 +151,7 @@ VVGLContext::VVGLContext(const VVGLContext & n)	{
 /*	========================================	*/
 #pragma mark --------------------- factory method
 
+/*
 VVGLContext * VVGLContext::allocNewContextSharingMe() const	{
 	if (sharedCtx == nullptr)
 		return new VVGLContext(ctx, pxlFmt);
@@ -153,6 +163,13 @@ VVGLContext VVGLContext::newContextSharingMe() const	{
 		return VVGLContext(ctx, pxlFmt);
 	else
 		return VVGLContext(sharedCtx, pxlFmt);
+}
+*/
+VVGLContextRef VVGLContext::newContextSharingMe() const	{
+	if (sharedCtx == nullptr)
+		return make_shared<VVGLContext>(ctx, pxlFmt);
+	else
+		return make_shared<VVGLContext>(sharedCtx, pxlFmt);
 }
 
 /*	========================================	*/
@@ -192,6 +209,21 @@ void VVGLContext::makeCurrentIfNull()	{
 			CGLSetCurrentContext(ctx);
 		}
 	}
+}
+bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
+	CGLContextObj		inCtxCtx = (inCtx==nullptr) ? nullptr : inCtx->ctx;
+	CGLShareGroupObj	inShareGroup = (inCtxCtx==nullptr) ? NULL : CGLGetShareGroup(inCtxCtx);
+	CGLShareGroupObj	myShareGroup = (ctx==nullptr) ? NULL : CGLGetShareGroup(ctx);
+	if (inShareGroup!=NULL && myShareGroup!=NULL && inShareGroup==myShareGroup)
+		return true;
+	return false;
+}
+bool VVGLContext::sameShareGroupAs(const CGLContextObj & inCtx)	{
+	CGLShareGroupObj	inShareGroup = (inCtx==nullptr) ? NULL : CGLGetShareGroup(inCtx);
+	CGLShareGroupObj	myShareGroup = (ctx==nullptr) ? NULL : CGLGetShareGroup(ctx);
+	if (inShareGroup!=NULL && myShareGroup!=NULL && inShareGroup==myShareGroup)
+		return true;
+	return false;
 }
 VVGLContext & VVGLContext::operator=(const VVGLContext & n)	{
 	if (ctx != nullptr)	{
@@ -261,15 +293,24 @@ VVGLContext::VVGLContext(const VVGLContext & n)	{
 	win = n.win;
 	generalInit();
 }
+VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	win = n->win;
+	generalInit();
+}
 
 /*	========================================	*/
 #pragma mark --------------------- factory method
 
+/*
 VVGLContext * VVGLContext::allocNewContextSharingMe() const	{
 	return new VVGLContext(win);
 }
 VVGLContext VVGLContext::newContextSharingMe() const	{
 	return VVGLContext(win);
+}
+*/
+VVGLContextRef VVGLContext::newContextSharingMe() const	{
+	return make_shared<VVGLContext>(win);
 }
 
 /*	========================================	*/
@@ -299,6 +340,10 @@ void VVGLContext::makeCurrentIfNull()	{
 	GLFWwindow		*currentCtx = glfwGetCurrentContext();
 	if (currentCtx == nullptr)
 		glfwMakeContextCurrent(win);
+}
+bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
+	cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
+	return false;
 }
 VVGLContext & VVGLContext::operator=(const VVGLContext & n)	{
 	win = n.win;
@@ -357,15 +402,26 @@ VVGLContext::VVGLContext(const VVGLContext & n)	{
 	ctx = n.ctx;
 	generalInit();
 }
+VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	display = n->display;
+	winSurface = n->winSurface;
+	ctx = n->ctx;
+	generalInit();
+}
 
 /*	========================================	*/
 #pragma mark --------------------- factory method
 
+/*
 VVGLContext * VVGLContext::allocNewContextSharingMe() const	{
 	return new VVGLContext(display, winSurface, ctx);
 }
 VVGLContext VVGLContext::newContextSharingMe() const	{
 	return VVGLContext(display, winSurface, ctx);
+}
+*/
+VVGLContextRef VVGLContext::newContextSharingMe()	{
+	return make_shared<VVGLContext>(display, winSurface, ctx);
 }
 
 /*	========================================	*/
@@ -396,6 +452,10 @@ void VVGLContext::makeCurrentIfNotCurrent()	{
 void VVGLContext::makeCurrentIfNull()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
 	makeCurrent();
+}
+bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
+	cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
+	return false;
 }
 VVGLContext & VVGLContext::operator=(const VVGLContext & n)	{
 	display = n.display;

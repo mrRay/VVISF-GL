@@ -122,8 +122,8 @@
 		1A0224961E390C9E00C110B8 /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224661E390C9E00C110B8 /* ISFVal.cpp */; };
 		1A0224971E390C9E00C110B8 /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224661E390C9E00C110B8 /* ISFVal.cpp */; };
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
-		1A2311B51E2D63E300B0EF84 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2311801E2D63D200B0EF84 /* libglfw.3.2.dylib */; };
 		1A2311BB1E2D64D300B0EF84 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311BA1E2D64D300B0EF84 /* glad.c */; };
+		1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1A350E301E1BF0E3004E0569 /* libVVISFKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AB1479A1E1BDAA80041528E /* libVVISFKit.a */; };
 		1A416D571E202CF9009E61EE /* CellMod.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A416D561E202CF9009E61EE /* CellMod.fs */; };
 		1A44D2A81E1BFD3C00F48E60 /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
@@ -172,194 +172,187 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1A23117F1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586E01ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 2FC975D58BF541C1B6525DD3;
 			remoteInfo = glfw;
 		};
-		1A2311811E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586E21ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 87D133DBED9D4886AFB640F2;
 			remoteInfo = boing;
 		};
-		1A2311831E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586E41ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 07F4D4A230CF4B839F0EE09E;
 			remoteInfo = gears;
 		};
-		1A2311851E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586E61ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C8C471703EE84CC08269B173;
 			remoteInfo = heightmap;
 		};
-		1A2311871E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586E81ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F3AFC95166AA4B839BBD5A4E;
 			remoteInfo = particles;
 		};
-		1A2311891E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586EA1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 915B3AEBC76E4588A6CC8C69;
 			remoteInfo = simple;
 		};
-		1A23118B1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586EC1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = EC0657D11BE946DFAF69275B;
 			remoteInfo = splitview;
 		};
-		1A23118D1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586EE1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 56F59F4F616F4B009D1A48F7;
 			remoteInfo = wave;
 		};
-		1A23118F1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586F01ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E56031D7F1B14642B67A0FA4;
 			remoteInfo = clipboard;
 		};
-		1A2311911E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586F21ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = FF0C75D201EC4204A71833A8;
 			remoteInfo = cursor;
 		};
-		1A2311931E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586F41ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E14EC9E82DBE4A3697480B3A;
 			remoteInfo = empty;
 		};
-		1A2311951E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586F61ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 0040EE368CBE4E30A92AAC19;
 			remoteInfo = events;
 		};
-		1A2311971E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586F81ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 43F4AD40C1BF4B6181FDF503;
 			remoteInfo = gamma;
 		};
-		1A2311991E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586FA1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = EB6220E839DF41B99B100260;
 			remoteInfo = glfwinfo;
 		};
-		1A23119B1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586FC1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AD37370EE94345A61B3B66;
 			remoteInfo = icon;
 		};
-		1A23119D1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2586FE1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 897A49DD8A25479FA1A67A84;
 			remoteInfo = iconify;
 		};
-		1A23119F1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587001ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 5921456763B5410FB9395993;
 			remoteInfo = joysticks;
 		};
-		1A2311A11E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587021ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = DABA15A6B1B44C33A9CB9A58;
 			remoteInfo = monitors;
 		};
-		1A2311A31E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587041ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 0B87995650704270A266367E;
 			remoteInfo = msaa;
 		};
-		1A2311A51E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587061ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C3273C464E2A4ED88083DF48;
 			remoteInfo = reopen;
 		};
-		1A2311A71E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587081ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 6E39D121F0444313BAB75C5D;
 			remoteInfo = sharing;
 		};
-		1A2311A91E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A25870A1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 2B86A7576B7B4A07A1F62610;
 			remoteInfo = tearing;
 		};
-		1A2311AB1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A25870C1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E538311E0C1547109ED0A0B0;
 			remoteInfo = threads;
 		};
-		1A2311AD1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A25870E1ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 20F8A8BC206E4F3B86C97BB9;
 			remoteInfo = timeout;
 		};
-		1A2311AF1E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587101ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2B1E03D4792402E80E4C4D4;
 			remoteInfo = title;
 		};
-		1A2311B11E2D63D200B0EF84 /* PBXContainerItemProxy */ = {
+		1A2587121ED49470009FC66A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 711FDDD8A4F64C00A3AB4EE3;
 			remoteInfo = windows;
-		};
-		1A2311B31E2D63DC00B0EF84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D6DCC326B6EB4031BEB06B1A;
-			remoteInfo = glfw;
 		};
 		1A350E2E1E1BE363004E0569 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -435,7 +428,7 @@
 		1A23114D1E2D63C700B0EF84 /* GLFWGears.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLFWGears.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2311531E2D63C700B0EF84 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		1A23115A1E2D63C700B0EF84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLFW.xcodeproj; path = "../glfw-3.2.1/GLFW.xcodeproj"; sourceTree = "<group>"; };
+		1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLFW.xcodeproj; path = "../../../glfw-3.2.1/GLFW.xcodeproj"; sourceTree = "<group>"; };
 		1A2311B91E2D64D300B0EF84 /* glad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glad.h; path = glad/glad.h; sourceTree = "<group>"; };
 		1A2311BA1E2D64D300B0EF84 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
 		1A416D561E202CF9009E61EE /* CellMod.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CellMod.fs; sourceTree = "<group>"; };
@@ -495,7 +488,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A2311B51E2D63E300B0EF84 /* libglfw.3.2.dylib in Frameworks */,
+				1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -662,35 +655,35 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		1A23115F1E2D63D200B0EF84 /* Products */ = {
+		1A2586C01ED49470009FC66A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1A2311801E2D63D200B0EF84 /* libglfw.3.2.dylib */,
-				1A2311821E2D63D200B0EF84 /* boing.app */,
-				1A2311841E2D63D200B0EF84 /* gears.app */,
-				1A2311861E2D63D200B0EF84 /* heightmap.app */,
-				1A2311881E2D63D200B0EF84 /* particles.app */,
-				1A23118A1E2D63D200B0EF84 /* simple.app */,
-				1A23118C1E2D63D200B0EF84 /* splitview.app */,
-				1A23118E1E2D63D200B0EF84 /* wave.app */,
-				1A2311901E2D63D200B0EF84 /* clipboard */,
-				1A2311921E2D63D200B0EF84 /* cursor */,
-				1A2311941E2D63D200B0EF84 /* empty.app */,
-				1A2311961E2D63D200B0EF84 /* events */,
-				1A2311981E2D63D200B0EF84 /* gamma */,
-				1A23119A1E2D63D200B0EF84 /* glfwinfo */,
-				1A23119C1E2D63D200B0EF84 /* icon.app */,
-				1A23119E1E2D63D200B0EF84 /* iconify */,
-				1A2311A01E2D63D200B0EF84 /* joysticks */,
-				1A2311A21E2D63D200B0EF84 /* monitors */,
-				1A2311A41E2D63D200B0EF84 /* msaa */,
-				1A2311A61E2D63D200B0EF84 /* reopen */,
-				1A2311A81E2D63D200B0EF84 /* sharing.app */,
-				1A2311AA1E2D63D200B0EF84 /* tearing.app */,
-				1A2311AC1E2D63D200B0EF84 /* threads.app */,
-				1A2311AE1E2D63D200B0EF84 /* timeout.app */,
-				1A2311B01E2D63D200B0EF84 /* title.app */,
-				1A2311B21E2D63D200B0EF84 /* windows.app */,
+				1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */,
+				1A2586E31ED49470009FC66A /* boing.app */,
+				1A2586E51ED49470009FC66A /* gears.app */,
+				1A2586E71ED49470009FC66A /* heightmap.app */,
+				1A2586E91ED49470009FC66A /* particles.app */,
+				1A2586EB1ED49470009FC66A /* simple.app */,
+				1A2586ED1ED49470009FC66A /* splitview.app */,
+				1A2586EF1ED49470009FC66A /* wave.app */,
+				1A2586F11ED49470009FC66A /* clipboard */,
+				1A2586F31ED49470009FC66A /* cursor */,
+				1A2586F51ED49470009FC66A /* empty.app */,
+				1A2586F71ED49470009FC66A /* events */,
+				1A2586F91ED49470009FC66A /* gamma */,
+				1A2586FB1ED49470009FC66A /* glfwinfo */,
+				1A2586FD1ED49470009FC66A /* icon.app */,
+				1A2586FF1ED49470009FC66A /* iconify */,
+				1A2587011ED49470009FC66A /* joysticks */,
+				1A2587031ED49470009FC66A /* monitors */,
+				1A2587051ED49470009FC66A /* msaa */,
+				1A2587071ED49470009FC66A /* reopen */,
+				1A2587091ED49470009FC66A /* sharing.app */,
+				1A25870B1ED49470009FC66A /* tearing.app */,
+				1A25870D1ED49470009FC66A /* threads.app */,
+				1A25870F1ED49470009FC66A /* timeout.app */,
+				1A2587111ED49470009FC66A /* title.app */,
+				1A2587131ED49470009FC66A /* windows.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -898,7 +891,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				1A2311B41E2D63DC00B0EF84 /* PBXTargetDependency */,
 			);
 			name = GLFWGears;
 			productName = GLFWGears;
@@ -1037,7 +1029,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 1A23115F1E2D63D200B0EF84 /* Products */;
+					ProductGroup = 1A2586C01ED49470009FC66A /* Products */;
 					ProjectRef = 1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */;
 				},
 			);
@@ -1054,186 +1046,186 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		1A2311801E2D63D200B0EF84 /* libglfw.3.2.dylib */ = {
+		1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = libglfw.3.2.dylib;
-			remoteRef = 1A23117F1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586E01ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311821E2D63D200B0EF84 /* boing.app */ = {
+		1A2586E31ED49470009FC66A /* boing.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = boing.app;
-			remoteRef = 1A2311811E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586E21ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311841E2D63D200B0EF84 /* gears.app */ = {
+		1A2586E51ED49470009FC66A /* gears.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = gears.app;
-			remoteRef = 1A2311831E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586E41ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311861E2D63D200B0EF84 /* heightmap.app */ = {
+		1A2586E71ED49470009FC66A /* heightmap.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = heightmap.app;
-			remoteRef = 1A2311851E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586E61ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311881E2D63D200B0EF84 /* particles.app */ = {
+		1A2586E91ED49470009FC66A /* particles.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = particles.app;
-			remoteRef = 1A2311871E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586E81ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23118A1E2D63D200B0EF84 /* simple.app */ = {
+		1A2586EB1ED49470009FC66A /* simple.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = simple.app;
-			remoteRef = 1A2311891E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586EA1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23118C1E2D63D200B0EF84 /* splitview.app */ = {
+		1A2586ED1ED49470009FC66A /* splitview.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = splitview.app;
-			remoteRef = 1A23118B1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586EC1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23118E1E2D63D200B0EF84 /* wave.app */ = {
+		1A2586EF1ED49470009FC66A /* wave.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = wave.app;
-			remoteRef = 1A23118D1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586EE1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311901E2D63D200B0EF84 /* clipboard */ = {
+		1A2586F11ED49470009FC66A /* clipboard */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = clipboard;
-			remoteRef = 1A23118F1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586F01ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311921E2D63D200B0EF84 /* cursor */ = {
+		1A2586F31ED49470009FC66A /* cursor */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = cursor;
-			remoteRef = 1A2311911E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586F21ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311941E2D63D200B0EF84 /* empty.app */ = {
+		1A2586F51ED49470009FC66A /* empty.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = empty.app;
-			remoteRef = 1A2311931E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586F41ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311961E2D63D200B0EF84 /* events */ = {
+		1A2586F71ED49470009FC66A /* events */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = events;
-			remoteRef = 1A2311951E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586F61ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311981E2D63D200B0EF84 /* gamma */ = {
+		1A2586F91ED49470009FC66A /* gamma */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = gamma;
-			remoteRef = 1A2311971E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586F81ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23119A1E2D63D200B0EF84 /* glfwinfo */ = {
+		1A2586FB1ED49470009FC66A /* glfwinfo */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = glfwinfo;
-			remoteRef = 1A2311991E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586FA1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23119C1E2D63D200B0EF84 /* icon.app */ = {
+		1A2586FD1ED49470009FC66A /* icon.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = icon.app;
-			remoteRef = 1A23119B1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586FC1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A23119E1E2D63D200B0EF84 /* iconify */ = {
+		1A2586FF1ED49470009FC66A /* iconify */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = iconify;
-			remoteRef = 1A23119D1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2586FE1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311A01E2D63D200B0EF84 /* joysticks */ = {
+		1A2587011ED49470009FC66A /* joysticks */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = joysticks;
-			remoteRef = 1A23119F1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587001ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311A21E2D63D200B0EF84 /* monitors */ = {
+		1A2587031ED49470009FC66A /* monitors */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = monitors;
-			remoteRef = 1A2311A11E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587021ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311A41E2D63D200B0EF84 /* msaa */ = {
+		1A2587051ED49470009FC66A /* msaa */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = msaa;
-			remoteRef = 1A2311A31E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587041ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311A61E2D63D200B0EF84 /* reopen */ = {
+		1A2587071ED49470009FC66A /* reopen */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = reopen;
-			remoteRef = 1A2311A51E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587061ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311A81E2D63D200B0EF84 /* sharing.app */ = {
+		1A2587091ED49470009FC66A /* sharing.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = sharing.app;
-			remoteRef = 1A2311A71E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587081ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311AA1E2D63D200B0EF84 /* tearing.app */ = {
+		1A25870B1ED49470009FC66A /* tearing.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = tearing.app;
-			remoteRef = 1A2311A91E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A25870A1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311AC1E2D63D200B0EF84 /* threads.app */ = {
+		1A25870D1ED49470009FC66A /* threads.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = threads.app;
-			remoteRef = 1A2311AB1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A25870C1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311AE1E2D63D200B0EF84 /* timeout.app */ = {
+		1A25870F1ED49470009FC66A /* timeout.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = timeout.app;
-			remoteRef = 1A2311AD1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A25870E1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311B01E2D63D200B0EF84 /* title.app */ = {
+		1A2587111ED49470009FC66A /* title.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = title.app;
-			remoteRef = 1A2311AF1E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587101ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2311B21E2D63D200B0EF84 /* windows.app */ = {
+		1A2587131ED49470009FC66A /* windows.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = windows.app;
-			remoteRef = 1A2311B11E2D63D200B0EF84 /* PBXContainerItemProxy */;
+			remoteRef = 1A2587121ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1409,11 +1401,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1A2311B41E2D63DC00B0EF84 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glfw;
-			targetProxy = 1A2311B31E2D63DC00B0EF84 /* PBXContainerItemProxy */;
-		};
 		1A350E2F1E1BE363004E0569 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1AB147991E1BDAA80041528E /* VVISFKit */;
@@ -1451,8 +1438,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
-					"$PROJECT_DIR/GLFWGears/**",
-					"/Users/testAdmin/Documents/glfw-3.2.1/include",
+					"\"$(PROJECT_DIR)/GLFWGears\"/**",
+					"\"$(PROJECT_DIR)/../../VVISF/include\"",
+					"\"$(PROJECT_DIR)/../../VVGL/include\"",
+					"\"$(PROJECT_DIR)/../../../glfw-3.2.1/include\"",
 				);
 				INFOPLIST_FILE = GLFWGears/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -1471,8 +1460,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
-					"$PROJECT_DIR/GLFWGears/**",
-					"/Users/testAdmin/Documents/glfw-3.2.1/include",
+					"\"$(PROJECT_DIR)/GLFWGears\"/**",
+					"\"$(PROJECT_DIR)/../../VVISF/include\"",
+					"\"$(PROJECT_DIR)/../../VVGL/include\"",
+					"\"$(PROJECT_DIR)/../../../glfw-3.2.1/include\"",
 				);
 				INFOPLIST_FILE = GLFWGears/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";

@@ -50,7 +50,7 @@ class VVGLScene	{
 	//	variables
 	protected:
 		recursive_mutex		renderLock;
-		VVGLContext			*context = nullptr;
+		VVGLContextRef		context = nullptr;
 		
 		bool				deleted = false;
 		bool				initialized = false;
@@ -79,7 +79,7 @@ class VVGLScene	{
 		//	creates a new GL context that shares the global buffer pool's context
 		VVGLScene();
 		//	uses the passed context- doesn't create any new GL contexts (just retains what was passed to it)
-		VVGLScene(const VVGLContext * inCtx);
+		VVGLScene(const VVGLContextRef & inCtx);
 		
 		//VVGLScene(const VVGLContext * inSharedCtx, const Size & inSize={640.,480.});
 		virtual ~VVGLScene();
@@ -93,8 +93,9 @@ class VVGLScene	{
 		virtual void renderOpaqueBlackFrame(const RenderTarget & inRenderTarget=RenderTarget());
 		virtual void renderRedFrame(const RenderTarget & inRenderTarget=RenderTarget());
 		
-		void setContext(const VVGLContext & inCtx);
-		inline VVGLContext * getContext() const { return context; }
+		//void setContext(const VVGLContext & inCtx);
+		//inline VVGLContext * getContext() const { return context; }
+		inline VVGLContextRef getContext() const { return context; }
 		
 		void setRenderCallback(const RenderCallback & n);
 		

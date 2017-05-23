@@ -20,12 +20,13 @@ VVGLScene::VVGLScene()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	VVGLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)	{
-		context = bp->getContext()->allocNewContextSharingMe();
+		context = bp->getContext()->newContextSharingMe();
 		//cout << "\tcontext is " << *context << endl;
 	}
 }
-VVGLScene::VVGLScene(const VVGLContext * inCtx)	{
-	context = new VVGLContext(inCtx);
+VVGLScene::VVGLScene(const VVGLContextRef & inCtx)	{
+	//context = new VVGLContext(inCtx);
+	context = inCtx;
 }
 
 void VVGLScene::prepareToBeDeleted()	{
@@ -45,7 +46,7 @@ VVGLScene::~VVGLScene()	{
 		prepareToBeDeleted();
 	
 	if (context != nullptr)	{
-		delete context;
+		//delete context;
 		context = nullptr;
 	}
 }

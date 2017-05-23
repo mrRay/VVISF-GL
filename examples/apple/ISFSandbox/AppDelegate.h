@@ -6,7 +6,7 @@
 
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>	{
-	VVGLContext		*sharedCtx;
+	VVGLContextRef		sharedCtx;
 	
 	VVISF::VVGLScene			*scene;
 	VVISF::ISFScene			*isfScene;

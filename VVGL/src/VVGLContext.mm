@@ -70,12 +70,20 @@ VVGLContext::VVGLContext(const VVGLContext & n)	{
 	
 	generalInit();
 }
+VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	ctx = (n->ctx==nil) ? nil : (void *)[(EAGLContext *)n->ctx retain];
+	
+	generalInit();
+}
 
 
 /*	========================================	*/
 #pragma mark --------------------- factory method
 
 
+/*
 VVGLContext * VVGLContext::allocNewContextSharingMe() const	{
 	//return new VVGLContext((void *)[ctx sharegroup])
 	
@@ -89,6 +97,15 @@ VVGLContext VVGLContext::newContextSharingMe() const	{
 	
 	EAGLContext		*newCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:[(EAGLContext *)ctx sharegroup]];
 	VVGLContext		returnMe = VVGLContext((void *)newCtx);
+	[newCtx autorelease];
+	return returnMe;
+}
+*/
+VVGLContextRef VVGLContext::newContextSharingMe()	{
+	EAGLContext		*newCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:[(EAGLContext *)ctx sharegroup]];
+	if (newCtx == nil)
+		return nullptr;
+	VVGLContextRef		returnMe = make_shared<VVGLContext>((void *)newCtx);
 	[newCtx autorelease];
 	return returnMe;
 }
@@ -139,6 +156,13 @@ void VVGLContext::makeCurrentIfNull()	{
 		//[(EAGLContext *)ctx setCurrent];
 		[EAGLContext setCurrentContext:(EAGLContext *)ctx];
 	}
+}
+bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
+	EAGLSharegroup		*inSharegroup = (inCtx==nullptr || inCtx->ctx==nullptr) ? nil : [(EAGLContext *)inCtx->ctx sharegroup];
+	EAGLSharegroup		*mySharegroup = (ctx==nullptr) ? nil : [(EAGLContext *)ctx sharegroup];
+	if (inSharegroup!=nil && mySharegroup!=nil && [inSharegroup isEqualTo:mySharegroup])
+		return true;
+	return false;
 }
 
 

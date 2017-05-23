@@ -6,6 +6,7 @@
 #if ISF_TARGET_RPI
 	#include "bcm_host.h"
 	#include "VVRPIDispManager.hpp"
+	#include "VVRPICamManager.hpp"
 #endif
 #include "ISFKit.h"
 #include "VVBase.hpp"
@@ -33,6 +34,8 @@ int main(int argc, const char *argv[])	{
 #if ISF_TARGET_RPI
 	//	make a display manager, which handles the EGL setup for the RPi
 	VVRPIDispManager		dm;
+	//	make a camera manager, which handles all the camera initialization and processing
+	VVRPICamManager			cm;
 	//	make a VVGLContext from the EGL properties owned by the display manager
 	VVGLContext				ctx(&(dm.eglDisplay), &(dm.eglWinSurface), &(dm.eglCtx));
 	//	make the global buffer pool

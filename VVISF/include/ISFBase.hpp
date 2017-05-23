@@ -19,9 +19,10 @@ using namespace std;
 
 //	some forward declarations used in this header
 class ISFPassTarget;
-struct ISFVal;
+//struct ISFVal;
 class ISFDoc;
 class ISFAttr;
+class ISFScene;
 
 
 
@@ -32,6 +33,8 @@ using ISFPassTargetRef = shared_ptr<ISFPassTarget>;
 using ISFDocRef = shared_ptr<ISFDoc>;
 //	ISFAttrRef is a shared poitner to an ISFAttr
 using ISFAttrRef = std::shared_ptr<ISFAttr>;
+//	ISFSceneRef is a shared pointer to an ISFScene
+using ISFSceneRef = std::shared_ptr<ISFScene>;
 
 
 

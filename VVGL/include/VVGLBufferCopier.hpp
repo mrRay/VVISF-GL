@@ -42,7 +42,7 @@ public VVGLShaderScene
 		//	creates a new GL context that shares the global buffer pool's context, uses that to create a new VVGLBufferCopier
 		VVGLBufferCopier();
 		//	uses the passed GL context to create a new VVGLBufferCopier
-		VVGLBufferCopier(const VVGLContext * inCtx);
+		VVGLBufferCopier(const VVGLContextRef & inCtx);
 		
 		virtual ~VVGLBufferCopier();
 		

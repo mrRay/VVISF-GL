@@ -31,7 +31,7 @@ class VVGLBufferPool	{
 		vector<VVGLBufferRef>		freeBuffers;
 		
 		recursive_mutex		contextLock;
-		VVGLContext			*context = nullptr;
+		VVGLContextRef		context = nullptr;
 		
 		Timestamper			timestamper;
 		
@@ -41,7 +41,8 @@ class VVGLBufferPool	{
 		
 	//	methods
 	public:
-		VVGLBufferPool(const VVGLContext * inShareCtx=nullptr);
+		//VVGLBufferPool(const VVGLContext * inShareCtx=nullptr);
+		VVGLBufferPool(const VVGLContextRef & inShareCtx=nullptr);
 		virtual ~VVGLBufferPool();
 		//	call this method to prep a pool for deletion- this will cause it to purge its contents, refuse to dispense more buffers, and automatically release any buffers that are returned to it
 		inline void prepareToBeDeleted() { deleted=true; purge(); }
@@ -55,7 +56,7 @@ class VVGLBufferPool	{
 		void purge();
 		inline Timestamp getTimestamp() const { return timestamper.nowTime(); };
 		inline void timestampThisBuffer(const VVGLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
-		inline VVGLContext * getContext() const { return context; }
+		inline VVGLContextRef & getContext() { return context; }
 		inline recursive_mutex & getContextLock() { return contextLock; }
 #if ISF_TARGET_MAC
 		inline CGColorSpaceRef getColorSpace() const { return colorSpace; }
@@ -75,7 +76,8 @@ class VVGLBufferPool	{
 
 
 //	this is how you create a global buffer pool- pass in a context and it'll be used as a shared context, or pass in nothing and all the contexts will be created externally
-VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContext * inShareCtx=nullptr);
+//VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContext * inShareCtx=nullptr);
+VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContextRef & inShareCtx=nullptr);
 VVGLBufferPoolRef GetGlobalBufferPool();
 
 //	these functions create buffers
@@ -107,6 +109,7 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inPaths, const 
 
 #if ISF_TARGET_MAC
 VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 

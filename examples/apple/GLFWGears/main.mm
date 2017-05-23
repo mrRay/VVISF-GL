@@ -94,14 +94,15 @@ int main(int argc, char *argv[])	{
 	
 	//	wrap the window's GL context with a VVGLContext, which we're going to use to screate a couple other resources
 	VVGLContext		ctx(window);
+	VVGLContextRef	ctxRef = make_shared<VVGLContext>(ctx);
 	//	first make the buffer pool
-	CreateGlobalBufferPool(&ctx);
+	CreateGlobalBufferPool(make_shared<VVGLContext>(ctx));
 	
 	
 	
 	
 	//	now create the display scene (this is what we're going to use to draw into the GLFWwindow)
-	displayScene = new VVGLScene(&ctx);
+	displayScene = new VVGLScene(make_shared<VVGLContext>(ctx));
 	displayScene->setAlwaysNeedsReshape(true);
 	displayScene->setClearColor(1., 0., 0., 1.);
 	//	set the display scene's render callback, which will draw 'targetTex' in the scene
@@ -110,6 +111,7 @@ int main(int argc, char *argv[])	{
 			return;
 		//cout << "\tshould be drawing buffer " << *targetTex << endl;
 		glColor4f(1., 1., 1., 1.);
+		glActiveTexture(GL_TEXTURE0);
 		glEnable(targetTex->desc.target);
 		
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -135,7 +137,7 @@ int main(int argc, char *argv[])	{
 		glVertexPointer(3, GL_FLOAT, 0, verts);
 		glTexCoordPointer(2, GL_FLOAT, 0, texs);
 		
-		glActiveTexture(GL_TEXTURE0);
+		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(targetTex->desc.target, targetTex->name);
 		
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -146,8 +148,8 @@ int main(int argc, char *argv[])	{
 	
 	
 	//	create the ISF scene, which is going to render-to-texture
-	isfScene = new ISFScene(&ctx);
-	isfScene->useFile(string("/Users/testAdmin/Documents/ISFSandbox/GLFWGears/CellMod.fs"));
+	isfScene = new ISFScene(make_shared<VVGLContext>(ctx));
+	isfScene->useFile(string("/Users/testAdmin/Documents/ISFSandbox/examples/apple/GLFWGears/CellMod.fs"));
 	cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
 	
 	

@@ -19,7 +19,7 @@ ISFScene::ISFScene()
 	cout << __PRETTY_FUNCTION__ << endl;
 	_setUpRenderCallback();
 }
-ISFScene::ISFScene(const VVGLContext * inCtx)
+ISFScene::ISFScene(const VVGLContextRef & inCtx)
 : VVGLShaderScene(inCtx)	{
 	_setUpRenderCallback();
 }
@@ -251,12 +251,25 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 	if (bp == nullptr && privatePool!=nullptr) bp = privatePool;
 	if (bp == nullptr) bp = GetGlobalBufferPool();
 	
-	returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
-		? CreateRGBAFloatTex(inSize, bp)
-		: CreateRGBATex(inSize, bp);
+	if (bp==nullptr)	{
+		cout << "\tERR: bailing, pool null, " << __PRETTY_FUNCTION__ << endl;
+		return nullptr;
+	}
+	
 	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
 	//	? CreateBGRAFloatTex(inSize, bp)
 	//	: CreateBGRATex(inSize, bp);
+	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
+	//	? CreateRGBAFloatTex(inSize, bp)
+	//	: CreateRGBATex(inSize, bp);
+	
+	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
+#if ISF_TARGET_MAC
+	if (persistentToIOSurface)
+		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+	else
+#endif
+		returnMe = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 	
 	renderToBuffer(returnMe, inSize, inRenderTime);
 	
@@ -468,6 +481,8 @@ void ISFScene::_renderPrep()	{
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
 				GLERRLOG
+				glEnable(tmpBuffer->desc.target);
+				GLERRLOG
 				glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 				GLERRLOG
 			}
@@ -493,6 +508,8 @@ void ISFScene::_renderPrep()	{
 			//	pass the actual texture to the program
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
+				GLERRLOG
+				glEnable(tmpBuffer->desc.target);
 				GLERRLOG
 				glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 				GLERRLOG
@@ -565,6 +582,7 @@ void ISFScene::_renderPrep()	{
 		if (tmpBuffer != nullptr)	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
+			glEnable(tmpBuffer->desc.target);
 			glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 			
 			samplerLoc = inTarget->getUniformLocation(0);
@@ -584,6 +602,8 @@ void ISFScene::_renderPrep()	{
 		if (tmpBuffer != nullptr)	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
+			GLERRLOG
+			glEnable(tmpBuffer->desc.target);
 			GLERRLOG
 			glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 			GLERRLOG
@@ -873,6 +893,13 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 		VVGLBufferPoolRef		bp = privatePool;
 		if (bp==nullptr && inTargetBuffer!=nullptr) bp = inTargetBuffer->parentBufferPool;
 		if (bp==nullptr) bp = GetGlobalBufferPool();
+		if (bp==nullptr)	{
+			cout << "\tERR: bailing, pool null, " << __PRETTY_FUNCTION__ << endl;
+			return;
+		}
+		
+		bool					shouldBeFloat = alwaysRenderToFloat;
+		bool					shouldBeIOSurface = persistentToIOSurface;
 		
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->getRenderPasses();
@@ -912,8 +939,16 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			if (passIndex >= passes.size())
 				tmpRenderTarget.color = inTargetBuffer;
 			else	{
-				tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
+				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
+				
+#if ISF_TARGET_MAC
+				if (shouldBeIOSurface)
+					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, bp) : CreateRGBATexIOSurface(targetBufferSize, bp);
+				else
+#endif
+					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
+				
 				context->makeCurrentIfNotCurrent();
 			}
 			//cout << "\ttargetBufferSize is " << targetBufferSize << ", and has target color buffer " << tmpRenderTarget.color << " and size " << targetBufferSize << endl;

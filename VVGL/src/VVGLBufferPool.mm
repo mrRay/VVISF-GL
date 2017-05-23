@@ -69,7 +69,7 @@ VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPool
 		return nullptr;
 	
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContext				*context = inPoolRef->getContext();
+	VVGLContextRef				context = inPoolRef->getContext();
 	if (context == nullptr)
 		return nullptr;
 	//context->makeCurrentIfNull();
@@ -311,7 +311,7 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const V
 	
 	//	lock, set the current context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContext				*context = inPoolRef->getContext();
+	VVGLContextRef				context = inPoolRef->getContext();
 	if (context == nullptr)
 		return nullptr;
 	//context->makeCurrentIfNull();
@@ -319,6 +319,8 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const V
 	context->makeCurrentIfNotCurrent();
 	
 	//	create the GL resource, do some basic setup before we upload data to it
+	glActiveTexture(GL_TEXTURE0);
+	GLERRLOG
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 	glEnable(desc.target);
 	GLERRLOG
@@ -433,6 +435,29 @@ VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRe
 	
 	return returnMe;
 }
+VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	VVGLBuffer::Descriptor	desc;
+	
+	desc.type = VVGLBuffer::Type_Tex;
+	desc.target = VVGLBuffer::Target_Rect;
+	desc.internalFormat = VVGLBuffer::IF_RGBA32F;
+	desc.pixelFormat = VVGLBuffer::PF_RGBA;
+	desc.pixelType = VVGLBuffer::PT_Float;
+	desc.cpuBackingType = VVGLBuffer::Backing_None;
+	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 1;
+	
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize);
+	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
 VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -445,6 +470,8 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 	//	figure out how big the IOSurface is and what its pixel format is
 	Size			newAssetSize(IOSurfaceGetWidth(newSurface), IOSurfaceGetHeight(newSurface));
 	uint32_t		pixelFormat = IOSurfaceGetPixelFormat(newSurface);
+	size_t			bytesPerRow = IOSurfaceGetBytesPerRow(newSurface);
+	bool			isRGBAFloatTex = (bytesPerRow >= (32*4*newAssetSize.width/8)) ? true : false;
 	//	make the buffer i'll be returning, set up as much of it as i can
 	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
 	inPoolRef->timestampThisBuffer(returnMe);
@@ -454,15 +481,27 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 	switch (pixelFormat)	{
 	case kCVPixelFormatType_32BGRA:	//	'BGRA'
 	case VVGLBuffer::PF_BGRA:
-		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
 		returnMe->desc.pixelFormat = VVGLBuffer::PF_BGRA;
-		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		if (isRGBAFloatTex)	{
+			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA32F;
+			returnMe->desc.pixelType = VVGLBuffer::PT_Float;
+		}
+		else	{
+			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
+			returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		}
 		break;
 	case kCVPixelFormatType_32RGBA:	//	'RGBA'
 	case VVGLBuffer::PF_RGBA:
-		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
 		returnMe->desc.pixelFormat = VVGLBuffer::PF_RGBA;
-		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		if (isRGBAFloatTex)	{
+			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA32F;
+			returnMe->desc.pixelType = VVGLBuffer::PT_Float;
+		}
+		else	{
+			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
+			returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+		}
 		break;
 	case kCVPixelFormatType_422YpCbCr8:	//	'2vuy'
 	case VVGLBuffer::PF_YCbCr_422:
@@ -504,9 +543,10 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 	
 	//	grab a context lock so we can do stuff with the GL context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContext						*context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
+	VVGLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
 	if (context!=nullptr)	{
 		context->makeCurrentIfNotCurrent();
+		glActiveTexture(GL_TEXTURE0);
 		glEnable(returnMe->desc.target);
 		glGenTextures(1,&(returnMe->name));
 		glBindTexture(returnMe->desc.target, returnMe->name);
@@ -526,6 +566,8 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFlush();
+		glBindTexture(returnMe->desc.target, 0);
+		glDisable(returnMe->desc.target);
 	}
 	
 	return returnMe;

@@ -35,7 +35,7 @@ class VVGLShaderScene : public VVGLScene	{
 	
 	public:
 		VVGLShaderScene();
-		VVGLShaderScene(const VVGLContext * inCtx);
+		VVGLShaderScene(const VVGLContextRef & inCtx);
 		//VVGLShaderScene(const VVGLContext * inSharedCtx=nullptr, const Size & inSize={640.,480.});
 		virtual ~VVGLShaderScene();
 		

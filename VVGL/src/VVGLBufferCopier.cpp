@@ -27,14 +27,14 @@ static VVGLBufferCopierRef * _globalBufferCopier = nullptr;
 #if !ISF_TARGET_RPI
 VVGLBufferCopier::VVGLBufferCopier() : VVGLScene()	{
 }
-VVGLBufferCopier::VVGLBufferCopier(const VVGLContext * inCtx) : VVGLScene(inCtx)	{
+VVGLBufferCopier::VVGLBufferCopier(const VVGLContextRef & inCtx) : VVGLScene(inCtx)	{
 }
 #else
 VVGLBufferCopier::VVGLBufferCopier() : VVGLShaderScene()	{
 	//	if we're running on a raspberry pi (if we're in opengl es) then we need to set up a simple shader that draws a texture
 	generalInit();
 }
-VVGLBufferCopier::VVGLBufferCopier(const VVGLContext * inCtx) : VVGLShaderScene(inCtx)	{
+VVGLBufferCopier::VVGLBufferCopier(const VVGLContextRef & inCtx) : VVGLShaderScene(inCtx)	{
 	//	if we're running on a raspberry pi (if we're in opengl es) then we need to set up a simple shader that draws a texture
 	generalInit();
 }
@@ -401,6 +401,8 @@ void VVGLBufferCopier::copyRedFrameTo(const VVGLBufferRef & n)	{
 
 #if ISF_TARGET_MAC || ISF_TARGET_GLFW
 void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect)	{
+	glActiveTexture(GL_TEXTURE0);
+	GLERRLOG
 	glEnable(inBufferRef->desc.target);
 	GLERRLOG
 	
@@ -432,6 +434,8 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 	glDrawArrays(GL_QUADS, 0, 4);
 	GLERRLOG
 	glBindTexture(inBufferRef->desc.target, 0);
+	GLERRLOG
+	glDisable(inBufferRef->desc.target);
 	GLERRLOG
 	
 	glDisable(inBufferRef->desc.target);
@@ -505,6 +509,8 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 	//	pass the texture to its uniform
 	glActiveTexture(GL_TEXTURE0);
 	GLERRLOG
+	glEnable(inBufferRef->desc.target);
+	GLERRLOG
 	glBindTexture(inBufferRef->desc.target, inBufferRef->name);
 	GLERRLOG
 	samplerIndex = glGetUniformLocation(program, "inputImage");
@@ -518,13 +524,15 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 	//	unbind stuff
 	glBindTexture(inBufferRef->desc.target, 0);
 	GLERRLOG
+	glDisable(inBufferRef->desc.target);
+	GLERRLOG
 	glDisableVertexAttribArray(geometryIndex);
 	GLERRLOG
 	glDisableVertexAttribArray(texCoordsIndex);
 	GLERRLOG
 	
-	glBindTexture(inBufferRef->desc.target, 0);
-	GLERRLOG
+	//glBindTexture(inBufferRef->desc.target, 0);
+	//GLERRLOG
 	
 }
 #endif

@@ -22,7 +22,7 @@ VVGLShaderScene::VVGLShaderScene()
 : VVGLScene()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 }
-VVGLShaderScene::VVGLShaderScene(const VVGLContext * inCtx)
+VVGLShaderScene::VVGLShaderScene(const VVGLContextRef & inCtx)
 : VVGLScene(inCtx)	{
 
 }
@@ -297,6 +297,7 @@ void VVGLShaderScene::_renderCleanup()	{
 	
 	if (context != nullptr)	{
 #if ISF_TARGET_MAC
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindTexture(GL_TEXTURE_RECTANGLE_EXT, 0);
 		GLERRLOG
 #endif

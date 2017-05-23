@@ -17,6 +17,8 @@
 	#include <GLFW/glfw3.h>
 #endif
 
+#include "VVBase.hpp"
+
 
 
 
@@ -33,6 +35,12 @@ using namespace std;
 uint32_t GLDisplayMaskForAllScreens();
 CGLPixelFormatObj CreateDefaultPixelFormat();
 #endif
+
+
+
+
+class VVGLContext;
+using VVGLContextRef = shared_ptr<VVGLContext>;
 
 
 
@@ -80,19 +88,26 @@ class VVGLContext	{
 		void generalInit();
 		
 		//	returned variable MUST BE FREED
-		VVGLContext * allocNewContextSharingMe() const;
+		//VVGLContext * allocNewContextSharingMe() const;
 		//	creates a new GL context, but returned variable doesn't have to be freed
-		VVGLContext newContextSharingMe() const;
+		//VVGLContext newContextSharingMe() const;
+		VVGLContextRef newContextSharingMe() const;
 		
 		~VVGLContext();
 		
 		//	copy constructors- these do NOT create new GL contexts, they merely copy/retain the GL contexts from the passed var
 		VVGLContext(const VVGLContext * n);
 		VVGLContext(const VVGLContext & n);
+		VVGLContext(const VVGLContextRef & n);
 		
 		void makeCurrent();
 		void makeCurrentIfNotCurrent();
 		void makeCurrentIfNull();
+		
+		bool sameShareGroupAs(const VVGLContextRef & inCtx);
+#if ISF_TARGET_MAC
+		bool sameShareGroupAs(const CGLContextObj & inCtx);
+#endif
 		
 		VVGLContext & operator=(const VVGLContext & n);
 		friend ostream & operator<<(ostream & os, const VVGLContext & n);

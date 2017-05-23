@@ -30,7 +30,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 		are not shared with anything (when this ctx was created, its sharegroup was null), so stuff 
 		you create in this context will not be shared.  which is okay- we're never going to tell this 
 		context to render anything (it exists merely to establish a sharegroup for other contexts)		*/
-		sharedCtx = new VVGLContext();
+		sharedCtx = make_shared<VVGLContext>();
 		/*	now make the global buffer pool with the shared context.  the buffer pool will create 
 		its own context, and that context will be a member of the sharegroup so its resources can be 
 		shared with other contexts.  create further GL contexts either using the original 

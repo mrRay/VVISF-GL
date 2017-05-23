@@ -34,6 +34,20 @@ static VVGLBufferPoolRef * _globalBufferPool = nullptr;
 #pragma mark --------------------- constructor/destructor
 
 
+VVGLBufferPool::VVGLBufferPool(const VVGLContextRef & inShareCtx)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	//cout << "\tpassed ctx was " << inShareCtx << endl;
+	//context = (inShareCtx==nullptr) ? new VVGLContext() : new VVGLContext(inShareCtx);
+	context = (inShareCtx==nullptr) ? make_shared<VVGLContext>() : inShareCtx->newContextSharingMe();
+	//cout << "\tcontext is " << *context << endl;
+	//cout << "\tmy ctx is " << context << endl;
+	freeBuffers.reserve(50);
+	
+#if ISF_TARGET_MAC
+	colorSpace = CGColorSpaceCreateDeviceRGB();
+#endif
+}
+/*
 VVGLBufferPool::VVGLBufferPool(const VVGLContext * inShareCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tpassed ctx was " << inShareCtx << endl;
@@ -47,12 +61,13 @@ VVGLBufferPool::VVGLBufferPool(const VVGLContext * inShareCtx)	{
 	colorSpace = CGColorSpaceCreateDeviceRGB();
 #endif
 }
+*/
 VVGLBufferPool::~VVGLBufferPool()	{
 	cout << __PRETTY_FUNCTION__ << endl;
 	
 	lock_guard<recursive_mutex>		lock(contextLock);
 	if (context != nullptr)	{
-		delete context;
+		//delete context;
 		context = nullptr;
 	}
 #if ISF_TARGET_MAC
@@ -213,6 +228,7 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		}
 #endif
 		//	enable the tex target, gen the texture, and bind it
+		glActiveTexture(GL_TEXTURE0);
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 		glEnable(newBufferDesc.target);
 		GLERRLOG
@@ -495,10 +511,12 @@ void VVGLBufferPool::housekeeping()	{
 	}
 }
 void VVGLBufferPool::purge()	{
-	lock_guard<mutex>		lock(freeBuffersLock);
-	for_each(freeBuffers.begin(), freeBuffers.end(), [&](const VVGLBufferRef & n)	{
-		n->idleCount = (IDLEBUFFERCOUNT+1);
-	});
+	{
+		lock_guard<mutex>		lock(freeBuffersLock);
+		for_each(freeBuffers.begin(), freeBuffers.end(), [&](const VVGLBufferRef & n)	{
+			n->idleCount = (IDLEBUFFERCOUNT+1);
+		});
+	}
 	housekeeping();
 }
 ostream & operator<<(ostream & os, const VVGLBufferPool & n)	{
@@ -604,7 +622,24 @@ void VVGLBufferPool::releaseBufferResources(VVGLBuffer * inBuffer)	{
 #pragma mark *************** non-member functions ***************
 
 
+/*
 VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContext * inShareCtx)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	VVGLBufferPoolRef		returnMe = make_shared<VVGLBufferPool>(inShareCtx);
+	if (_globalBufferPool != nullptr)	{
+		delete _globalBufferPool;
+		_globalBufferPool = nullptr;
+	}
+	_globalBufferPool = new shared_ptr<VVGLBufferPool>(returnMe);
+	
+	//	create the global buffer copier (it will use the global buffer pool for its shared ctx/pxl fmt)
+	CreateGlobalBufferCopier();
+	
+	return returnMe;
+}
+*/
+VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContextRef & inShareCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	VVGLBufferPoolRef		returnMe = make_shared<VVGLBufferPool>(inShareCtx);

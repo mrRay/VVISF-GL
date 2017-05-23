@@ -24,17 +24,18 @@ using namespace std;
 class VVGLBuffer;
 class VVGLBufferPool;
 class VVGLBufferCopier;
+//class VVGLContext;
 
 
 
 
-//	VERY COMMON.  VVGLBufferRef is a shared pointer to an VVGLBuffer.  this is how you should store and refer to VVGLBuffers- copying an instance of the VVGLBuffer class is potentially dangerous, as the underlying GL resources aren't duplicated.  working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use.  if you need to create another instance of a given VVGLBufferRef, you should use VVGLBufferCopy().
+//	VERY COMMON.  VVGLBufferRef is a shared pointer to an VVGLBuffer.  this is how you should store and refer to VVGLBuffers- copying an instance of the VVGLBuffer class is potentially dangerous, as the underlying GL resources aren't duplicated.  working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use.  if you need to create another instance of a given VVGLBufferRef (copying the accompanying GL resource), you should use VVGLBufferCopy().
 using VVGLBufferRef = shared_ptr<VVGLBuffer>;
 //	VVGLBufferPoolRef is a shared pointer to an VVGLBufferPoolRef, and is the preferred way to ensure that you don't create/destroy buffer pools unnecessarily.
 using VVGLBufferPoolRef = shared_ptr<VVGLBufferPool>;
 //	VVGLBufferCopierRef is a shared pointer to an VVGLBufferCopierRef
 using VVGLBufferCopierRef = shared_ptr<VVGLBufferCopier>;
-
+//using VVGLContextRef = shared_ptr<VVGLContext>;
 
 
 

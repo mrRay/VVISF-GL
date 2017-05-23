@@ -65,6 +65,7 @@ ISFPassTarget::~ISFPassTarget()	{
 
 void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResize, const bool & inCreateNewBuffer)	{
 	//using namespace VVISF;
+	using namespace std;
 	
 	targetWidth = inSize.width;
 	targetHeight = inSize.height;
@@ -73,11 +74,15 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
 	VVGLBufferPoolRef		bp = nullptr;
 	VVGLBufferCopierRef		copier = nullptr;
+	bool					shouldBeFloat = false;
+	bool					shouldBeIOSurface = false;
 	if (parentDoc != nullptr)	{
 		ISFScene		*parentScene = parentDoc->getParentScene();
 		if (parentScene != nullptr)	{
 			bp = parentScene->getPrivatePool();
 			copier = parentScene->getPrivateCopier();
+			shouldBeFloat = parentScene->getAlwaysRenderToFloat();
+			shouldBeIOSurface = parentScene->getPersistentToIOSurface();
 		}
 	}
 	//	if that didn't work, use the globals...
@@ -86,12 +91,24 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	if (copier == nullptr)
 		copier = GetGlobalBufferCopier();
 	
+	if (bp==nullptr || copier==nullptr)	{
+		cout << "\tERR: bailing, pool/copier null, " << __PRETTY_FUNCTION__ << endl;
+		return;
+	}
 	
 	//	if the buffer's currently nil
 	if (buffer == nullptr)	{
 		if (inCreateNewBuffer)	{
-			buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 			//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+			//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+			
+#if ISF_TARGET_MAC
+			if (shouldBeIOSurface)
+				buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+			else
+#endif
+				buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+			
 			copier->copyBlackFrameTo(buffer);
 		}
 	}
@@ -101,8 +118,17 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 		if (inSize != buffer->srcRect.size)	{
 			//	if i'm supposed to resize, do so
 			if (inResize)	{
-				VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				VVGLBufferRef		newBuffer;
+				
+#if ISF_TARGET_MAC
+				if (shouldBeIOSurface)
+					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+				else
+#endif
+					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				
 				copier->sizeVariantCopy(buffer, newBuffer);
 				buffer = newBuffer;
 			}
@@ -110,8 +136,15 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 			else	{
 				//	if i'm supposed to create a new buffer
 				if (inCreateNewBuffer)	{
-					buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 					//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+					//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+					
+#if ISF_TARGET_MAC
+					if (shouldBeIOSurface)
+						buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+					else
+#endif
+						buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 				}
 				//	else i'm not supposed to create a new buffer
 				else	{
@@ -172,6 +205,8 @@ const string ISFPassTarget::getTargetHeightString()	{
 	return (targetHeightString==nullptr) ? string("") : string(*targetHeightString);
 }
 void ISFPassTarget::setFloatFlag(const bool & n)	{
+	using namespace std;
+	
 	bool		changed = (floatFlag==n) ? false : true;
 	if (!changed)
 		return;
@@ -180,11 +215,15 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
 		VVGLBufferPoolRef		bp = nullptr;
 		VVGLBufferCopierRef		copier = nullptr;
+		bool					shouldBeFloat = false;
+		bool					shouldBeIOSurface = false;
 		if (parentDoc != nullptr)	{
 			ISFScene		*parentScene = parentDoc->getParentScene();
 			if (parentScene != nullptr)	{
 				bp = parentScene->getPrivatePool();
 				copier = parentScene->getPrivateCopier();
+				shouldBeFloat = parentScene->getAlwaysRenderToFloat();
+				shouldBeIOSurface = parentScene->getPersistentToIOSurface();
 			}
 		}
 		//	if that didn't work, use the globals...
@@ -193,8 +232,22 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		if (copier == nullptr)
 			copier = GetGlobalBufferCopier();
 		
-		VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		if (bp==nullptr || copier==nullptr)	{
+			cout << "\tERR: bailing, pool/copier null, " << __PRETTY_FUNCTION__ << endl;
+			return;
+		}
+		
 		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
+		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		VVGLBufferRef		newBuffer;
+		
+#if ISF_TARGET_MAC
+		if (shouldBeIOSurface)
+			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(targetSize(), bp) : CreateRGBATexIOSurface(targetSize(), bp);
+		else
+#endif
+			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		
 		if (newBuffer != nullptr)	{
 			if (copier != nullptr)
 				copier->ignoreSizeCopy(buffer, newBuffer);
