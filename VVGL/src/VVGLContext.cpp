@@ -4,6 +4,8 @@
 #import <CoreGraphics/CoreGraphics.h>
 #endif
 #include <iostream>
+#include <cassert>
+#include <regex>
 
 
 
@@ -40,8 +42,48 @@ uint32_t GLDisplayMaskForAllScreens()	{
 	return glDisplayMask;
 }
 CGLPixelFormatObj CreateDefaultPixelFormat()	{
+	//return CreateCompatibilityGLPixelFormat();
+	std::cout << "defaulting to GL4 instead of GL 2 " << __PRETTY_FUNCTION__ << std::endl;
+	return CreateGL4PixelFormat();
+}
+CGLPixelFormatObj CreateCompatibilityGLPixelFormat()	{
 	CGLPixelFormatAttribute		attribs[] = {
 		kCGLPFAAcceleratedCompute,
+		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy,
+		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
+		kCGLPFANoRecovery,
+		kCGLPFAAllowOfflineRenderers,
+		(CGLPixelFormatAttribute)0
+	};
+	CGLError			cgErr = kCGLNoError;
+	int32_t				screenCount = 0;
+	CGLPixelFormatObj	returnMe = nullptr;
+	cgErr = CGLChoosePixelFormat(attribs, &returnMe, &screenCount);
+	if (cgErr != kCGLNoError)
+		cout << "\terr: " << cgErr << ", " << __PRETTY_FUNCTION__ << endl;
+	return returnMe;
+}
+CGLPixelFormatObj CreateGL3PixelFormat()	{
+	CGLPixelFormatAttribute		attribs[] = {
+		kCGLPFAAcceleratedCompute,
+		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_GL3_Core,
+		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
+		kCGLPFANoRecovery,
+		kCGLPFAAllowOfflineRenderers,
+		(CGLPixelFormatAttribute)0
+	};
+	CGLError			cgErr = kCGLNoError;
+	int32_t				screenCount = 0;
+	CGLPixelFormatObj	returnMe = nullptr;
+	cgErr = CGLChoosePixelFormat(attribs, &returnMe, &screenCount);
+	if (cgErr != kCGLNoError)
+		cout << "\terr: " << cgErr << ", " << __PRETTY_FUNCTION__ << endl;
+	return returnMe;
+}
+CGLPixelFormatObj CreateGL4PixelFormat()	{
+	CGLPixelFormatAttribute		attribs[] = {
+		kCGLPFAAcceleratedCompute,
+		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_GL4_Core,
 		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
 		kCGLPFANoRecovery,
 		kCGLPFAAllowOfflineRenderers,
@@ -180,6 +222,9 @@ void VVGLContext::generalInit()	{
 		const int32_t		swap = 0;
 		CGLSetParameter(ctx, kCGLCPSwapInterval, &swap);
 	}
+	
+	//	figure out what version of GL we're working with
+	calculateVersion();
 }
 
 /*	========================================	*/
@@ -319,6 +364,9 @@ VVGLContextRef VVGLContext::newContextSharingMe() const	{
 void VVGLContext::generalInit()	{
 	if (win != nullptr)	{
 	}
+	
+	//	figure out what version of GL we're working with
+	calculateVersion();
 }
 
 /*	========================================	*/
@@ -371,19 +419,60 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 /*	========================================	*/
 #pragma mark --------------------- constructor/destructor
 
-VVGLContext::VVGLContext(EGLDisplay * inDisplay, EGLSurface * inWinSurface, EGLContext * inCtx)	{
+
+VVGLContext::VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx)	{
 	display = inDisplay;
 	winSurface = inWinSurface;
+	sharedCtx = inSharedCtx;
 	ctx = inCtx;
+	generalInit();
+}
+VVGLContext::VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx)	{
+	display = inDisplay;
+	winSurface = inWinSurface;
+	sharedCtx = inSharedCtx;
+	
+	//	choose a display configuration
+	EGLBoolean			result;
+	EGLConfig			eglConfig;
+	const EGLint		targetDispAttribs[] = {
+		EGL_RED_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_BLUE_SIZE, 8,
+		EGL_ALPHA_SIZE, 8,
+		EGL_DEPTH_SIZE, 16,
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+		EGL_NONE
+	};
+	EGLint				numConfigs = 0;
+	result = eglChooseConfig(display, targetDispAttribs, &eglConfig, 1, &numConfigs);
+	assert(result != GL_FALSE);
+	assert(eglGetError() == EGL_SUCCESS);
+	
+	//	create a new context
+	const EGLint		targetCtxAttribs[] = {
+		EGL_CONTEXT_CLIENT_VERSION, 2,
+		EGL_NONE
+	};
+	ctx = eglCreateContext(display, eglConfig, sharedCtx, targetCtxAttribs);
+	assert(ctx != EGL_NO_CONTEXT);
+	assert(eglGetError() == EGL_SUCCESS);
+	
+	//	set this so we know to destroy the context when we get released!
+	ownsTheCtx = true;
+	
 	generalInit();
 }
 VVGLContext::VVGLContext()	{
 	generalInit();
 }
 VVGLContext::~VVGLContext()	{
-	display = nullptr;
-	winSurface = nullptr;
-	ctx = nullptr;
+	if (ownsTheCtx && ctx != EGL_NO_CONTEXT)	{
+		eglDestroyContext(display, ctx);
+	}
+	display = EGL_NO_DISPLAY;
+	winSurface = EGL_NO_SURFACE;
+	ctx = EGL_NO_CONTEXT;
 }
 
 /*	========================================	*/
@@ -420,7 +509,7 @@ VVGLContext VVGLContext::newContextSharingMe() const	{
 	return VVGLContext(display, winSurface, ctx);
 }
 */
-VVGLContextRef VVGLContext::newContextSharingMe()	{
+VVGLContextRef VVGLContext::newContextSharingMe() const	{
 	return make_shared<VVGLContext>(display, winSurface, ctx);
 }
 
@@ -429,8 +518,11 @@ VVGLContextRef VVGLContext::newContextSharingMe()	{
 
 void VVGLContext::generalInit()	{
 	if (display != nullptr)	{
-		eglSwapInterval(*display, 0);
+		eglSwapInterval(display, 0);
 	}
+	
+	//	figure out what version of GL we're working with
+	calculateVersion();
 }
 
 /*	========================================	*/
@@ -445,8 +537,9 @@ void VVGLContext::makeCurrentIfNotCurrent()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
 	EGLContext		currentCtx = eglGetCurrentContext();
 	if (currentCtx != ctx)	{
-		if (display != nullptr && winSurface != nullptr && ctx != nullptr)
+		if (display != nullptr && winSurface != nullptr && ctx != nullptr)	{
 			eglMakeCurrent(display, winSurface, winSurface, ctx);
+		}
 	}
 }
 void VVGLContext::makeCurrentIfNull()	{
@@ -482,6 +575,57 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 #pragma mark ******************************************** COMMON
+
+
+
+void VVGLContext::calculateVersion()	{
+	cout << __PRETTY_FUNCTION__ << endl;
+	version = GLVersion_Unknown;
+	if (ctx == nullptr)
+		return;
+	makeCurrentIfNotCurrent();
+	const unsigned char			*versString = glGetString(GL_VERSION);
+	//cout << "\tversion string is " << versString << endl;
+	switch (*versString)	{
+	case '2': version = GLVersion_2; break;
+	case '3': version = GLVersion_33; break;
+	case '4': version = GLVersion_4; break;
+	default:
+		{
+			string			baseString = string((const char *)versString);
+			regex			regexJustES("[gG][lL][\\s]*[eE][sS]");
+			//	if the base string looks like an OpenGL ES string...
+			if (regex_search(baseString, regexJustES))	{
+				regex			regexESVsn("[gG][lL][\\s]*[eE][sS][\\s]*([0-9]+)");
+				smatch			matches;
+				//	if we were able to extract some kind of vsn for GL ES
+				if (regex_search(baseString, matches, regexESVsn) && matches.size()>=2)	{
+					int				majorVsn = atoi(matches[1].str().c_str());
+					switch (majorVsn)	{
+					case 2:
+						version = GLVersion_ES2;
+						break;
+					default:
+						version = GLVersion_ES2;
+						break;
+					}
+				}
+				//	else we weren't able to extract any kind of vsn for GL ES- something's wrong, the full regex isn't matched
+				else	{
+					//cout << "\terr: matched base string (" << baseString << ") didn't match expanded\n";
+					version = GLVersion_ES2;
+				}
+			}
+			//	else the base string doesn't look like a GL ES string
+			else	{
+				//cout << "\terr: base string (" << baseString << ") not recognized\n";
+				//	...i have no idea what goes here, need to test more hardware.  for now, fall back to GL 2.
+				version = GLVersion_2;
+			}
+		}
+		break;
+	}
+}
 
 
 

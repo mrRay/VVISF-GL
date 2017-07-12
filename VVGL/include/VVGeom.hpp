@@ -2,6 +2,7 @@
 #define VVGeom_h
 
 #include <iostream>
+#include "VVBase.hpp"
 
 
 namespace VVGL
@@ -75,6 +76,111 @@ enum SizingMode	{
 };
 //	this method resizes one rect to fit in another using the provided sizing mode.  useful for calculating sizes while preserving aspect ratios.
 Rect ResizeRect(const Rect & fitThisRect, const Rect & inThisRect, const SizingMode & sizingMode);
+
+
+
+
+//	these structs simplify the process of constructing, referring to, and packing/unpacking GL-based data describing a quad
+struct GLBufferVertexXY {
+	float		geo[2] = { 0., 0. };
+	inline bool operator==(const GLBufferVertexXY & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1]); }
+	inline bool operator!=(const GLBufferVertexXY & n) const { return !(*this==(n)); }
+};
+struct GLBufferVertexXYST {
+	float		geo[2] = { 0., 0. };
+	float		tex[2] = { 0., 0. };
+	inline bool operator==(const GLBufferVertexXYST & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1] && this->tex[0]==n.tex[0] && this->tex[1]==n.tex[1]); }
+	inline bool operator!=(const GLBufferVertexXYST & n) const { return !(*this==(n)); }
+};
+struct GLBufferVertexXYC {
+	float		geo[2] = { 0., 0. };
+	GLColor		color;
+	inline bool operator==(const GLBufferVertexXYC & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1] && this->color.r==n.color.r && this->color.g==n.color.g && this->color.b==n.color.b && this->color.a==n.color.a); }
+	inline bool operator!=(const GLBufferVertexXYC & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXY {
+	GLBufferVertexXY	bl;
+	GLBufferVertexXY	br;
+	GLBufferVertexXY	tl;
+	GLBufferVertexXY	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXY & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXY & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXYST {
+	GLBufferVertexXYST	bl;
+	GLBufferVertexXYST	br;
+	GLBufferVertexXYST	tl;
+	GLBufferVertexXYST	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXYST & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXYST & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXYC {
+	GLBufferVertexXYC	bl;
+	GLBufferVertexXYC	br;
+	GLBufferVertexXYC	tl;
+	GLBufferVertexXYC	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXYC & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXYC & n) const { return !(*this==(n)); }
+};
+
+struct GLBufferVertexXYZ	{
+	float		geo[3] = { 0., 0., 0. };
+	inline bool operator==(const GLBufferVertexXYZ & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1] && this->geo[2]==n.geo[2]); }
+	inline bool operator!=(const GLBufferVertexXYZ & n) const { return !(*this==(n)); }
+};
+struct GLBufferVertexXYZST	{
+	float		geo[3] = { 0., 0., 0. };
+	float		tex[2] = { 0., 0. };
+	inline bool operator==(const GLBufferVertexXYZST & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1] && this->geo[2]==n.geo[2] && this->tex[0]==n.tex[0] && this->tex[1]==n.tex[1]); }
+	inline bool operator!=(const GLBufferVertexXYZST & n) const { return !(*this==(n)); }
+};
+struct GLBufferVertexXYZC	{
+	float		geo[3] = { 0., 0., 0. };
+	GLColor		color;
+	inline bool operator==(const GLBufferVertexXYZC & n) const { return (this->geo[0]==n.geo[0] && this->geo[1]==n.geo[1] && this->geo[2]==n.geo[2] && this->color.r==n.color.r && this->color.g==n.color.g && this->color.b==n.color.b && this->color.a==n.color.a); }
+	inline bool operator!=(const GLBufferVertexXYZC & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXYZ	{
+	GLBufferVertexXYZ	bl;
+	GLBufferVertexXYZ	br;
+	GLBufferVertexXYZ	tl;
+	GLBufferVertexXYZ	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXYZ & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXYZ & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXYZST {
+	GLBufferVertexXYZST	bl;
+	GLBufferVertexXYZST	br;
+	GLBufferVertexXYZST	tl;
+	GLBufferVertexXYZST	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXYZST & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXYZST & n) const { return !(*this==(n)); }
+};
+struct GLBufferQuadXYZC {
+	GLBufferVertexXYZC	bl;
+	GLBufferVertexXYZC	br;
+	GLBufferVertexXYZC	tl;
+	GLBufferVertexXYZC	tr;
+	inline int32_t stride() const { return sizeof(bl); }
+	inline bool operator==(const GLBufferQuadXYZC & n) const { return (this->bl==n.bl && this->br==n.br && this->tl==n.tl && this->tr==n.tr); }
+	inline bool operator!=(const GLBufferQuadXYZC & n) const { return !(*this==(n)); }
+};
+
+
+
+
+//	populates the passed VVBufferQuad struct with the passed geometry and texture coords
+void GLBufferQuadPopulate(GLBufferQuadXY *b, Rect geoRect);
+void GLBufferQuadPopulate(GLBufferQuadXYST *b, Rect geoRect, Rect texRect, bool flippedTex=false);
+void GLBufferQuadPopulate(GLBufferQuadXYC *b, Rect geoRect, GLColor geoColor);
+void GLBufferQuadPopulate(GLBufferQuadXYZ *b, Rect geoRect);
+void GLBufferQuadPopulate(GLBufferQuadXYZST *b, Rect geoRect, Rect texRect, bool flippedTex=false);
+void GLBufferQuadPopulate(GLBufferQuadXYZC *b, Rect geoRect, GLColor geoColor);
 
 
 

@@ -1,4 +1,5 @@
 #import "VVGLBufferGLView.h"
+//#include "VVGLContext.hpp"
 
 
 
@@ -11,7 +12,9 @@
 @interface VVGLBufferGLView()	{
 	
 }
-- (void) setSharedGLContext:(const VVGLContextRef)n;
+@property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::VVGLBufferRef vao;
+@property (assign,readwrite) BOOL initialized;
+@property (readonly) VVGL::VVGLBufferRef retainDrawBuffer;
 @end
 
 
@@ -28,13 +31,15 @@
 		pthread_mutex_init(&renderLock, &attr);
 		pthread_mutexattr_destroy(&attr);
 		initialized = NO;
-		sizingMode = VVISF::SizingMode_Fit;
+		scene = nullptr;
+		vao = nullptr;
+		sizingMode = VVGL::SizingMode_Fit;
 		retainDraw = NO;
 		retainDrawLock = OS_SPINLOCK_INIT;
 		retainDrawBuffer = nullptr;
 		onlyDrawNewStuff = NO;
 		onlyDrawNewStuffLock = OS_SPINLOCK_INIT;
-		onlyDrawNewStuffTimestamp = VVISF::Timestamp();
+		onlyDrawNewStuffTimestamp = VVGL::Timestamp();
 		return self;
 	}
 	if (self != nil)
@@ -49,13 +54,15 @@
 		pthread_mutex_init(&renderLock, &attr);
 		pthread_mutexattr_destroy(&attr);
 		initialized = NO;
-		sizingMode = VVISF::SizingMode_Fit;
+		scene = nullptr;
+		vao = nullptr;
+		sizingMode = VVGL::SizingMode_Fit;
 		retainDraw = NO;
 		retainDrawLock = OS_SPINLOCK_INIT;
 		retainDrawBuffer = nullptr;
 		onlyDrawNewStuff = NO;
 		onlyDrawNewStuffLock = OS_SPINLOCK_INIT;
-		onlyDrawNewStuffTimestamp = VVISF::Timestamp();
+		onlyDrawNewStuffTimestamp = VVGL::Timestamp();
 		return self;
 	}
 	if (self != nil)
@@ -76,7 +83,7 @@
 	
 	pthread_mutex_lock(&renderLock);
 		if (!initialized)	{
-			using namespace VVISF;
+			//using namespace VVISF;
 			
 			VVGLBufferPoolRef		bp = GetGlobalBufferPool();
 			if (bp != nullptr)	{
@@ -85,11 +92,13 @@
 			}
 		}
 	pthread_mutex_unlock(&renderLock);
-	[self redraw];
+	
+	if (initialized)
+		[self redraw];
 	
 }
 - (void) redraw	{
-	using namespace VVISF;
+	//using namespace VVISF;
 	
 	VVGLBufferRef	lastBuffer = nullptr;
 	OSSpinLockLock(&retainDrawLock);
@@ -98,15 +107,15 @@
 	
 	[self drawBuffer:lastBuffer];
 }
-- (void) drawBuffer:(VVISF::VVGLBufferRef)b	{
-	//NSLog(@"%s",__func__);
+- (void) drawBuffer:(VVGL::VVGLBufferRef)b	{
+	NSLog(@"%s ... %s",__func__,b->getDescriptionString().c_str());
 	
 	BOOL			bail = NO;
 	
 	OSSpinLockLock(&retainDrawLock);
-	if (retainDraw)	{
+	//if (retainDraw)	{
 		retainDrawBuffer = b;
-	}
+	//}
 	OSSpinLockUnlock(&retainDrawLock);
 	
 	OSSpinLockLock(&onlyDrawNewStuffLock);
@@ -118,132 +127,207 @@
 	if (bail)
 		return;
 	
-	GLuint			target = (b==nullptr) ? GL_TEXTURE_2D : b->desc.target;
+	//	we probably shouldn't do this every time we draw a buffer.
+	NSRect		tmpBounds = [self backingBounds];
+	scene->setOrthoSize(VVGL::Size(tmpBounds.size.width, tmpBounds.size.height));
+	
 	pthread_mutex_lock(&renderLock);
 		if (initialized)	{
 			[[self openGLContext] makeCurrentContext];
-			
-			//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			
-			//glBlendFunc(GL_ONE, GL_ZERO);
-			//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_FASTEST);
-			glDisable(GL_DEPTH_TEST);
-			glClearColor(0.0, 0.0, 0.0, 1.0);
-			
-			glActiveTexture(GL_TEXTURE0);
-			glEnable(target);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			
-			//	bilinear filtering stuff
-			//glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			//glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			//glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			//glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			
-			//	set up the view to draw
-			NSRect				bounds = [self bounds];
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glViewport(0, 0, (GLsizei) bounds.size.width, (GLsizei) bounds.size.height);
-			//if (flipped)
-				glOrtho(bounds.origin.x, bounds.origin.x+bounds.size.width, bounds.origin.y, bounds.origin.y+bounds.size.height, 1.0, -1.0);
-			//else
-			//	glOrtho(bounds.origin.x, bounds.origin.x+bounds.size.width, bounds.origin.y+bounds.size.height, bounds.origin.y, 1.0, -1.0);
-			//glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA,GL_DST_ALPHA);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glDisable(GL_BLEND);
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			//	clear the view
-			glClearColor(0.0,0.0,0.0,0.0);
-			glClear(GL_COLOR_BUFFER_BIT);
-			
-			
-			if (b != nil)	{
-				NSRect			bounds = [self bounds];
-				VVISF::Rect	boundsRect = { bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height };
-				VVISF::Rect	destRect = VVISF::ResizeRect(b->srcRect, boundsRect, VVISF::SizingMode_Fit);
-				
-				/*
-				b->draw(destRect);
-				*/
-				
-				
-				
-				//inCtx.makeCurrentIfNotCurrent();
-				float			verts[] = {
-					(float)MinX(destRect), (float)MinY(destRect), 0.0,
-					(float)MaxX(destRect), (float)MinY(destRect), 0.0,
-					(float)MaxX(destRect), (float)MaxY(destRect), 0.0,
-					(float)MinX(destRect), (float)MaxY(destRect), 0.0
-				};
-				bool			flipped = b->flipped;
-				VVISF::Rect			src = b->glReadySrcRect();
-				float			texs[] = {
-					(float)MinX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
-					(float)MaxX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
-					(float)MaxX(src), (flipped) ? (float)MinY(src) : (float)MaxY(src),
-					(float)MinX(src), (flipped) ? (float)MinY(src) : (float)MaxY(src)
-				};
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glDisableClientState(GL_COLOR_ARRAY);
-	
-				glVertexPointer(3, GL_FLOAT, 0, verts);
-				glTexCoordPointer(2, GL_FLOAT, 0, texs);
-				glBindTexture(b->desc.target, b->name);
-				glDrawArrays(GL_QUADS, 0, 4);
-				glBindTexture(b->desc.target, 0);
-				glDisable(b->desc.target);
-				
-			}
-			//	flush!
-			glFlush();
-			
-			glDisable(target);
+			scene->render();
 		}
 	pthread_mutex_unlock(&renderLock);
 	
+	
+	OSSpinLockLock(&retainDrawLock);
+	if (!retainDraw)	{
+		retainDrawBuffer = nullptr;
+	}
+	OSSpinLockUnlock(&retainDrawLock);
 }
-/*
-- (void) setSharedGLContext:(CGLContextObj)c	{
-	if (c == nullptr)
-		return;
-	pthread_mutex_lock(&renderLock);
-		CGLPixelFormatObj	rawPxlFmt = VVISF::CreateDefaultPixelFormat();
-		NSOpenGLPixelFormat	*pxlFmt = [[[NSOpenGLPixelFormat alloc] initWithCGLPixelFormatObj:rawPxlFmt] autorelease];
-		NSOpenGLContext		*sharedCtx = [[NSOpenGLContext alloc] initWithCGLContextObj:c];
-		
-		NSOpenGLContext		*newContext = [[NSOpenGLContext alloc] initWithFormat:pxlFmt shareContext:sharedCtx];
-		[self setOpenGLContext:newContext];
-		[newContext setView:self];
-		[newContext release];
-		
-		long				swap = 1;
-		[[self openGLContext] setValues:(GLint *)&swap forParameter:NSOpenGLCPSwapInterval];
-		initialized = YES;
-		
-		CGLReleasePixelFormat(rawPxlFmt);
-	pthread_mutex_unlock(&renderLock);
-}
-*/
 - (void) setSharedGLContext:(const VVGLContextRef)n	{
 	pthread_mutex_lock(&renderLock);
-		NSOpenGLContext		*tmpSharedCtx = (n->sharedCtx==nullptr) ? nil : [[[NSOpenGLContext alloc] initWithCGLContextObj:n->sharedCtx] autorelease];
-		NSOpenGLContext		*newContext = [[NSOpenGLContext alloc]
-			initWithFormat:[[[NSOpenGLPixelFormat alloc] initWithCGLPixelFormatObj:n->pxlFmt] autorelease]
-			shareContext:tmpSharedCtx];
-		if (newContext != nil)	{
-			[self setOpenGLContext:newContext];
-			[newContext setView:self];
-			[newContext release];
+		void		*selfPtr = (void*)self;
+		
+		scene = make_shared<VVGLScene>(n->newContextSharingMe());
+		//	load the frag/vert shaders
+		string			vsString("\r\
+#version 330 core\r\
+in vec3		inXYZ;\r\
+in vec2		inST;\r\
+uniform mat4	vvglOrthoProj;\r\
+out vec2		programST;\r\
+void main()	{\r\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
+	programST = inST;\r\
+}\r\
+");
+		string			fsString("\r\
+#version 330 core\r\
+in vec2		programST;\r\
+uniform sampler2D		inputImage;\r\
+uniform sampler2DRect	inputImageRect;\r\
+uniform int		isRectTex;\r\
+out vec4		FragColor;\r\
+void main()	{\r\
+	if (isRectTex==0)\r\
+		FragColor = vec4(0,0,0,1);\r\
+	else if (isRectTex==1)\r\
+		FragColor = texture(inputImage,programST);\r\
+	else\r\
+		FragColor = texture(inputImageRect,programST);\r\
+}\r\
+");
+		scene->setVertexShaderString(vsString);
+		scene->setFragmentShaderString(fsString);
+		//	we're going to create a couple vars on the stack here- the vars themselves are shared 
+		//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
+		//	the same underlying vars, which will be retained until these callback blocks are 
+		//	destroyed and shared between the callback lambdas...
+		VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
+		VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
+		VVGLCachedUniRef		inputImage = make_shared<VVGLCachedUni>("inputImage");
+		VVGLCachedUniRef		inputImageRect = make_shared<VVGLCachedUni>("inputImageRect");
+		VVGLCachedUniRef		isRectTex = make_shared<VVGLCachedUni>("isRectTex");
+		VVGLCachedUniRef		orthoProj = make_shared<VVGLCachedUni>("vvglOrthoproj");
+		//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
+		scene->setRenderPrepCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,orthoProj,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+			//cout << __PRETTY_FUNCTION__ << endl;
+			if (inPgmChanged)	{
+				//	cache all the locations for the vertex attributes & uniform locations
+				GLint				myProgram = n.getProgram();
+				xyzAttr->cacheTheLoc(myProgram);
+				stAttr->cacheTheLoc(myProgram);
+				inputImage->cacheTheLoc(myProgram);
+				inputImageRect->cacheTheLoc(myProgram);
+				isRectTex->cacheTheLoc(myProgram);
+				orthoProj->cacheTheLoc(myProgram);
+				
+				//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
+				GLBufferQuadXYST	targetQuad;
+				
+				//	create a new VAO, store it in the VVGLBufferGLView as an ivar.  don't bother populating it now.
+				VVGLBufferRef		tmpVAO = CreateVAO(true);
+				[(id)selfPtr setVAO:tmpVAO];
+			}
+		});
+		//	the render callback passes all the data to the GL program
+		scene->setRenderCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,orthoProj,selfPtr](const VVGLScene & n)	{
+			//cout << __PRETTY_FUNCTION__ << endl;
+			//	clear
+			glClearColor(0., 0., 0., 1.);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			//	get the buffer we want to draw
+			VVGLBufferRef		bufferToDraw = [(id)selfPtr retainDrawBuffer];
+			//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
+			NSRect				rawBounds = [(id)selfPtr bounds];
+			VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
+			VVGL::Rect			geometryRect = ResizeRect((bufferToDraw==nullptr) ? viewBoundsRect : bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
+			GLBufferQuadXYST	targetQuad;
+			GLBufferQuadPopulate(&targetQuad, geometryRect, (bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
+			
+			//	pass the 2D texture to the program (if there's a 2D texture)
+			glActiveTexture(GL_TEXTURE0);
+			GLERRLOG
+			glBindTexture(VVGLBuffer::Target_2D, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_2D) ? bufferToDraw->name : 0);
+			GLERRLOG
+			glBindTexture(VVGLBuffer::Target_Rect, 0);
+			GLERRLOG
+			if (inputImage->loc >= 0)	{
+				glUniform1i(inputImage->loc, 0);
+				GLERRLOG
+			}
+			//	pass the RECT texture to the program (if there's a RECT texture)
+			glActiveTexture(GL_TEXTURE1);
+			GLERRLOG
+			glBindTexture(VVGLBuffer::Target_2D, 0);
+			GLERRLOG
+			glBindTexture(VVGLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_Rect) ? bufferToDraw->name : 0);
+			GLERRLOG
+			if (inputImageRect->loc >= 0)	{
+				glUniform1i(inputImageRect->loc, 1);
+				GLERRLOG
+			}
+			//	pass an int to the program that indicates whether we're passing no texture (0), a 2D texture (1) or a RECT texture (2)
+			if (isRectTex->loc >= 0)	{
+				if (bufferToDraw == nullptr)
+					glUniform1i(isRectTex->loc, 0);
+				else	{
+					switch (bufferToDraw->desc.target)	{
+					case VVGLBuffer::Target_2D:
+						glUniform1i(isRectTex->loc, 1);
+						break;
+					case VVGLBuffer::Target_Rect:
+						glUniform1i(isRectTex->loc, 2);
+						break;
+					default:
+						glUniform1i(isRectTex->loc, 0);
+						break;
+					}
+				}
+				GLERRLOG
+			}
+			//	pass a 4x4 projection matrix to the program
+			if (orthoProj->loc >= 0)	{
+				//	calculate the orthographic projection transform for a viewport with the given size
+				float		right = MaxX(viewBoundsRect);
+				float		left = MinX(viewBoundsRect);
+				float		top = MaxY(viewBoundsRect);
+				float		bottom = MinY(viewBoundsRect);
+				float		near = -1.;
+				float		far = 1.;
+				GLfloat		projMatrix[] = {
+					2.f/(right - left), 0., 0., -1.f*(right+left)/(right-left),
+					0.,	2.f/(top-bottom), 0., -1.f*(top+bottom)/(top-bottom),
+					0., 0., -2.f/(far-near), -1.f*(far+near)/(far-near),
+					0., 0., 0., 1.
+				};
+				glUniformMatrix4fv(orthoProj->loc, 1, GL_FALSE, projMatrix);
+				GLERRLOG
+			}
+			
+			//	bind the VAO
+			VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+			glBindVertexArray(tmpVAO->name);
+			GLERRLOG
+			
+			//	make a new VBO to contain vertex + texture coord data
+			uint32_t			vbo = 0;
+			glGenBuffers(1, &vbo);
+			GLERRLOG
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			GLERRLOG
+			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+			GLERRLOG
+			//	configure the attribute pointers to use the VBO
+			if (xyzAttr->loc >= 0)	{
+				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				GLERRLOG
+				xyzAttr->enable();
+			}
+			if (stAttr->loc >= 0)	{
+				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+				GLERRLOG
+				stAttr->enable();
+			}
+			
+			//	draw
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			GLERRLOG
+			//	un-bind the VAO
+			glBindVertexArray(0);
+			GLERRLOG
+			
+			//	delete the VBO we made earlier...
+			glDeleteBuffers(1, &vbo);
+			GLERRLOG
+		});
+		NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->getContext()->ctx];
+		if (sceneCtxWrapper != nil)	{
+			[self setOpenGLContext:sceneCtxWrapper];
+			[sceneCtxWrapper setView:self];
+			[sceneCtxWrapper release];
 			long				swap = 1;
 			[[self openGLContext] setValues:(GLint *)&swap forParameter:NSOpenGLCPSwapInterval];
 			initialized = YES;
@@ -254,8 +338,10 @@
 
 @synthesize initialized;
 @synthesize sizingMode;
+@synthesize retainDrawBuffer;
+@synthesize vao;
 - (void) setOnlyDrawNewStuff:(BOOL)n	{
-	using namespace VVISF;
+	//using namespace VVISF;
 	OSSpinLockLock(&onlyDrawNewStuffLock);
 	onlyDrawNewStuff = n;
 	onlyDrawNewStuffTimestamp = Timestamp();
@@ -266,7 +352,7 @@
 	retainDraw = n;
 	OSSpinLockUnlock(&retainDrawLock);
 }
-- (void) setRetainDrawBuffer:(VVISF::VVGLBufferRef)n	{
+- (void) setRetainDrawBuffer:(VVGL::VVGLBufferRef)n	{
 	OSSpinLockLock(&retainDrawLock);
 	retainDrawBuffer = n;
 	OSSpinLockUnlock(&retainDrawLock);
@@ -281,3 +367,17 @@
 
 
 @end
+
+
+
+
+
+
+
+
+@implementation NSOpenGLView (NSOpenGLViewVVGLBufferViewAdditions)
+- (NSRect) backingBounds	{
+	return [(id)self convertRectToBacking:[self bounds]];
+}
+@end
+

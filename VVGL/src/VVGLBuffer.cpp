@@ -21,12 +21,6 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	switch (this->pixelType)	{
 	case PT_Float:
 		switch (this->internalFormat)	{
-		case IF_Lum8:
-			bytesPerRow = 8 * 1 * s.width / 8;	//	should never exist; a pixel type of "float" should never be paired with a "lum8", as the # of bits per pixel explicitly conflicts
-			break;
-#if ISF_TARGET_MAC
-		case IF_LumFloat:
-#endif
 #if !ISF_TARGET_RPI
 		case IF_R:
 			bytesPerRow = 32 * 1 * s.width / 8;
@@ -40,12 +34,10 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 #if !ISF_TARGET_RPI
 	case PT_HalfFloat:
 		switch (this->internalFormat)	{
-		case IF_Lum8:
 		case IF_R:
 			bytesPerRow = 32 * 1 * s.width / 8;
 			break;
 		case IF_Depth24:
-		case IF_LumAlpha:
 			bytesPerRow = 32 * 2 * s.width / 8;
 			break;
 		case IF_RGB:
@@ -65,15 +57,9 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 #endif
 	case PT_UByte:
 		switch (this->internalFormat)	{
-		case IF_Lum8:
 #if !ISF_TARGET_RPI
 		case IF_R:
 			bytesPerRow = 8 * 1 * s.width / 8;
-			break;
-#endif
-#if ISF_TARGET_MAC
-		case IF_LumFloat:
-			bytesPerRow = 32 * 1 * s.width / 8;
 			break;
 #endif
 		default:
@@ -307,7 +293,7 @@ Rect VVGLBuffer::glReadySrcRect() const	{
 #endif
 	return { this->srcRect.origin.x/this->size.width, this->srcRect.origin.y/this->size.height, this->srcRect.size.width/this->size.width, this->srcRect.size.height/this->size.height };
 }
-
+/*
 Rect VVGLBuffer::croppedSrcRect(Rect & cropRect, bool & takeFlipIntoAccount) const	{
 	Rect		flippedCropRect = cropRect;
 	if (takeFlipIntoAccount && this->flipped)
@@ -319,7 +305,7 @@ Rect VVGLBuffer::croppedSrcRect(Rect & cropRect, bool & takeFlipIntoAccount) con
 	returnMe.origin.y = flippedCropRect.origin.y*this->srcRect.size.height + this->srcRect.origin.y;
 	return returnMe;
 }
-
+*/
 bool VVGLBuffer::isFullFrame() const	{
 	if (this->srcRect.origin.x==0.0 && this->srcRect.origin.y==0.0 && this->srcRect.size.width==this->size.width && this->srcRect.size.height==this->size.height)
 		return true;
@@ -420,6 +406,8 @@ void VVGLBuffer::draw(const Rect & dst) const	{
 }
 */
 string VVGLBuffer::getDescriptionString() const	{
+	if (this == nullptr)
+		return string("nullptr");
 	char		typeChar = '?';
 	switch (this->desc.type)	{
 	case VVGLBuffer::Type_RB:	typeChar='R'; break;
@@ -427,6 +415,10 @@ string VVGLBuffer::getDescriptionString() const	{
 	case VVGLBuffer::Type_Tex:	typeChar='T'; break;
 	case VVGLBuffer::Type_PBO:	typeChar='P'; break;
 	case VVGLBuffer::Type_VBO:	typeChar='V'; break;
+	case VVGLBuffer::Type_EBO:	typeChar='E'; break;
+#if ISF_TARGET_GL3PLUS
+	case VVGLBuffer::Type_VAO:	typeChar='A'; break;
+#endif
 	}
 	return FmtString("<VVGLBuffer %c, %d, %dx%d>",typeChar,name,(int)this->size.width,(int)this->size.height);
 }

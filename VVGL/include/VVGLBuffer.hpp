@@ -3,15 +3,18 @@
 
 #include <vector>
 #include <chrono>
-#include "VVBase.hpp"
+#include "VVGLContext.hpp"
 
-
-
+/*
 #if ISF_TARGET_MAC
-	#import <TargetConditionals.h>
-	#include <objc/objc.h>
-	#include <IOSurface/IOSurface.h>
-	#include <OpenGL/gl.h>
+	//#import <TargetConditionals.h>
+	//#include <objc/objc.h>
+	//#include <IOSurface/IOSurface.h>
+	//#import <OpenGL/OpenGL.h>
+	//#import <OpenGL/gl.h>
+	//#import <OpenGL/glext.h>
+	//#import <OpenGL/gl3.h>
+	//#import <OpenGL/gl3ext.h>
 #elif ISF_TARGET_IOS
 	//#import <OpenGLES/EAGL.h>
 	#import <OpenGLES/ES3/glext.h>
@@ -28,6 +31,7 @@
 	#include <EGL/egl.h>
 	#include <EGL/eglext.h>
 #endif
+*/
 
 
 
@@ -51,80 +55,25 @@ class VVGLBuffer	{
 			Type_FBO,
 			Type_Tex,
 			Type_PBO,
-			Type_VBO
-		};
-		enum Target	{
-			Target_None,
-			Target_RB,
-			Target_2D = GL_TEXTURE_2D,
-#if ISF_TARGET_MAC
-			Target_Rect = GL_TEXTURE_RECTANGLE_EXT,
-#endif
-#if !ISF_TARGET_RPI
-			Target_Cube = GL_TEXTURE_CUBE_MAP
+			Type_VBO,
+			Type_EBO,
+#if ISF_TARGET_GL3PLUS
+			Type_VAO,
 #endif
 		};
-		enum InternalFormat	{
-			IF_None = 0,
+		
+		//	enums describing the various GL object (usually texture) properties- split up b/c availability depends on platform
 #if ISF_TARGET_MAC
-			IF_Lum8 = GL_LUMINANCE8,
-			IF_LumFloat = GL_LUMINANCE32F_ARB,
-#else
-			IF_Lum8 = GL_LUMINANCE,
-#endif
-			IF_LumAlpha = GL_LUMINANCE_ALPHA,
-#if !ISF_TARGET_RPI
-			IF_R = GL_RED,
-#endif
-			IF_RGB = GL_RGB,
-			IF_RGBA = GL_RGBA,
-#if ISF_TARGET_MAC
-			IF_RGBA8 = GL_RGBA8,
-			IF_RGBA32F = GL_RGBA32F_ARB,	//!<	four channel, 32 bit per channel
-#elif ISF_TARGET_IOS
-			IF_RGBA32F = GL_RGBA32F,	//!<	four channel, 32 bit per channel.  probably can't render to this in iOS.
-			IF_RGBA16F = GL_RGBA16F_EXT,	//!<	four channel, 16 bit per channel.
-#elif ISF_TARGET_GLFW
-			IF_RGBA32F = GL_RGBA32F_ARB,
-#endif
-#if !ISF_TARGET_RPI
-			IF_Depth24 = GL_DEPTH_COMPONENT24,
-#else
-			IF_Depth16 = GL_DEPTH_COMPONENT16,
-#endif
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-			IF_RGB_DXT1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-			IF_RGBA_DXT5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-			IF_YCoCg_DXT5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-			IF_A_RGTC = GL_COMPRESSED_RED_RGTC1
-#endif
-		};
-		enum PixelFormat	{
-			PF_None = 0,
-			PF_Depth = GL_DEPTH_COMPONENT,
-			PF_LUM = GL_LUMINANCE,
-			PF_LUM_A = GL_LUMINANCE_ALPHA,
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-			PF_R = GL_RED,
-			PF_BGRA = GL_BGRA,
-			PF_YCbCr_422 = GL_YCBCR_422_APPLE,
+		#include "VVGLBuffer_Mac_Enums.h"
 #elif ISF_TARGET_RPI
-			PF_BGRA = GL_BGRA_EXT,
-			PF_YCbCr_422 = GL_APPLE_rgb_422,
+		#include "VVGLBuffer_RPI_Enums.h"
+#elif ISF_TARGET_IOS
+		#include "VVGLBuffer_IOS_Enums.h"
+#elif ISF_TARGET_GLFW
+		#include "VVGLBuffer_GLFW_Enums.h"
 #endif
-			PF_RGBA = GL_RGBA,
-		};
-		enum PixelType	{
-			PT_Float = GL_FLOAT,
-			PT_UByte = GL_UNSIGNED_BYTE,
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-			PT_UInt_8888_Rev = GL_UNSIGNED_INT_8_8_8_8_REV,
-#endif
-#if !ISF_TARGET_RPI
-			PT_HalfFloat = GL_HALF_FLOAT,
-#endif
-			PT_UShort88 = GL_UNSIGNED_SHORT_8_8_APPLE
-		};
+		
+		
 		enum Backing	{
 			Backing_None,	//!<	there is no resource
 			Backing_Internal,	//!<	the resource was created by this framework (and should be deleted by this framework)
@@ -222,7 +171,9 @@ class VVGLBuffer	{
 		bool isComparableForRecycling(const VVGLBuffer::Descriptor & n) const;
 		uint32_t backingLengthForSize(Size s) const;
 		Rect glReadySrcRect() const;
+		/*
 		Rect croppedSrcRect(Rect & cropRect, bool & takeFlipIntoAccount) const;
+		*/
 		bool isFullFrame() const;
 		bool isNPOT2DTex() const;
 		bool isPOT2DTex() const;

@@ -119,8 +119,9 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	*/
 	
 	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
-	//cout << "\tdrawing " << *newFrame << endl;
-	[glView drawBuffer:newFrame];
+	VVGLBufferRef	copiedFrame = GetGlobalBufferCopier()->copyToNewBuffer(newFrame);
+	cout << "\tnewFrame is " << *newFrame << ", drawing " << *copiedFrame << endl;
+	[glView drawBuffer:copiedFrame];
 	
 	/*
 	VVGLBufferRef		renderedBuffer = shaderScene->createAndRenderABuffer();

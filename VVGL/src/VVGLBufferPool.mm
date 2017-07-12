@@ -31,7 +31,7 @@ namespace VVGL
 
 
 
-VVGLBufferRef CreateTexFromImage(const string & inPath, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	
 	NSString			*pathString = [NSString stringWithUTF8String:inPath.c_str()];
 	
@@ -64,17 +64,19 @@ VVGLBufferRef CreateTexFromImage(const string & inPath, const VVGLBufferPoolRef 
 	
 	//return nullptr;
 }
-VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
 	
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContextRef				context = inPoolRef->getContext();
-	if (context == nullptr)
-		return nullptr;
-	//context->makeCurrentIfNull();
-	//context->makeCurrent();
-	context->makeCurrentIfNotCurrent();
+	if (!inCreateInCurrentContext)	{
+		VVGLContextRef				context = inPoolRef->getContext();
+		if (context == nullptr)
+			return nullptr;
+		//context->makeCurrentIfNull();
+		//context->makeCurrent();
+		context->makeCurrentIfNotCurrent();
+	}
 	
 	bool				directUploadOK = true;
 	CGBitmapInfo		newImgInfo = CGImageGetBitmapInfo(n);
@@ -133,7 +135,7 @@ VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPool
 			desc.msAmount = 0;
 			desc.localSurfaceID = 0;
 			
-			returnMe = inPoolRef->createBufferRef(desc, imgSize, (void*)CFDataGetBytePtr(frameData), imgSize);
+			returnMe = inPoolRef->createBufferRef(desc, imgSize, (void*)CFDataGetBytePtr(frameData), imgSize, inCreateInCurrentContext);
 			if (returnMe != nullptr)	{
 				returnMe->parentBufferPool = inPoolRef;
 			
@@ -190,7 +192,7 @@ VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPool
 		desc.msAmount = 0;
 		desc.localSurfaceID = 0;
 		
-		returnMe = inPoolRef->createBufferRef(desc, imgSize, (void*)imgData, imgSize);
+		returnMe = inPoolRef->createBufferRef(desc, imgSize, (void*)imgData, imgSize, inCreateInCurrentContext);
 		if (returnMe != nullptr)	{
 			returnMe->parentBufferPool = inPoolRef;
 			
@@ -222,7 +224,7 @@ VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const VVGLBufferPool
 
 
 
-VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __FUNCTION__ << endl;
 	if (inPaths.size() != 6)
 		return nullptr;
@@ -251,7 +253,7 @@ VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const 
 	VVGLBufferRef		returnMe = nullptr;
 	//	if there are six images, we're clear to upload them to the GL texture
 	if (images.size() == 6)	{
-		returnMe = CreateCubeTexFromImages(images, inPoolRef);
+		returnMe = CreateCubeTexFromImages(images, inCreateInCurrentContext, inPoolRef);
 	}
 	//	run through the images, releasing them
 	for (const auto & imgIt : images)	{
@@ -260,7 +262,7 @@ VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const 
 	}
 	return returnMe;
 }
-VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -311,19 +313,23 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const V
 	
 	//	lock, set the current context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContextRef				context = inPoolRef->getContext();
-	if (context == nullptr)
-		return nullptr;
-	//context->makeCurrentIfNull();
-	//context->makeCurrent();
-	context->makeCurrentIfNotCurrent();
+	if (!inCreateInCurrentContext)	{
+		VVGLContextRef				context = inPoolRef->getContext();
+		if (context == nullptr)
+			return nullptr;
+		//context->makeCurrentIfNull();
+		//context->makeCurrent();
+		context->makeCurrentIfNotCurrent();
+	}
 	
 	//	create the GL resource, do some basic setup before we upload data to it
 	glActiveTexture(GL_TEXTURE0);
 	GLERRLOG
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-	glEnable(desc.target);
-	GLERRLOG
+	if (inPoolRef->getContext()->version <= GLVersion_2)	{
+		glEnable(desc.target);
+		GLERRLOG
+	}
 #endif
 	glGenTextures(1, &(returnMe->name));
 	GLERRLOG
@@ -397,8 +403,10 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const V
 	glBindTexture(desc.target, 0);
 	GLERRLOG
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-	glDisable(desc.target);
-	GLERRLOG
+	if (inPoolRef->getContext()->version <= GLVersion_2)	{
+		glDisable(desc.target);
+		GLERRLOG
+	}
 #endif
 	
 	free(clipboardData);
@@ -411,7 +419,7 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const V
 
 
 #if ISF_TARGET_MAC
-VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -430,12 +438,12 @@ VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const VVGLBufferPoolRe
 	desc.msAmount = 0;
 	desc.localSurfaceID = 1;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
 	
@@ -453,12 +461,12 @@ VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const VVGLBufferP
 	desc.msAmount = 0;
 	desc.localSurfaceID = 1;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
 	
@@ -543,14 +551,23 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 	
 	//	grab a context lock so we can do stuff with the GL context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	VVGLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
-	if (context!=nullptr)	{
+	if (!inCreateInCurrentContext)	{
+		VVGLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
 		context->makeCurrentIfNotCurrent();
+	}
+	CGLContextObj		cglCtx = CGLGetCurrentContext();
+	if (cglCtx != NULL)	{
 		glActiveTexture(GL_TEXTURE0);
-		glEnable(returnMe->desc.target);
+		GLERRLOG
+		if (inPoolRef->getContext()->version <= GLVersion_2)	{
+			glEnable(returnMe->desc.target);
+			GLERRLOG
+		}
 		glGenTextures(1,&(returnMe->name));
+		GLERRLOG
 		glBindTexture(returnMe->desc.target, returnMe->name);
-		CGLError		err = CGLTexImageIOSurface2D(context->ctx,
+		GLERRLOG
+		CGLError		err = CGLTexImageIOSurface2D(cglCtx,
 			returnMe->desc.target,
 			returnMe->desc.internalFormat,
 			newAssetSize.width,
@@ -562,12 +579,21 @@ VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const VVGLB
 		if (err != noErr)
 			cout << "\tERR: " << err << " at CGLTexImageIOSurface2D() in " << __PRETTY_FUNCTION__ << endl;
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		GLERRLOG
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		GLERRLOG
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		GLERRLOG
 		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		GLERRLOG
 		glFlush();
+		GLERRLOG
 		glBindTexture(returnMe->desc.target, 0);
-		glDisable(returnMe->desc.target);
+		GLERRLOG
+		if (inPoolRef->getContext()->version <= GLVersion_2)	{
+			glDisable(returnMe->desc.target);
+			GLERRLOG
+		}
 	}
 	
 	return returnMe;

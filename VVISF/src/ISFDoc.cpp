@@ -636,7 +636,7 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	}
 	//	if the file's still not open then it just didn't exist- i have to use the passthru shader
 	if (!fin.is_open())	{
-		vertShaderSource = new string(ISFVertPassthru);
+		vertShaderSource = new string(ISFVertPassthru_GL2);
 	}
 	//	else the file's open- read it into a string
 	else	{
@@ -923,17 +923,19 @@ string ISFDoc::generateTextureTypeString()	{
 	}
 	return returnMe;
 }
-bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
+bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	if (outFragSrc==nullptr || outVertSrc==nullptr || vertShaderSource==nullptr || fragShaderSource==nullptr)
 		throw ISFErr(ISFErrType_ErrorParsingFS, "Preflight failed", __PRETTY_FUNCTION__);
 	//	assemble the variable declarations
-	string		varDeclarations = string("");
-	 if (!_assembleShaderSource_VarDeclarations(&varDeclarations))
-	 	throw ISFErr(ISFErrType_ErrorParsingFS, "Var Dec failed", __PRETTY_FUNCTION__);
-	//cout << "var declarations:\n*******************\n" << varDeclarations << "*******************\n";
+	string		vsVarDeclarations = string("");
+	string		fsVarDeclarations = string("");
+	if (!_assembleShaderSource_VarDeclarations(&vsVarDeclarations, &fsVarDeclarations, inGLVers))
+		throw ISFErr(ISFErrType_ErrorParsingFS, "Var Dec failed", __PRETTY_FUNCTION__);
+	//cout << "vs var declarations:\n*******************\n" << vsVarDeclarations << "*******************\n";
+	//cout << "fs var declarations:\n*******************\n" << fsVarDeclarations << "*******************\n";
 	
 	/*	stores names of the images/buffers that are accessed via IMG_THIS_PIXEL (which is replaced 
 	in the frag shader, but the names are then needed to declare vars in the vert shader)		*/
@@ -952,15 +954,47 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 	VVGLBufferRef	imgBuffer = nullptr;
 	string			modSrcString("");
 	string			newString("");
+	size_t			tmpIndex;
 	
 	//	put together a new frag shader string from the raw shader source
 	string			newFragShaderSrc = string("");
-	newFragShaderSrc.reserve(1.5 * (varDeclarations.size()+fragShaderSource->size()));
+	newFragShaderSrc.reserve(1.5 * (fsVarDeclarations.size()+fragShaderSource->size()));
 	{
+		//	remove any lines containing #version tags
+		searchString = string("#version");
+		tmpRange = VVRange(newFragShaderSrc.find(searchString), searchString.size());
+		do	{
+			if (tmpRange.loc != string::npos)	{
+				tmpIndex = modSrcString.find_first_of("\n\r\f", tmpRange.max());
+				if (tmpIndex != string::npos)	{
+					tmpRange.len = tmpIndex - tmpRange.loc;
+					newFragShaderSrc.erase(tmpRange.loc, tmpRange.len);
+					
+					tmpRange = VVRange(newFragShaderSrc.find(searchString), searchString.size());
+				}
+			}
+		} while (tmpRange.loc != string::npos);
+		//	add the #version tag for the min version of GLSL supported by this major vsn of openGL
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+			newFragShaderSrc.insert(0, string("#version 110\n"));
+			break;
+		case GLVersion_ES2:
+			newFragShaderSrc.insert(0, string("#version 100\n"));
+			break;
+		case GLVersion_33:
+			newFragShaderSrc.insert(0, string("#version 130\n"));
+			break;
+		case GLVersion_4:
+			newFragShaderSrc.insert(0, string("#version 400\n"));
+			break;
+		}
+		
 		//	add the compatibility define
 		newFragShaderSrc.append(ISF_ES_Compatibility);
 		//	copy the variable declarations to the frag shader src
-		newFragShaderSrc.append(varDeclarations);
+		newFragShaderSrc.append(fsVarDeclarations);
 		
 		//	now i have to find-and-replace the shader source for various things- make a copy of the raw source and work from that.
 		modSrcString.reserve(newFragShaderSrc.capacity());
@@ -1094,11 +1128,22 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 						imgThisPixelSamplerNames.push_back(samplerName);
 					
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
-						newFuncString = FmtString("texture2D(%s, _%s_texCoord)",samplerNameC,samplerNameC);
-					}
-					else	{
-						newFuncString = FmtString("texture2DRect(%s, _%s_texCoord)",samplerNameC,samplerNameC);
+					
+					switch (inGLVers)	{
+					case GLVersion_Unknown:
+					case GLVersion_2:
+					case GLVersion_ES2:
+						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+							newFuncString = FmtString("texture2D(%s, _%s_texCoord)",samplerNameC,samplerNameC);
+						}
+						else	{
+							newFuncString = FmtString("texture2DRect(%s, _%s_texCoord)",samplerNameC,samplerNameC);
+						}
+						break;
+					case GLVersion_33:
+					case GLVersion_4:
+						newFuncString = FmtString("texture(%s, _%s_texCoord)",samplerNameC,samplerNameC);
+						break;
 					}
 					
 					modSrcString.replace(fullFuncRangeToReplace.loc, fullFuncRangeToReplace.len, newFuncString, 0, newFuncString.size());
@@ -1108,7 +1153,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 		//	add the IMG_THIS_PIXEL variable declarations to the frag shader
 		if (imgThisPixelSamplerNames.size() > 0)	{
 			for (const auto & it : imgThisPixelSamplerNames)	{
-				newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
+				switch (inGLVers)	{
+				case GLVersion_Unknown:
+				case GLVersion_2:
+				case GLVersion_ES2:
+					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
+					break;
+				case GLVersion_33:
+				case GLVersion_4:
+					newFragShaderSrc.append(FmtString("in vec2\t\t_%s_texCoord;\n",it.c_str()));
+					break;
+				}
 			}
 		}
 		
@@ -1135,11 +1190,21 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 						imgThisNormPixelSamplerNames.push_back(samplerName);
 					
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
-						newFuncString = FmtString("texture2D(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
-					}
-					else	{
-						newFuncString = FmtString("texture2DRect(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
+					switch (inGLVers)	{
+					case GLVersion_Unknown:
+					case GLVersion_2:
+					case GLVersion_ES2:
+						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+							newFuncString = FmtString("texture2D(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
+						}
+						else	{
+							newFuncString = FmtString("texture2DRect(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
+						}
+						break;
+					case GLVersion_33:
+					case GLVersion_4:
+						newFuncString = FmtString("texture(%s, _%s_normTexCoord)", samplerNameC, samplerNameC);
+						break;
 					}
 					
 					modSrcString.replace(fullFuncRangeToReplace.loc, fullFuncRangeToReplace.len, newFuncString, 0, newFuncString.size());
@@ -1149,7 +1214,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 		//	add the IMG_THIS_NORM_PIXEL variable declarations to the frag shader
 		if (imgThisNormPixelSamplerNames.size() > 0)	{
 			for (const auto & it : imgThisNormPixelSamplerNames)	{
-				newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+				switch (inGLVers)	{
+				case GLVersion_Unknown:
+				case GLVersion_2:
+				case GLVersion_ES2:
+					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+					break;
+				case GLVersion_33:
+				case GLVersion_4:
+					newFragShaderSrc.append(FmtString("in vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+					break;
+				}
 			}
 		}
 		
@@ -1179,15 +1254,31 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 		newFragShaderSrc.append("\n");
 		
 		//	if the frag shader requires macro functions, add them now that i'm done declaring the variables
-		if (requires2DMacro)
-			newFragShaderSrc.append(ISFGLMacro2D);
-		if (requires2DBiasMacro)
-			newFragShaderSrc.append(ISFGLMacro2DBias);
-		if (requires2DRectMacro)
-			newFragShaderSrc.append(ISFGLMacro2DRect);
-		if (requires2DRectBiasMacro)
-			newFragShaderSrc.append(ISFGLMacro2DRectBias);
-		
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+		case GLVersion_ES2:
+			if (requires2DMacro)
+				newFragShaderSrc.append(ISFGLMacro2D_GL2);
+			if (requires2DBiasMacro)
+				newFragShaderSrc.append(ISFGLMacro2DBias_GL2);
+			if (requires2DRectMacro)
+				newFragShaderSrc.append(ISFGLMacro2DRect_GL2);
+			if (requires2DRectBiasMacro)
+				newFragShaderSrc.append(ISFGLMacro2DRectBias_GL2);
+			break;
+		case GLVersion_33:
+		case GLVersion_4:
+			if (requires2DMacro)
+				newFragShaderSrc.append(ISFGLMacro2D_GL3);
+			if (requires2DBiasMacro)
+				newFragShaderSrc.append(ISFGLMacro2DBias_GL3);
+			if (requires2DRectMacro)
+				newFragShaderSrc.append(ISFGLMacro2DRect_GL3);
+			if (requires2DRectBiasMacro)
+				newFragShaderSrc.append(ISFGLMacro2DRectBias_GL3);
+			break;
+		}
 		//	add the shader source that has been find-and-replaced
 		newFragShaderSrc.append(modSrcString);
 		//cout << "newFragShaderSrc is:\n******************\n" << newFragShaderSrc << "\n******************\n";
@@ -1196,25 +1287,86 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 	
 	//	put together a new vert shader string from the raw shader source
 	string			newVertShaderSrc = string("");
-	newVertShaderSrc.reserve(2.5 * (varDeclarations.size()+vertShaderSource->size()));
+	newVertShaderSrc.reserve(2.5 * (vsVarDeclarations.size()+vertShaderSource->size()));
 	{
+		//	remove any lines containing #version tags
+		searchString = string("#version");
+		tmpRange = VVRange(newVertShaderSrc.find(searchString), searchString.size());
+		do	{
+			if (tmpRange.loc != string::npos)	{
+				tmpIndex = modSrcString.find_first_of("\n\r\f", tmpRange.max());
+				if (tmpIndex != string::npos)	{
+					tmpRange.len = tmpIndex - tmpRange.loc;
+					newVertShaderSrc.erase(tmpRange.loc, tmpRange.len);
+					
+					tmpRange = VVRange(newVertShaderSrc.find(searchString), searchString.size());
+				}
+			}
+		} while (tmpRange.loc != string::npos);
+		//	add the #version tag for the min version of GLSL supported by this major vsn of openGL
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+			newVertShaderSrc.insert(0, string("#version 110\n"));
+			break;
+		case GLVersion_ES2:
+			newVertShaderSrc.insert(0, string("#version 100\n"));
+			break;
+		case GLVersion_33:
+			newVertShaderSrc.insert(0, string("#version 130\n"));
+			break;
+		case GLVersion_4:
+			newVertShaderSrc.insert(0, string("#version 400\n"));
+			break;
+		}
+		
 		//	add the compatibility define
 		newVertShaderSrc.append(ISF_ES_Compatibility);
 		//	load any specific vars or function declarations for the vertex shader from an included file
-		newVertShaderSrc.append(ISFVertVarDec);
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+		case GLVersion_ES2:
+			newVertShaderSrc.append(ISFVertVarDec_GLES2);
+			break;
+		case GLVersion_33:
+		case GLVersion_4:
+			newVertShaderSrc.append(ISFVertVarDec_GL3);
+			break;
+		}
 		//	append the variable declarations i assembled earlier with the frag shader
-		newVertShaderSrc.append(varDeclarations);
+		newVertShaderSrc.append(vsVarDeclarations);
 		
 		//	add the variables for values corresponding to buffers from IMG_THIS_PIXEL and IMG_THIS_NORM_PIXEL in the frag shader
 		if (imgThisPixelSamplerNames.size()>0 || imgThisNormPixelSamplerNames.size()>0)	{
 			if (imgThisPixelSamplerNames.size() > 0)	{
 				for (const auto & it : imgThisPixelSamplerNames)	{
-					newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
+					switch (inGLVers)	{
+					case GLVersion_Unknown:
+					case GLVersion_2:
+					case GLVersion_ES2:
+						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
+						break;
+					case GLVersion_33:
+					case GLVersion_4:
+						newVertShaderSrc.append(FmtString("out vec2\t\t_%s_texCoord;\n",it.c_str()));
+						break;
+					}
 				}
 			}
 			if (imgThisNormPixelSamplerNames.size() > 0)	{
 				for (const auto & it : imgThisNormPixelSamplerNames)	{
-					newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+					switch (inGLVers)	{
+					case GLVersion_Unknown:
+					case GLVersion_2:
+					case GLVersion_ES2:
+						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+						break;
+					case GLVersion_33:
+					case GLVersion_4:
+						newVertShaderSrc.append(FmtString("out vec2\t\t_%s_normTexCoord;\n",it.c_str()));
+						break;
+					}
 				}
 			}
 		}
@@ -1370,13 +1522,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 		
 		//	if the frag shader requires macro functions, add them now that i'm done declaring the variables
 		if (requires2DMacro)
-			newVertShaderSrc.append(ISFGLMacro2D);
+			newVertShaderSrc.append(ISFGLMacro2D_GL2);
 		if (requires2DBiasMacro)
-			newVertShaderSrc.append(ISFGLMacro2DBias);
+			newVertShaderSrc.append(ISFGLMacro2DBias_GL2);
 		if (requires2DRectMacro)
-			newVertShaderSrc.append(ISFGLMacro2DRect);
+			newVertShaderSrc.append(ISFGLMacro2DRect_GL2);
 		if (requires2DRectBiasMacro)
-			newVertShaderSrc.append(ISFGLMacro2DRectBias);
+			newVertShaderSrc.append(ISFGLMacro2DRectBias_GL2);
 		
 		//	add the shader source that has been find-and-replaced
 		newVertShaderSrc.append(modSrcString);
@@ -1402,7 +1554,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 		newVertShaderSrc.append(string("}\n"));
 		//cout << "newVertShaderSrc is:\n******************\n" << newVertShaderSrc << "\n******************\n";
 	}
-	
+	/*
 	//	if there are any "#version" tags in the shaders, see that they are preserved and moved to the beginning!
 	string			fragVersionString("");
 	string			vertVersionString("");
@@ -1410,7 +1562,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 	tmpRange = VVRange(0, searchString.size());
 	tmpRange.loc = newFragShaderSrc.find(searchString);
 	if (tmpRange.loc != string::npos)	{
-		tmpRange.len = newFragShaderSrc.find_first_of("\n\r", tmpRange.max()) - tmpRange.loc;
+		tmpRange.len = newFragShaderSrc.find_first_of("\n\r\f", tmpRange.max()) - tmpRange.loc;
 		fragVersionString = newFragShaderSrc.substr(tmpRange.loc, tmpRange.len);
 		newFragShaderSrc.erase(tmpRange.loc, tmpRange.len);
 		newFragShaderSrc.insert(0, fragVersionString);
@@ -1419,13 +1571,14 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc)	{
 	tmpRange = VVRange(0, searchString.size());
 	tmpRange.loc = newVertShaderSrc.find(searchString);
 	if (tmpRange.loc != string::npos)	{
-		tmpRange.len = newVertShaderSrc.find_first_of("\n\r", tmpRange.max()) - tmpRange.loc;
+		tmpRange.len = newVertShaderSrc.find_first_of("\n\r\f", tmpRange.max()) - tmpRange.loc;
 		vertVersionString = newVertShaderSrc.substr(tmpRange.loc, tmpRange.len);
 		newVertShaderSrc.erase(tmpRange.loc, tmpRange.len);
 		newVertShaderSrc.insert(0, vertVersionString);
 	}
 	else if (fragVersionString.size()>0)
 		newVertShaderSrc.insert(0, fragVersionString);
+	*/
 	
 	//	at this point i've created frag and vertex shaders, and i just need to copy them to the provided strings
 	outFragSrc->reserve(newFragShaderSrc.size()+1);
@@ -1471,26 +1624,65 @@ void ISFDoc::evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize)	{
 #pragma mark --------------------- protected methods
 
 
-bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outString)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
+bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
-	if (outString == nullptr)
+	if (outVSString==nullptr || outFSString==nullptr)
 		return false;
 	
-	//	we're going to work this by assembling an array of strings, one for each line- have the rector reserve space for enough strings
-	vector<string>		declarations;
-	declarations.reserve(inputs.size()+imageImports.size()+persistentBuffers.size()+tempBuffers.size()+9);
+	//	we're going to work this by assembling an array of strings, one for each line- have the vector reserve space for enough strings
+	vector<string>		vsDeclarations;
+	vector<string>		fsDeclarations;
+	vsDeclarations.reserve(inputs.size()+imageImports.size()+persistentBuffers.size()+tempBuffers.size()+9);
+	fsDeclarations.reserve(vsDeclarations.capacity());
+	
+	//	frag shader always needs an output, which we're naming gl_FragColor so shaders written against GL 2.1 will work.  we'll use a #define in the shader source to make the shader precompiler change gl_FragColor to isf_FragColor
+	switch (inGLVers)	{
+	case GLVersion_Unknown:
+	case GLVersion_2:
+	case GLVersion_ES2:
+		break;
+	case GLVersion_33:
+	case GLVersion_4:
+		fsDeclarations.emplace_back("#define gl_FragColor isf_FragColor\n");
+		fsDeclarations.emplace_back("out vec4 gl_FragColor;\n");
+		break;
+	}
+	
 	//	these are the 9 standard entries
-	declarations.emplace_back("uniform int\t\tPASSINDEX;\n");
-	declarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
-	declarations.emplace_back("varying vec2\t\tisf_FragNormCoord;\n");
-	declarations.emplace_back("varying vec3\t\tisf_VertNorm;\n");
-	declarations.emplace_back("varying vec3\t\tisf_VertPos;\n");
-	declarations.emplace_back("uniform float\t\tTIME;\n");
-	declarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
-	declarations.emplace_back("uniform vec4\t\tDATE;\n");
-	declarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
+	vsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
+	fsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
+	vsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
+	fsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
+	switch (inGLVers)	{
+	case GLVersion_Unknown:
+	case GLVersion_2:
+	case GLVersion_ES2:
+		vsDeclarations.emplace_back("varying vec2\t\tisf_FragNormCoord;\n");
+		fsDeclarations.emplace_back("varying vec2\t\tisf_FragNormCoord;\n");
+		//vsDeclarations.emplace_back("varying vec3\t\tisf_VertNorm;\n");
+		//fsDeclarations.emplace_back("varying vec3\t\tisf_VertNorm;\n");
+		//vsDeclarations.emplace_back("varying vec3\t\tisf_VertPos;\n");
+		//fsDeclarations.emplace_back("varying vec3\t\tisf_VertPos;\n");
+		break;
+	case GLVersion_33:
+	case GLVersion_4:
+		vsDeclarations.emplace_back("out vec2\t\tisf_FragNormCoord;\n");
+		fsDeclarations.emplace_back("in vec2\t\tisf_FragNormCoord;\n");
+		//vsDeclarations.emplace_back("out vec3\t\tisf_VertNorm;\n");
+		//fsDeclarations.emplace_back("in vec3\t\tisf_VertNorm;\n");
+		//vsDeclarations.emplace_back("out vec3\t\tisf_VertPos;\n");
+		//fsDeclarations.emplace_back("in vec3\t\tisf_VertPos;\n");
+		break;
+	}
+	vsDeclarations.emplace_back("uniform float\t\tTIME;\n");
+	fsDeclarations.emplace_back("uniform float\t\tTIME;\n");
+	vsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
+	fsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
+	vsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
+	fsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
+	vsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
+	fsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
 	
 	//	this block will be used to add declarations for a provided ISFAttr
 	auto	attribDecBlock = [&](const ISFAttrRef & inRef)	{
@@ -1501,25 +1693,32 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outString)	{
 			break;
 		case ISFValType_Event:
 		case ISFValType_Bool:
-			declarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
 			break;
 		case ISFValType_Long:
-			declarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
 			break;
 		case ISFValType_Float:
-			declarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
 			break;
 		case ISFValType_Point2D:
-			declarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
 			break;
 		case ISFValType_Color:
-			declarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
 			break;
 		case ISFValType_Cube:
 			//	make a sampler for the cubemap texture
-			declarations.emplace_back(FmtString("uniform samplerCube\t\t%s;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform samplerCube\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform samplerCube\t\t%s;\n", nameCStr));
 			//	just pass in the imgSize
-			declarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
 			break;
 		case ISFValType_Image:
 		case ISFValType_Audio:
@@ -1527,16 +1726,23 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outString)	{
 			{
 				ISFVal			attribVal = inRef->getCurrentVal();
 				VVGLBufferRef	attribBuffer = attribVal.getImageBuffer();
-				if (attribBuffer==nullptr || attribBuffer->desc.target==VVGLBuffer::Target_2D)
-					declarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
-				else
-					declarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
+				if (attribBuffer==nullptr || attribBuffer->desc.target==VVGLBuffer::Target_2D)	{
+					vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
+					fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
+				}
+				else	{
+					vsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
+					fsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
+				}
 				//	a vec4 describing the image rect IN NATIVE GL TEXTURE COORDS (2D is normalized, RECT is not)
-				declarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+				vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
 				//	a vec2 describing the size in pixels of the image
-				declarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+				vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
 				//	a bool describing whether the image in the texture should be flipped vertically
-				declarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+				vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
 				break;
 			}
 		}
@@ -1547,13 +1753,20 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outString)	{
 		const string &		tmpName = inRef->getName();
 		const char *		nameCStr = tmpName.c_str();
 		VVGLBufferRef		bufferRef = inRef->getBuffer();
-		if (bufferRef==nullptr || bufferRef->desc.target==VVGLBuffer::Target_2D)
-			declarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
-		else
-			declarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
-		declarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
-		declarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
-		declarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+		if (bufferRef==nullptr || bufferRef->desc.target==VVGLBuffer::Target_2D)	{
+			vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
+		}
+		else	{
+			vsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
+		}
+		vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+		fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+		vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+		fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+		vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+		fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
 	};
 	
 	//	add the variables for the various inputs
@@ -1568,16 +1781,29 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outString)	{
 	//	add the variables for the temp buffers
 	for (const auto & tgBufIt : tempBuffers)
 		targetBufferBlock(tgBufIt);
-	
+	/*
+	cout << "VS declarations are:\n";
+	for (const auto & stringIt : vsDeclarations)	{
+		cout << "\t" << stringIt << endl;
+	}
+	cout << "FS declarations are:\n";
+	for (const auto & stringIt : fsDeclarations)	{
+		cout << "\t" << stringIt << endl;
+	}
+	*/
 	//	now calculate the total length of the output string and reserve space for it
 	size_t			reserveSize = 0;
-	for (const auto & stringIt : declarations)	{
+	for (const auto & stringIt : fsDeclarations)	{
 		reserveSize += stringIt.size();
 	}
-	outString->reserve(reserveSize);
+	outVSString->reserve(reserveSize);
+	outFSString->reserve(reserveSize);
 	//	now copy the individual declarations to the output string
-	for (const auto & stringIt : declarations)	{
-		outString->append(stringIt);
+	for (const auto & stringIt : vsDeclarations)	{
+		outVSString->append(stringIt);
+	}
+	for (const auto & stringIt : fsDeclarations)	{
+		outFSString->append(stringIt);
 	}
 	
 	return true;

@@ -80,7 +80,7 @@ VVGLBufferPool::~VVGLBufferPool()	{
 #pragma mark --------------------- public API
 
 
-VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, const Size & s, const void * b, const Size & bs)	{
+VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, const Size & s, const void * b, const Size & bs, const bool & inCreateInCurrentContext)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (deleted)
 		return nullptr;
@@ -110,11 +110,13 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 #if ISF_TARGET_MAC
 	CGLError			err = kCGLNoError;
 #endif
-	if (context == nullptr)
-		return nullptr;
-	//context->makeCurrentIfNull();
-	//context->makeCurrent();
-	context->makeCurrentIfNotCurrent();
+	if (!inCreateInCurrentContext)	{
+		if (context == nullptr)
+			return nullptr;
+		//context->makeCurrentIfNull();
+		//context->makeCurrent();
+		context->makeCurrentIfNotCurrent();
+	}
 	
 	//	cout << "\terr: " << err << " in " << __PRETTY_FUNCTION__ << endl;
 #if ISF_TARGET_MAC
@@ -145,14 +147,6 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 	case VVGLBuffer::PF_R:
 #endif
-	case VVGLBuffer::PF_LUM:
-		//pixelFormat = kCVPixelFormatType_OneComponent8;
-		pixelFormat = 'L008';
-		break;
-	case VVGLBuffer::PF_LUM_A:
-		//pixelFormat = kCVPixelFormatType_TwoComponent8;
-		pixelFormat = '2C08';
-		break;
 	case VVGLBuffer::PF_RGBA:
 		//pixelFormat = kCVPixelFormatType_32RGBA;
 		pixelFormat = 'RGBA';
@@ -196,14 +190,18 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		glBindRenderbuffer(returnMe->desc.target, 0);
 		GLERRLOG
 		//	flush!
-		glFlush();
-		GLERRLOG
+		if (!inCreateInCurrentContext)	{
+			glFlush();
+			GLERRLOG
+		}
 		break;
 	case VVGLBuffer::Type_FBO:
 		glGenFramebuffers(1, &(returnMe->name));
 		GLERRLOG
-		glFlush();
-		GLERRLOG
+		if (!inCreateInCurrentContext)	{
+			glFlush();
+			GLERRLOG
+		}
 		break;
 	case VVGLBuffer::Type_Tex:
 #if ISF_TARGET_MAC
@@ -229,9 +227,12 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 #endif
 		//	enable the tex target, gen the texture, and bind it
 		glActiveTexture(GL_TEXTURE0);
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-		glEnable(newBufferDesc.target);
 		GLERRLOG
+#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+		if (context->version <= GLVersion_2)	{
+			glEnable(newBufferDesc.target);
+			GLERRLOG
+		}
 #endif
 		glGenTextures(1, &(returnMe->name));
 		GLERRLOG
@@ -280,10 +281,10 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-		if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
-			glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-			GLERRLOG
-		}
+		//if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
+		//	glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+		//	GLERRLOG
+		//}
 		
 		if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
 			glTexParameteri(newBufferDesc.target, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_CACHED_APPLE);
@@ -373,20 +374,26 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		glBindTexture(newBufferDesc.target, 0);
 		GLERRLOG
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-		glDisable(newBufferDesc.target);
-		GLERRLOG
+		if (context->version <= GLVersion_2)	{
+			glDisable(newBufferDesc.target);
+			GLERRLOG
+		}
 #endif
-		//	flush!
-		glFlush();
-		GLERRLOG
+		if (!inCreateInCurrentContext)	{
+			//	flush!
+			glFlush();
+			GLERRLOG
+		}
 		
 		break;
 	case VVGLBuffer::Type_PBO:
 		glGenBuffers(1, &(returnMe->name));
 		GLERRLOG
-		//	flush!
-		glFlush();
-		GLERRLOG
+		if (!inCreateInCurrentContext)	{
+			//	flush!
+			glFlush();
+			GLERRLOG
+		}
 		//	"pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage())
 		//	"unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D())
 		
@@ -400,7 +407,11 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		//	COPY		GL -> GL
 		break;
 	case VVGLBuffer::Type_VBO:
-		//	left intentionally blank, VBOs are created in their own method
+	case VVGLBuffer::Type_EBO:
+#if ISF_TARGET_GL3PLUS
+	case VVGLBuffer::Type_VAO:
+#endif
+		//	left intentionally blank- VBOs, EBOs, and VAOs are created in their respective factory functions
 		break;
 	}
 	
@@ -457,6 +468,10 @@ VVGLBufferRef VVGLBufferPool::fetchMatchingFreeBuffer(const VVGLBuffer::Descript
 					sizeIsOK = true;
 				break;
 			case VVGLBuffer::Type_VBO:
+			case VVGLBuffer::Type_EBO:
+#if ISF_TARGET_GL3PLUS
+			case VVGLBuffer::Type_VAO:
+#endif
 				break;
 			}
 			
@@ -523,7 +538,7 @@ ostream & operator<<(ostream & os, const VVGLBufferPool & n)	{
 	os << "<VVGLBufferPool " << &n << ">";
 	return os;
 }
-/*
+
 void VVGLBufferPool::flush()	{
 	lock_guard<recursive_mutex>		lock(contextLock);
 	if (context != nullptr)	{
@@ -531,9 +546,10 @@ void VVGLBufferPool::flush()	{
 		//context->makeCurrent();
 		context->makeCurrentIfNotCurrent();
 		glFlush();
+		GLERRLOG
 	}
 }
-*/
+
 
 
 /*	========================================	*/
@@ -603,6 +619,16 @@ void VVGLBufferPool::releaseBufferResources(VVGLBuffer * inBuffer)	{
 		glDeleteBuffers(1, &inBuffer->name);
 		GLERRLOG
 		break;
+	case VVGLBuffer::Type_EBO:
+		glDeleteBuffers(1, &inBuffer->name);
+		GLERRLOG
+		break;
+#if ISF_TARGET_GL3PLUS
+	case VVGLBuffer::Type_VAO:
+		glDeleteVertexArrays(1, &inBuffer->name);
+		GLERRLOG
+		break;
+#endif
 	}
 	glFlush();
 	GLERRLOG
@@ -666,7 +692,7 @@ VVGLBufferPoolRef GetGlobalBufferPool()	{
 #pragma mark --------------------- buffer creation methods
 
 
-VVGLBufferRef CreateRGBATex(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRGBATex(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -689,12 +715,12 @@ VVGLBufferRef CreateRGBATex(const Size & size, const VVGLBufferPoolRef & inPoolR
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateRGBAFloatTex(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRGBAFloatTex(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -722,12 +748,12 @@ VVGLBufferRef CreateRGBAFloatTex(const Size & size, const VVGLBufferPoolRef & in
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateBGRATex(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateBGRATex(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -750,12 +776,12 @@ VVGLBufferRef CreateBGRATex(const Size & size, const VVGLBufferPoolRef & inPoolR
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateBGRAFloatTex(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateBGRAFloatTex(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -783,12 +809,12 @@ VVGLBufferRef CreateBGRAFloatTex(const Size & size, const VVGLBufferPoolRef & in
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateRB(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateRB(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	if (inPoolRef == nullptr)
@@ -812,12 +838,12 @@ VVGLBufferRef CreateRB(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateFBO(const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	if (inPoolRef == nullptr)
@@ -837,12 +863,12 @@ VVGLBufferRef CreateFBO(const VVGLBufferPoolRef & inPoolRef)	{
 	//desc.msAmount = 0;
 	//desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
-VVGLBufferRef CreateDepthBuffer(const Size & size, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateDepthBuffer(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	if (inPoolRef == nullptr)
@@ -866,7 +892,7 @@ VVGLBufferRef CreateDepthBuffer(const Size & size, const VVGLBufferPoolRef & inP
 	//desc.msAmount = 0;
 	//desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size);
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
@@ -896,7 +922,39 @@ VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32
 }
 
 
-VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const VVGLBufferPoolRef & inPoolRef)	{
+#if ISF_TARGET_MAC
+VVGLBufferRef CreateRGBARectTex(const Size & size, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	VVGLBuffer::Descriptor	desc;
+	
+	desc.type = VVGLBuffer::Type_Tex;
+	desc.target = VVGLBuffer::Target_Rect;
+//#if ISF_TARGET_MAC
+	desc.internalFormat = VVGLBuffer::IF_RGBA8;
+//#else
+//	desc.internalFormat = VVGLBuffer::IF_RGBA;
+//#endif
+	desc.pixelFormat = VVGLBuffer::PF_RGBA;
+	desc.pixelType = VVGLBuffer::PT_UByte;
+	desc.cpuBackingType = VVGLBuffer::Backing_None;
+	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
+#endif
+
+
+VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
 	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
@@ -914,11 +972,13 @@ VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const i
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	//if (inPoolRef->getContext() != nullptr)	{
-		//inPoolRef->context->makeCurrentIfNull();
-		//inPoolRef->context->makeCurrent();
-		//inPoolRef->getContext()->makeCurrentIfNotCurrent();
-	//}
+	if (!inCreateInCurrentContext)	{
+		if (inPoolRef->getContext() != nullptr)	{
+			//inPoolRef->context->makeCurrentIfNull();
+			//inPoolRef->context->makeCurrent();
+			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+		}
+	}
 	
 	glGenBuffers(1, &(returnMe->name));
 	GLERRLOG
@@ -928,8 +988,10 @@ VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const i
 	GLERRLOG
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	GLERRLOG
-	glFlush();
-	GLERRLOG
+	if (!inCreateInCurrentContext)	{
+		glFlush();
+		GLERRLOG
+	}
 	
 	returnMe->size = {0.,0.};
 	returnMe->srcRect = {0., 0., 0., 0.};
@@ -938,15 +1000,103 @@ VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const i
 	
 	return returnMe;
 }
+VVGLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
+	VVGLBuffer::Descriptor &	desc = returnMe->desc;
+	
+	desc.type = VVGLBuffer::Type_EBO;
+	desc.target = VVGLBuffer::Target_None;
+	desc.internalFormat = VVGLBuffer::IF_None;
+	desc.pixelFormat = VVGLBuffer::PF_None;
+	desc.pixelType = VVGLBuffer::PT_Float;
+	desc.cpuBackingType = VVGLBuffer::Backing_None;
+	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	if (!inCreateInCurrentContext)	{
+		if (inPoolRef->getContext() != nullptr)	{
+			//inPoolRef->context->makeCurrentIfNull();
+			//inPoolRef->context->makeCurrent();
+			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+		}
+	}
+	
+	glGenBuffers(1, &(returnMe->name));
+	GLERRLOG
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, returnMe->name);
+	GLERRLOG
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, inByteSize, inBytes, inUsage);
+	GLERRLOG
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	GLERRLOG
+	if (!inCreateInCurrentContext)	{
+		glFlush();
+		GLERRLOG
+	}
+	
+	returnMe->size = {0.,0.};
+	returnMe->srcRect = {0., 0., 0., 0.};
+	inPoolRef->timestampThisBuffer(returnMe);
+	returnMe->preferDeletion = true;
+	
+	return returnMe;
+}
+#if ISF_TARGET_GL3PLUS
+VVGLBufferRef CreateVAO(const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
+	VVGLBuffer::Descriptor &	desc = returnMe->desc;
+	
+	desc.type = VVGLBuffer::Type_VAO;
+	desc.target = VVGLBuffer::Target_None;
+	desc.internalFormat = VVGLBuffer::IF_None;
+	desc.pixelFormat = VVGLBuffer::PF_None;
+	desc.pixelType = VVGLBuffer::PT_Float;
+	desc.cpuBackingType = VVGLBuffer::Backing_None;
+	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	if (!inCreateInCurrentContext)	{
+		if (inPoolRef->getContext() != nullptr)	{
+			//inPoolRef->context->makeCurrentIfNull();
+			//inPoolRef->context->makeCurrent();
+			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+		}
+	}
+	
+	glGenVertexArrays(1, &(returnMe->name));
+	GLERRLOG
+	if (!inCreateInCurrentContext)	{
+		glFlush();
+		GLERRLOG
+	}
+	
+	returnMe->size = {0.,0.};
+	returnMe->srcRect = {0., 0., 0., 0.};
+	inPoolRef->timestampThisBuffer(returnMe);
+	returnMe->preferDeletion = true;
+	
+	return returnMe;
+}
+#endif
 
 
 
 
 #if !ISF_TARGET_MAC && !ISF_TARGET_IOS
-VVGLBufferRef CreateTexFromImage(const string & inPath, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	return nullptr;
 }
-VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const VVGLBufferPoolRef & inPoolRef)	{
+VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
 	return nullptr;
 }
 #endif	//	#if !ISF_TARGET_MAC && !ISF_TARGET_IOS

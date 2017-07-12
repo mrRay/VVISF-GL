@@ -1,15 +1,13 @@
 
 #include <iostream>
 #include <cassert>
-//#include "ClassA.hpp"
 #include "VVGL.hpp"
 #if ISF_TARGET_RPI
 	#include "bcm_host.h"
 	#include "VVRPIDispManager.hpp"
-	#include "VVRPICamManager.hpp"
+	//#include "VVRPICamManager.hpp"
 #endif
 #include "ISFKit.h"
-#include "VVBase.hpp"
 #include <sstream>
 #include <string>
 #include <fstream>
@@ -31,126 +29,136 @@ int main(int argc, const char *argv[])	{
 	cout << "****************************************\n";
 	cout << __PRETTY_FUNCTION__ << endl;
 	cout << "****************************************\n";
-#if ISF_TARGET_RPI
+	
+	
+	/*			raspberry pi setup			*/
 	//	make a display manager, which handles the EGL setup for the RPi
 	VVRPIDispManager		dm;
-	//	make a camera manager, which handles all the camera initialization and processing
-	VVRPICamManager			cm;
-	//	make a VVGLContext from the EGL properties owned by the display manager
-	VVGLContext				ctx(&(dm.eglDisplay), &(dm.eglWinSurface), &(dm.eglCtx));
-	//	make the global buffer pool
-	CreateGlobalBufferPool(&ctx);
-	//	this is the buffer we're going to render into
-	VVGLBufferRef				displayBuffer = nullptr;
-	//	make the scene we're going to use to display content on the screen
-	VVGLShaderScene				displayScene(&ctx);
-	
-	VVGL::Rect			displayRect = {(double)dm.dstRect.x, (double)dm.dstRect.y, (double)dm.dstRect.width, (double)dm.dstRect.height};
+	VVGL::Rect				displayRect = VVGL::Rect((double)dm.dstRect.x, (double)dm.dstRect.y, (double)dm.dstRect.width, (double)dm.dstRect.height);
 	cout << "\tdisplayRect is " << displayRect << endl;
-	//	set up the display scene
+	
+	
+	/*			OpenGL setup				*/
+	//	make a VVGLContext from the EGL properties owned by the display manager
+	VVGLContextRef			baseCtx = make_shared<VVGLContext>(dm.eglDisplay, dm.eglWinSurface, EGL_NO_CONTEXT, dm.eglCtx);
+	//	make the global buffer pool
+	CreateGlobalBufferPool(baseCtx);
+	
+	
+	/*			display scene setup			*/
+	//	this is the buffer we're going to display.  we render content into this, and the display scene displays it.
+	VVGLBufferRef			displayBuffer = CreateRGBATex({640.,480.});
+	//	make the scene we're going to use to display content on the screen, set it up
+	VVGLScene				displayScene(baseCtx->newContextSharingMe());
 	displayScene.setAlwaysNeedsReshape(true);
 	//displayScene.setPerformClear(false);
-	displayScene.setSize(displayRect.size);
-	string			fsString("\
-precision mediump		float;\
-uniform sampler2D		inputImage;\
-varying vec2			vertSTVar;\
-\
-void main()	{\
-	gl_FragColor = texture2D(inputImage, vertSTVar);\
-}\
+	//displayScene.setClearColor(GLColor(1,0,0,1));
+	displayScene.setOrthoSize(displayRect.size);
+	string			fsString("\n\
+precision mediump		float;\n\
+uniform sampler2D		inputImage;\n\
+varying vec2			vertSTVar;\n\
+\n\
+void main()	{\n\
+	gl_FragColor = texture2D(inputImage, vertSTVar);\n\
+	//gl_FragColor = vec4(vertSTVar.x, vertSTVar.y, 0., 1.);\n\
+	//gl_FragColor = vec4(1., 1., 1., 1.);\n\
+}\n\
 ");
-	string			vsString("\
-attribute vec4			vertXYZ;\
-attribute vec2			vertST;\
-uniform vec4			orthoRect;\
-varying vec2			vertSTVar;\
-\
-void main()	{\
-	gl_Position = vertXYZ;\
-	mat4			projectionMatrix = mat4(2./orthoRect[2], 0., 0., -1.,\
-		0., 2./orthoRect[3], 0., -1.,\
-		0., 0., -1., 0.,\
-		0., 0., 0., 1.);\
-	gl_Position *= projectionMatrix;\
-	vertSTVar = vertST;\
-}\
+	string			vsString("\n\
+attribute vec3			vertXYZ;\n\
+attribute vec2			vertST;\n\
+uniform mat4			vvglOrthoProj;\n\
+varying vec2			vertSTVar;\n\
+\n\
+void main()	{\n\
+	gl_Position = vec4(vertXYZ.x, vertXYZ.y, vertXYZ.z, 1.0) * vvglOrthoProj;\n\
+	vertSTVar = vertST;\n\
+}\n\
 ");
 	displayScene.setFragmentShaderString(fsString);
 	displayScene.setVertexShaderString(vsString);
-	displayScene.setRenderCallback([&](const VVGLScene & s){
-		if (displayBuffer == nullptr)
-			return;
+	//	make some cached attrib/uniform refs that will refer to vars in the vert/frag shaders in the render prep and render callbacks
+	VVGLCachedAttribRef		inputXYZ = make_shared<VVGLCachedAttrib>("vertXYZ");
+	VVGLCachedAttribRef		inputST = make_shared<VVGLCachedAttrib>("vertST");
+	VVGLCachedUniRef		inputTex = make_shared<VVGLCachedUni>("inputImage");
+	//	set up the scene's render prep callback
+	displayScene.setRenderPrepCallback([=](const VVGLScene & s, const bool & inReshaped, const bool & inPgmChanged)	{
+		//	if the program's changed, we want to re-cache the locations of the attrib/uniforms
+		if (inPgmChanged)	{
+			inputXYZ->cacheTheLoc(s.getProgram());
+			inputST->cacheTheLoc(s.getProgram());
+			inputTex->cacheTheLoc(s.getProgram());
+		}
+		else	{
+			if (inputXYZ->loc < 0)
+				inputXYZ->cacheTheLoc(s.getProgram());
+			if (inputST->loc < 0)
+				inputST->cacheTheLoc(s.getProgram());
+			if (inputTex->loc < 0)
+				inputTex->cacheTheLoc(s.getProgram());
+		}
+	});
+	//	set up the scene's render callback
+	displayScene.setRenderCallback([displayRect,inputXYZ,inputST,inputTex,&displayBuffer](const VVGLScene & s){
 		using namespace VVGL;
 		//cout << __FUNCTION__ << ", drawing buffer " << *displayBuffer << endl;
-		VVGLShaderScene		*recast = (VVGLShaderScene *)(&s);
-		//	set up some basic data- dst rect, tex coords
-		Rect			inDstRect = {0., 0., 1920., 1080.};
-		GLfloat			geoCoords[] = {
-			(GLfloat)MinX(inDstRect), (GLfloat)MinY(inDstRect), 0.,
-			(GLfloat)MaxX(inDstRect), (GLfloat)MinY(inDstRect), 0.,
-			(GLfloat)MinX(inDstRect), (GLfloat)MaxY(inDstRect), 0.,
-			(GLfloat)MaxX(inDstRect), (GLfloat)MaxY(inDstRect), 0.
-		};
-		Rect			glTexCoordsRect = displayBuffer->glReadySrcRect();
-		GLfloat			texCoords[] = {
-			(GLfloat)MinX(glTexCoordsRect), (GLfloat)MinY(glTexCoordsRect),
-			(GLfloat)MaxX(glTexCoordsRect), (GLfloat)MinY(glTexCoordsRect),
-			(GLfloat)MinX(glTexCoordsRect), (GLfloat)MaxY(glTexCoordsRect),
-			(GLfloat)MaxX(glTexCoordsRect), (GLfloat)MaxY(glTexCoordsRect)
-		};
-		GLint			tmpIndex;
+		
+		//	set up some basic quad stuff
+		VVGL::Rect			geoRect = displayRect;
+		VVGL::Rect			texRect = (displayBuffer==nullptr) ? VVGL::Rect(0., 0., 1., 1.) : displayBuffer->glReadySrcRect();
+		GLBufferQuadXYZST	targetQuad;
+		GLBufferQuadPopulate(&targetQuad, geoRect, texRect, false);
 		//	populate the vertex attribute
-		tmpIndex = glGetAttribLocation(recast->getProgram(), "vertXYZ");
-		glEnableVertexAttribArray(tmpIndex);
-		glVertexAttribPointer(tmpIndex, 3, GL_FLOAT, GL_FALSE, 0, geoCoords);
+		if (inputXYZ->loc >= 0)	{
+			inputXYZ->enable();
+			glVertexAttribPointer(inputXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), &(targetQuad.bl.geo[0]));
+			GLERRLOG
+		}
+		else	{
+			cout << "\tERR: cannot populate inputXYZ, location not cached " << __PRETTY_FUNCTION__ << endl;
+		}
 		//	populate the tex coords attribute
-		tmpIndex = glGetAttribLocation(recast->getProgram(), "vertST");
-		glEnableVertexAttribArray(tmpIndex);
-		glVertexAttribPointer(tmpIndex, 2, GL_FLOAT, GL_FALSE, 0, texCoords);
+		if (inputST->loc >= 0)	{
+			inputST->enable();
+			glVertexAttribPointer(inputST->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), &(targetQuad.bl.tex[0]));
+			GLERRLOG
+		}
+		else	{
+			cout << "\tERR: cannot populate inputST, location not cached (" << __PRETTY_FUNCTION__ << ")\n";
+		}
 		//	pass the texture to its uniform
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(displayBuffer->desc.target, displayBuffer->name);
-		tmpIndex = glGetUniformLocation(recast->getProgram(), "inputImage");
-		glUniform1i(tmpIndex, 0);
+		if (inputTex->loc >= 0 && displayBuffer!=nullptr)	{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(displayBuffer->desc.target, displayBuffer->name);
+			GLERRLOG
+			glUniform1i(inputTex->loc, 0);
+			GLERRLOG
+		}
+		else	{
+			cout << "\tERR: cannot populate tex, location or displayBuffer not cached " << __PRETTY_FUNCTION__ << endl;
+		}
 		//	draw
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		//	unbind stuff
-		glBindTexture(displayBuffer->desc.target, 0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(0);
+		GLERRLOG
+		//	un-bind and disable stuff
+		if (displayBuffer != nullptr)
+			glBindTexture(displayBuffer->desc.target, 0);
+		GLERRLOG
+		if (inputST->loc >= 0)
+			inputST->disable();
+		if (inputXYZ->loc >= 0)
+			inputXYZ->disable();
 		
 	});
 	//	tell the displayScene to render (this compiles the shaders so i'm ready to pass vars to them)
 	displayScene.render();
-	//	pass the orthogonal rect to the shader (we only need to pass it once, on creation)
-	VVGL::Rect			dstRect = displayRect;
-	GLint				progLoc = displayScene.getProgram();
-	if (progLoc > 0)	{
-		glUseProgram(progLoc);
-		GLERRLOG
-		GLint				samplerLoc = glGetUniformLocation(progLoc, "orthoRect");
-		//cout << "\tstart, progLoc is " << progLoc << ", samplerLoc is " << samplerLoc << endl;
-		GLERRLOG
-		if (samplerLoc >= 0)	{
-			glUniform4f(samplerLoc, dstRect.origin.x, dstRect.origin.y, dstRect.size.width, dstRect.size.height);
-			GLERRLOG
-		}
-		glUseProgram(0);
-		GLERRLOG
-	}
 	
 	
-	
-	
-	//string			extString = string((char *)glGetString(GL_EXTENSIONS));
-	//cout << "\textensions are " << extString << endl;
-	
-	
-	
+	/*			source scene setup			*/
 	
 	//	make the src scene
-	ISFScene				srcScene(&ctx);
+	ISFScene				srcScene(baseCtx->newContextSharingMe());
 	bool					hasSrc = false;
 	srcScene.setAlwaysNeedsReshape(true);
 	//srcScene.setClearColor(0., 1., 0., 1.);
@@ -167,15 +175,14 @@ void main()	{\
 	
 	
 	
-	
-	//	make the fx scene
-	ISFScene				fxScene(&ctx);
+	/*			fx scene setup				*/
+	ISFScene				fxScene(baseCtx->newContextSharingMe());
 	bool					hasFX = false;
 	fxScene.setAlwaysNeedsReshape(true);
 	if (argc >= 3)	{
 		hasFX = true;
 		string		path(argv[2]);
-		cout << "\tload fx file: " << path << endl;
+		cout << "\tloading fx file: " << path << endl;
 		fxScene.useFile(path);
 	}
 	else
@@ -188,8 +195,7 @@ void main()	{\
 	}
 	
 	
-	
-	
+	/*			keystroke thread setup		*/
 	//	split off a thread to watch cin for keystrokes
 	thread			keyThread([](){
 		string		line;
@@ -204,14 +210,7 @@ void main()	{\
 	});
 	
 	
-	
-	
-	//	render stuff!
-	Timestamper				ts;
-	ts.reset();
-	//double					tmpDur = 5.;
-	//cout << "\tdisplaying stuff for " << tmpDur << " seconds\n";
-	//while (ts.nowTime().getTimeInSeconds() < tmpDur)
+	/*			render stuff!				*/
 	while (!quitFlag.load())
 	{
 		if (hasFX)	{
@@ -224,17 +223,17 @@ void main()	{\
 		}
 		displayScene.render();
 		
-		
+		cout << "\tDM swapping buffers\n";
 		dm.swapBuffers();
 		//assert(glGetError()==0);
 		GLERRLOG
+		//cout << "\thousekeeping()\n";
 		GetGlobalBufferPool()->housekeeping();
 	}
 	
 	//	kill the key input thread
 	keyThread.join();
 	
-#endif
 	return 0;
 }
 

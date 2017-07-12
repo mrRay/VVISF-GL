@@ -1,11 +1,7 @@
 #ifndef VVGLBufferCopier_hpp
 #define VVGLBufferCopier_hpp
 
-#if !ISF_TARGET_RPI
 #include "VVGLScene.hpp"
-#else
-#include "VVGLShaderScene.hpp"
-#endif
 
 #if ISF_TARGET_MAC
 #import <TargetConditionals.h>
@@ -20,13 +16,7 @@ namespace VVGL
 
 
 
-class VVGLBufferCopier : 
-#if !ISF_TARGET_RPI
-public VVGLScene
-#else
-public VVGLShaderScene
-#endif
-{
+class VVGLBufferCopier : public VVGLScene	{
 	private:
 #if ISF_TARGET_MAC
 		bool			copyToIOSurface = false;
@@ -35,9 +25,21 @@ public VVGLShaderScene
 		Size			copySize = { 320., 240. };
 		SizingMode		copySizingMode = SizingMode_Stretch;
 		
-		VVGLBufferRef	geoXYVBO = nullptr;
-		VVGLBufferRef	geoSTVBO = nullptr;
-	
+		//VVGLBufferRef	geoXYVBO = nullptr;
+		//VVGLBufferRef	geoSTVBO = nullptr;
+		
+#if ISF_TARGET_GL3PLUS
+		VVGLBufferRef	vao = nullptr;	//	"owns" its own VBO, used to draw stuff if we're in GL 3
+#elif ISF_TARGET_GLES
+		VVGLBufferRef	vbo = nullptr;	//	geometry + tex coords, used to draw stuff if we're in GL ES
+#endif
+		GLBufferQuadXYZST	vboContents;	//	the VBO owned by 'vao' or the VBO 'vbo' is described by this var.  we check this, and if there's a delta the vao has to make a new vbo/'vbo' has to update its contents
+		VVGLCachedAttrib	inputXYZLoc = VVGLCachedAttrib("inXYZ");	//	address of the attribute loc we pass geometry data to
+		VVGLCachedAttrib	inputSTLoc = VVGLCachedAttrib("inST");	//	address of the attribute loc we pass tex coord data to
+		VVGLCachedUni		inputImageLoc = VVGLCachedUni("inputImage");	//	address of the uniform loc we pass 2D texture IDs to
+		VVGLCachedUni		inputImageRectLoc = VVGLCachedUni("inputImageRect");	//	address of the uniform loc we pass RECT texture IDs to
+		VVGLCachedUni		isRectTexLoc = VVGLCachedUni("isRectTex");	//	address of the uniform we use to indicate whether the program should sample the 2D or RECT texture
+		
 	public:
 		//	creates a new GL context that shares the global buffer pool's context, uses that to create a new VVGLBufferCopier
 		VVGLBufferCopier();
@@ -48,8 +50,10 @@ public VVGLShaderScene
 		
 		virtual void prepareToBeDeleted();
 		
+#if ISF_TARGET_MAC
 		void setCopyToIOSurface(const bool & n);
 		bool getCopyToIOSurface();
+#endif
 		void setCopyAndResize(const bool & n);
 		bool getCopyAndResize();
 		void setCopySize(const Size & n);
@@ -76,12 +80,14 @@ public VVGLShaderScene
 	
 	private:
 		//	acquire 'renderLock' and set current context before calling
-		void _drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect);
+		//void _drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect);
+		void _drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct);
 };
 
 
 
 VVGLBufferCopierRef CreateGlobalBufferCopier();
+VVGLBufferCopierRef CreateGlobalBufferCopier(const VVGLContextRef & inCtx);
 //inline VVGLBufferCopierRef GetGlobalBufferCopier() { return *_globalBufferCopier; }
 VVGLBufferCopierRef GetGlobalBufferCopier();
 

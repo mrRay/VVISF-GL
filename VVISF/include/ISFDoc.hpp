@@ -104,13 +104,13 @@ class ISFDoc	{
 		//	returns a string describing the type of the expected texture samplers ("2" for 2D, "R" for Rect, "C" for Cube).  save this, if it changes in a later pass the shader source must be generated again.
 		string generateTextureTypeString();
 		//	returns a true if successful.  populates the provided strings with strings that are usable for frag/vert shaders
-		bool generateShaderSource(string * outFragSrc, string * outVertSrc);
+		bool generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers);
 		
 		friend ostream & operator<<(ostream & os, const ISFDoc & n);
 		
 	protected:
 		//	returns a true if successful.  populates a string with variable declarations for a frag shader
-		bool _assembleShaderSource_VarDeclarations(string * outString);
+		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers);
 		//	returns a true if successful.  populates a map with string/value pairs that will be used to evaluate variable names in strings
 		bool _assembleSubstitutionMap(map<string,double*> * outMap);
 };

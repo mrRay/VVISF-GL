@@ -3,7 +3,11 @@
 
 #include <iostream>
 #if ISF_TARGET_MAC
-	#include <OpenGL/OpenGL.h>
+	#import <OpenGL/OpenGL.h>
+	//#import <OpenGL/gl.h>
+	//#import <OpenGL/glext.h>
+	#import <OpenGL/gl3.h>
+	#import <OpenGL/gl3ext.h>
 #elif ISF_TARGET_RPI
 	#include "bcm_host.h"
 	//#include <GLES/gl.h>
@@ -34,17 +38,28 @@ using namespace std;
 #if ISF_TARGET_MAC
 uint32_t GLDisplayMaskForAllScreens();
 CGLPixelFormatObj CreateDefaultPixelFormat();
+CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
+CGLPixelFormatObj CreateGL3PixelFormat();
+CGLPixelFormatObj CreateGL4PixelFormat();
 #endif
 
 
 
 
-class VVGLContext;
-using VVGLContextRef = shared_ptr<VVGLContext>;
+//	use a shared_ptr to pass around refs to a VVGLContext w/o copying any GL resources
+//class VVGLContext;
+//using VVGLContextRef = shared_ptr<VVGLContext>;
 
 
 
 
+/*		VVGLContext is an attempt to make a platform-agnostic representation of an OpenGL context.  
+this is useful if you want to perform common functions on a GL context (setting the current context, 
+making another context in the same sharegroup), but you don't want to have to write any platform-specific code.
+
+if you're porting VVGL to another platform, one of the first things you need to do is to make a 
+new ISF_TARGET_XXXX macro, and use that macro to add your platform's GL implementation to this class.  
+you should be able to following along pretty well here using the other platforms as an example.			*/
 class VVGLContext	{
 	public:
 		
@@ -57,10 +72,13 @@ class VVGLContext	{
 #elif ISF_TARGET_GLFW
 		GLFWwindow			*win = nullptr;
 #elif ISF_TARGET_RPI
-		EGLDisplay			*display = nullptr;
-		EGLSurface			*winSurface = nullptr;
-		EGLContext			*ctx = nullptr;	//	owned by this object
+		EGLDisplay			display = EGL_NO_DISPLAY;	//	weak ref, potentially unsafe
+		EGLSurface			winSurface = EGL_NO_SURFACE;	//	weak ref, potentially unsafe
+		EGLContext			sharedCtx = EGL_NO_CONTEXT;	//	weak ref, potentially unsafe
+		bool				ownsTheCtx = false;	//	set to true when i "own" ctx and must destroy it on my release
+		EGLContext			ctx = EGL_NO_CONTEXT;	//	owned by this object
 #endif
+		GLVersion			version = GLVersion_2;
 		
 		
 	public:
@@ -77,8 +95,10 @@ class VVGLContext	{
 #elif ISF_TARGET_GLFW
 		VVGLContext(GLFWwindow * inWindow);
 #elif ISF_TARGET_RPI
-		//	this function doesn't create anything- it just obtains a weak ref to the passed context
-		VVGLContext(EGLDisplay * inDisplay, EGLSurface * inWinSurface, EGLContext * inCtx);
+		//	this function doesn't create anything- it just obtains a weak ref to the passed EGL vars
+		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx);
+		//	this function creates a new GL context using the passed shared context
+		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx);
 #endif
 		//	this function creates a context using the default pixel format
 		VVGLContext();
@@ -86,6 +106,7 @@ class VVGLContext	{
 		
 	public:
 		void generalInit();
+		void calculateVersion();
 		
 		//	returned variable MUST BE FREED
 		//VVGLContext * allocNewContextSharingMe() const;

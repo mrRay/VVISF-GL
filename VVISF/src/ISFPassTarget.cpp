@@ -104,10 +104,10 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 			
 #if ISF_TARGET_MAC
 			if (shouldBeIOSurface)
-				buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+				buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 			else
 #endif
-				buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 			
 			copier->copyBlackFrameTo(buffer);
 		}
@@ -124,10 +124,10 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 				
 #if ISF_TARGET_MAC
 				if (shouldBeIOSurface)
-					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 				else
 #endif
-					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 				
 				copier->sizeVariantCopy(buffer, newBuffer);
 				buffer = newBuffer;
@@ -141,10 +141,10 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 					
 #if ISF_TARGET_MAC
 					if (shouldBeIOSurface)
-						buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+						buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 					else
 #endif
-						buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+						buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 				}
 				//	else i'm not supposed to create a new buffer
 				else	{
@@ -243,10 +243,10 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		
 #if ISF_TARGET_MAC
 		if (shouldBeIOSurface)
-			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(targetSize(), bp) : CreateRGBATexIOSurface(targetSize(), bp);
+			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(targetSize(), true, bp) : CreateRGBATexIOSurface(targetSize(), true, bp);
 		else
 #endif
-			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(targetSize(), true, bp) : CreateRGBATex(targetSize(), true, bp);
 		
 		if (newBuffer != nullptr)	{
 			if (copier != nullptr)

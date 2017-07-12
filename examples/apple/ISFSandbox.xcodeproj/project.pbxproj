@@ -7,120 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A02240D1E390C7C00C110B8 /* VVBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F31E390C7C00C110B8 /* VVBase.hpp */; };
-		1A02240E1E390C7C00C110B8 /* VVBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F31E390C7C00C110B8 /* VVBase.hpp */; };
-		1A02240F1E390C7C00C110B8 /* VVGeom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F41E390C7C00C110B8 /* VVGeom.hpp */; };
-		1A0224101E390C7C00C110B8 /* VVGeom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F41E390C7C00C110B8 /* VVGeom.hpp */; };
-		1A0224111E390C7C00C110B8 /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F51E390C7C00C110B8 /* VVGL.hpp */; };
-		1A0224121E390C7C00C110B8 /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F51E390C7C00C110B8 /* VVGL.hpp */; };
-		1A0224131E390C7C00C110B8 /* VVGLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F61E390C7C00C110B8 /* VVGLBuffer.hpp */; };
-		1A0224141E390C7C00C110B8 /* VVGLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F61E390C7C00C110B8 /* VVGLBuffer.hpp */; };
-		1A0224151E390C7C00C110B8 /* VVGLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F71E390C7C00C110B8 /* VVGLBufferCopier.hpp */; };
-		1A0224161E390C7C00C110B8 /* VVGLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F71E390C7C00C110B8 /* VVGLBufferCopier.hpp */; };
-		1A0224171E390C7C00C110B8 /* VVGLBufferPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F81E390C7C00C110B8 /* VVGLBufferPool.h */; };
-		1A0224181E390C7C00C110B8 /* VVGLBufferPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F81E390C7C00C110B8 /* VVGLBufferPool.h */; };
-		1A0224191E390C7C00C110B8 /* VVGLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F91E390C7C00C110B8 /* VVGLBufferPool.hpp */; };
-		1A02241A1E390C7C00C110B8 /* VVGLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223F91E390C7C00C110B8 /* VVGLBufferPool.hpp */; };
-		1A02241B1E390C7C00C110B8 /* VVGLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FA1E390C7C00C110B8 /* VVGLContext.hpp */; };
-		1A02241C1E390C7C00C110B8 /* VVGLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FA1E390C7C00C110B8 /* VVGLContext.hpp */; };
-		1A02241D1E390C7C00C110B8 /* VVGLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FB1E390C7C00C110B8 /* VVGLScene.hpp */; };
-		1A02241E1E390C7C00C110B8 /* VVGLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FB1E390C7C00C110B8 /* VVGLScene.hpp */; };
-		1A02241F1E390C7C00C110B8 /* VVGLShaderScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FC1E390C7C00C110B8 /* VVGLShaderScene.hpp */; };
-		1A0224201E390C7C00C110B8 /* VVGLShaderScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FC1E390C7C00C110B8 /* VVGLShaderScene.hpp */; };
-		1A0224211E390C7C00C110B8 /* VVRange.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FD1E390C7C00C110B8 /* VVRange.hpp */; };
-		1A0224221E390C7C00C110B8 /* VVRange.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FD1E390C7C00C110B8 /* VVRange.hpp */; };
-		1A0224231E390C7C00C110B8 /* VVStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FE1E390C7C00C110B8 /* VVStringUtils.hpp */; };
-		1A0224241E390C7C00C110B8 /* VVStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FE1E390C7C00C110B8 /* VVStringUtils.hpp */; };
-		1A0224251E390C7C00C110B8 /* VVTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FF1E390C7C00C110B8 /* VVTime.hpp */; };
-		1A0224261E390C7C00C110B8 /* VVTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0223FF1E390C7C00C110B8 /* VVTime.hpp */; };
-		1A0224271E390C7C00C110B8 /* VVBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224001E390C7C00C110B8 /* VVBase.cpp */; };
-		1A0224281E390C7C00C110B8 /* VVBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224001E390C7C00C110B8 /* VVBase.cpp */; };
-		1A0224291E390C7C00C110B8 /* VVBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224001E390C7C00C110B8 /* VVBase.cpp */; };
-		1A02242A1E390C7C00C110B8 /* VVGeom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224011E390C7C00C110B8 /* VVGeom.cpp */; };
-		1A02242B1E390C7C00C110B8 /* VVGeom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224011E390C7C00C110B8 /* VVGeom.cpp */; };
-		1A02242C1E390C7C00C110B8 /* VVGeom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224011E390C7C00C110B8 /* VVGeom.cpp */; };
-		1A02242D1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224021E390C7C00C110B8 /* VVGLBuffer.cpp */; };
-		1A02242E1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224021E390C7C00C110B8 /* VVGLBuffer.cpp */; };
-		1A02242F1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224021E390C7C00C110B8 /* VVGLBuffer.cpp */; };
-		1A0224301E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224031E390C7C00C110B8 /* VVGLBufferCopier.cpp */; };
-		1A0224311E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224031E390C7C00C110B8 /* VVGLBufferCopier.cpp */; };
-		1A0224321E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224031E390C7C00C110B8 /* VVGLBufferCopier.cpp */; };
-		1A0224331E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224041E390C7C00C110B8 /* VVGLBufferCopier.mm */; };
-		1A0224341E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224041E390C7C00C110B8 /* VVGLBufferCopier.mm */; };
-		1A0224351E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224041E390C7C00C110B8 /* VVGLBufferCopier.mm */; };
-		1A0224361E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224051E390C7C00C110B8 /* VVGLBufferPool.cpp */; };
-		1A0224371E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224051E390C7C00C110B8 /* VVGLBufferPool.cpp */; };
-		1A0224381E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224051E390C7C00C110B8 /* VVGLBufferPool.cpp */; };
-		1A0224391E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224061E390C7C00C110B8 /* VVGLBufferPool.mm */; };
-		1A02243A1E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224061E390C7C00C110B8 /* VVGLBufferPool.mm */; };
-		1A02243B1E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224061E390C7C00C110B8 /* VVGLBufferPool.mm */; };
-		1A02243C1E390C7C00C110B8 /* VVGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224071E390C7C00C110B8 /* VVGLContext.cpp */; };
-		1A02243D1E390C7C00C110B8 /* VVGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224071E390C7C00C110B8 /* VVGLContext.cpp */; };
-		1A02243E1E390C7C00C110B8 /* VVGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224071E390C7C00C110B8 /* VVGLContext.cpp */; };
-		1A02243F1E390C7C00C110B8 /* VVGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224081E390C7C00C110B8 /* VVGLContext.mm */; };
-		1A0224401E390C7C00C110B8 /* VVGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224081E390C7C00C110B8 /* VVGLContext.mm */; };
-		1A0224411E390C7C00C110B8 /* VVGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224081E390C7C00C110B8 /* VVGLContext.mm */; };
-		1A0224421E390C7C00C110B8 /* VVGLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224091E390C7C00C110B8 /* VVGLScene.cpp */; };
-		1A0224431E390C7C00C110B8 /* VVGLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224091E390C7C00C110B8 /* VVGLScene.cpp */; };
-		1A0224441E390C7C00C110B8 /* VVGLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224091E390C7C00C110B8 /* VVGLScene.cpp */; };
-		1A0224451E390C7C00C110B8 /* VVGLScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240A1E390C7C00C110B8 /* VVGLScene.mm */; };
-		1A0224461E390C7C00C110B8 /* VVGLScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240A1E390C7C00C110B8 /* VVGLScene.mm */; };
-		1A0224471E390C7C00C110B8 /* VVGLScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240A1E390C7C00C110B8 /* VVGLScene.mm */; };
-		1A0224481E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240B1E390C7C00C110B8 /* VVGLShaderScene.cpp */; };
-		1A0224491E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240B1E390C7C00C110B8 /* VVGLShaderScene.cpp */; };
-		1A02244A1E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240B1E390C7C00C110B8 /* VVGLShaderScene.cpp */; };
-		1A02244B1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240C1E390C7C00C110B8 /* VVStringUtils.cpp */; };
-		1A02244C1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240C1E390C7C00C110B8 /* VVStringUtils.cpp */; };
-		1A02244D1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A02240C1E390C7C00C110B8 /* VVStringUtils.cpp */; };
 		1A0224671E390C9E00C110B8 /* exprtk.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224511E390C9E00C110B8 /* exprtk.hpp */; };
 		1A0224681E390C9E00C110B8 /* exprtk.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224511E390C9E00C110B8 /* exprtk.hpp */; };
 		1A0224691E390C9E00C110B8 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1A0224521E390C9E00C110B8 /* readme.txt */; };
 		1A02246A1E390C9E00C110B8 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1A0224521E390C9E00C110B8 /* readme.txt */; };
-		1A02246B1E390C9E00C110B8 /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224531E390C9E00C110B8 /* ISFAttr.hpp */; };
-		1A02246C1E390C9E00C110B8 /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224531E390C9E00C110B8 /* ISFAttr.hpp */; };
-		1A02246D1E390C9E00C110B8 /* ISFBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224541E390C9E00C110B8 /* ISFBase.hpp */; };
-		1A02246E1E390C9E00C110B8 /* ISFBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224541E390C9E00C110B8 /* ISFBase.hpp */; };
-		1A02246F1E390C9E00C110B8 /* ISFConstants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224551E390C9E00C110B8 /* ISFConstants.hpp */; };
-		1A0224701E390C9E00C110B8 /* ISFConstants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224551E390C9E00C110B8 /* ISFConstants.hpp */; };
-		1A0224711E390C9E00C110B8 /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224561E390C9E00C110B8 /* ISFDoc.hpp */; };
-		1A0224721E390C9E00C110B8 /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224561E390C9E00C110B8 /* ISFDoc.hpp */; };
-		1A0224731E390C9E00C110B8 /* ISFErr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224571E390C9E00C110B8 /* ISFErr.hpp */; };
-		1A0224741E390C9E00C110B8 /* ISFErr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224571E390C9E00C110B8 /* ISFErr.hpp */; };
-		1A0224751E390C9E00C110B8 /* ISFKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224581E390C9E00C110B8 /* ISFKit.h */; };
-		1A0224761E390C9E00C110B8 /* ISFKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224581E390C9E00C110B8 /* ISFKit.h */; };
-		1A0224771E390C9E00C110B8 /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224591E390C9E00C110B8 /* ISFPassTarget.hpp */; };
-		1A0224781E390C9E00C110B8 /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224591E390C9E00C110B8 /* ISFPassTarget.hpp */; };
-		1A0224791E390C9E00C110B8 /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245A1E390C9E00C110B8 /* ISFScene.hpp */; };
-		1A02247A1E390C9E00C110B8 /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245A1E390C9E00C110B8 /* ISFScene.hpp */; };
-		1A02247B1E390C9E00C110B8 /* ISFStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245B1E390C9E00C110B8 /* ISFStringUtils.hpp */; };
-		1A02247C1E390C9E00C110B8 /* ISFStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245B1E390C9E00C110B8 /* ISFStringUtils.hpp */; };
-		1A02247D1E390C9E00C110B8 /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245C1E390C9E00C110B8 /* ISFVal.hpp */; };
-		1A02247E1E390C9E00C110B8 /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245C1E390C9E00C110B8 /* ISFVal.hpp */; };
 		1A02247F1E390C9E00C110B8 /* json.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245E1E390C9E00C110B8 /* json.hpp */; };
 		1A0224801E390C9E00C110B8 /* json.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A02245E1E390C9E00C110B8 /* json.hpp */; };
 		1A0224811E390C9E00C110B8 /* LICENSE.MIT in Resources */ = {isa = PBXBuildFile; fileRef = 1A02245F1E390C9E00C110B8 /* LICENSE.MIT */; };
 		1A0224821E390C9E00C110B8 /* LICENSE.MIT in Resources */ = {isa = PBXBuildFile; fileRef = 1A02245F1E390C9E00C110B8 /* LICENSE.MIT */; };
-		1A0224831E390C9E00C110B8 /* ISFAttr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224601E390C9E00C110B8 /* ISFAttr.cpp */; };
-		1A0224841E390C9E00C110B8 /* ISFAttr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224601E390C9E00C110B8 /* ISFAttr.cpp */; };
-		1A0224851E390C9E00C110B8 /* ISFAttr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224601E390C9E00C110B8 /* ISFAttr.cpp */; };
-		1A0224861E390C9E00C110B8 /* ISFBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224611E390C9E00C110B8 /* ISFBase.cpp */; };
-		1A0224871E390C9E00C110B8 /* ISFBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224611E390C9E00C110B8 /* ISFBase.cpp */; };
-		1A0224881E390C9E00C110B8 /* ISFBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224611E390C9E00C110B8 /* ISFBase.cpp */; };
-		1A0224891E390C9E00C110B8 /* ISFDoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224621E390C9E00C110B8 /* ISFDoc.cpp */; };
-		1A02248A1E390C9E00C110B8 /* ISFDoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224621E390C9E00C110B8 /* ISFDoc.cpp */; };
-		1A02248B1E390C9E00C110B8 /* ISFDoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224621E390C9E00C110B8 /* ISFDoc.cpp */; };
-		1A02248C1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224631E390C9E00C110B8 /* ISFPassTarget.cpp */; };
-		1A02248D1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224631E390C9E00C110B8 /* ISFPassTarget.cpp */; };
-		1A02248E1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224631E390C9E00C110B8 /* ISFPassTarget.cpp */; };
-		1A02248F1E390C9E00C110B8 /* ISFScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224641E390C9E00C110B8 /* ISFScene.cpp */; };
-		1A0224901E390C9E00C110B8 /* ISFScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224641E390C9E00C110B8 /* ISFScene.cpp */; };
-		1A0224911E390C9E00C110B8 /* ISFScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224641E390C9E00C110B8 /* ISFScene.cpp */; };
-		1A0224921E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224651E390C9E00C110B8 /* ISFStringUtils.cpp */; };
-		1A0224931E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224651E390C9E00C110B8 /* ISFStringUtils.cpp */; };
-		1A0224941E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224651E390C9E00C110B8 /* ISFStringUtils.cpp */; };
-		1A0224951E390C9E00C110B8 /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224661E390C9E00C110B8 /* ISFVal.cpp */; };
-		1A0224961E390C9E00C110B8 /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224661E390C9E00C110B8 /* ISFVal.cpp */; };
-		1A0224971E390C9E00C110B8 /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A0224661E390C9E00C110B8 /* ISFVal.cpp */; };
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
 		1A2311BB1E2D64D300B0EF84 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311BA1E2D64D300B0EF84 /* glad.c */; };
 		1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
@@ -166,6 +60,51 @@
 		1AE177AF1E25995400E978E5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177AA1E2581FA00E978E5 /* CoreGraphics.framework */; };
 		1AE177B11E259E1600E978E5 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177B01E259E1600E978E5 /* GLKit.framework */; };
 		1AE177B31E259E1E00E978E5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177B21E259E1E00E978E5 /* UIKit.framework */; };
+		1AF5E9211F14FF6200E9245E /* VVBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E90F1F14FF6200E9245E /* VVBase.hpp */; };
+		1AF5E9221F14FF6200E9245E /* VVGeom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9101F14FF6200E9245E /* VVGeom.hpp */; };
+		1AF5E9231F14FF6200E9245E /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9111F14FF6200E9245E /* VVGL.hpp */; };
+		1AF5E9241F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9121F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h */; };
+		1AF5E9251F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9131F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h */; };
+		1AF5E9261F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9141F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h */; };
+		1AF5E9271F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9151F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h */; };
+		1AF5E9281F14FF6200E9245E /* VVGLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9161F14FF6200E9245E /* VVGLBuffer.hpp */; };
+		1AF5E9291F14FF6200E9245E /* VVGLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9171F14FF6200E9245E /* VVGLBufferCopier.hpp */; };
+		1AF5E92A1F14FF6200E9245E /* VVGLBufferPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9181F14FF6200E9245E /* VVGLBufferPool.h */; };
+		1AF5E92B1F14FF6200E9245E /* VVGLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9191F14FF6200E9245E /* VVGLBufferPool.hpp */; };
+		1AF5E92C1F14FF6200E9245E /* VVGLCachedAttrib.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91A1F14FF6200E9245E /* VVGLCachedAttrib.hpp */; };
+		1AF5E92D1F14FF6200E9245E /* VVGLCachedUni.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91B1F14FF6200E9245E /* VVGLCachedUni.hpp */; };
+		1AF5E92E1F14FF6200E9245E /* VVGLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91C1F14FF6200E9245E /* VVGLContext.hpp */; };
+		1AF5E92F1F14FF6200E9245E /* VVGLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91D1F14FF6200E9245E /* VVGLScene.hpp */; };
+		1AF5E9301F14FF6200E9245E /* VVRange.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91E1F14FF6200E9245E /* VVRange.hpp */; };
+		1AF5E9311F14FF6200E9245E /* VVStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E91F1F14FF6200E9245E /* VVStringUtils.hpp */; };
+		1AF5E9321F14FF6200E9245E /* VVTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9201F14FF6200E9245E /* VVTime.hpp */; };
+		1AF5E93D1F14FF6A00E9245E /* VVGeom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9331F14FF6A00E9245E /* VVGeom.cpp */; };
+		1AF5E93E1F14FF6A00E9245E /* VVGLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9341F14FF6A00E9245E /* VVGLBuffer.cpp */; };
+		1AF5E93F1F14FF6A00E9245E /* VVGLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9351F14FF6A00E9245E /* VVGLBufferCopier.cpp */; };
+		1AF5E9401F14FF6A00E9245E /* VVGLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9361F14FF6A00E9245E /* VVGLBufferPool.cpp */; };
+		1AF5E9411F14FF6A00E9245E /* VVGLBufferPool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9371F14FF6A00E9245E /* VVGLBufferPool.mm */; };
+		1AF5E9421F14FF6A00E9245E /* VVGLCachedAttrib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9381F14FF6A00E9245E /* VVGLCachedAttrib.cpp */; };
+		1AF5E9431F14FF6A00E9245E /* VVGLCachedUni.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9391F14FF6A00E9245E /* VVGLCachedUni.cpp */; };
+		1AF5E9441F14FF6A00E9245E /* VVGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E93A1F14FF6A00E9245E /* VVGLContext.cpp */; };
+		1AF5E9451F14FF6A00E9245E /* VVGLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E93B1F14FF6A00E9245E /* VVGLScene.cpp */; };
+		1AF5E9461F14FF6A00E9245E /* VVStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E93C1F14FF6A00E9245E /* VVStringUtils.cpp */; };
+		1AF5E9511F14FF8200E9245E /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9471F14FF8200E9245E /* ISFAttr.hpp */; };
+		1AF5E9521F14FF8200E9245E /* ISFBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9481F14FF8200E9245E /* ISFBase.hpp */; };
+		1AF5E9531F14FF8200E9245E /* ISFConstants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9491F14FF8200E9245E /* ISFConstants.hpp */; };
+		1AF5E9541F14FF8200E9245E /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94A1F14FF8200E9245E /* ISFDoc.hpp */; };
+		1AF5E9551F14FF8200E9245E /* ISFErr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94B1F14FF8200E9245E /* ISFErr.hpp */; };
+		1AF5E9561F14FF8200E9245E /* ISFKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94C1F14FF8200E9245E /* ISFKit.h */; };
+		1AF5E9571F14FF8200E9245E /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94D1F14FF8200E9245E /* ISFPassTarget.hpp */; };
+		1AF5E9581F14FF8200E9245E /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94E1F14FF8200E9245E /* ISFScene.hpp */; };
+		1AF5E9591F14FF8200E9245E /* ISFStringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E94F1F14FF8200E9245E /* ISFStringUtils.hpp */; };
+		1AF5E95A1F14FF8200E9245E /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AF5E9501F14FF8200E9245E /* ISFVal.hpp */; };
+		1AF5E9621F14FF8A00E9245E /* ISFAttr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E95B1F14FF8A00E9245E /* ISFAttr.cpp */; };
+		1AF5E9631F14FF8A00E9245E /* ISFBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E95C1F14FF8A00E9245E /* ISFBase.cpp */; };
+		1AF5E9641F14FF8A00E9245E /* ISFDoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E95D1F14FF8A00E9245E /* ISFDoc.cpp */; };
+		1AF5E9651F14FF8A00E9245E /* ISFPassTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E95E1F14FF8A00E9245E /* ISFPassTarget.cpp */; };
+		1AF5E9661F14FF8A00E9245E /* ISFScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E95F1F14FF8A00E9245E /* ISFScene.cpp */; };
+		1AF5E9671F14FF8A00E9245E /* ISFStringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9601F14FF8A00E9245E /* ISFStringUtils.cpp */; };
+		1AF5E9681F14FF8A00E9245E /* ISFVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AF5E9611F14FF8A00E9245E /* ISFVal.cpp */; };
 		1AFC50541E01F73600728B39 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AFC50531E01F73600728B39 /* IOSurface.framework */; };
 		1AFC50561E0218B200728B39 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AFC50551E0218B200728B39 /* OpenGL.framework */; };
 		1AFC50611E04401F00728B39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AFC50601E04401F00728B39 /* CoreGraphics.framework */; };
@@ -378,53 +317,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1A0223F31E390C7C00C110B8 /* VVBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVBase.hpp; path = ../../../VVGL/include/VVBase.hpp; sourceTree = "<group>"; };
-		1A0223F41E390C7C00C110B8 /* VVGeom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGeom.hpp; path = ../../../VVGL/include/VVGeom.hpp; sourceTree = "<group>"; };
-		1A0223F51E390C7C00C110B8 /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
-		1A0223F61E390C7C00C110B8 /* VVGLBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBuffer.hpp; path = ../../../VVGL/include/VVGLBuffer.hpp; sourceTree = "<group>"; };
-		1A0223F71E390C7C00C110B8 /* VVGLBufferCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBufferCopier.hpp; path = ../../../VVGL/include/VVGLBufferCopier.hpp; sourceTree = "<group>"; };
-		1A0223F81E390C7C00C110B8 /* VVGLBufferPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBufferPool.h; path = ../../../VVGL/include/VVGLBufferPool.h; sourceTree = "<group>"; };
-		1A0223F91E390C7C00C110B8 /* VVGLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBufferPool.hpp; path = ../../../VVGL/include/VVGLBufferPool.hpp; sourceTree = "<group>"; };
-		1A0223FA1E390C7C00C110B8 /* VVGLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLContext.hpp; path = ../../../VVGL/include/VVGLContext.hpp; sourceTree = "<group>"; };
-		1A0223FB1E390C7C00C110B8 /* VVGLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLScene.hpp; path = ../../../VVGL/include/VVGLScene.hpp; sourceTree = "<group>"; };
-		1A0223FC1E390C7C00C110B8 /* VVGLShaderScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLShaderScene.hpp; path = ../../../VVGL/include/VVGLShaderScene.hpp; sourceTree = "<group>"; };
-		1A0223FD1E390C7C00C110B8 /* VVRange.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVRange.hpp; path = ../../../VVGL/include/VVRange.hpp; sourceTree = "<group>"; };
-		1A0223FE1E390C7C00C110B8 /* VVStringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVStringUtils.hpp; path = ../../../VVGL/include/VVStringUtils.hpp; sourceTree = "<group>"; };
-		1A0223FF1E390C7C00C110B8 /* VVTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVTime.hpp; path = ../../../VVGL/include/VVTime.hpp; sourceTree = "<group>"; };
-		1A0224001E390C7C00C110B8 /* VVBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVBase.cpp; path = ../../../VVGL/src/VVBase.cpp; sourceTree = "<group>"; };
-		1A0224011E390C7C00C110B8 /* VVGeom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGeom.cpp; path = ../../../VVGL/src/VVGeom.cpp; sourceTree = "<group>"; };
-		1A0224021E390C7C00C110B8 /* VVGLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBuffer.cpp; path = ../../../VVGL/src/VVGLBuffer.cpp; sourceTree = "<group>"; };
-		1A0224031E390C7C00C110B8 /* VVGLBufferCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBufferCopier.cpp; path = ../../../VVGL/src/VVGLBufferCopier.cpp; sourceTree = "<group>"; };
-		1A0224041E390C7C00C110B8 /* VVGLBufferCopier.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLBufferCopier.mm; path = ../../../VVGL/src/VVGLBufferCopier.mm; sourceTree = "<group>"; };
-		1A0224051E390C7C00C110B8 /* VVGLBufferPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBufferPool.cpp; path = ../../../VVGL/src/VVGLBufferPool.cpp; sourceTree = "<group>"; };
-		1A0224061E390C7C00C110B8 /* VVGLBufferPool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLBufferPool.mm; path = ../../../VVGL/src/VVGLBufferPool.mm; sourceTree = "<group>"; };
-		1A0224071E390C7C00C110B8 /* VVGLContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLContext.cpp; path = ../../../VVGL/src/VVGLContext.cpp; sourceTree = "<group>"; };
-		1A0224081E390C7C00C110B8 /* VVGLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLContext.mm; path = ../../../VVGL/src/VVGLContext.mm; sourceTree = "<group>"; };
-		1A0224091E390C7C00C110B8 /* VVGLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLScene.cpp; path = ../../../VVGL/src/VVGLScene.cpp; sourceTree = "<group>"; };
-		1A02240A1E390C7C00C110B8 /* VVGLScene.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLScene.mm; path = ../../../VVGL/src/VVGLScene.mm; sourceTree = "<group>"; };
-		1A02240B1E390C7C00C110B8 /* VVGLShaderScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLShaderScene.cpp; path = ../../../VVGL/src/VVGLShaderScene.cpp; sourceTree = "<group>"; };
-		1A02240C1E390C7C00C110B8 /* VVStringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVStringUtils.cpp; path = ../../../VVGL/src/VVStringUtils.cpp; sourceTree = "<group>"; };
 		1A0224511E390C9E00C110B8 /* exprtk.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = exprtk.hpp; sourceTree = "<group>"; };
 		1A0224521E390C9E00C110B8 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
-		1A0224531E390C9E00C110B8 /* ISFAttr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFAttr.hpp; path = ../../../VVISF/include/ISFAttr.hpp; sourceTree = "<group>"; };
-		1A0224541E390C9E00C110B8 /* ISFBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFBase.hpp; path = ../../../VVISF/include/ISFBase.hpp; sourceTree = "<group>"; };
-		1A0224551E390C9E00C110B8 /* ISFConstants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFConstants.hpp; path = ../../../VVISF/include/ISFConstants.hpp; sourceTree = "<group>"; };
-		1A0224561E390C9E00C110B8 /* ISFDoc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFDoc.hpp; path = ../../../VVISF/include/ISFDoc.hpp; sourceTree = "<group>"; };
-		1A0224571E390C9E00C110B8 /* ISFErr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFErr.hpp; path = ../../../VVISF/include/ISFErr.hpp; sourceTree = "<group>"; };
-		1A0224581E390C9E00C110B8 /* ISFKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISFKit.h; path = ../../../VVISF/include/ISFKit.h; sourceTree = "<group>"; };
-		1A0224591E390C9E00C110B8 /* ISFPassTarget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFPassTarget.hpp; path = ../../../VVISF/include/ISFPassTarget.hpp; sourceTree = "<group>"; };
-		1A02245A1E390C9E00C110B8 /* ISFScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFScene.hpp; path = ../../../VVISF/include/ISFScene.hpp; sourceTree = "<group>"; };
-		1A02245B1E390C9E00C110B8 /* ISFStringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFStringUtils.hpp; path = ../../../VVISF/include/ISFStringUtils.hpp; sourceTree = "<group>"; };
-		1A02245C1E390C9E00C110B8 /* ISFVal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFVal.hpp; path = ../../../VVISF/include/ISFVal.hpp; sourceTree = "<group>"; };
 		1A02245E1E390C9E00C110B8 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 		1A02245F1E390C9E00C110B8 /* LICENSE.MIT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.MIT; sourceTree = "<group>"; };
-		1A0224601E390C9E00C110B8 /* ISFAttr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFAttr.cpp; path = ../../../VVISF/src/ISFAttr.cpp; sourceTree = "<group>"; };
-		1A0224611E390C9E00C110B8 /* ISFBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFBase.cpp; path = ../../../VVISF/src/ISFBase.cpp; sourceTree = "<group>"; };
-		1A0224621E390C9E00C110B8 /* ISFDoc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFDoc.cpp; path = ../../../VVISF/src/ISFDoc.cpp; sourceTree = "<group>"; };
-		1A0224631E390C9E00C110B8 /* ISFPassTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFPassTarget.cpp; path = ../../../VVISF/src/ISFPassTarget.cpp; sourceTree = "<group>"; };
-		1A0224641E390C9E00C110B8 /* ISFScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFScene.cpp; path = ../../../VVISF/src/ISFScene.cpp; sourceTree = "<group>"; };
-		1A0224651E390C9E00C110B8 /* ISFStringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFStringUtils.cpp; path = ../../../VVISF/src/ISFStringUtils.cpp; sourceTree = "<group>"; };
-		1A0224661E390C9E00C110B8 /* ISFVal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFVal.cpp; path = ../../../VVISF/src/ISFVal.cpp; sourceTree = "<group>"; };
 		1A23114D1E2D63C700B0EF84 /* GLFWGears.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLFWGears.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2311531E2D63C700B0EF84 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		1A23115A1E2D63C700B0EF84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -478,6 +374,51 @@
 		1AE177AC1E2583EC00E978E5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		1AE177B01E259E1600E978E5 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/GLKit.framework; sourceTree = DEVELOPER_DIR; };
 		1AE177B21E259E1E00E978E5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		1AF5E90F1F14FF6200E9245E /* VVBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVBase.hpp; path = ../../../VVGL/include/VVBase.hpp; sourceTree = "<group>"; };
+		1AF5E9101F14FF6200E9245E /* VVGeom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGeom.hpp; path = ../../../VVGL/include/VVGeom.hpp; sourceTree = "<group>"; };
+		1AF5E9111F14FF6200E9245E /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
+		1AF5E9121F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBuffer_GLFW_Enums.h; path = ../../../VVGL/include/VVGLBuffer_GLFW_Enums.h; sourceTree = "<group>"; };
+		1AF5E9131F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBuffer_IOS_Enums.h; path = ../../../VVGL/include/VVGLBuffer_IOS_Enums.h; sourceTree = "<group>"; };
+		1AF5E9141F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBuffer_Mac_Enums.h; path = ../../../VVGL/include/VVGLBuffer_Mac_Enums.h; sourceTree = "<group>"; };
+		1AF5E9151F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBuffer_RPI_Enums.h; path = ../../../VVGL/include/VVGLBuffer_RPI_Enums.h; sourceTree = "<group>"; };
+		1AF5E9161F14FF6200E9245E /* VVGLBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBuffer.hpp; path = ../../../VVGL/include/VVGLBuffer.hpp; sourceTree = "<group>"; };
+		1AF5E9171F14FF6200E9245E /* VVGLBufferCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBufferCopier.hpp; path = ../../../VVGL/include/VVGLBufferCopier.hpp; sourceTree = "<group>"; };
+		1AF5E9181F14FF6200E9245E /* VVGLBufferPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGLBufferPool.h; path = ../../../VVGL/include/VVGLBufferPool.h; sourceTree = "<group>"; };
+		1AF5E9191F14FF6200E9245E /* VVGLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLBufferPool.hpp; path = ../../../VVGL/include/VVGLBufferPool.hpp; sourceTree = "<group>"; };
+		1AF5E91A1F14FF6200E9245E /* VVGLCachedAttrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLCachedAttrib.hpp; path = ../../../VVGL/include/VVGLCachedAttrib.hpp; sourceTree = "<group>"; };
+		1AF5E91B1F14FF6200E9245E /* VVGLCachedUni.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLCachedUni.hpp; path = ../../../VVGL/include/VVGLCachedUni.hpp; sourceTree = "<group>"; };
+		1AF5E91C1F14FF6200E9245E /* VVGLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLContext.hpp; path = ../../../VVGL/include/VVGLContext.hpp; sourceTree = "<group>"; };
+		1AF5E91D1F14FF6200E9245E /* VVGLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGLScene.hpp; path = ../../../VVGL/include/VVGLScene.hpp; sourceTree = "<group>"; };
+		1AF5E91E1F14FF6200E9245E /* VVRange.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVRange.hpp; path = ../../../VVGL/include/VVRange.hpp; sourceTree = "<group>"; };
+		1AF5E91F1F14FF6200E9245E /* VVStringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVStringUtils.hpp; path = ../../../VVGL/include/VVStringUtils.hpp; sourceTree = "<group>"; };
+		1AF5E9201F14FF6200E9245E /* VVTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVTime.hpp; path = ../../../VVGL/include/VVTime.hpp; sourceTree = "<group>"; };
+		1AF5E9331F14FF6A00E9245E /* VVGeom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGeom.cpp; path = ../../../VVGL/src/VVGeom.cpp; sourceTree = "<group>"; };
+		1AF5E9341F14FF6A00E9245E /* VVGLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBuffer.cpp; path = ../../../VVGL/src/VVGLBuffer.cpp; sourceTree = "<group>"; };
+		1AF5E9351F14FF6A00E9245E /* VVGLBufferCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBufferCopier.cpp; path = ../../../VVGL/src/VVGLBufferCopier.cpp; sourceTree = "<group>"; };
+		1AF5E9361F14FF6A00E9245E /* VVGLBufferPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLBufferPool.cpp; path = ../../../VVGL/src/VVGLBufferPool.cpp; sourceTree = "<group>"; };
+		1AF5E9371F14FF6A00E9245E /* VVGLBufferPool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLBufferPool.mm; path = ../../../VVGL/src/VVGLBufferPool.mm; sourceTree = "<group>"; };
+		1AF5E9381F14FF6A00E9245E /* VVGLCachedAttrib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLCachedAttrib.cpp; path = ../../../VVGL/src/VVGLCachedAttrib.cpp; sourceTree = "<group>"; };
+		1AF5E9391F14FF6A00E9245E /* VVGLCachedUni.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLCachedUni.cpp; path = ../../../VVGL/src/VVGLCachedUni.cpp; sourceTree = "<group>"; };
+		1AF5E93A1F14FF6A00E9245E /* VVGLContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLContext.cpp; path = ../../../VVGL/src/VVGLContext.cpp; sourceTree = "<group>"; };
+		1AF5E93B1F14FF6A00E9245E /* VVGLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGLScene.cpp; path = ../../../VVGL/src/VVGLScene.cpp; sourceTree = "<group>"; };
+		1AF5E93C1F14FF6A00E9245E /* VVStringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVStringUtils.cpp; path = ../../../VVGL/src/VVStringUtils.cpp; sourceTree = "<group>"; };
+		1AF5E9471F14FF8200E9245E /* ISFAttr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFAttr.hpp; path = ../../../VVISF/include/ISFAttr.hpp; sourceTree = "<group>"; };
+		1AF5E9481F14FF8200E9245E /* ISFBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFBase.hpp; path = ../../../VVISF/include/ISFBase.hpp; sourceTree = "<group>"; };
+		1AF5E9491F14FF8200E9245E /* ISFConstants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFConstants.hpp; path = ../../../VVISF/include/ISFConstants.hpp; sourceTree = "<group>"; };
+		1AF5E94A1F14FF8200E9245E /* ISFDoc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFDoc.hpp; path = ../../../VVISF/include/ISFDoc.hpp; sourceTree = "<group>"; };
+		1AF5E94B1F14FF8200E9245E /* ISFErr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFErr.hpp; path = ../../../VVISF/include/ISFErr.hpp; sourceTree = "<group>"; };
+		1AF5E94C1F14FF8200E9245E /* ISFKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISFKit.h; path = ../../../VVISF/include/ISFKit.h; sourceTree = "<group>"; };
+		1AF5E94D1F14FF8200E9245E /* ISFPassTarget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFPassTarget.hpp; path = ../../../VVISF/include/ISFPassTarget.hpp; sourceTree = "<group>"; };
+		1AF5E94E1F14FF8200E9245E /* ISFScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFScene.hpp; path = ../../../VVISF/include/ISFScene.hpp; sourceTree = "<group>"; };
+		1AF5E94F1F14FF8200E9245E /* ISFStringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFStringUtils.hpp; path = ../../../VVISF/include/ISFStringUtils.hpp; sourceTree = "<group>"; };
+		1AF5E9501F14FF8200E9245E /* ISFVal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFVal.hpp; path = ../../../VVISF/include/ISFVal.hpp; sourceTree = "<group>"; };
+		1AF5E95B1F14FF8A00E9245E /* ISFAttr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFAttr.cpp; path = ../../../VVISF/src/ISFAttr.cpp; sourceTree = "<group>"; };
+		1AF5E95C1F14FF8A00E9245E /* ISFBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFBase.cpp; path = ../../../VVISF/src/ISFBase.cpp; sourceTree = "<group>"; };
+		1AF5E95D1F14FF8A00E9245E /* ISFDoc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFDoc.cpp; path = ../../../VVISF/src/ISFDoc.cpp; sourceTree = "<group>"; };
+		1AF5E95E1F14FF8A00E9245E /* ISFPassTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFPassTarget.cpp; path = ../../../VVISF/src/ISFPassTarget.cpp; sourceTree = "<group>"; };
+		1AF5E95F1F14FF8A00E9245E /* ISFScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFScene.cpp; path = ../../../VVISF/src/ISFScene.cpp; sourceTree = "<group>"; };
+		1AF5E9601F14FF8A00E9245E /* ISFStringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFStringUtils.cpp; path = ../../../VVISF/src/ISFStringUtils.cpp; sourceTree = "<group>"; };
+		1AF5E9611F14FF8A00E9245E /* ISFVal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFVal.cpp; path = ../../../VVISF/src/ISFVal.cpp; sourceTree = "<group>"; };
 		1AFC50531E01F73600728B39 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		1AFC50551E0218B200728B39 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		1AFC50601E04401F00728B39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -560,32 +501,34 @@
 		1A02244E1E390C8200C110B8 /* VVGL */ = {
 			isa = PBXGroup;
 			children = (
-				1A0223F31E390C7C00C110B8 /* VVBase.hpp */,
-				1A0223F41E390C7C00C110B8 /* VVGeom.hpp */,
-				1A0223F51E390C7C00C110B8 /* VVGL.hpp */,
-				1A0223F61E390C7C00C110B8 /* VVGLBuffer.hpp */,
-				1A0223F71E390C7C00C110B8 /* VVGLBufferCopier.hpp */,
-				1A0223F81E390C7C00C110B8 /* VVGLBufferPool.h */,
-				1A0223F91E390C7C00C110B8 /* VVGLBufferPool.hpp */,
-				1A0223FA1E390C7C00C110B8 /* VVGLContext.hpp */,
-				1A0223FB1E390C7C00C110B8 /* VVGLScene.hpp */,
-				1A0223FC1E390C7C00C110B8 /* VVGLShaderScene.hpp */,
-				1A0223FD1E390C7C00C110B8 /* VVRange.hpp */,
-				1A0223FE1E390C7C00C110B8 /* VVStringUtils.hpp */,
-				1A0223FF1E390C7C00C110B8 /* VVTime.hpp */,
-				1A0224001E390C7C00C110B8 /* VVBase.cpp */,
-				1A0224011E390C7C00C110B8 /* VVGeom.cpp */,
-				1A0224021E390C7C00C110B8 /* VVGLBuffer.cpp */,
-				1A0224031E390C7C00C110B8 /* VVGLBufferCopier.cpp */,
-				1A0224041E390C7C00C110B8 /* VVGLBufferCopier.mm */,
-				1A0224051E390C7C00C110B8 /* VVGLBufferPool.cpp */,
-				1A0224061E390C7C00C110B8 /* VVGLBufferPool.mm */,
-				1A0224071E390C7C00C110B8 /* VVGLContext.cpp */,
-				1A0224081E390C7C00C110B8 /* VVGLContext.mm */,
-				1A0224091E390C7C00C110B8 /* VVGLScene.cpp */,
-				1A02240A1E390C7C00C110B8 /* VVGLScene.mm */,
-				1A02240B1E390C7C00C110B8 /* VVGLShaderScene.cpp */,
-				1A02240C1E390C7C00C110B8 /* VVStringUtils.cpp */,
+				1AF5E90F1F14FF6200E9245E /* VVBase.hpp */,
+				1AF5E9101F14FF6200E9245E /* VVGeom.hpp */,
+				1AF5E9111F14FF6200E9245E /* VVGL.hpp */,
+				1AF5E9121F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h */,
+				1AF5E9131F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h */,
+				1AF5E9141F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h */,
+				1AF5E9151F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h */,
+				1AF5E9161F14FF6200E9245E /* VVGLBuffer.hpp */,
+				1AF5E9171F14FF6200E9245E /* VVGLBufferCopier.hpp */,
+				1AF5E9181F14FF6200E9245E /* VVGLBufferPool.h */,
+				1AF5E9191F14FF6200E9245E /* VVGLBufferPool.hpp */,
+				1AF5E91A1F14FF6200E9245E /* VVGLCachedAttrib.hpp */,
+				1AF5E91B1F14FF6200E9245E /* VVGLCachedUni.hpp */,
+				1AF5E91C1F14FF6200E9245E /* VVGLContext.hpp */,
+				1AF5E91D1F14FF6200E9245E /* VVGLScene.hpp */,
+				1AF5E91E1F14FF6200E9245E /* VVRange.hpp */,
+				1AF5E91F1F14FF6200E9245E /* VVStringUtils.hpp */,
+				1AF5E9201F14FF6200E9245E /* VVTime.hpp */,
+				1AF5E9331F14FF6A00E9245E /* VVGeom.cpp */,
+				1AF5E9341F14FF6A00E9245E /* VVGLBuffer.cpp */,
+				1AF5E9351F14FF6A00E9245E /* VVGLBufferCopier.cpp */,
+				1AF5E9361F14FF6A00E9245E /* VVGLBufferPool.cpp */,
+				1AF5E9371F14FF6A00E9245E /* VVGLBufferPool.mm */,
+				1AF5E9381F14FF6A00E9245E /* VVGLCachedAttrib.cpp */,
+				1AF5E9391F14FF6A00E9245E /* VVGLCachedUni.cpp */,
+				1AF5E93A1F14FF6A00E9245E /* VVGLContext.cpp */,
+				1AF5E93B1F14FF6A00E9245E /* VVGLScene.cpp */,
+				1AF5E93C1F14FF6A00E9245E /* VVStringUtils.cpp */,
 			);
 			name = VVGL;
 			sourceTree = "<group>";
@@ -593,25 +536,25 @@
 		1A02244F1E390C8700C110B8 /* VVISF */ = {
 			isa = PBXGroup;
 			children = (
+				1AF5E9471F14FF8200E9245E /* ISFAttr.hpp */,
+				1AF5E9481F14FF8200E9245E /* ISFBase.hpp */,
+				1AF5E9491F14FF8200E9245E /* ISFConstants.hpp */,
+				1AF5E94A1F14FF8200E9245E /* ISFDoc.hpp */,
+				1AF5E94B1F14FF8200E9245E /* ISFErr.hpp */,
+				1AF5E94C1F14FF8200E9245E /* ISFKit.h */,
+				1AF5E94D1F14FF8200E9245E /* ISFPassTarget.hpp */,
+				1AF5E94E1F14FF8200E9245E /* ISFScene.hpp */,
+				1AF5E94F1F14FF8200E9245E /* ISFStringUtils.hpp */,
+				1AF5E9501F14FF8200E9245E /* ISFVal.hpp */,
+				1AF5E95B1F14FF8A00E9245E /* ISFAttr.cpp */,
+				1AF5E95C1F14FF8A00E9245E /* ISFBase.cpp */,
+				1AF5E95D1F14FF8A00E9245E /* ISFDoc.cpp */,
+				1AF5E95E1F14FF8A00E9245E /* ISFPassTarget.cpp */,
+				1AF5E95F1F14FF8A00E9245E /* ISFScene.cpp */,
+				1AF5E9601F14FF8A00E9245E /* ISFStringUtils.cpp */,
+				1AF5E9611F14FF8A00E9245E /* ISFVal.cpp */,
 				1A0224501E390C9E00C110B8 /* exprtk */,
-				1A0224531E390C9E00C110B8 /* ISFAttr.hpp */,
-				1A0224541E390C9E00C110B8 /* ISFBase.hpp */,
-				1A0224551E390C9E00C110B8 /* ISFConstants.hpp */,
-				1A0224561E390C9E00C110B8 /* ISFDoc.hpp */,
-				1A0224571E390C9E00C110B8 /* ISFErr.hpp */,
-				1A0224581E390C9E00C110B8 /* ISFKit.h */,
-				1A0224591E390C9E00C110B8 /* ISFPassTarget.hpp */,
-				1A02245A1E390C9E00C110B8 /* ISFScene.hpp */,
-				1A02245B1E390C9E00C110B8 /* ISFStringUtils.hpp */,
-				1A02245C1E390C9E00C110B8 /* ISFVal.hpp */,
 				1A02245D1E390C9E00C110B8 /* nlohmann_json */,
-				1A0224601E390C9E00C110B8 /* ISFAttr.cpp */,
-				1A0224611E390C9E00C110B8 /* ISFBase.cpp */,
-				1A0224621E390C9E00C110B8 /* ISFDoc.cpp */,
-				1A0224631E390C9E00C110B8 /* ISFPassTarget.cpp */,
-				1A0224641E390C9E00C110B8 /* ISFScene.cpp */,
-				1A0224651E390C9E00C110B8 /* ISFStringUtils.cpp */,
-				1A0224661E390C9E00C110B8 /* ISFVal.cpp */,
 			);
 			name = VVISF;
 			sourceTree = "<group>";
@@ -803,19 +746,24 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A02240F1E390C7C00C110B8 /* VVGeom.hpp in Headers */,
-				1A02241B1E390C7C00C110B8 /* VVGLContext.hpp in Headers */,
-				1A0224131E390C7C00C110B8 /* VVGLBuffer.hpp in Headers */,
-				1A0224231E390C7C00C110B8 /* VVStringUtils.hpp in Headers */,
-				1A02241F1E390C7C00C110B8 /* VVGLShaderScene.hpp in Headers */,
-				1A0224111E390C7C00C110B8 /* VVGL.hpp in Headers */,
-				1A0224171E390C7C00C110B8 /* VVGLBufferPool.h in Headers */,
-				1A0224191E390C7C00C110B8 /* VVGLBufferPool.hpp in Headers */,
-				1A0224151E390C7C00C110B8 /* VVGLBufferCopier.hpp in Headers */,
-				1A0224211E390C7C00C110B8 /* VVRange.hpp in Headers */,
-				1A02240D1E390C7C00C110B8 /* VVBase.hpp in Headers */,
-				1A0224251E390C7C00C110B8 /* VVTime.hpp in Headers */,
-				1A02241D1E390C7C00C110B8 /* VVGLScene.hpp in Headers */,
+				1AF5E9291F14FF6200E9245E /* VVGLBufferCopier.hpp in Headers */,
+				1AF5E92A1F14FF6200E9245E /* VVGLBufferPool.h in Headers */,
+				1AF5E92F1F14FF6200E9245E /* VVGLScene.hpp in Headers */,
+				1AF5E9251F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h in Headers */,
+				1AF5E9241F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h in Headers */,
+				1AF5E9221F14FF6200E9245E /* VVGeom.hpp in Headers */,
+				1AF5E9231F14FF6200E9245E /* VVGL.hpp in Headers */,
+				1AF5E92D1F14FF6200E9245E /* VVGLCachedUni.hpp in Headers */,
+				1AF5E92E1F14FF6200E9245E /* VVGLContext.hpp in Headers */,
+				1AF5E9321F14FF6200E9245E /* VVTime.hpp in Headers */,
+				1AF5E92B1F14FF6200E9245E /* VVGLBufferPool.hpp in Headers */,
+				1AF5E9301F14FF6200E9245E /* VVRange.hpp in Headers */,
+				1AF5E92C1F14FF6200E9245E /* VVGLCachedAttrib.hpp in Headers */,
+				1AF5E9311F14FF6200E9245E /* VVStringUtils.hpp in Headers */,
+				1AF5E9261F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h in Headers */,
+				1AF5E9281F14FF6200E9245E /* VVGLBuffer.hpp in Headers */,
+				1AF5E9211F14FF6200E9245E /* VVBase.hpp in Headers */,
+				1AF5E9271F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -823,18 +771,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AF5E9581F14FF8200E9245E /* ISFScene.hpp in Headers */,
+				1AF5E9561F14FF8200E9245E /* ISFKit.h in Headers */,
+				1AF5E9591F14FF8200E9245E /* ISFStringUtils.hpp in Headers */,
+				1AF5E9531F14FF8200E9245E /* ISFConstants.hpp in Headers */,
+				1AF5E9511F14FF8200E9245E /* ISFAttr.hpp in Headers */,
+				1AF5E9541F14FF8200E9245E /* ISFDoc.hpp in Headers */,
+				1AF5E9551F14FF8200E9245E /* ISFErr.hpp in Headers */,
 				1A02247F1E390C9E00C110B8 /* json.hpp in Headers */,
-				1A02246B1E390C9E00C110B8 /* ISFAttr.hpp in Headers */,
-				1A02246F1E390C9E00C110B8 /* ISFConstants.hpp in Headers */,
-				1A02247D1E390C9E00C110B8 /* ISFVal.hpp in Headers */,
-				1A0224711E390C9E00C110B8 /* ISFDoc.hpp in Headers */,
-				1A0224751E390C9E00C110B8 /* ISFKit.h in Headers */,
-				1A02246D1E390C9E00C110B8 /* ISFBase.hpp in Headers */,
+				1AF5E9521F14FF8200E9245E /* ISFBase.hpp in Headers */,
+				1AF5E95A1F14FF8200E9245E /* ISFVal.hpp in Headers */,
+				1AF5E9571F14FF8200E9245E /* ISFPassTarget.hpp in Headers */,
 				1A0224671E390C9E00C110B8 /* exprtk.hpp in Headers */,
-				1A0224791E390C9E00C110B8 /* ISFScene.hpp in Headers */,
-				1A0224731E390C9E00C110B8 /* ISFErr.hpp in Headers */,
-				1A02247B1E390C9E00C110B8 /* ISFStringUtils.hpp in Headers */,
-				1A0224771E390C9E00C110B8 /* ISFPassTarget.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,17 +791,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A0224801E390C9E00C110B8 /* json.hpp in Headers */,
-				1A02246C1E390C9E00C110B8 /* ISFAttr.hpp in Headers */,
-				1A0224701E390C9E00C110B8 /* ISFConstants.hpp in Headers */,
-				1A02247E1E390C9E00C110B8 /* ISFVal.hpp in Headers */,
-				1A0224721E390C9E00C110B8 /* ISFDoc.hpp in Headers */,
-				1A0224761E390C9E00C110B8 /* ISFKit.h in Headers */,
-				1A02246E1E390C9E00C110B8 /* ISFBase.hpp in Headers */,
 				1A0224681E390C9E00C110B8 /* exprtk.hpp in Headers */,
-				1A02247A1E390C9E00C110B8 /* ISFScene.hpp in Headers */,
-				1A0224741E390C9E00C110B8 /* ISFErr.hpp in Headers */,
-				1A02247C1E390C9E00C110B8 /* ISFStringUtils.hpp in Headers */,
-				1A0224781E390C9E00C110B8 /* ISFPassTarget.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -861,19 +799,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0224101E390C7C00C110B8 /* VVGeom.hpp in Headers */,
-				1A02241C1E390C7C00C110B8 /* VVGLContext.hpp in Headers */,
-				1A0224141E390C7C00C110B8 /* VVGLBuffer.hpp in Headers */,
-				1A0224241E390C7C00C110B8 /* VVStringUtils.hpp in Headers */,
-				1A0224201E390C7C00C110B8 /* VVGLShaderScene.hpp in Headers */,
-				1A0224121E390C7C00C110B8 /* VVGL.hpp in Headers */,
-				1A0224181E390C7C00C110B8 /* VVGLBufferPool.h in Headers */,
-				1A02241A1E390C7C00C110B8 /* VVGLBufferPool.hpp in Headers */,
-				1A0224161E390C7C00C110B8 /* VVGLBufferCopier.hpp in Headers */,
-				1A0224221E390C7C00C110B8 /* VVRange.hpp in Headers */,
-				1A02240E1E390C7C00C110B8 /* VVBase.hpp in Headers */,
-				1A0224261E390C7C00C110B8 /* VVTime.hpp in Headers */,
-				1A02241E1E390C7C00C110B8 /* VVGLScene.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1295,28 +1220,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0224881E390C9E00C110B8 /* ISFBase.cpp in Sources */,
-				1A02244A1E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */,
-				1A0224411E390C7C00C110B8 /* VVGLContext.mm in Sources */,
-				1A0224291E390C7C00C110B8 /* VVBase.cpp in Sources */,
-				1A02243B1E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */,
-				1A0224911E390C9E00C110B8 /* ISFScene.cpp in Sources */,
-				1A02243E1E390C7C00C110B8 /* VVGLContext.cpp in Sources */,
 				1A2311BB1E2D64D300B0EF84 /* glad.c in Sources */,
-				1A02248B1E390C9E00C110B8 /* ISFDoc.cpp in Sources */,
-				1A02244D1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */,
-				1A0224321E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */,
-				1A02248E1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */,
 				1A2311541E2D63C700B0EF84 /* main.mm in Sources */,
-				1A0224851E390C9E00C110B8 /* ISFAttr.cpp in Sources */,
-				1A0224941E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */,
-				1A0224471E390C7C00C110B8 /* VVGLScene.mm in Sources */,
-				1A02242F1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */,
-				1A02242C1E390C7C00C110B8 /* VVGeom.cpp in Sources */,
-				1A0224971E390C9E00C110B8 /* ISFVal.cpp in Sources */,
-				1A0224381E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */,
-				1A0224351E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */,
-				1A0224441E390C7C00C110B8 /* VVGLScene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1324,19 +1229,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0224301E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */,
-				1A0224271E390C7C00C110B8 /* VVBase.cpp in Sources */,
-				1A02243F1E390C7C00C110B8 /* VVGLContext.mm in Sources */,
-				1A02244B1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */,
-				1A02242A1E390C7C00C110B8 /* VVGeom.cpp in Sources */,
-				1A0224331E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */,
-				1A02243C1E390C7C00C110B8 /* VVGLContext.cpp in Sources */,
-				1A0224391E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */,
-				1A0224421E390C7C00C110B8 /* VVGLScene.cpp in Sources */,
-				1A0224481E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */,
-				1A0224451E390C7C00C110B8 /* VVGLScene.mm in Sources */,
-				1A0224361E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */,
-				1A02242D1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */,
+				1AF5E9421F14FF6A00E9245E /* VVGLCachedAttrib.cpp in Sources */,
+				1AF5E93E1F14FF6A00E9245E /* VVGLBuffer.cpp in Sources */,
+				1AF5E9451F14FF6A00E9245E /* VVGLScene.cpp in Sources */,
+				1AF5E93D1F14FF6A00E9245E /* VVGeom.cpp in Sources */,
+				1AF5E9431F14FF6A00E9245E /* VVGLCachedUni.cpp in Sources */,
+				1AF5E9441F14FF6A00E9245E /* VVGLContext.cpp in Sources */,
+				1AF5E9461F14FF6A00E9245E /* VVStringUtils.cpp in Sources */,
+				1AF5E9411F14FF6A00E9245E /* VVGLBufferPool.mm in Sources */,
+				1AF5E9401F14FF6A00E9245E /* VVGLBufferPool.cpp in Sources */,
+				1AF5E93F1F14FF6A00E9245E /* VVGLBufferCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1354,13 +1256,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A02248F1E390C9E00C110B8 /* ISFScene.cpp in Sources */,
-				1A0224831E390C9E00C110B8 /* ISFAttr.cpp in Sources */,
-				1A0224891E390C9E00C110B8 /* ISFDoc.cpp in Sources */,
-				1A02248C1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */,
-				1A0224951E390C9E00C110B8 /* ISFVal.cpp in Sources */,
-				1A0224861E390C9E00C110B8 /* ISFBase.cpp in Sources */,
-				1A0224921E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */,
+				1AF5E9661F14FF8A00E9245E /* ISFScene.cpp in Sources */,
+				1AF5E9621F14FF8A00E9245E /* ISFAttr.cpp in Sources */,
+				1AF5E9641F14FF8A00E9245E /* ISFDoc.cpp in Sources */,
+				1AF5E9651F14FF8A00E9245E /* ISFPassTarget.cpp in Sources */,
+				1AF5E9681F14FF8A00E9245E /* ISFVal.cpp in Sources */,
+				1AF5E9631F14FF8A00E9245E /* ISFBase.cpp in Sources */,
+				1AF5E9671F14FF8A00E9245E /* ISFStringUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1368,13 +1270,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0224901E390C9E00C110B8 /* ISFScene.cpp in Sources */,
-				1A0224841E390C9E00C110B8 /* ISFAttr.cpp in Sources */,
-				1A02248A1E390C9E00C110B8 /* ISFDoc.cpp in Sources */,
-				1A02248D1E390C9E00C110B8 /* ISFPassTarget.cpp in Sources */,
-				1A0224961E390C9E00C110B8 /* ISFVal.cpp in Sources */,
-				1A0224871E390C9E00C110B8 /* ISFBase.cpp in Sources */,
-				1A0224931E390C9E00C110B8 /* ISFStringUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1382,19 +1277,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0224311E390C7C00C110B8 /* VVGLBufferCopier.cpp in Sources */,
-				1A0224281E390C7C00C110B8 /* VVBase.cpp in Sources */,
-				1A0224401E390C7C00C110B8 /* VVGLContext.mm in Sources */,
-				1A02244C1E390C7C00C110B8 /* VVStringUtils.cpp in Sources */,
-				1A02242B1E390C7C00C110B8 /* VVGeom.cpp in Sources */,
-				1A0224341E390C7C00C110B8 /* VVGLBufferCopier.mm in Sources */,
-				1A02243D1E390C7C00C110B8 /* VVGLContext.cpp in Sources */,
-				1A02243A1E390C7C00C110B8 /* VVGLBufferPool.mm in Sources */,
-				1A0224431E390C7C00C110B8 /* VVGLScene.cpp in Sources */,
-				1A0224491E390C7C00C110B8 /* VVGLShaderScene.cpp in Sources */,
-				1A0224461E390C7C00C110B8 /* VVGLScene.mm in Sources */,
-				1A0224371E390C7C00C110B8 /* VVGLBufferPool.cpp in Sources */,
-				1A02242E1E390C7C00C110B8 /* VVGLBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1480,7 +1362,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1491,7 +1376,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1589,7 +1477,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ISFSandbox/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1602,7 +1493,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ISFSandbox/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1614,7 +1508,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1625,7 +1522,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = "-DISF_TARGET_MAC";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_MAC",
+					"-DISF_TARGET_GL3PLUS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1644,7 +1544,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_IOS";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_IOS",
+					"-DISF_TARGET_GLES",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISFKit-iOS";
 				PRODUCT_NAME = VVISFKit;
 				SDKROOT = iphoneos;
@@ -1669,7 +1572,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_IOS";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_IOS",
+					"-DISF_TARGET_GLES",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISFKit-iOS";
 				PRODUCT_NAME = VVISFKit;
 				SDKROOT = iphoneos;
@@ -1694,7 +1600,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_IOS";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_IOS",
+					"-DISF_TARGET_GLES",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
@@ -1718,7 +1627,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_TARGET_IOS";
+				OTHER_CFLAGS = (
+					"-DISF_TARGET_IOS",
+					"-DISF_TARGET_GLES",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;

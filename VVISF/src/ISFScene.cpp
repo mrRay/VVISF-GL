@@ -15,20 +15,20 @@ namespace VVISF
 
 
 ISFScene::ISFScene()
-: VVGLShaderScene()	{
+: VVGLScene()	{
 	cout << __PRETTY_FUNCTION__ << endl;
 	_setUpRenderCallback();
 }
 ISFScene::ISFScene(const VVGLContextRef & inCtx)
-: VVGLShaderScene(inCtx)	{
+: VVGLScene(inCtx)	{
 	_setUpRenderCallback();
 }
 
 
 void ISFScene::prepareToBeDeleted()	{
-	geoXYVBO = nullptr;
+	//geoXYVBO = nullptr;
 	//	now call the super, which deletes the context
-	VVGLShaderScene::prepareToBeDeleted();
+	VVGLScene::prepareToBeDeleted();
 }
 ISFScene::~ISFScene()	{
 	if (!deleted)
@@ -39,7 +39,12 @@ ISFScene::~ISFScene()	{
 		compiledInputTypeString = nullptr;
 	}
 	
-	geoXYVBO = nullptr;
+	//geoXYVBO = nullptr;
+#if ISF_TARGET_GL3PLUS
+	vao = nullptr;
+#elif ISF_TARGET_GLES
+	vbo = nullptr;
+#endif
 }
 
 
@@ -248,8 +253,10 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 	}
 	
 	VVGLBufferPoolRef		bp = inPoolRef;
-	if (bp == nullptr && privatePool!=nullptr) bp = privatePool;
-	if (bp == nullptr) bp = GetGlobalBufferPool();
+	if (bp == nullptr && privatePool!=nullptr)
+		bp = privatePool;
+	if (bp == nullptr)
+		bp = GetGlobalBufferPool();
 	
 	if (bp==nullptr)	{
 		cout << "\tERR: bailing, pool null, " << __PRETTY_FUNCTION__ << endl;
@@ -266,10 +273,10 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
 #if ISF_TARGET_MAC
 	if (persistentToIOSurface)
-		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, bp) : CreateRGBATexIOSurface(inSize, bp);
+		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
 	else
 #endif
-		returnMe = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+		returnMe = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, false, bp) : CreateRGBATex(inSize, false, bp);
 	
 	renderToBuffer(returnMe, inSize, inRenderTime);
 	
@@ -293,15 +300,15 @@ void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer)	{
 	if (inTargetBuffer != nullptr)
 		_render(inTargetBuffer, inTargetBuffer->srcRect.size, timestamper.nowTime().getTimeInSeconds(), nullptr);
 	else
-		_render(nullptr, size, timestamper.nowTime().getTimeInSeconds(), nullptr);
+		_render(nullptr, orthoSize, timestamper.nowTime().getTimeInSeconds(), nullptr);
 }
 
 
 void ISFScene::setSize(const VVGL::Size & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", self is " << this << endl;
 	//renderSize = n;	//	do NOT set the renderSize here (if we do then it will be changed every time a pass is rendered)
-	VVGLScene::setSize(n);
-	//cout << "\tnew size is " << size << endl;
+	VVGLScene::setOrthoSize(n);
+	//cout << "\tnew size is " << orthoSize << endl;
 }
 
 
@@ -310,10 +317,112 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
+#if ISF_TARGET_GL3PLUS
+	setRenderCallback([&](const VVGLScene & s)	{
+		//	make a quad that describes the area we have to draw
+		GLBufferQuadXY		targetQuad;
+		GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+		
+		//	bind the VAO
+		VVGLBufferRef		myVAO = getVAO();
+		if (myVAO == nullptr)
+			return;
+		glBindVertexArray(myVAO->name);
+		GLERRLOG
+		
+		//	if the target quad doesn't match the contents of the vbo in the vao
+		if (targetQuad != vboContents)	{
+			//cout << "\tvbo contents updated, repopulating\n";
+			//	make a VBO, populate it with vertex data
+			uint32_t		tmpVBO = -1;
+			glGenBuffers(1, &tmpVBO);
+			GLERRLOG
+			glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+			GLERRLOG
+			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+			GLERRLOG
+			//	configure the attribute pointer to work with the VBO
+			if (vertexAttrib.loc >= 0)	{
+				glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				GLERRLOG
+				vertexAttrib.enable();
+			}
+			
+			//	un-bind the VAO, we're done configuring it
+			glBindVertexArray(0);
+			GLERRLOG
+			//	delete the VBO we just made (the VAO will retain it)
+			glDeleteBuffers(1, &tmpVBO);
+			GLERRLOG
+			//	update my local copy of the vbo contents
+			vboContents = targetQuad;
+			//	re-enable the VAO!
+			glBindVertexArray(myVAO->name);
+			GLERRLOG
+		}
+		
+		//	...draw!
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+		
+		//	un-bind the VAO
+		glBindVertexArray(0);
+		GLERRLOG
+	});
+#elif ISF_TARGET_GLES
+	setRenderCallback([&](const VVGLScene & s)	{
+		//	make a quad that describes the area we have to draw
+		GLBufferQuadXY		targetQuad;
+		GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+		
+		//	get the VBO
+		VVGLBufferRef		myVBO = getVBO();
+		
+		//	if there's no VBO, or the target quad doesn't match the VBO's contents
+		if (myVBO==nullptr || targetQuad!=vboContents)	{
+			//	make the VBO, populate it with vertex data
+			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
+			//	update the instance's copy of the VBO
+			setVBO(myVBO);
+			//	update the contents of the VBO
+			vboContents = targetQuad;
+		}
+		
+		//	bind the VBO
+		if (myVBO != nullptr)	{
+			glBindBuffer(GL_ARRAY_BUFFER, myVBO->name);
+			GLERRLOG
+		}
+		//	configure the attribute pointers to work with the VBO
+		if (vertexAttrib.loc >= 0)	{
+			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+			GLERRLOG
+			vertexAttrib.enable();
+		}
+		
+		//	draw!
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+		
+		//	disable the relevant attribute pointers
+		if (vertexAttrib.loc >= 0)	{
+			vertexAttrib.disable();
+		}
+		//	un-bind the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		GLERRLOG
+	});
+#endif
+	
+	
+	
+	
+	
+	/*
 	setRenderCallback([&](const VVGLScene & s)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		VVGL::Rect				tmpRect(0,0,0,0);
-		tmpRect.size = static_cast<const ISFScene&>(s).size;
+		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
 		//cout << "\tverts based on rect " << tmpRect << endl;
 #if ISF_TARGET_MAC || ISF_TARGET_GLFW
 		glColor4f(1., 1., 1., 1.);
@@ -341,37 +450,24 @@ void ISFScene::_setUpRenderCallback()	{
 			(GLfloat)MinX(tmpRect), (GLfloat)MaxY(tmpRect),
 			(GLfloat)MaxX(tmpRect), (GLfloat)MaxY(tmpRect)
 		};
-		if (vertexAttribLoc >= 0)	{
-			glEnableVertexAttribArray(vertexAttribLoc);
+		if (vertexAttrib.loc >= 0)	{
+			glEnableVertexAttribArray(vertexAttrib.loc);
 			GLERRLOG
-			glVertexAttribPointer(vertexAttribLoc, 2, GL_FLOAT, GL_FALSE, 0, geoCoords);
+			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, 0, geoCoords);
 			GLERRLOG
 		}
 		
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
 		
-		if (vertexAttribLoc >= 0)	{
-			glDisableVertexAttribArray(vertexAttribLoc);
+		if (vertexAttrib.loc >= 0)	{
+			glDisableVertexAttribArray(vertexAttrib.loc);
+			GLERRLOG
 		}
 		
-		/*
-		if (geoXYVBO != nullptr)	{
-			glBindBuffer(GL_ARRAY_BUFFER, geoXYVBO->name);
-			GLERRLOG
-			glEnableVertexAttribArray(0);
-			GLERRLOG
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-			GLERRLOG
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			GLERRLOG
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			GLERRLOG
-		}
-		else
-			cout << "\terr: geoXYVBO null in " << __PRETTY_FUNCTION__ << endl;
-		*/
 #endif
 	});
+	*/
 }
 void ISFScene::_renderPrep()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -390,7 +486,8 @@ void ISFScene::_renderPrep()	{
 		//	update the shader strings
 		string		tmpFrag;
 		string		tmpVert;
-		doc->generateShaderSource(&tmpFrag, &tmpVert);
+		GLVersion	tmpVersion = (context==nullptr) ? GLVersion_2 : context->version;
+		doc->generateShaderSource(&tmpFrag, &tmpVert, tmpVersion);
 		setVertexShaderString(tmpVert);
 		setFragmentShaderString(tmpFrag);
 	}
@@ -400,8 +497,9 @@ void ISFScene::_renderPrep()	{
 	bool		fShaderUpdatedFlag = fsStringUpdated;
 	
 	//	tell the super to do its _renderPrep, which will compile the shader and get it all set up if necessary
-	VVGLShaderScene::_renderPrep();
+	VVGLScene::_renderPrep();
 	
+	/*
 	//	if i don't have a VBO containing geometry for a quad, make one now
 	if (geoXYVBO == nullptr)	{
 		GLfloat			geo[] = {
@@ -412,6 +510,13 @@ void ISFScene::_renderPrep()	{
 		};
 		geoXYVBO = CreateVBO(geo, sizeof(GLfloat)*8, GL_STATIC_DRAW);
 	}
+	*/
+	
+	//	make sure there's a VAO
+#if ISF_TARGET_GL3PLUS
+	if (getVAO() == nullptr)
+		setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
+#endif
 	
 	//	...if either of these values have changed, the program has been recompiled and i need to find new uniform locations for all the attributes (the uniforms in the GLSL programs)
 	bool		findNewUniforms = false;
@@ -481,8 +586,10 @@ void ISFScene::_renderPrep()	{
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
 				GLERRLOG
-				glEnable(tmpBuffer->desc.target);
-				GLERRLOG
+				if (context->version <= GLVersion_2)	{
+					glEnable(tmpBuffer->desc.target);
+					GLERRLOG
+				}
 				glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 				GLERRLOG
 			}
@@ -509,8 +616,10 @@ void ISFScene::_renderPrep()	{
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
 				GLERRLOG
-				glEnable(tmpBuffer->desc.target);
-				GLERRLOG
+				if (context->version <= GLVersion_2)	{
+					glEnable(tmpBuffer->desc.target);
+					GLERRLOG
+				}
 				glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 				GLERRLOG
 			}
@@ -524,14 +633,14 @@ void ISFScene::_renderPrep()	{
 			tmpRect = (tmpBuffer==nullptr) ? VVGL::Rect(0,0,1,1) : tmpBuffer->glReadySrcRect();
 			samplerLoc = inAttr->getUniformLocation(1);
 			if (samplerLoc >= 0)	{
-				glUniform4f(samplerLoc,tmpRect.origin.x,tmpRect.origin.y,tmpRect.size.width,tmpRect.size.height);
+				glUniform4f(samplerLoc, tmpRect.origin.x, tmpRect.origin.y, tmpRect.size.width, tmpRect.size.height);
 				GLERRLOG
 			}
 			//	pass the size to the program
 			tmpRect = (tmpBuffer==nullptr) ? VVGL::Rect(0,0,1,1) : tmpBuffer->srcRect;
 			samplerLoc = inAttr->getUniformLocation(2);
 			if (samplerLoc >= 0)	{
-				glUniform2f(samplerLoc,tmpRect.size.width,tmpRect.size.height);
+				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
 				GLERRLOG
 			}
 			//	pass the flippedness to the program
@@ -546,11 +655,13 @@ void ISFScene::_renderPrep()	{
 	auto		setTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
 		const char *		tmpTargetName = inTarget->getName().c_str();
 		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
+		GLERRLOG
 		if (samplerLoc >= 0)
 			inTarget->setUniformLocation(0, samplerLoc);
 		
 		sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
 		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		GLERRLOG
 		if (samplerLoc >= 0)
 			inTarget->setUniformLocation(2, samplerLoc);
 	};
@@ -582,18 +693,27 @@ void ISFScene::_renderPrep()	{
 		if (tmpBuffer != nullptr)	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
-			glEnable(tmpBuffer->desc.target);
+			GLERRLOG
+			if (context->version <= GLVersion_2)	{
+				glEnable(tmpBuffer->desc.target);
+				GLERRLOG
+			}
 			glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
+			GLERRLOG
 			
 			samplerLoc = inTarget->getUniformLocation(0);
-			if (samplerLoc >= 0)
+			if (samplerLoc >= 0)	{
 				glUniform1i(samplerLoc, textureCount);
+				GLERRLOG
+			}
 			++textureCount;
 			//	pass the size to the program
 			tmpRect = tmpBuffer->srcRect;
 			samplerLoc = inTarget->getUniformLocation(2);
-			if (samplerLoc >= 0)
+			if (samplerLoc >= 0)	{
 				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
+				GLERRLOG
+			}
 		}
 	};
 	*/
@@ -603,8 +723,10 @@ void ISFScene::_renderPrep()	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
 			GLERRLOG
-			glEnable(tmpBuffer->desc.target);
-			GLERRLOG
+			if (context->version <= GLVersion_2)	{
+				glEnable(tmpBuffer->desc.target);
+				GLERRLOG
+			}
 			glBindTexture(tmpBuffer->desc.target, tmpBuffer->name);
 			GLERRLOG
 			
@@ -618,14 +740,14 @@ void ISFScene::_renderPrep()	{
 			tmpRect = tmpBuffer->glReadySrcRect();
 			samplerLoc = inTarget->getUniformLocation(1);
 			if (samplerLoc >= 0)	{
-				glUniform4f(samplerLoc,tmpRect.origin.x,tmpRect.origin.y,tmpRect.size.width,tmpRect.size.height);
+				glUniform4f(samplerLoc, tmpRect.origin.x, tmpRect.origin.y, tmpRect.size.width, tmpRect.size.height);
 				GLERRLOG
 			}
 			//	pass the size to the program
 			tmpRect = tmpBuffer->srcRect;
 			samplerLoc = inTarget->getUniformLocation(2);
 			if (samplerLoc >= 0)	{
-				glUniform2f(samplerLoc,tmpRect.size.width,tmpRect.size.height);
+				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
 				GLERRLOG
 			}
 			//	pass the flippedness to the program
@@ -636,6 +758,7 @@ void ISFScene::_renderPrep()	{
 			}
 		}
 	};
+	
 	
 	//	run through the inputs, applying the current values to the program
 	vector<ISFAttrRef> &	inputs = doc->getInputs();
@@ -786,50 +909,43 @@ void ISFScene::_renderPrep()	{
 	
 	//	if we're finding new uniforms then we also have to update the uniform locations of some standard inputs
 	if (findNewUniforms)	{
-		vertexAttribLoc = (program<=0) ? -1 : glGetAttribLocation(program, "a_position");
-		GLERRLOG
-		renderSizeUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "RENDERSIZE");
-		GLERRLOG
-		passIndexUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "PASSINDEX");
-		GLERRLOG
-		timeUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "TIME");
-		GLERRLOG
-		timeDeltaUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "TIMEDELTA");
-		GLERRLOG
-		dateUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "DATE");
-		GLERRLOG
-		renderFrameIndexUniformLoc = (program<=0) ? -1 : glGetUniformLocation(program, "FRAMEINDEX");
-		GLERRLOG
+		vertexAttrib.cacheTheLoc(program);
+		renderSizeUni.cacheTheLoc(program);
+		passIndexUni.cacheTheLoc(program);
+		timeUni.cacheTheLoc(program);
+		timeDeltaUni.cacheTheLoc(program);
+		dateUni.cacheTheLoc(program);
+		renderFrameIndexUni.cacheTheLoc(program);
 	}
 	//	push the standard inputs to the program
-	if (renderSizeUniformLoc >= 0)	{
-		glUniform2f(renderSizeUniformLoc, size.width, size.height);
+	if (renderSizeUni.loc >= 0)	{
+		glUniform2f(renderSizeUni.loc, orthoSize.width, orthoSize.height);
 		GLERRLOG
 	}
-	if (passIndexUniformLoc >= 0)	{
-		glUniform1i(passIndexUniformLoc, passIndex-1);
+	if (passIndexUni.loc >= 0)	{
+		glUniform1i(passIndexUni.loc, passIndex-1);
 		GLERRLOG
 	}
-	if (timeUniformLoc >= 0)	{
-		glUniform1f(timeUniformLoc, (float)renderTime);
+	if (timeUni.loc >= 0)	{
+		glUniform1f(timeUni.loc, (float)renderTime);
 		GLERRLOG
 	}
-	if (timeDeltaUniformLoc >= 0)	{
-		glUniform1f(timeDeltaUniformLoc, (float)renderTimeDelta);
+	if (timeDeltaUni.loc >= 0)	{
+		glUniform1f(timeDeltaUni.loc, (float)renderTimeDelta);
 		GLERRLOG
 	}
-	if (dateUniformLoc >= 0)	{
+	if (dateUni.loc >= 0)	{
 		time_t		now = time(0);
 		tm			*localTime = localtime(&now);
 		double		timeInSeconds = 0.;
 		timeInSeconds += localTime->tm_sec;
 		timeInSeconds += localTime->tm_min * 60.;
 		timeInSeconds += localTime->tm_hour * 60. * 60.;
-		glUniform4f(dateUniformLoc, localTime->tm_year+1900., localTime->tm_mon+1, localTime->tm_mday, timeInSeconds);
+		glUniform4f(dateUni.loc, localTime->tm_year+1900., localTime->tm_mon+1, localTime->tm_mday, timeInSeconds);
 		GLERRLOG
 	}
-	if (renderFrameIndexUniformLoc >= 0)	{
-		glUniform1i(renderFrameIndexUniformLoc, renderFrameIndex);
+	if (renderFrameIndexUni.loc >= 0)	{
+		glUniform1i(renderFrameIndexUni.loc, renderFrameIndex);
 		GLERRLOG
 	}
 	
@@ -839,7 +955,7 @@ void ISFScene::_initialize()	{
 	if (deleted)
 		return;
 	
-	VVGLShaderScene::_initialize();
+	VVGLScene::_initialize();
 	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
@@ -850,7 +966,7 @@ void ISFScene::_renderCleanup()	{
 	if (deleted)
 		return;
 	
-	VVGLShaderScene::_renderCleanup();
+	VVGLScene::_renderCleanup();
 	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
@@ -872,6 +988,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 	
 #if ISF_TARGET_IOS
 	glPushGroupMarkerEXT(0, "All ISF-specific rendering");
+	GLERRLOG
 #endif
 	
 	{
@@ -891,8 +1008,10 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 		
 		//	get the buffer pool we're going to use to generate the buffers
 		VVGLBufferPoolRef		bp = privatePool;
-		if (bp==nullptr && inTargetBuffer!=nullptr) bp = inTargetBuffer->parentBufferPool;
-		if (bp==nullptr) bp = GetGlobalBufferPool();
+		if (bp==nullptr && inTargetBuffer!=nullptr)
+			bp = inTargetBuffer->parentBufferPool;
+		if (bp==nullptr)
+			bp = GetGlobalBufferPool();
 		if (bp==nullptr)	{
 			cout << "\tERR: bailing, pool null, " << __PRETTY_FUNCTION__ << endl;
 			return;
@@ -914,7 +1033,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			//RenderTarget			tmpRenderTarget = RenderTarget(CreateFBO(), nullptr, nullptr);
 			RenderTarget			tmpRenderTarget;
 			if (inTargetBuffer != nullptr)	{
-				tmpRenderTarget.fbo = CreateFBO(bp);
+				tmpRenderTarget.fbo = CreateFBO(true, bp);
 				context->makeCurrentIfNotCurrent();
 			}
 			
@@ -944,10 +1063,10 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 				
 #if ISF_TARGET_MAC
 				if (shouldBeIOSurface)
-					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, bp) : CreateRGBATexIOSurface(targetBufferSize, bp);
+					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
 #endif
-					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
+					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
 				
 				context->makeCurrentIfNotCurrent();
 			}
@@ -1022,12 +1141,13 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 	
 #if ISF_TARGET_IOS
 	glPopGroupMarkerEXT();
+	GLERRLOG
 #endif
 	
 }
 void ISFScene::setVertexShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
-	VVGLShaderScene::setVertexShaderString(n);
+	VVGLScene::setVertexShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
 	for (const auto & attrIt : tmpDoc->getInputs())	{
@@ -1039,7 +1159,7 @@ void ISFScene::setVertexShaderString(const string & n)	{
 }
 void ISFScene::setFragmentShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
-	VVGLShaderScene::setFragmentShaderString(n);
+	VVGLScene::setFragmentShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
 	for (const auto & attrIt : tmpDoc->getInputs())	{
