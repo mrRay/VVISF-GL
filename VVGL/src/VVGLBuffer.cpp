@@ -416,7 +416,7 @@ string VVGLBuffer::getDescriptionString() const	{
 	case VVGLBuffer::Type_PBO:	typeChar='P'; break;
 	case VVGLBuffer::Type_VBO:	typeChar='V'; break;
 	case VVGLBuffer::Type_EBO:	typeChar='E'; break;
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	case VVGLBuffer::Type_VAO:	typeChar='A'; break;
 #endif
 	}

@@ -1,5 +1,4 @@
-#import "VVGLBufferGLView.h"
-//#include "VVGLContext.hpp"
+#import "VVBufferGLKView.h"
 
 
 
@@ -9,7 +8,7 @@
 	item = nil;											\
 }}
 
-@interface VVGLBufferGLView()	{
+@interface VVBufferGLKView()	{
 	
 }
 @property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::VVGLBufferRef vao;
@@ -20,10 +19,11 @@
 
 
 
-@implementation VVGLBufferGLView
+@implementation VVBufferGLKView
 
 
-- (id) initWithFrame:(NSRect)f	{
+- (id) initWithFrame:(CGRect)f	{
+	NSLog(@"%s",__func__);
 	if (self = [super initWithFrame:f])	{
 		pthread_mutexattr_t		attr;
 		pthread_mutexattr_init(&attr);
@@ -47,6 +47,7 @@
 	return nil;
 }
 - (id) initWithCoder:(NSCoder *)c	{
+	NSLog(@"%s",__func__);
 	if (self = [super initWithCoder:c])	{
 		pthread_mutexattr_t		attr;
 		pthread_mutexattr_init(&attr);
@@ -79,27 +80,16 @@
 	OSSpinLockUnlock(&retainDrawLock);
 	[super dealloc];
 }
-- (void) drawRect:(NSRect)r	{
+- (void) drawRect:(CGRect)r	{
+	//NSLog(@"%s",__func__);
 	
 	pthread_mutex_lock(&renderLock);
-		if (!initialized)	{
-			//using namespace VVISF;
-			
-			VVGLBufferPoolRef		bp = GetGlobalBufferPool();
-			if (bp != nullptr)	{
-				[self setSharedGLContext:bp->getContext()];
-				initialized = YES;
-			}
+		if (initialized && scene!=nullptr)	{
+			scene->render(VVGLScene::RenderTarget());
 		}
 	pthread_mutex_unlock(&renderLock);
-	
-	if (initialized)
-		[self redraw];
-	
 }
 - (void) redraw	{
-	//using namespace VVISF;
-	
 	VVGLBufferRef	lastBuffer = nullptr;
 	OSSpinLockLock(&retainDrawLock);
 	lastBuffer = (!retainDraw || retainDrawBuffer==nullptr) ? nullptr : retainDrawBuffer;
@@ -109,8 +99,25 @@
 }
 - (void) drawBuffer:(VVGL::VVGLBufferRef)b	{
 	//NSLog(@"%s ... %s",__func__,b->getDescriptionString().c_str());
-	
 	BOOL			bail = NO;
+	pthread_mutex_lock(&renderLock);
+	if (!initialized || scene==nullptr)	{
+		NSLog(@"\t\tneed to initialize %@",[self class]);
+		auto			bp = GetGlobalBufferPool();
+		auto			bpCtx = (bp==nullptr) ? nullptr : bp->getContext();
+		if (bpCtx != nullptr)	{
+			[self setSharedGLContext:bpCtx];
+			initialized = YES;
+		}
+		
+		if (!initialized || scene==nullptr)	{
+			bail = YES;
+			NSLog(@"\t\tbailing, view not initialized, %s",__func__);
+		}
+	}
+	pthread_mutex_unlock(&renderLock);
+	if (bail)
+		return;
 	
 	OSSpinLockLock(&retainDrawLock);
 	//if (retainDraw)	{
@@ -128,13 +135,12 @@
 		return;
 	
 	//	we probably shouldn't do this every time we draw a buffer.
-	NSRect		tmpBounds = [self backingBounds];
+	CGRect		tmpBounds = CGRectMake(0,0,[self drawableWidth],[self drawableHeight]);
 	scene->setOrthoSize(VVGL::Size(tmpBounds.size.width, tmpBounds.size.height));
 	
 	pthread_mutex_lock(&renderLock);
 		if (initialized)	{
-			[[self openGLContext] makeCurrentContext];
-			scene->render();
+			[self display];
 		}
 	pthread_mutex_unlock(&renderLock);
 	
@@ -154,7 +160,7 @@
 	scene = make_shared<VVGLScene>(n->newContextSharingMe());
 	//	load the frag/vert shaders
 	string			vsString("\r\
-#version 330 core\r\
+#version 300 es\r\
 in vec3		inXYZ;\r\
 in vec2		inST;\r\
 uniform mat4	vvglOrthoProj;\r\
@@ -165,10 +171,11 @@ programST = inST;\r\
 }\r\
 ");
 	string			fsString("\r\
-#version 330 core\r\
+#version 300 es\r\
+precision mediump		float;\r\
 in vec2		programST;\r\
 uniform sampler2D		inputImage;\r\
-uniform sampler2DRect	inputImageRect;\r\
+//uniform sampler2DRect	inputImageRect;\r\
 uniform int		isRectTex;\r\
 out vec4		FragColor;\r\
 void main()	{\r\
@@ -176,8 +183,8 @@ if (isRectTex==0)\r\
 	FragColor = vec4(0,0,0,1);\r\
 else if (isRectTex==1)\r\
 	FragColor = texture(inputImage,programST);\r\
-else\r\
-	FragColor = texture(inputImageRect,programST);\r\
+//else\r\
+//	FragColor = texture(inputImageRect,programST);\r\
 }\r\
 ");
 	scene->setVertexShaderString(vsString);
@@ -189,39 +196,39 @@ else\r\
 	VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
 	VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
 	VVGLCachedUniRef		inputImage = make_shared<VVGLCachedUni>("inputImage");
-	VVGLCachedUniRef		inputImageRect = make_shared<VVGLCachedUni>("inputImageRect");
+	//VVGLCachedUniRef		inputImageRect = make_shared<VVGLCachedUni>("inputImageRect");
 	VVGLCachedUniRef		isRectTex = make_shared<VVGLCachedUni>("isRectTex");
 	//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
-	scene->setRenderPrepCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	scene->setRenderPrepCallback([xyzAttr,stAttr,inputImage,isRectTex,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
+		
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
 			GLint				myProgram = n.getProgram();
 			xyzAttr->cacheTheLoc(myProgram);
 			stAttr->cacheTheLoc(myProgram);
 			inputImage->cacheTheLoc(myProgram);
-			inputImageRect->cacheTheLoc(myProgram);
+			//inputImageRect->cacheTheLoc(myProgram);
 			isRectTex->cacheTheLoc(myProgram);
 			
 			//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
 			GLBufferQuadXYST	targetQuad;
 			
-			//	create a new VAO, store it in the VVGLBufferGLView as an ivar.  don't bother populating it now.
+			//	create a new VAO, store it in the VVBufferGLKView as an ivar.  don't bother populating it now.
 			VVGLBufferRef		tmpVAO = CreateVAO(true);
 			[(id)selfPtr setVAO:tmpVAO];
 		}
+		
+		
 	});
 	//	the render callback passes all the data to the GL program
-	scene->setRenderCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,selfPtr](const VVGLScene & n)	{
+	scene->setRenderCallback([xyzAttr,stAttr,inputImage,isRectTex,selfPtr](const VVGLScene & n)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
-		//	clear
-		glClearColor(0., 0., 0., 1.);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//	get the buffer we want to draw
 		VVGLBufferRef		bufferToDraw = [(id)selfPtr retainDrawBuffer];
 		//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
-		NSRect				rawBounds = [(id)selfPtr bounds];
+		CGRect				rawBounds = CGRectMake(0,0,[(VVBufferGLKView *)selfPtr drawableWidth],[(VVBufferGLKView *)selfPtr drawableHeight]);
 		VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 		VVGL::Rect			geometryRect = ResizeRect((bufferToDraw==nullptr) ? viewBoundsRect : bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
 		GLBufferQuadXYST	targetQuad;
@@ -232,23 +239,23 @@ else\r\
 		GLERRLOG
 		glBindTexture(VVGLBuffer::Target_2D, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_2D) ? bufferToDraw->name : 0);
 		GLERRLOG
-		glBindTexture(VVGLBuffer::Target_Rect, 0);
-		GLERRLOG
+		//glBindTexture(VVGLBuffer::Target_Rect, 0);
+		//GLERRLOG
 		if (inputImage->loc >= 0)	{
 			glUniform1i(inputImage->loc, 0);
 			GLERRLOG
 		}
 		//	pass the RECT texture to the program (if there's a RECT texture)
-		glActiveTexture(GL_TEXTURE1);
-		GLERRLOG
-		glBindTexture(VVGLBuffer::Target_2D, 0);
-		GLERRLOG
-		glBindTexture(VVGLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_Rect) ? bufferToDraw->name : 0);
-		GLERRLOG
-		if (inputImageRect->loc >= 0)	{
-			glUniform1i(inputImageRect->loc, 1);
-			GLERRLOG
-		}
+		//glActiveTexture(GL_TEXTURE1);
+		//GLERRLOG
+		//glBindTexture(VVGLBuffer::Target_2D, 0);
+		//GLERRLOG
+		//glBindTexture(VVGLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_Rect) ? bufferToDraw->name : 0);
+		//GLERRLOG
+		//if (inputImageRect->loc >= 0)	{
+		//	glUniform1i(inputImageRect->loc, 1);
+		//	GLERRLOG
+		//}
 		//	pass an int to the program that indicates whether we're passing no texture (0), a 2D texture (1) or a RECT texture (2)
 		if (isRectTex->loc >= 0)	{
 			if (bufferToDraw == nullptr)
@@ -258,9 +265,9 @@ else\r\
 				case VVGLBuffer::Target_2D:
 					glUniform1i(isRectTex->loc, 1);
 					break;
-				case VVGLBuffer::Target_Rect:
-					glUniform1i(isRectTex->loc, 2);
-					break;
+				//case VVGLBuffer::Target_Rect:
+				//	glUniform1i(isRectTex->loc, 2);
+				//	break;
 				default:
 					glUniform1i(isRectTex->loc, 0);
 					break;
@@ -304,14 +311,13 @@ else\r\
 		//	delete the VBO we made earlier...
 		glDeleteBuffers(1, &vbo);
 		GLERRLOG
+		
 	});
-	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->getContext()->ctx];
-	if (sceneCtxWrapper != nil)	{
-		[self setOpenGLContext:sceneCtxWrapper];
-		[sceneCtxWrapper setView:self];
-		[sceneCtxWrapper release];
-		long				swap = 1;
-		[[self openGLContext] setValues:(GLint *)&swap forParameter:NSOpenGLCPSwapInterval];
+	
+	VVGLContextRef	sceneCtx = scene->getContext();
+	EAGLContext		*sceneGLCtx = (sceneCtx==nullptr) ? nil : (EAGLContext *)(sceneCtx->ctx);
+	if (sceneGLCtx != nil)	{
+		[self setContext:sceneGLCtx];
 		initialized = YES;
 	}
 	
@@ -350,17 +356,3 @@ else\r\
 
 
 @end
-
-
-
-
-
-
-
-
-@implementation NSOpenGLView (NSOpenGLViewVVGLBufferViewAdditions)
-- (NSRect) backingBounds	{
-	return [(id)self convertRectToBacking:[self bounds]];
-}
-@end
-

@@ -92,7 +92,7 @@ VVGLBufferCopier::~VVGLBufferCopier()	{
 	if (!deleted)
 		prepareToBeDeleted();
 	
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	vao = nullptr;
 #elif ISF_TARGET_GLES
 	vbo = nullptr;
@@ -155,6 +155,35 @@ void main()	{\n\
 	//else\n\
 		//gl_FragColor = texture2DRect(inputImageRect,programST);\n\
 }\n\
+");
+#elif ISF_TARGET_GLES3
+	string			vsString("\r\
+#version 300 es\r\
+in vec3		inXYZ;\r\
+in vec2		inST;\r\
+uniform mat4	vvglOrthoProj;\r\
+out vec2		programST;\r\
+void main()	{\r\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
+	programST = inST;\r\
+}\r\
+");
+	string			fsString("\r\
+#version 300 es\r\
+precision mediump		float;\r\
+in vec2		programST;\r\
+uniform sampler2D		inputImage;\r\
+uniform sampler2DRect	inputImageRect;\r\
+uniform int		isRectTex;\r\
+out vec4		FragColor;\r\
+void main()	{\r\
+	if (isRectTex==0)\r\
+		FragColor = vec4(0,0,0,1);\r\
+	else if (isRectTex==1)\r\
+		FragColor = texture(inputImage,programST);\r\
+	else\r\
+		FragColor = texture(inputImageRect,programST);\r\
+}\r\
 ");
 #endif
 	setVertexShaderString(vsString);
@@ -441,7 +470,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 	cout << __PRETTY_FUNCTION__ << "- DISABLED!" << endl;
 }
 */
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	

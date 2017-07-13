@@ -42,6 +42,7 @@ enum GLVersion	{
 	GLVersion_Unknown,
 	GLVersion_2,
 	GLVersion_ES2,
+	GLVersion_ES3,
 	GLVersion_33,
 	GLVersion_4
 };

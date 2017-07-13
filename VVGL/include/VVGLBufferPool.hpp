@@ -8,6 +8,8 @@
 #if ISF_TARGET_MAC
 #import <CoreGraphics/CoreGraphics.h>
 #import <TargetConditionals.h>
+#elif ISF_TARGET_IOS
+#import <CoreGraphics/CoreGraphics.h>
 #endif
 
 
@@ -35,7 +37,7 @@ class VVGLBufferPool	{
 		
 		Timestamper			timestamper;
 		
-#if ISF_TARGET_MAC
+#if ISF_TARGET_MAC || ISF_TARGET_IOS
 		CGColorSpaceRef		colorSpace = nullptr;
 #endif
 		
@@ -58,7 +60,7 @@ class VVGLBufferPool	{
 		inline void timestampThisBuffer(const VVGLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
 		inline VVGLContextRef & getContext() { return context; }
 		inline recursive_mutex & getContextLock() { return contextLock; }
-#if ISF_TARGET_MAC
+#if ISF_TARGET_MAC || ISF_TARGET_IOS
 		inline CGColorSpaceRef getColorSpace() const { return colorSpace; }
 #endif
 		
@@ -83,8 +85,6 @@ VVGLBufferPoolRef GetGlobalBufferPool();
 //	these functions create buffers
 VVGLBufferRef CreateRGBATex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRGBAFloatTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-VVGLBufferRef CreateBGRATex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-VVGLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRB(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateFBO(const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateDepthBuffer(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -95,10 +95,15 @@ VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32
 VVGLBufferRef CreateRGBARectTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 
+#if !ISF_TARGET_IOS
+VVGLBufferRef CreateBGRATex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#endif
+
 //	these methods create VVGLBuffers that aren't actually images at all
 VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 VVGLBufferRef CreateVAO(const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 

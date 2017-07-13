@@ -52,7 +52,7 @@ class ISFScene : public VVGLScene	{
 		
 		//	access to these vars should be restricted by the 'renderLock' var inherited from VVGLScene
 		//VVGLBufferRef		geoXYVBO = nullptr;
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 		VVGLBufferRef		vao = nullptr;
 #elif ISF_TARGET_GLES
 		VVGLBufferRef		vbo = nullptr;
@@ -129,7 +129,7 @@ class ISFScene : public VVGLScene	{
 		virtual void setFragmentShaderString(const string & n);
 		
 	protected:
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 		inline VVGLBufferRef getVAO() const { return vao; }
 		inline void setVAO(const VVGLBufferRef & n) { vao = n; }
 #elif ISF_TARGET_GLES

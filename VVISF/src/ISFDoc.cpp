@@ -983,8 +983,11 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_ES2:
 			newFragShaderSrc.insert(0, string("#version 100\n"));
 			break;
+		case GLVersion_ES3:
+			newFragShaderSrc.insert(0, string("#version 300 es\n"));
+			break;
 		case GLVersion_33:
-			newFragShaderSrc.insert(0, string("#version 130\n"));
+			newFragShaderSrc.insert(0, string("#version 330\n"));
 			break;
 		case GLVersion_4:
 			newFragShaderSrc.insert(0, string("#version 400\n"));
@@ -1140,6 +1143,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 							newFuncString = FmtString("texture2DRect(%s, _%s_texCoord)",samplerNameC,samplerNameC);
 						}
 						break;
+					case GLVersion_ES3:
 					case GLVersion_33:
 					case GLVersion_4:
 						newFuncString = FmtString("texture(%s, _%s_texCoord)",samplerNameC,samplerNameC);
@@ -1159,6 +1163,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				case GLVersion_ES2:
 					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
 					break;
+				case GLVersion_ES3:
 				case GLVersion_33:
 				case GLVersion_4:
 					newFragShaderSrc.append(FmtString("in vec2\t\t_%s_texCoord;\n",it.c_str()));
@@ -1201,6 +1206,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 							newFuncString = FmtString("texture2DRect(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
 						}
 						break;
+					case GLVersion_ES3:
 					case GLVersion_33:
 					case GLVersion_4:
 						newFuncString = FmtString("texture(%s, _%s_normTexCoord)", samplerNameC, samplerNameC);
@@ -1220,6 +1226,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				case GLVersion_ES2:
 					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
 					break;
+				case GLVersion_ES3:
 				case GLVersion_33:
 				case GLVersion_4:
 					newFragShaderSrc.append(FmtString("in vec2\t\t_%s_normTexCoord;\n",it.c_str()));
@@ -1267,6 +1274,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 			if (requires2DRectBiasMacro)
 				newFragShaderSrc.append(ISFGLMacro2DRectBias_GL2);
 			break;
+		case GLVersion_ES3:
 		case GLVersion_33:
 		case GLVersion_4:
 			if (requires2DMacro)
@@ -1312,8 +1320,11 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_ES2:
 			newVertShaderSrc.insert(0, string("#version 100\n"));
 			break;
+		case GLVersion_ES3:
+			newVertShaderSrc.insert(0, string("#version 300 es\n"));
+			break;
 		case GLVersion_33:
-			newVertShaderSrc.insert(0, string("#version 130\n"));
+			newVertShaderSrc.insert(0, string("#version 330\n"));
 			break;
 		case GLVersion_4:
 			newVertShaderSrc.insert(0, string("#version 400\n"));
@@ -1329,6 +1340,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_ES2:
 			newVertShaderSrc.append(ISFVertVarDec_GLES2);
 			break;
+		case GLVersion_ES3:
 		case GLVersion_33:
 		case GLVersion_4:
 			newVertShaderSrc.append(ISFVertVarDec_GL3);
@@ -1347,6 +1359,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					case GLVersion_ES2:
 						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
 						break;
+					case GLVersion_ES3:
 					case GLVersion_33:
 					case GLVersion_4:
 						newVertShaderSrc.append(FmtString("out vec2\t\t_%s_texCoord;\n",it.c_str()));
@@ -1362,6 +1375,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					case GLVersion_ES2:
 						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
 						break;
+					case GLVersion_ES3:
 					case GLVersion_33:
 					case GLVersion_4:
 						newVertShaderSrc.append(FmtString("out vec2\t\t_%s_normTexCoord;\n",it.c_str()));
@@ -1642,6 +1656,7 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	case GLVersion_2:
 	case GLVersion_ES2:
 		break;
+	case GLVersion_ES3:
 	case GLVersion_33:
 	case GLVersion_4:
 		fsDeclarations.emplace_back("#define gl_FragColor isf_FragColor\n");
@@ -1665,6 +1680,7 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 		//vsDeclarations.emplace_back("varying vec3\t\tisf_VertPos;\n");
 		//fsDeclarations.emplace_back("varying vec3\t\tisf_VertPos;\n");
 		break;
+	case GLVersion_ES3:
 	case GLVersion_33:
 	case GLVersion_4:
 		vsDeclarations.emplace_back("out vec2\t\tisf_FragNormCoord;\n");

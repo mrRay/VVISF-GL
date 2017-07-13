@@ -1,7 +1,7 @@
 #include "VVGLContext.hpp"
 
 #if ISF_TARGET_MAC
-#import <CoreGraphics/CoreGraphics.h>
+	#import <CoreGraphics/CoreGraphics.h>
 #endif
 #include <iostream>
 #include <cassert>
@@ -579,7 +579,7 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 void VVGLContext::calculateVersion()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
 	if (ctx == nullptr)
 		return;
@@ -604,6 +604,9 @@ void VVGLContext::calculateVersion()	{
 					switch (majorVsn)	{
 					case 2:
 						version = GLVersion_ES2;
+						break;
+					case 3:
+						version = GLVersion_ES3;
 						break;
 					default:
 						version = GLVersion_ES2;

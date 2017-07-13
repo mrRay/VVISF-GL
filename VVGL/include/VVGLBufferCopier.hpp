@@ -28,7 +28,7 @@ class VVGLBufferCopier : public VVGLScene	{
 		//VVGLBufferRef	geoXYVBO = nullptr;
 		//VVGLBufferRef	geoSTVBO = nullptr;
 		
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 		VVGLBufferRef	vao = nullptr;	//	"owns" its own VBO, used to draw stuff if we're in GL 3
 #elif ISF_TARGET_GLES
 		VVGLBufferRef	vbo = nullptr;	//	geometry + tex coords, used to draw stuff if we're in GL ES

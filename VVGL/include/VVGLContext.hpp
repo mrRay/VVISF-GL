@@ -8,6 +8,12 @@
 	//#import <OpenGL/glext.h>
 	#import <OpenGL/gl3.h>
 	#import <OpenGL/gl3ext.h>
+#elif ISF_TARGET_IOS
+	//#ifndef __cplusplus
+		//#import <OpenGLES/EAGL.h>
+		#import <OpenGLES/ES3/glext.h>
+		//#import <GLKit/GLKit.h>
+	//#endif
 #elif ISF_TARGET_RPI
 	#include "bcm_host.h"
 	//#include <GLES/gl.h>
@@ -89,9 +95,11 @@ class VVGLContext	{
 		VVGLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat());
 #elif ISF_TARGET_IOS
 		//	"inCtx" is an EAGLContext! this function doesn't create anything- it just retains the passed ctx
-		VVGLContext(const void * inCtx);
-		//	this function creates a GL context using the passed sharegroup
-		//VVGLContext(const void * inSharegroup);
+		VVGLContext(const void * inEAGLContext);
+		//	this function doesn't create a new GL context- it "wraps" (and retains) the passed context
+		//VVGLContext(const EAGLContext * inCtx);
+		//	this function actually creates a new GL context using the passed sharegroup and rendering API
+		//VVGLContext(const EAGLSharegroup * inSharegroup, const EAGLRenderingAPI & inRenderAPI);
 #elif ISF_TARGET_GLFW
 		VVGLContext(GLFWwindow * inWindow);
 #elif ISF_TARGET_RPI

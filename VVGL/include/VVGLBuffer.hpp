@@ -57,7 +57,7 @@ class VVGLBuffer	{
 			Type_PBO,
 			Type_VBO,
 			Type_EBO,
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 			Type_VAO,
 #endif
 		};

@@ -40,7 +40,7 @@ ISFScene::~ISFScene()	{
 	}
 	
 	//geoXYVBO = nullptr;
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	vao = nullptr;
 #elif ISF_TARGET_GLES
 	vbo = nullptr;
@@ -317,7 +317,7 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	setRenderCallback([&](const VVGLScene & s)	{
 		//	make a quad that describes the area we have to draw
 		GLBufferQuadXY		targetQuad;
@@ -513,7 +513,7 @@ void ISFScene::_renderPrep()	{
 	*/
 	
 	//	make sure there's a VAO
-#if ISF_TARGET_GL3PLUS
+#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	if (getVAO() == nullptr)
 		setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
 #endif
