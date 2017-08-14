@@ -77,6 +77,7 @@ class ISFAttr	{
 		
 		friend ostream & operator<<(ostream & os, const ISFAttr & n);
 		void lengthyDescription();
+		string getDescription();
 };
 
 

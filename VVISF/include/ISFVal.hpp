@@ -66,8 +66,10 @@ struct ISFVal	{
 		bool getBoolVal() const;
 		int32_t getLongVal() const;
 		inline double * getPointValPtr() { if (type!=ISFValType_Point2D) return nullptr; return &(val.pointVal[0]); }
+		inline double getPointValByIndex(const int & inIndex) { if (type!=ISFValType_Point2D || inIndex<0 || inIndex>1) return 0.; return val.pointVal[inIndex]; }
 		inline void setPointValByIndex(const int & inIndex, const double & inVal) { if (type!=ISFValType_Point2D) return; val.pointVal[inIndex]=inVal; }
 		inline double * getColorValPtr() { if (type!=ISFValType_Color) return nullptr; return &(val.colorVal[0]); }
+		inline double getColorValByChannel(const int & inIndex) { if (type!=ISFValType_Color || inIndex<0 || inIndex>3) return 0.; return val.colorVal[inIndex]; }
 		inline void setColorValByChannel(const int & inIndex, const double & inVal) { if (type!=ISFValType_Color) return; val.colorVal[inIndex]=inVal; }
 		VVGLBufferRef getImageBuffer() const;
 		void setImageBuffer(const VVGLBufferRef & n);

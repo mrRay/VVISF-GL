@@ -19,6 +19,7 @@ enum PixelFormat	{
 	PF_None = 0,
 	PF_Depth = GL_DEPTH_COMPONENT,
 	PF_RGBA = GL_RGBA,
+	PF_BGRA = GL_BGRA
 };
 enum PixelType	{
 	PT_Float = GL_FLOAT,

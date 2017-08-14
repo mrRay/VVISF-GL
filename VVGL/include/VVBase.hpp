@@ -69,6 +69,10 @@ struct GLColor	{
 #endif
 
 
+//	this function dumps a 4cc to chars
+inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if (destCharPtr==nullptr) return; for (int i=0; i<4; ++i) destCharPtr[i] = (fourCC >> ((3-i)*8)) & 0xFF; }
+
+
 }
 
 

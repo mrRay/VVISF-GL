@@ -53,7 +53,7 @@ ISFScene::~ISFScene()	{
 
 
 void ISFScene::useFile(const string & inPath)	{
-	//cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
+	cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{
 		lock_guard<recursive_mutex> rlock(renderLock);
 		lock_guard<mutex>	plock(propertyLock);
@@ -94,34 +94,37 @@ void ISFScene::useFile(const string & inPath)	{
 }
 string ISFScene::getFilePath()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getPath();
+	return (doc==nullptr) ? string("") : doc->getPath();
 }
 string ISFScene::getFileName()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getName();
+	return (doc==nullptr) ? string("") : doc->getName();
 }
 string ISFScene::getFileDescription()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getDescription();
+	return (doc==nullptr) ? string("") : doc->getDescription();
 }
 string ISFScene::getFileCredit()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getCredit();
+	return (doc==nullptr) ? string("") : doc->getCredit();
 }
 ISFFileType ISFScene::getFileType()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getType();
+	return (doc==nullptr) ? ISFFileType_None : doc->getType();
 }
 vector<string> ISFScene::getFileCategories()	{
 	lock_guard<mutex>		lock(propertyLock);
-	return doc->getCategories();
+	return (doc==nullptr) ? vector<string>() : doc->getCategories();
 }
 
 
 void ISFScene::setBufferForInputNamed(const VVGLBufferRef & inBuffer, const string & inName)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return;
 	ISFAttrRef		tmpAttr = tmpDoc->getInput(inName);
-	tmpAttr->setCurrentImageBuffer(inBuffer);
+	if (tmpAttr != nullptr)
+		tmpAttr->setCurrentImageBuffer(inBuffer);
 }
 void ISFScene::setFilterInputBuffer(const VVGLBufferRef & inBuffer)	{
 	//cout << __PRETTY_FUNCTION__ << ", buffer is " << inBuffer << endl;
@@ -135,6 +138,8 @@ void ISFScene::setFilterInputBuffer(const VVGLBufferRef & inBuffer)	{
 }
 void ISFScene::setBufferForInputImageKey(const VVGLBufferRef & inBuffer, const string & inString)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return;
 	for (const auto & attrIt : tmpDoc->getImageInputs())	{
 		if (attrIt->getName() == inString)	{
 			attrIt->setCurrentImageBuffer(inBuffer);
@@ -144,6 +149,8 @@ void ISFScene::setBufferForInputImageKey(const VVGLBufferRef & inBuffer, const s
 }
 void ISFScene::setBufferForAudioInputKey(const VVGLBufferRef & inBuffer, const string & inString)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return;
 	for (const auto & attrIt : tmpDoc->getAudioInputs())	{
 		if (attrIt->getName() == inString)	{
 			attrIt->setCurrentImageBuffer(inBuffer);
@@ -153,6 +160,8 @@ void ISFScene::setBufferForAudioInputKey(const VVGLBufferRef & inBuffer, const s
 }
 VVGLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return nullptr;
 	for (const auto & attrIt : tmpDoc->getImageInputs())	{
 		if (attrIt->getName() == inKey)	{
 			return attrIt->getCurrentImageBuffer();
@@ -162,6 +171,8 @@ VVGLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
 }
 VVGLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return nullptr;
 	for (const auto & attrIt : tmpDoc->getAudioInputs())	{
 		if (attrIt->getName() == inKey)	{
 			return attrIt->getCurrentImageBuffer();
@@ -171,6 +182,8 @@ VVGLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
 }
 VVGLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return nullptr;
 	for (const auto & targetIt : tmpDoc->getPersistentBuffers())	{
 		if (targetIt->getName() == inKey)	{
 			return targetIt->getBuffer();
@@ -180,6 +193,8 @@ VVGLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
 }
 VVGLBufferRef ISFScene::getTempBufferNamed(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return nullptr;
 	for (const auto & targetIt : tmpDoc->getTempBuffers())	{
 		if (targetIt->getName() == inKey)	{
 			return targetIt->getBuffer();
@@ -210,22 +225,42 @@ ISFVal ISFScene::valueForInputNamed(const string & inName)	{
 
 ISFAttrRef ISFScene::getInputNamed(const string & inName)	{
 	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return nullptr;
 	for (const auto & attrIt : tmpDoc->getInputs())	{
 		if (attrIt->getName() == inName)
 			return attrIt;
 	}
 	return nullptr;
 }
+vector<ISFAttrRef> ISFScene::getInputs()	{
+	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return vector<ISFAttrRef>();
+	return tmpDoc->getInputs();
+}
+vector<ISFAttrRef> ISFScene::getInputs(const ISFValType & inType)	{
+	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return vector<ISFAttrRef>();
+	return tmpDoc->getInputs(inType);
+}
 vector<ISFAttrRef> ISFScene::getImageInputs()	{
 	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return vector<ISFAttrRef>();
 	return tmpDoc->getImageInputs();
 }
 vector<ISFAttrRef> ISFScene::getAudioInputs()	{
 	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return vector<ISFAttrRef>();
 	return tmpDoc->getAudioInputs();
 }
 vector<ISFAttrRef> ISFScene::getImageImports()	{
 	ISFDocRef		tmpDoc = getDoc();
+	if (tmpDoc == nullptr)
+		return vector<ISFAttrRef>();
 	return tmpDoc->getImageImports();
 }
 
@@ -292,6 +327,9 @@ void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::
 }
 void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime)	{
 	_render(inTargetBuffer, inRenderSize, inRenderTime, nullptr);
+}
+void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,VVGLBufferRef> * outPassDict)	{
+	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), outPassDict);
 }
 void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize)	{
 	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), nullptr);
@@ -1080,6 +1118,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			if (outPassDict!=nullptr && tmpRenderTarget.color!=nullptr)	{
 				//(*outPassDict)[FmtString("%d",passIndex-1)] = tmpRenderTarget.color;
 				(*outPassDict)[passIndex-1] = tmpRenderTarget.color;
+				//cout << "\tstoring " << *tmpRenderTarget.color << " at " << passIndex-1 << endl;
 			}
 			
 			//	increment the pass index for next time
@@ -1099,6 +1138,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			//	add the buffer i rendered into (this is the "output" buffer, and is stored at key "-1")
 			//(*outPassDict)[string("-1")] = inTargetBuffer;
 			(*outPassDict)[-1] = inTargetBuffer;
+			//cout << "\tstoring " << *inTargetBuffer << " at " << -1 << endl;
 			//	add the buffers for the various image inputs at keys going from 100-199
 			int			i=0;
 			for (const auto & attrIt : tmpDoc->getImageInputs())	{
@@ -1106,6 +1146,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",100+i)] = tmpBuffer;
 					(*outPassDict)[100+i] = tmpBuffer;
+					//cout << "\tstoring " << *tmpBuffer << " at " << 100+i << endl;
 				}
 				
 				++i;
@@ -1117,6 +1158,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",200+i)] = tmpBuffer;
 					(*outPassDict)[200+i] = tmpBuffer;
+					//cout << "\tstoring " << *tmpBuffer << " at " << 200+i << endl;
 				}
 				
 				++i;
@@ -1146,27 +1188,33 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 	
 }
 void ISFScene::setVertexShaderString(const string & n)	{
+	//cout << "*******************************\n";
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
 	VVGLScene::setVertexShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
-	for (const auto & attrIt : tmpDoc->getInputs())	{
-		attrIt->clearUniformLocations();
-	}
-	for (const auto & attrIt : tmpDoc->getImageImports())	{
-		attrIt->clearUniformLocations();
+	if (tmpDoc != nullptr)	{
+		for (const auto & attrIt : tmpDoc->getInputs())	{
+			attrIt->clearUniformLocations();
+		}
+		for (const auto & attrIt : tmpDoc->getImageImports())	{
+			attrIt->clearUniformLocations();
+		}
 	}
 }
 void ISFScene::setFragmentShaderString(const string & n)	{
+	//cout << "*******************************\n";
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
 	VVGLScene::setFragmentShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
-	for (const auto & attrIt : tmpDoc->getInputs())	{
-		attrIt->clearUniformLocations();
-	}
-	for (const auto & attrIt : tmpDoc->getImageImports())	{
-		attrIt->clearUniformLocations();
+	if (tmpDoc != nullptr)	{
+		for (const auto & attrIt : tmpDoc->getInputs())	{
+			attrIt->clearUniformLocations();
+		}
+		for (const auto & attrIt : tmpDoc->getImageImports())	{
+			attrIt->clearUniformLocations();
+		}
 	}
 }
 

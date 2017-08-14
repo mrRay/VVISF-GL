@@ -4,8 +4,8 @@
 #include <iostream>
 #if ISF_TARGET_MAC
 	#import <OpenGL/OpenGL.h>
-	//#import <OpenGL/gl.h>
-	//#import <OpenGL/glext.h>
+	#import <OpenGL/gl.h>
+	#import <OpenGL/glext.h>
 	#import <OpenGL/gl3.h>
 	#import <OpenGL/gl3ext.h>
 #elif ISF_TARGET_IOS

@@ -42,7 +42,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 		
 		
 		//	make a new scene.  we aren't giving the scene a context to use, so it will create its own context in the global buffer pool's sharegroup.
-		scene = new VVGLScene(GetGlobalBufferPool()->getContext());
+		scene = new VVGLScene();
 		scene->setClearColor(1., 0., 0., 1.);
 		//scene->setRenderCallback([](const VVGLScene & n){
 		//	cout << __PRETTY_FUNCTION__ << endl;
@@ -88,6 +88,10 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	std::string		tmpString = std::string([path UTF8String]);
 	isfScene->useFile(tmpString);
 	//cout << "doc is \n" << *(isfScene->getDoc()) << endl;
+	
+	
+	NSString		*viewPath = [[NSBundle mainBundle] pathForResource:@"PreviewPluginAlphaOverCheckerboard" ofType:@"fs"];
+	[glView useFile:viewPath];
 	
 	
 	[NSTimer

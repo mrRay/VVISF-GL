@@ -58,6 +58,19 @@ string StringByDeletingExtension(const string & n)	{
 		return n;
 	return n.substr(0, extensionIndex);
 }
+string StringByDeletingLastAndAddingFirstSlash(const string & n)	{
+	if (n.size()<1)
+		return string("");
+	
+	bool		hasFirst = (n[0]=='/') ? true : false;
+	bool		hasLast = (n[n.size()-1]=='/') ? true : false;
+	string		returnMe = n;
+	if (hasLast)
+		returnMe.pop_back();
+	if (!hasFirst)
+		returnMe.insert(0, 1, '/');
+	return returnMe;
+}
 string FmtString(const char * fmt, ...)	{
 	va_list			args;
 	va_start(args, fmt);

@@ -20,12 +20,20 @@ using namespace std;
 #pragma mark --------------------- ISF file management methods
 
 
-vector<string> * createArrayOfISFsForPath(const string & inPath, const ISFFileType & inType, const bool & inRecursive)	{
+#if !ISF_TARGET_MAC && !ISF_TARGET_IOS
+
+shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inPath, const ISFFileType & inType, const bool & inRecursive)	{
+	cout << "ERR empty: " << __PRETTY_FUNCTION__ << endl;
 	return nullptr;
 }
-vector<string> * createArrayOfDefaultISFs(const ISFFileType & inType)	{
+shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & inType)	{
+	cout << "ERR empty: " << __PRETTY_FUNCTION__ << endl;
 	return nullptr;
 }
+
+#endif
+
+
 bool FileIsProbablyAnISF(const string & pathToFile)	{
 	//return false;
 	bool		returnMe = false;

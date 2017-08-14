@@ -24,7 +24,7 @@ enum PixelFormat	{
 	PF_Depth = GL_DEPTH_COMPONENT,
 	PF_R = GL_RED,
 	PF_BGRA = GL_BGRA,
-	PF_YCbCr_422 = GL_RGB_422_APPLE,
+	PF_YCbCr_422 = GL_YCBCR_422_APPLE,
 	PF_RGBA = GL_RGBA,
 };
 enum PixelType	{

@@ -32,7 +32,8 @@ using namespace VVGL;
 
 
 ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
+	cout << __PRETTY_FUNCTION__ << endl;
+	cout << "\t" << inPath << endl;
 	
 	parentScene = inParentScene;
 	
@@ -279,7 +280,7 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 					if (persistentObj.is_string())	{
 						persistentVal = ParseStringAsBool(persistentObj);
 						//if (persistentVal.getType() == ISFValType_None)
-							//persistentVal = ValByEvaluatingString(persistentObj);
+							//persistentVal = ISFValByEvaluatingString(persistentObj);
 					}
 					else if (persistentObj.is_boolean())
 						persistentVal = ISFBoolVal(persistentObj.get<bool>());
@@ -326,7 +327,7 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 				if (tmpFloatFlag.is_string())	{
 					tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
 					//if (tmpFloatVal.getType() == ISFValType_None)
-						//tmpFloatVal = ValByEvaluatingString(tmpFloatFlag);
+						//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
 				}
 				else if (tmpFloatFlag.is_boolean())
 					tmpFloatVal = ISFBoolVal(tmpFloatFlag.get<bool>());
@@ -623,6 +624,29 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 				audioInputs.push_back(newAttribRef);
 			
 		}
+		
+		//	check to see if this is a transition
+		bool		hasStartImage = false;
+		bool		hasEndImage = false;
+		bool		hasProgress = false;
+		for (const auto & input : inputs)	{
+			if (input!=nullptr)	{
+				if (input->getType()==ISFValType_Image)	{
+					if (input->getName() == "startImage")
+						hasStartImage = true;
+					if (input->getName() == "endImage")
+						hasEndImage = true;
+				}
+				else if (input->getType() == ISFValType_Float)	{
+					if (input->getName() == "progress")
+						hasProgress = true;
+				}
+			}
+			if (hasStartImage && hasEndImage && hasProgress)
+				break;
+		}
+		if (hasStartImage && hasEndImage && hasProgress)
+			type = ISFFileType_Transition;
 	}
 	
 	

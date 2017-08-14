@@ -21,19 +21,19 @@ using namespace std;
 
 ISFVal ParseStringAsBool(const string & n)	{
 	string			testStrings[4] = { string("yes"), string("true"), string("no"), string("false") };
-	for (int i=0; i<4; ++i)	{
-		if (testStrings[i].size() == n.size())	{
+	for (int testStrIdx=0; testStrIdx<4; ++testStrIdx)	{
+		if (testStrings[testStrIdx].size() == n.size())	{
 			bool		match = true;
-			auto		itA = testStrings[i].begin();
+			auto		itA = testStrings[testStrIdx].begin();
 			auto		itB = n.begin();
-			for (itA=testStrings[i].begin(), itB=n.begin(); itA!=testStrings[i].end(); ++itA, ++itB)	{
+			for (itA=testStrings[testStrIdx].begin(), itB=n.begin(); itA!=testStrings[testStrIdx].end(); ++itA, ++itB)	{
 				if (tolower(*itA) != (*itB))	{
 					match = false;
 					break;
 				}
 			}
 			if (match)	{
-				if (i<2)
+				if (testStrIdx < 2)
 					return ISFBoolVal(true);
 				else
 					return ISFBoolVal(false);
@@ -43,7 +43,7 @@ ISFVal ParseStringAsBool(const string & n)	{
 	return ISFNullVal();
 }
 
-ISFVal ValByEvaluatingString(const string & n, const map<string, double> & inSymbols)	{
+ISFVal ISFValByEvaluatingString(const string & n, const map<string, double> & inSymbols)	{
 	exprtk::expression<double>		expr;
 	exprtk::symbol_table<double>	table;
 	exprtk::parser<double>			parser;

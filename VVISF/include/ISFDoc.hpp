@@ -71,6 +71,7 @@ class ISFDoc	{
 		vector<ISFAttrRef> & getImageInputs() { return imageInputs; }
 		vector<ISFAttrRef> & getAudioInputs() { return audioInputs; }
 		vector<ISFAttrRef> & getImageImports() { return imageImports; }
+		vector<ISFAttrRef> & getInputsOfType(const ISFValType & inInputType);
 		
 		//	this method must be called before rendering (passes/etc may have expressions that require the render dims to be evaluated)
 		void evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize);
@@ -83,10 +84,10 @@ class ISFDoc	{
 		const ISFPassTargetRef getPersistentTargetForKey(const string & n);
 		const ISFPassTargetRef getTempTargetForKey(const string & n);
 		
-		//string * getJSONSourceString() const { return jsonSourceString; }
-		//string * getJSONString() const { return jsonString; }
-		//string * getVertShaderSource() const { return vertShaderSource; }
-		//string * getFragShaderSource() const { return fragShaderSource; }
+		string * getJSONSourceString() const { return jsonSourceString; }
+		string * getJSONString() const { return jsonString; }
+		string * getVertShaderSource() const { return vertShaderSource; }
+		string * getFragShaderSource() const { return fragShaderSource; }
 		void getJSONSourceString(string & outStr);
 		void getJSONString(string & outStr);
 		void getVertShaderSource(string & outStr);

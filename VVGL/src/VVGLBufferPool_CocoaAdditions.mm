@@ -1,5 +1,5 @@
 #include <string>
-#include "VVGLBufferPool.h"
+#include "VVGLBufferPool_CocoaAdditions.h"
 //#include "VVGLBuffer.hpp"
 #include "VVBase.hpp"
 
@@ -419,182 +419,135 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const b
 
 
 #if ISF_TARGET_MAC
-VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	if (inPoolRef == nullptr)
+VVGLBufferRef CreateBufferForNSImage(NSImage * inImg, const bool & createInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inImg==nil || inPoolRef==nullptr)
 		return nullptr;
+	NSSize				origImageSize = [inImg size];
+	NSRect				origImageRect = NSMakeRect(0, 0, origImageSize.width, origImageSize.height);
+	NSImageRep			*bestRep = [inImg bestRepresentationForRect:origImageRect context:nil hints:nil];
+	NSSize				bitmapSize = NSMakeSize([bestRep pixelsWide], [bestRep pixelsHigh]);
+	if (bitmapSize.width==0 || bitmapSize.height==0)
+		bitmapSize = [inImg size];
+	NSRect				bitmapRect = NSMakeRect(0,0,bitmapSize.width,bitmapSize.height);
 	
-	VVGLBuffer::Descriptor	desc;
+	//	make a bitmap image rep
+	NSBitmapImageRep		*rep = [[NSBitmapImageRep alloc]
+		initWithBitmapDataPlanes:nil
+		pixelsWide:bitmapSize.width
+		pixelsHigh:bitmapSize.height
+		bitsPerSample:8
+		samplesPerPixel:4
+		hasAlpha:YES
+		isPlanar:NO
+		colorSpaceName:NSCalibratedRGBColorSpace
+		bitmapFormat:0
+		bytesPerRow:32 * bitmapSize.width / 8
+		bitsPerPixel:32];
+	if (rep == nil)
+		return nullptr;
+	//	save the current NSGraphicsContext, make a new one based on the bitmap image rep i just created
+	NSGraphicsContext		*origContext = [NSGraphicsContext currentContext];
+	if (origContext != nil)
+		[origContext retain];
+	NSGraphicsContext		*newContext = [NSGraphicsContext graphicsContextWithBitmapImageRep:rep];
+	if (newContext != nil)	{
+		//	set up & start drawing in the new graphics context (draws into the bitmap image rep)
+		[NSGraphicsContext setCurrentContext:newContext];
+		[newContext setShouldAntialias:NO];
+		
+		//[[NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:1.0] set];
+		//VVRECTFill(bitmapRect);
+		[inImg
+			drawInRect:bitmapRect
+			fromRect:origImageRect
+			operation:NSCompositeCopy
+			fraction:1.0];
+		
+		//	flush the graphics
+		[newContext flushGraphics];
+	}
+	[NSGraphicsContext setCurrentContext:origContext];
+	if (origContext != nil)	{
+		[origContext release];
+		origContext = nil;
+	}
 	
+	//	the bitmap rep we just drew into was premultiplied, and we have to fix that before uploading it
+	[rep unpremultiply];
+	
+	//VVBuffer		*returnMe = [self allocBufferForBitmapRep:rep prefer2DTexture:prefer2D];
+	VVGLBufferRef	returnMe = CreateBufferForBitmapRep(rep, createInCurrentContext, inPoolRef);
+	[rep release];
+	//[returnMe setSrcRect:VVMAKERECT(0,0,bitmapSize.width,bitmapSize.height)];
+	returnMe->srcRect = VVGL::Rect(0,0,bitmapSize.width,bitmapSize.height);
+	//[returnMe setFlipped:YES];
+	returnMe->flipped = true;
+	/*	the static analyzer flags this as a leak, but it isn't.  the VVGLBuffer instance retains the NSBitmapRep underlying the GL texture, which is interpreted here as a leak.		*/
+	return returnMe;
+	/*	the static analyzer flags this as a leak, but it isn't.  the VVGLBuffer instance retains the NSBitmapRep underlying the GL texture, which is interpreted here as a leak.		*/
+}
+VVGLBufferRef CreateBufferForBitmapRep(NSBitmapImageRep * inRep, const bool & createInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inRep==nil || inPoolRef==nullptr)
+		return nullptr;
+	void					*pixelData = (void *)[inRep bitmapData];
+	if (pixelData == nil)
+		return nullptr;
+	NSSize					cgRepSize = [inRep size];
+	VVGL::Size				repSize(cgRepSize.width, cgRepSize.height);
+	VVGL::Size				gpuSize;
+	/*
+	if (prefer2D)	{
+		int						tmpInt;
+		tmpInt = 1;
+		while (tmpInt < repSize.width)
+			tmpInt <<= 1;
+		gpuSize.width = tmpInt;
+		tmpInt = 1;
+		while (tmpInt < repSize.height)
+			tmpInt <<= 1;
+		gpuSize.height = tmpInt;
+	}
+	else	{
+	*/
+		gpuSize = repSize;
+	/*
+	}
+	*/
+	
+	VVGLBuffer::Descriptor		desc;
 	desc.type = VVGLBuffer::Type_Tex;
 	desc.target = VVGLBuffer::Target_Rect;
 	desc.internalFormat = VVGLBuffer::IF_RGBA8;
-	desc.pixelFormat = VVGLBuffer::PF_BGRA;
-	desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
-	desc.cpuBackingType = VVGLBuffer::Backing_None;
-	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
-	desc.texRangeFlag = false;
-	desc.texClientStorageFlag = false;
-	desc.msAmount = 0;
-	desc.localSurfaceID = 1;
-	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, Size(), inCreateInCurrentContext);
-	returnMe->parentBufferPool = inPoolRef;
-	
-	return returnMe;
-}
-VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
-	if (inPoolRef == nullptr)
-		return nullptr;
-	
-	VVGLBuffer::Descriptor	desc;
-	
-	desc.type = VVGLBuffer::Type_Tex;
-	desc.target = VVGLBuffer::Target_Rect;
-	desc.internalFormat = VVGLBuffer::IF_RGBA32F;
 	desc.pixelFormat = VVGLBuffer::PF_RGBA;
-	desc.pixelType = VVGLBuffer::PT_Float;
-	desc.cpuBackingType = VVGLBuffer::Backing_None;
+	desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+	desc.cpuBackingType = VVGLBuffer::Backing_External;
 	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
 	desc.texRangeFlag = false;
-	desc.texClientStorageFlag = false;
+	desc.texClientStorageFlag = true;
 	desc.msAmount = 0;
-	desc.localSurfaceID = 1;
+	desc.localSurfaceID = 0;
 	
-	VVGLBufferRef	returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, Size(), inCreateInCurrentContext);
-	returnMe->parentBufferPool = inPoolRef;
-	
-	return returnMe;
-}
-VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & inCreateInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
-	if (inPoolRef == nullptr)
-		return nullptr;
-	
-	//	look up the surface for the ID i was passed, bail if i can't
-	IOSurfaceRef		newSurface = IOSurfaceLookup(inID);
-	if (newSurface == NULL)
-		return nullptr;
-	
-	//	figure out how big the IOSurface is and what its pixel format is
-	Size			newAssetSize(IOSurfaceGetWidth(newSurface), IOSurfaceGetHeight(newSurface));
-	uint32_t		pixelFormat = IOSurfaceGetPixelFormat(newSurface);
-	size_t			bytesPerRow = IOSurfaceGetBytesPerRow(newSurface);
-	bool			isRGBAFloatTex = (bytesPerRow >= (32*4*newAssetSize.width/8)) ? true : false;
-	//	make the buffer i'll be returning, set up as much of it as i can
-	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
-	inPoolRef->timestampThisBuffer(returnMe);
-	returnMe->desc.type = VVGLBuffer::Type_Tex;
-	returnMe->desc.target = VVGLBuffer::Target_Rect;
-	
-	switch (pixelFormat)	{
-	case kCVPixelFormatType_32BGRA:	//	'BGRA'
-	case VVGLBuffer::PF_BGRA:
-		returnMe->desc.pixelFormat = VVGLBuffer::PF_BGRA;
-		if (isRGBAFloatTex)	{
-			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA32F;
-			returnMe->desc.pixelType = VVGLBuffer::PT_Float;
+	//VVBuffer			*returnMe = [self allocBufferForDescriptor:&desc sized:gpuSize backingPtr:pixelData backingSize:repSize];
+	VVGLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
+	//[returnMe setSrcRect:VVMAKERECT(0,0,repSize.width,repSize.height)];
+	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
+	//	the backing release callback should release a bitmap rep- set it, and the context (which is the rep)
+	//[returnMe setBackingID:VVBufferBackID_NSBitImgRep];
+	returnMe->backingID = VVGLBuffer::BackingID_NSBitImgRep;
+	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseBitmapRep];
+	[inRep retain];	//	we want to explicitly retain the rep we were passed- when the underlying VVGLBuffer is freed, its backing release callback will release the rep
+	returnMe->backingReleaseCallback = [](VVGLBuffer & inBuffer, void * inReleaseContext)	{
+		if (inReleaseContext != nil)	{
+			NSBitmapImageRep	*tmpRep = (NSBitmapImageRep *)inReleaseContext;
+			[tmpRep release];
 		}
-		else	{
-			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
-			returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
-		}
-		break;
-	case kCVPixelFormatType_32RGBA:	//	'RGBA'
-	case VVGLBuffer::PF_RGBA:
-		returnMe->desc.pixelFormat = VVGLBuffer::PF_RGBA;
-		if (isRGBAFloatTex)	{
-			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA32F;
-			returnMe->desc.pixelType = VVGLBuffer::PT_Float;
-		}
-		else	{
-			returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
-			returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
-		}
-		break;
-	case kCVPixelFormatType_422YpCbCr8:	//	'2vuy'
-	case VVGLBuffer::PF_YCbCr_422:
-		returnMe->desc.internalFormat = VVGLBuffer::IF_RGB;
-		returnMe->desc.pixelFormat = VVGLBuffer::PF_YCbCr_422;
-		returnMe->desc.pixelType = VVGLBuffer::PT_UShort88;
-		break;
-	default:
-		cout << "\tERR: unknown pixel format (" << pixelFormat << ") in " << __PRETTY_FUNCTION__ << endl;
-		returnMe->desc.internalFormat = VVGLBuffer::IF_RGBA8;
-		returnMe->desc.pixelFormat = VVGLBuffer::PF_BGRA;
-		returnMe->desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
-		break;
-	}
+	};
+	//[returnMe setBackingReleaseCallbackContextObject:inRep];
+	returnMe->backingContext = (void*)inRep;
+	//[returnMe setBackingSize:repSize];
+	returnMe->backingSize = repSize;
 	
-	returnMe->desc.cpuBackingType = VVGLBuffer::Backing_None;
-	returnMe->desc.gpuBackingType = VVGLBuffer::Backing_Internal;
-	returnMe->desc.texRangeFlag = false;
-	returnMe->desc.texClientStorageFlag = false;
-	returnMe->desc.msAmount = 0;
-	returnMe->desc.localSurfaceID = inID;
-	
-	returnMe->name = 0;
 	returnMe->preferDeletion = true;
-	returnMe->size = newAssetSize;
-	returnMe->srcRect = Rect(0,0,newAssetSize.width,newAssetSize.height);
-	//returnMe->flipped = 
-	returnMe->backingSize = newAssetSize;
-	//returnMe->backingReleaseCallback = 
-	//returnMe->backingContext = 
-	returnMe->backingID = VVGLBuffer::BackingID_RemoteIOSrf;
-	
-	returnMe->setRemoteSurfaceRef(newSurface);
-	
-	//	we can free the surface now that the buffer we'll be returning has retained it
-	CFRelease(newSurface);
-	
-	//	...now that i've created and set up the VVGLBuffer, take care of the GL resource setup...
-	
-	//	grab a context lock so we can do stuff with the GL context
-	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
-	if (!inCreateInCurrentContext)	{
-		VVGLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
-		context->makeCurrentIfNotCurrent();
-	}
-	CGLContextObj		cglCtx = CGLGetCurrentContext();
-	if (cglCtx != NULL)	{
-		glActiveTexture(GL_TEXTURE0);
-		GLERRLOG
-		if (inPoolRef->getContext()->version <= GLVersion_2)	{
-			glEnable(returnMe->desc.target);
-			GLERRLOG
-		}
-		glGenTextures(1,&(returnMe->name));
-		GLERRLOG
-		glBindTexture(returnMe->desc.target, returnMe->name);
-		GLERRLOG
-		CGLError		err = CGLTexImageIOSurface2D(cglCtx,
-			returnMe->desc.target,
-			returnMe->desc.internalFormat,
-			newAssetSize.width,
-			newAssetSize.height,
-			returnMe->desc.pixelFormat,
-			returnMe->desc.pixelType,
-			newSurface,
-			0);
-		if (err != noErr)
-			cout << "\tERR: " << err << " at CGLTexImageIOSurface2D() in " << __PRETTY_FUNCTION__ << endl;
-		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		GLERRLOG
-		glTexParameteri(returnMe->desc.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		GLERRLOG
-		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		GLERRLOG
-		glTexParameteri(returnMe->desc.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		GLERRLOG
-		glFlush();
-		GLERRLOG
-		glBindTexture(returnMe->desc.target, 0);
-		GLERRLOG
-		if (inPoolRef->getContext()->version <= GLVersion_2)	{
-			glDisable(returnMe->desc.target);
-			GLERRLOG
-		}
-	}
 	
 	return returnMe;
 }
@@ -633,11 +586,47 @@ void CGBitmapContextUnpremultiply(CGContextRef ctx)	{
 }
 
 
-
 #endif	//	#if ISF_TARGET_MAC || ISF_TARGET_IOS
 
 
 
 
 }
+
+
+
+
+#if ISF_TARGET_MAC
+@implementation NSBitmapImageRep (VVGLNSBitmapImageRepAdditions)
+- (void) unpremultiply	{
+	NSSize				actualSize = NSMakeSize([self pixelsWide], [self pixelsHigh]);
+	unsigned long		bytesPerRow = [self bytesPerRow];
+	unsigned char		*bitmapData = [self bitmapData];
+	unsigned char		*pixelPtr = nil;
+	double				colors[4];
+	if (bitmapData==nil || bytesPerRow<=0 || actualSize.width<1 || actualSize.height<1)
+		return;
+	for (int y=0; y<actualSize.height; ++y)	{
+		pixelPtr = bitmapData + (y * bytesPerRow);
+		for (int x=0; x<actualSize.width; ++x)	{
+			//	convert unsigned chars to normalized doubles
+			for (int i=0; i<4; ++i)
+				colors[i] = ((double)*(pixelPtr+i))/255.;
+			//	unpremultiply if there's an alpha and it won't cause a divide-by-zero
+			if (colors[3]>0. && colors[3]<1.)	{
+				for (int i=0; i<3; ++i)
+					colors[i] = colors[i] / colors[3];
+			}
+			//	convert the normalized components back into unsigned chars
+			for (int i=0; i<4; ++i)
+				*(pixelPtr+i) = (unsigned char)(colors[i]*255.);
+			
+			//	don't forget to increment the pixel ptr!
+			pixelPtr += 4;
+		}
+	}
+}
+@end
+#endif
+
 

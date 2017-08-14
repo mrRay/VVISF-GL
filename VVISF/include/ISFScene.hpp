@@ -30,7 +30,7 @@ class ISFScene : public VVGLScene	{
 		
 		mutex			propertyLock;	//	locks the below two vars
 		//bool			loadingInProgress = false;
-		ISFDocRef		doc;	//	the ISFDoc being used
+		ISFDocRef		doc = nullptr;	//	the ISFDoc being used
 		
 		//	access to these vars should be restricted by the 'renderLock' var inherited from VVGLScene
 		VVGL::Size		renderSize = orthoSize;	//	the last size at which i was requested to render a buffer (used to produce vals from normalized point inputs that need a render size to be used)
@@ -107,6 +107,7 @@ class ISFScene : public VVGLScene	{
 		
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime);
+		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,VVGLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize);
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer);
 		
@@ -119,6 +120,8 @@ class ISFScene : public VVGLScene	{
 		//virtual void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize=VVGL::Size(640.,480.), const double & inRenderTime=timestamper.nowTime().getTimeInSeconds(), map<string,VVGLBufferRef> * outPassDict=nullptr);
 		
 		ISFAttrRef getInputNamed(const string & inName);
+		vector<ISFAttrRef> getInputs();
+		vector<ISFAttrRef> getInputs(const ISFValType & inType);
 		vector<ISFAttrRef> getImageInputs();
 		vector<ISFAttrRef> getAudioInputs();
 		vector<ISFAttrRef> getImageImports();

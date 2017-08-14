@@ -82,6 +82,9 @@ void ISFAttr::lengthyDescription()	{
 	cout << "\tdef:\t\t" << defaultVal << endl;
 	cout << "\tiden:\t" << identityVal << ">" << endl;
 }
+string ISFAttr::getDescription()	{
+	return FmtString("<ISFAttr %s: %s>", getName().c_str(), ISFValTypeString(getType()).c_str());
+}
 
 
 
