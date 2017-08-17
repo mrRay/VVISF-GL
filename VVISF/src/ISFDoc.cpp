@@ -948,7 +948,7 @@ string ISFDoc::generateTextureTypeString()	{
 	return returnMe;
 }
 bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << ", vers is " << inGLVers << endl;
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	if (outFragSrc==nullptr || outVertSrc==nullptr || vertShaderSource==nullptr || fragShaderSource==nullptr)
@@ -1019,7 +1019,18 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		}
 		
 		//	add the compatibility define
-		newFragShaderSrc.append(ISF_ES_Compatibility);
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+			//	intentionally blank
+			break;
+		case GLVersion_ES2:
+		case GLVersion_ES3:
+		case GLVersion_33:
+		case GLVersion_4:
+			newFragShaderSrc.append(ISF_ES_Compatibility);
+			break;
+		}
 		//	copy the variable declarations to the frag shader src
 		newFragShaderSrc.append(fsVarDeclarations);
 		
@@ -1356,7 +1367,18 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		}
 		
 		//	add the compatibility define
-		newVertShaderSrc.append(ISF_ES_Compatibility);
+		switch (inGLVers)	{
+		case GLVersion_Unknown:
+		case GLVersion_2:
+			//	intentionally blank
+			break;
+		case GLVersion_ES2:
+		case GLVersion_ES3:
+		case GLVersion_33:
+		case GLVersion_4:
+			newVertShaderSrc.append(ISF_ES_Compatibility);
+			break;
+		}
 		//	load any specific vars or function declarations for the vertex shader from an included file
 		switch (inGLVers)	{
 		case GLVersion_Unknown:

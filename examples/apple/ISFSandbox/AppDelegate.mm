@@ -89,10 +89,10 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	isfScene->useFile(tmpString);
 	//cout << "doc is \n" << *(isfScene->getDoc()) << endl;
 	
-	
+	/*
 	NSString		*viewPath = [[NSBundle mainBundle] pathForResource:@"PreviewPluginAlphaOverCheckerboard" ofType:@"fs"];
 	[glView useFile:viewPath];
-	
+	*/
 	
 	[NSTimer
 		scheduledTimerWithTimeInterval:1./60.
@@ -123,6 +123,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	*/
 	
 	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
+	//[glView drawBuffer:newFrame];
 	VVGLBufferRef	copiedFrame = GetGlobalBufferCopier()->copyToNewBuffer(newFrame);
 	//cout << "\tnewFrame is " << *newFrame << ", drawing " << *copiedFrame << endl;
 	[glView drawBuffer:copiedFrame];

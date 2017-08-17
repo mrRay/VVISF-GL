@@ -186,8 +186,11 @@ void main()	{\r\
 }\r\
 ");
 #endif
-	setVertexShaderString(vsString);
-	setFragmentShaderString(fsString);
+	
+	if (getGLVersion() != GLVersion_2)	{
+		setVertexShaderString(vsString);
+		setFragmentShaderString(fsString);
+	}
 	
 	setRenderPrepCallback([&](const VVGLScene & n, const bool inReshaped, const bool & inPgmChanged) {
 		if (inPgmChanged)	{
@@ -474,111 +477,158 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	//	make the VAO if we don't already have one
-	if (vao == nullptr)
-		vao = CreateVAO(true);
+	//	if it's GL 2.x
+	if (getGLVersion() == GLVersion_2)	{
+		glActiveTexture(GL_TEXTURE0);
+		GLERRLOG
+		glEnable(inBufferRef->desc.target);
+		GLERRLOG
+		/*
+		float			verts[] = {
+			(float)MinX(inDstRect), (float)MinY(inDstRect), 0.0,
+			(float)MaxX(inDstRect), (float)MinY(inDstRect), 0.0,
+			(float)MaxX(inDstRect), (float)MaxY(inDstRect), 0.0,
+			(float)MinX(inDstRect), (float)MaxY(inDstRect), 0.0
+		};
+		float			texs[] = {
+			(float)MinX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
+			(float)MaxX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
+			(float)MaxX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect),
+			(float)MinX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect)
+		};
+		*/
+		glEnableClientState(GL_VERTEX_ARRAY);
+		GLERRLOG
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		GLERRLOG
+		glDisableClientState(GL_COLOR_ARRAY);
+		GLERRLOG
 	
-	//	if the target quad doesn't match what's in the VAO now, we have to update the VAO now
-	if (inVertexStruct != vboContents)	{
-		//cout << "\tvbo contents updated, repopulating\n";
+		glVertexPointer(3, GL_FLOAT, inVertexStruct.stride(), (float*)&inVertexStruct);
+		GLERRLOG
+		glTexCoordPointer(2, GL_FLOAT, inVertexStruct.stride(), &inVertexStruct.bl.tex[0]);
+		GLERRLOG
+		glBindTexture(inBufferRef->desc.target, inBufferRef->name);
+		GLERRLOG
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+		glBindTexture(inBufferRef->desc.target, 0);
+		GLERRLOG
+		glDisable(inBufferRef->desc.target);
+		GLERRLOG
+	
+		glDisable(inBufferRef->desc.target);
+		GLERRLOG
+	}
+	//	else it's not GL 2- it's GL3+ or GLES3+
+	else	{
+		//	make the VAO if we don't already have one
+		if (vao == nullptr)
+			vao = CreateVAO(true);
+	
+		//	if the target quad doesn't match what's in the VAO now, we have to update the VAO now
+		if (inVertexStruct != vboContents)	{
+			//cout << "\tvbo contents updated, repopulating\n";
+			//	bind the VAO
+			if (vao != nullptr)	{
+				glBindVertexArray(vao->name);
+				GLERRLOG
+			}
+			//	make a VBO, populate it with vertex data
+			uint32_t		tmpVBO = -1;
+			glGenBuffers(1, &tmpVBO);
+			GLERRLOG
+			glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+			GLERRLOG
+			glBufferData(GL_ARRAY_BUFFER, sizeof(inVertexStruct), (void*)&inVertexStruct, GL_STATIC_DRAW);
+			GLERRLOG
+			//	configure the attribute pointers to work with the VBO
+			if (inputXYZLoc.loc >= 0)	{
+				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)0);
+				GLERRLOG
+				inputXYZLoc.enable();
+			}
+			if (inputSTLoc.loc >= 0)	{
+				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)(3*sizeof(float)));
+				GLERRLOG
+				inputSTLoc.enable();
+			}
+			//	un-bind the VAO, we're done assembling it
+			glBindVertexArray(0);
+			GLERRLOG
+			//	delete the VBO
+			glDeleteBuffers(1, &tmpVBO);
+			GLERRLOG
+		
+			vboContents = inVertexStruct;
+		}
+	
+		//	at this point we've got a VAO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
+	
 		//	bind the VAO
 		if (vao != nullptr)	{
 			glBindVertexArray(vao->name);
 			GLERRLOG
 		}
-		//	make a VBO, populate it with vertex data
-		uint32_t		tmpVBO = -1;
-		glGenBuffers(1, &tmpVBO);
+		//	pass the 2D texture to the program (if there is a 2D texture)
+		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
-		glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+		glBindTexture(GL_TEXTURE_2D, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_2D) ? inBufferRef->name : 0);
 		GLERRLOG
-		glBufferData(GL_ARRAY_BUFFER, sizeof(inVertexStruct), (void*)&inVertexStruct, GL_STATIC_DRAW);
-		GLERRLOG
-		//	configure the attribute pointers to work with the VBO
-		if (inputXYZLoc.loc >= 0)	{
-			glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)0);
+		//glBindTexture(VVGLBuffer::Target_2D, 0);
+		//GLERRLOG
+		if (inputImageLoc.loc >= 0)	{
+			glUniform1i(inputImageLoc.loc, 0);
 			GLERRLOG
-			inputXYZLoc.enable();
 		}
-		if (inputSTLoc.loc >= 0)	{
-			glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)(3*sizeof(float)));
-			GLERRLOG
-			inputSTLoc.enable();
-		}
-		//	un-bind the VAO, we're done assembling it
-		glBindVertexArray(0);
-		GLERRLOG
-		//	delete the VBO
-		glDeleteBuffers(1, &tmpVBO);
-		GLERRLOG
-		
-		vboContents = inVertexStruct;
-	}
-	
-	//	at this point we've got a VAO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
-	
-	//	bind the VAO
-	if (vao != nullptr)	{
-		glBindVertexArray(vao->name);
-		GLERRLOG
-	}
-	//	pass the 2D texture to the program (if there is a 2D texture)
-	glActiveTexture(GL_TEXTURE0);
-	GLERRLOG
-	glBindTexture(GL_TEXTURE_2D, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_2D) ? inBufferRef->name : 0);
-	GLERRLOG
-	//glBindTexture(VVGLBuffer::Target_2D, 0);
-	//GLERRLOG
-	if (inputImageLoc.loc >= 0)	{
-		glUniform1i(inputImageLoc.loc, 0);
-		GLERRLOG
-	}
 #if ISF_TARGET_MAC
-	//	pass the RECT texture to the program (if there is a RECT texture)
-	glActiveTexture(GL_TEXTURE1);
-	GLERRLOG
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	//GLERRLOG
-	glBindTexture(VVGLBuffer::Target_Rect, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_Rect) ? inBufferRef->name : 0);
-	GLERRLOG
-	if (inputImageRectLoc.loc >= 0)	{
-		glUniform1i(inputImageRectLoc.loc, 1);
+		//	pass the RECT texture to the program (if there is a RECT texture)
+		glActiveTexture(GL_TEXTURE1);
 		GLERRLOG
-	}
-#endif
-	//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
-	if (isRectTexLoc.loc >= 0)	{
-		if (inBufferRef == nullptr)	{
-			glUniform1i(isRectTexLoc.loc, 0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//GLERRLOG
+		glBindTexture(VVGLBuffer::Target_Rect, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_Rect) ? inBufferRef->name : 0);
+		GLERRLOG
+		if (inputImageRectLoc.loc >= 0)	{
+			glUniform1i(inputImageRectLoc.loc, 1);
 			GLERRLOG
 		}
-		else	{
-			switch (inBufferRef->desc.target)	{
-			case VVGLBuffer::Target_2D:
-				glUniform1i(isRectTexLoc.loc, 1);
-				GLERRLOG
-				break;
-#if ISF_TARGET_MAC
-			case VVGLBuffer::Target_Rect:
-				glUniform1i(isRectTexLoc.loc, 2);
-				GLERRLOG
-				break;
 #endif
-			default:
+		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
+		if (isRectTexLoc.loc >= 0)	{
+			if (inBufferRef == nullptr)	{
 				glUniform1i(isRectTexLoc.loc, 0);
 				GLERRLOG
-				break;
+			}
+			else	{
+				switch (inBufferRef->desc.target)	{
+				case VVGLBuffer::Target_2D:
+					glUniform1i(isRectTexLoc.loc, 1);
+					GLERRLOG
+					break;
+#if ISF_TARGET_MAC
+				case VVGLBuffer::Target_Rect:
+					glUniform1i(isRectTexLoc.loc, 2);
+					GLERRLOG
+					break;
+#endif
+				default:
+					glUniform1i(isRectTexLoc.loc, 0);
+					GLERRLOG
+					break;
+				}
 			}
 		}
+	
+		//	draw!
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+	
+		//	unbind the VAO
+		glBindVertexArray(0);
+		GLERRLOG
 	}
 	
-	//	draw!
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	GLERRLOG
-	
-	//	unbind the VAO
-	glBindVertexArray(0);
-	GLERRLOG
 }
 #elif ISF_TARGET_GLES
 void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct)	{

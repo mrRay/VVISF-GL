@@ -84,7 +84,7 @@ class VVGLContext	{
 		bool				ownsTheCtx = false;	//	set to true when i "own" ctx and must destroy it on my release
 		EGLContext			ctx = EGL_NO_CONTEXT;	//	owned by this object
 #endif
-		GLVersion			version = GLVersion_2;
+		GLVersion			version = GLVersion_Unknown;
 		
 		
 	public:

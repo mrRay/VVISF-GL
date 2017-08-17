@@ -42,9 +42,9 @@ uint32_t GLDisplayMaskForAllScreens()	{
 	return glDisplayMask;
 }
 CGLPixelFormatObj CreateDefaultPixelFormat()	{
-	//return CreateCompatibilityGLPixelFormat();
-	std::cout << "defaulting to GL4 instead of GL 2 " << __PRETTY_FUNCTION__ << std::endl;
-	return CreateGL4PixelFormat();
+	return CreateCompatibilityGLPixelFormat();
+	//std::cout << "defaulting to GL4 instead of GL 2 " << __PRETTY_FUNCTION__ << std::endl;
+	//return CreateGL4PixelFormat();
 }
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat()	{
 	CGLPixelFormatAttribute		attribs[] = {
@@ -579,13 +579,13 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 void VVGLContext::calculateVersion()	{
-	//cout << __PRETTY_FUNCTION__ << endl;
+	cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
 	if (ctx == nullptr)
 		return;
 	makeCurrentIfNotCurrent();
 	const unsigned char			*versString = glGetString(GL_VERSION);
-	//cout << "\tversion string is " << versString << endl;
+	cout << "\tversion string is " << versString << endl;
 	switch (*versString)	{
 	case '2': version = GLVersion_2; break;
 	case '3': version = GLVersion_33; break;

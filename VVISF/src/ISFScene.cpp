@@ -40,11 +40,10 @@ ISFScene::~ISFScene()	{
 	}
 	
 	//geoXYVBO = nullptr;
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if !ISF_TARGET_GLES
 	vao = nullptr;
-#elif ISF_TARGET_GLES
-	vbo = nullptr;
 #endif
+	vbo = nullptr;
 }
 
 
@@ -355,59 +354,105 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if !ISF_TARET_GLES
 	setRenderCallback([&](const VVGLScene & s)	{
-		//	make a quad that describes the area we have to draw
-		GLBufferQuadXY		targetQuad;
-		GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+		//	if we're in GL 2 then we can't use a VAO
+		if (s.getGLVersion() == GLVersion_2)	{
+			//	make a quad that describes the area we have to draw
+			GLBufferQuadXY		targetQuad;
+			GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
-		//	bind the VAO
-		VVGLBufferRef		myVAO = getVAO();
-		if (myVAO == nullptr)
-			return;
-		glBindVertexArray(myVAO->name);
-		GLERRLOG
+			//	get the VBO
+			VVGLBufferRef		myVBO = getVBO();
 		
-		//	if the target quad doesn't match the contents of the vbo in the vao
-		if (targetQuad != vboContents)	{
-			//cout << "\tvbo contents updated, repopulating\n";
-			//	make a VBO, populate it with vertex data
-			uint32_t		tmpVBO = -1;
-			glGenBuffers(1, &tmpVBO);
-			GLERRLOG
-			glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
-			GLERRLOG
-			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
-			GLERRLOG
-			//	configure the attribute pointer to work with the VBO
+			//	if there's no VBO, or the target quad doesn't match the VBO's contents
+			if (myVBO==nullptr || targetQuad!=vboContents)	{
+				//	make the VBO, populate it with vertex data
+				myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
+				//	update the instance's copy of the VBO
+				setVBO(myVBO);
+				//	update the contents of the VBO
+				vboContents = targetQuad;
+			}
+		
+			//	bind the VBO
+			if (myVBO != nullptr)	{
+				glBindBuffer(GL_ARRAY_BUFFER, myVBO->name);
+				GLERRLOG
+			}
+			//	configure the attribute pointers to work with the VBO
 			if (vertexAttrib.loc >= 0)	{
 				glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
 				GLERRLOG
 				vertexAttrib.enable();
 			}
-			
-			//	un-bind the VAO, we're done configuring it
-			glBindVertexArray(0);
+		
+			//	draw!
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			GLERRLOG
-			//	delete the VBO we just made (the VAO will retain it)
-			glDeleteBuffers(1, &tmpVBO);
-			GLERRLOG
-			//	update my local copy of the vbo contents
-			vboContents = targetQuad;
-			//	re-enable the VAO!
-			glBindVertexArray(myVAO->name);
+		
+			//	disable the relevant attribute pointers
+			if (vertexAttrib.loc >= 0)	{
+				vertexAttrib.disable();
+			}
+			//	un-bind the VBO
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			GLERRLOG
 		}
+		//	else we're in a flavor of GL that has VAOs
+		else	{
+			//	make a quad that describes the area we have to draw
+			GLBufferQuadXY		targetQuad;
+			GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
-		//	...draw!
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		GLERRLOG
+			//	bind the VAO
+			VVGLBufferRef		myVAO = getVAO();
+			if (myVAO == nullptr)
+				return;
+			glBindVertexArray(myVAO->name);
+			GLERRLOG
 		
-		//	un-bind the VAO
-		glBindVertexArray(0);
-		GLERRLOG
+			//	if the target quad doesn't match the contents of the vbo in the vao
+			if (targetQuad != vboContents)	{
+				//cout << "\tvbo contents updated, repopulating\n";
+				//	make a VBO, populate it with vertex data
+				uint32_t		tmpVBO = -1;
+				glGenBuffers(1, &tmpVBO);
+				GLERRLOG
+				glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+				GLERRLOG
+				glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+				GLERRLOG
+				//	configure the attribute pointer to work with the VBO
+				if (vertexAttrib.loc >= 0)	{
+					glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+					GLERRLOG
+					vertexAttrib.enable();
+				}
+			
+				//	un-bind the VAO, we're done configuring it
+				glBindVertexArray(0);
+				GLERRLOG
+				//	delete the VBO we just made (the VAO will retain it)
+				glDeleteBuffers(1, &tmpVBO);
+				GLERRLOG
+				//	update my local copy of the vbo contents
+				vboContents = targetQuad;
+				//	re-enable the VAO!
+				glBindVertexArray(myVAO->name);
+				GLERRLOG
+			}
+		
+			//	...draw!
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			GLERRLOG
+		
+			//	un-bind the VAO
+			glBindVertexArray(0);
+			GLERRLOG
+		}
 	});
-#elif ISF_TARGET_GLES
+#else
 	setRenderCallback([&](const VVGLScene & s)	{
 		//	make a quad that describes the area we have to draw
 		GLBufferQuadXY		targetQuad;
@@ -551,7 +596,7 @@ void ISFScene::_renderPrep()	{
 	*/
 	
 	//	make sure there's a VAO
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if !ISF_TARGET_GLES
 	if (getVAO() == nullptr)
 		setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
 #endif

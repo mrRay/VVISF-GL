@@ -585,10 +585,16 @@ void VVGLScene::_initialize()	{
 	
 	//glEnable(GL_TEXTURE_RECTANGLE);
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	//glEnable(GL_BLEND);
-	//GLERRLOG
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//GLERRLOG
+	if (getGLVersion() == GLVersion_2)	{
+		glEnable(GL_BLEND);
+		GLERRLOG
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GLERRLOG
+//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		GLERRLOG
+//#endif
+	}
 	//const int32_t		swap = 0;
 	//CGLSetParameter(cgl_ctx, kCGLCPSwapInterval, &swap);
 	
@@ -641,6 +647,31 @@ void VVGLScene::_reshape()	{
 			//cout << "\tERR: need to reshape, but no pgm! " << __PRETTY_FUNCTION__ << endl;
 		}
 		glViewport(0,0,orthoSize.width,orthoSize.height);
+		GLERRLOG
+	}
+	
+	if (getGLVersion() == GLVersion_2)	{
+//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+		glMatrixMode(GL_MODELVIEW);
+		GLERRLOG
+		glLoadIdentity();
+		GLERRLOG
+		glMatrixMode(GL_PROJECTION);
+		GLERRLOG
+		glLoadIdentity();
+		GLERRLOG
+		if (orthoSize.width>0 && orthoSize.height>0)	{
+			if (!orthoFlipped)	{
+				glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
+				GLERRLOG
+			}
+			else	{
+				glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
+				GLERRLOG
+			}
+		}
+//#endif
+		glViewport(0, 0, orthoSize.width, orthoSize.height);
 		GLERRLOG
 	}
 	

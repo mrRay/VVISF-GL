@@ -229,12 +229,12 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		//	enable the tex target, gen the texture, and bind it
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 		if (context->version <= GLVersion_2)	{
 			glEnable(newBufferDesc.target);
 			GLERRLOG
 		}
-#endif
+//#endif
 		glGenTextures(1, &(returnMe->name));
 		GLERRLOG
 		glBindTexture(newBufferDesc.target, returnMe->name);
@@ -282,10 +282,12 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 #if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-		//if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
-		//	glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-		//	GLERRLOG
-		//}
+		if (context!=nullptr && context->version == GLVersion_2)	{
+			if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
+				glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+				GLERRLOG
+			}
+		}
 		
 		if (newBufferDesc.pixelFormat == VVGLBuffer::PF_Depth)	{
 			glTexParameteri(newBufferDesc.target, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_CACHED_APPLE);
@@ -1552,12 +1554,14 @@ VVGLBufferRef CreateTexRangeFromCMSampleBuffer(CMSampleBufferRef & n, const bool
 		//	make the actual buffer i'll be returning
 		//returnMe = [self allocBufferForCVPixelBuffer:cvImg texRange:YES ioSurface:NO];
 		returnMe = CreateBufferForCVPixelBuffer(cvImg, true, false, createInCurrentContext, inPoolRef);
-		//	get the CMSampleBuffer timing info, apply it to the buffer
-		CMTime				bufferTime = CMSampleBufferGetPresentationTimeStamp(n);
-		returnMe->contentTimestamp = VVGL::Timestamp((uint64_t)(bufferTime.value), bufferTime.timescale);
-		//double				timeInSec = (!CMTIME_IS_VALID(bufferTime)) ? 0. : CMTimeGetSeconds(bufferTime);
-		//uint64_t			tmpTimestamp = SWatchAbsTimeUnitForTime(timeInSec);
-		//[returnMe setContentTimestampFromPtr:&tmpTimestamp];
+		if (returnMe != nullptr)	{
+			//	get the CMSampleBuffer timing info, apply it to the buffer
+			CMTime				bufferTime = CMSampleBufferGetPresentationTimeStamp(n);
+			returnMe->contentTimestamp = VVGL::Timestamp((uint64_t)(bufferTime.value), bufferTime.timescale);
+			//double				timeInSec = (!CMTIME_IS_VALID(bufferTime)) ? 0. : CMTimeGetSeconds(bufferTime);
+			//uint64_t			tmpTimestamp = SWatchAbsTimeUnitForTime(timeInSec);
+			//[returnMe setContentTimestampFromPtr:&tmpTimestamp];
+		}
 	}
 	else	{
 		if (cvImg == NULL)	{

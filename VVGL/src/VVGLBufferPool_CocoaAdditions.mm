@@ -325,12 +325,12 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const b
 	//	create the GL resource, do some basic setup before we upload data to it
 	glActiveTexture(GL_TEXTURE0);
 	GLERRLOG
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 	if (inPoolRef->getContext()->version <= GLVersion_2)	{
 		glEnable(desc.target);
 		GLERRLOG
 	}
-#endif
+//#endif
 	glGenTextures(1, &(returnMe->name));
 	GLERRLOG
 	glBindTexture(desc.target, returnMe->name);
@@ -402,12 +402,12 @@ VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const b
 	
 	glBindTexture(desc.target, 0);
 	GLERRLOG
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 	if (inPoolRef->getContext()->version <= GLVersion_2)	{
 		glDisable(desc.target);
 		GLERRLOG
 	}
-#endif
+//#endif
 	
 	free(clipboardData);
 	

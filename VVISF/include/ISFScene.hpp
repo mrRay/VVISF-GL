@@ -52,11 +52,10 @@ class ISFScene : public VVGLScene	{
 		
 		//	access to these vars should be restricted by the 'renderLock' var inherited from VVGLScene
 		//VVGLBufferRef		geoXYVBO = nullptr;
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if !ISF_TARGET_GLES
 		VVGLBufferRef		vao = nullptr;
-#elif ISF_TARGET_GLES
-		VVGLBufferRef		vbo = nullptr;
 #endif
+		VVGLBufferRef		vbo = nullptr;
 		GLBufferQuadXY		vboContents;	//	the VBO owned by VAO is described by this var- we check this, and if there's a delta then we have to upload new data to the VBO
 		
 		//	these vars describe some non-default/non-standard options for more unusual situations
@@ -132,13 +131,12 @@ class ISFScene : public VVGLScene	{
 		virtual void setFragmentShaderString(const string & n);
 		
 	protected:
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if !ISF_TARGET_GLES
 		inline VVGLBufferRef getVAO() const { return vao; }
 		inline void setVAO(const VVGLBufferRef & n) { vao = n; }
-#elif ISF_TARGET_GLES
+#endif
 		inline VVGLBufferRef getVBO() const { return vbo; }
 		inline void setVBO(const VVGLBufferRef & n) { vbo = n; }
-#endif
 		void _setUpRenderCallback();
 		virtual void _renderPrep();
 		virtual void _initialize();

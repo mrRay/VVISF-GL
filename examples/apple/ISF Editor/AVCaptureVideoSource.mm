@@ -174,9 +174,9 @@
 			
 			NSMutableDictionary		*tmpDict = MUTDICT;
 			//[tmpDict setObject:NUMBOOL(YES) forKey:(NSString *)kCVPixelBufferOpenGLCompatibilityKey];
-			//[tmpDict setObject:NUMINT(kCVPixelFormatType_422YpCbCr8) forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
+			[tmpDict setObject:[NSNumber numberWithInteger:kCVPixelFormatType_422YpCbCr8] forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
 			//[tmpDict setObject:NUMINT(kCVPixelFormatType_32ARGB) forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
-			[tmpDict setObject:[NSNumber numberWithInteger:kCVPixelFormatType_32BGRA] forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
+			//[tmpDict setObject:[NSNumber numberWithInteger:kCVPixelFormatType_32BGRA] forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
 			//[tmpDict setObject:NUMINT(kCVPixelFormatType_32ABGR) forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
 			//[tmpDict setObject:NUMINT(kCVPixelFormatType_32RGBA) forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
 			//[tmpDict setObject:NUMINT(kCVPixelFormatType_420YpCbCr8Planar) forKey:(NSString *)kCVPixelBufferPixelFormatTypeKey];
