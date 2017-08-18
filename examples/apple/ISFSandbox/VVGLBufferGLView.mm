@@ -15,6 +15,7 @@
 @property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::VVGLBufferRef vao;
 @property (assign,readwrite) BOOL initialized;
 @property (readonly) VVGL::VVGLBufferRef retainDrawBuffer;
+@property (assign,readwrite) VVGL::GLBufferQuadXYST lastVBOCoords;
 @end
 
 
@@ -108,7 +109,7 @@
 	[self drawBuffer:lastBuffer];
 }
 - (void) drawBuffer:(VVGL::VVGLBufferRef)b	{
-	//NSLog(@"%s ... %s",__func__,b->getDescriptionString().c_str());
+	//NSLog(@"%s ... %p, %s",__func__,self,b->getDescriptionString().c_str());
 	
 	BOOL			bail = NO;
 	
@@ -146,7 +147,7 @@
 	OSSpinLockUnlock(&retainDrawLock);
 }
 - (void) setSharedGLContext:(const VVGLContextRef)n	{
-	
+	//NSLog(@"%s ... %p",__func__,self);
 	pthread_mutex_lock(&renderLock);
 	
 	void			*selfPtr = (void*)self;
@@ -154,6 +155,7 @@
 	scene = make_shared<VVGLScene>(n->newContextSharingMe());
 	
 	if (scene->getGLVersion() == GLVersion_2)	{
+		//NSLog(@"\t\tGL 2");
 		scene->setRenderPrepCallback([](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 			
 		});
@@ -231,7 +233,7 @@
 		
 	}
 	else	{
-	
+		//NSLog(@"\t\tGL 3+");
 		//	load the frag/vert shaders
 		string			vsString("\r\
 #version 330 core\r\
@@ -282,13 +284,6 @@ else\r\
 				inputImage->cacheTheLoc(myProgram);
 				inputImageRect->cacheTheLoc(myProgram);
 				isRectTex->cacheTheLoc(myProgram);
-			
-				//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
-				GLBufferQuadXYST	targetQuad;
-			
-				//	create a new VAO, store it in the VVGLBufferGLView as an ivar.  don't bother populating it now.
-				VVGLBufferRef		tmpVAO = CreateVAO(true);
-				[(id)selfPtr setVAO:tmpVAO];
 			}
 		});
 		//	the render callback passes all the data to the GL program
@@ -300,6 +295,21 @@ else\r\
 		
 			//	get the buffer we want to draw
 			VVGLBufferRef		bufferToDraw = [(id)selfPtr retainDrawBuffer];
+			//	try to get the VAO.  if the VAO's null, create it and store it in the VVGLBufferGLView as an ivar. 
+			VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+			if (tmpVAO == nullptr)	{
+				VVGLBufferPoolRef		bp = (bufferToDraw==nullptr) ? nullptr : bufferToDraw->parentBufferPool;
+				if (bp != nullptr)	{
+					tmpVAO = CreateVAO(true, bp);
+					[(id)selfPtr setVAO:tmpVAO];
+				}
+			}
+			//	if there's still no VAO, something's wrong- bail
+			if (tmpVAO == nullptr)	{
+				cout << "\terr: null VAO, bailing " << __PRETTY_FUNCTION__ << endl;
+				return;
+			}
+			
 			//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
 			NSRect				rawBounds = [(id)selfPtr bounds];
 			VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
@@ -350,40 +360,46 @@ else\r\
 			}
 		
 			//	bind the VAO
-			VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
 			glBindVertexArray(tmpVAO->name);
 			GLERRLOG
-		
-			//	make a new VBO to contain vertex + texture coord data
+			
 			uint32_t			vbo = 0;
-			glGenBuffers(1, &vbo);
-			GLERRLOG
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			GLERRLOG
-			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
-			GLERRLOG
-			//	configure the attribute pointers to use the VBO
-			if (xyzAttr->loc >= 0)	{
-				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+			if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+				//	make a new VBO to contain vertex + texture coord data
+				glGenBuffers(1, &vbo);
 				GLERRLOG
-				xyzAttr->enable();
-			}
-			if (stAttr->loc >= 0)	{
-				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
 				GLERRLOG
-				stAttr->enable();
+				glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+				GLERRLOG
+				//	configure the attribute pointers to use the VBO
+				if (xyzAttr->loc >= 0)	{
+					glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+					GLERRLOG
+					xyzAttr->enable();
+				}
+				if (stAttr->loc >= 0)	{
+					glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+					GLERRLOG
+					stAttr->enable();
+				}
 			}
-		
+			
 			//	draw
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			GLERRLOG
 			//	un-bind the VAO
 			glBindVertexArray(0);
 			GLERRLOG
-		
-			//	delete the VBO we made earlier...
-			glDeleteBuffers(1, &vbo);
-			GLERRLOG
+			
+			if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+				//	delete the VBO we made earlier...
+				glDeleteBuffers(1, &vbo);
+				GLERRLOG
+				//	update the vbo coords ivar (we don't want to update the VBO contents every pass)
+				[(id)selfPtr setLastVBOCoords:targetQuad];
+			}
+			
 		});
 	
 	}
@@ -406,6 +422,9 @@ else\r\
 @synthesize sizingMode;
 @synthesize retainDrawBuffer;
 @synthesize vao;
+@synthesize lastVBOCoords;
+
+
 - (void) setOnlyDrawNewStuff:(BOOL)n	{
 	//using namespace VVISF;
 	OSSpinLockLock(&onlyDrawNewStuffLock);
