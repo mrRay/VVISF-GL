@@ -1,10 +1,18 @@
 #import "DifferingGLVersionsAppDelegate.h"
+#import "VVGLBufferPool_CocoaAdditions.h"
 
 
 
 
 #define NSTOVVGLRECT(n) (VVGL::Rect(n.origin.x, n.origin.y, n.size.width, n.size.height))
 #define NSTOVVGLSIZE(n) (VVGL::Size(n.width, n.height))
+
+
+
+
+@interface DifferingGLVersionsAppDelegate ()
+@property (assign,readwrite) VVGL::GLBufferQuadXYST lastVBOCoords;
+@end
 
 
 
@@ -141,9 +149,6 @@ FragColor *= (1.-fadeVal);\r\
 			inputImageRectUni->cacheTheLoc(myProgram);
 			isRectTexUni->cacheTheLoc(myProgram);
 			fadeValUni->cacheTheLoc(myProgram);
-	
-			//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
-			GLBufferQuadXYST	targetQuad;
 			
 			//	make a new VAO
 			[self setVAO:CreateVAO(true, modernBufferPool)];
@@ -165,7 +170,7 @@ FragColor *= (1.-fadeVal);\r\
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
 		GLBufferQuadXYST	targetQuad;
 		GLBufferQuadPopulate(&targetQuad, geometryRect, (imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
-
+		
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(VVGLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==VVGLBuffer::Target_2D) ? imgBuffer->name : 0);
@@ -204,33 +209,39 @@ FragColor *= (1.-fadeVal);\r\
 			GLfloat					opacity = fmod(timeSinceStart, 1.);
 			glUniform1f(fadeValUni->loc, opacity);
 		}
-
+		
 		//	bind the VAO
 		VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
 		glBindVertexArray(tmpVAO->name);
-
-		//	make a new VBO to contain vertex + texture coord data
+		
 		uint32_t			vbo = 0;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
-		//	configure the attribute pointers to use the VBO
-		if (xyzAttr->loc >= 0)	{
-			glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
-			xyzAttr->enable();
+		if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+			//	make a new VBO to contain vertex + texture coord data
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+			//	configure the attribute pointers to use the VBO
+			if (xyzAttr->loc >= 0)	{
+				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				xyzAttr->enable();
+			}
+			if (stAttr->loc >= 0)	{
+				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+				stAttr->enable();
+			}
 		}
-		if (stAttr->loc >= 0)	{
-			glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
-			stAttr->enable();
-		}
-
+		
 		//	draw
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		//	un-bind the VAO
 		glBindVertexArray(0);
 		
-		//	delete the VBO we made earlier...
-		glDeleteBuffers(1, &vbo);
+		if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+			//	delete the VBO we made earlier...
+			glDeleteBuffers(1, &vbo);
+			//	update the vbo coords ivar (we don't want to update the VBO contents every pass)
+			[(id)selfPtr setLastVBOCoords:targetQuad];
+		}
 	});
 }
 
@@ -278,6 +289,7 @@ FragColor *= (1.-fadeVal);\r\
 
 @synthesize date;
 @synthesize vao;
+@synthesize lastVBOCoords;
 
 
 @end

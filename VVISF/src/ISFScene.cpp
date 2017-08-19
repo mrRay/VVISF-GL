@@ -51,6 +51,23 @@ ISFScene::~ISFScene()	{
 #pragma mark --------------------- public methods
 
 
+void ISFScene::useFile()	{
+	lock_guard<recursive_mutex> rlock(renderLock);
+	lock_guard<mutex>	plock(propertyLock);
+	if (doc != nullptr)
+		doc->setParentScene(nullptr);
+	doc = nullptr;
+	
+	//	reset the timestamper and render frame index
+	timestamper.reset();
+	renderTime = 0.;
+	renderTimeDelta = 0.;
+	passIndex = 0;
+	if (compiledInputTypeString!=nullptr)	{
+		delete compiledInputTypeString;
+		compiledInputTypeString=nullptr;
+	}
+}
 void ISFScene::useFile(const string & inPath)	{
 	cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{

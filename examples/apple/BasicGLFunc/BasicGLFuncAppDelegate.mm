@@ -1,4 +1,5 @@
 #import "BasicGLFuncAppDelegate.h"
+#import "VVGLBufferPool_CocoaAdditions.h"
 
 
 

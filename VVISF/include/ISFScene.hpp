@@ -72,6 +72,7 @@ class ISFScene : public VVGLScene	{
 		
 		virtual void prepareToBeDeleted();
 		
+		void useFile();
 		void useFile(const string & inPath);
 		string getFilePath();
 		string getFileName();
