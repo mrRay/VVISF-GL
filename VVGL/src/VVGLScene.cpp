@@ -105,7 +105,7 @@ VVGLBufferRef VVGLScene::createAndRenderABuffer(const Size & inSize, const VVGLB
 	return tmpTarget.color;
 }
 void VVGLScene::renderToBuffer(const VVGLBufferRef & inBuffer)	{
-	cout << __PRETTY_FUNCTION__ << ", passed buffer is " << inBuffer << endl;
+	//cout << __PRETTY_FUNCTION__ << ", passed buffer is " << inBuffer << endl;
 	//	set the orthogonal size
 	if (inBuffer != nullptr)
 		setOrthoSize(inBuffer->srcRect.size);

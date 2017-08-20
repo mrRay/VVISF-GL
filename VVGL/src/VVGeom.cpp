@@ -90,44 +90,44 @@ void GLBufferQuadPopulate(GLBufferQuadXYST *b, Rect geoRect, Rect texRect, bool 
 	if (!flippedTex)	{
 		b->bl.geo[0] = MinX(geoRect);
 		b->bl.geo[1] = MinY(geoRect);
-		b->tl.tex[0] = MinX(texRect);
-		b->tl.tex[1] = MinY(texRect);
+		b->bl.tex[0] = MinX(texRect);
+		b->bl.tex[1] = MinY(texRect);
 	
 		b->br.geo[0] = MaxX(geoRect);
 		b->br.geo[1] = MinY(geoRect);
-		b->tr.tex[0] = MaxX(texRect);
-		b->tr.tex[1] = MinY(texRect);
+		b->br.tex[0] = MaxX(texRect);
+		b->br.tex[1] = MinY(texRect);
 	
 		b->tl.geo[0] = MinX(geoRect);
 		b->tl.geo[1] = MaxY(geoRect);
-		b->bl.tex[0] = MinX(texRect);
-		b->bl.tex[1] = MaxY(texRect);
+		b->tl.tex[0] = MinX(texRect);
+		b->tl.tex[1] = MaxY(texRect);
 	
 		b->tr.geo[0] = MaxX(geoRect);
 		b->tr.geo[1] = MaxY(geoRect);
-		b->br.tex[0] = MaxX(texRect);
-		b->br.tex[1] = MaxY(texRect);
+		b->tr.tex[0] = MaxX(texRect);
+		b->tr.tex[1] = MaxY(texRect);
 	}
 	else	{
 		b->bl.geo[0] = MinX(geoRect);
 		b->bl.geo[1] = MinY(geoRect);
 		b->bl.tex[0] = MinX(texRect);
-		b->tl.tex[1] = MaxY(texRect);
+		b->bl.tex[1] = MaxY(texRect);
 	
 		b->br.geo[0] = MaxX(geoRect);
 		b->br.geo[1] = MinY(geoRect);
 		b->br.tex[0] = MaxX(texRect);
-		b->tr.tex[1] = MaxY(texRect);
+		b->br.tex[1] = MaxY(texRect);
 	
 		b->tl.geo[0] = MinX(geoRect);
 		b->tl.geo[1] = MaxY(geoRect);
 		b->tl.tex[0] = MinX(texRect);
-		b->bl.tex[1] = MinY(texRect);
+		b->tl.tex[1] = MinY(texRect);
 	
 		b->tr.geo[0] = MaxX(geoRect);
 		b->tr.geo[1] = MaxY(geoRect);
 		b->tr.tex[0] = MaxX(texRect);
-		b->br.tex[1] = MinY(texRect);
+		b->tr.tex[1] = MinY(texRect);
 	}
 }
 void GLBufferQuadPopulate(GLBufferQuadXYC *b, Rect geoRect, GLColor geoColor)	{
@@ -198,26 +198,26 @@ void GLBufferQuadPopulate(GLBufferQuadXYZST *b, Rect geoRect, Rect texRect, bool
 		b->bl.geo[0] = MinX(geoRect);
 		b->bl.geo[1] = MinY(geoRect);
 		b->bl.geo[2] = 0.;
-		b->tl.tex[0] = MinX(texRect);
-		b->tl.tex[1] = MinY(texRect);
+		b->bl.tex[0] = MinX(texRect);
+		b->bl.tex[1] = MinY(texRect);
 	
 		b->br.geo[0] = MaxX(geoRect);
 		b->br.geo[1] = MinY(geoRect);
 		b->br.geo[2] = 0.;
-		b->tr.tex[0] = MaxX(texRect);
-		b->tr.tex[1] = MinY(texRect);
+		b->br.tex[0] = MaxX(texRect);
+		b->br.tex[1] = MinY(texRect);
 	
 		b->tl.geo[0] = MinX(geoRect);
 		b->tl.geo[1] = MaxY(geoRect);
 		b->tl.geo[2] = 0.;
-		b->bl.tex[0] = MinX(texRect);
-		b->bl.tex[1] = MaxY(texRect);
+		b->tl.tex[0] = MinX(texRect);
+		b->tl.tex[1] = MaxY(texRect);
 	
 		b->tr.geo[0] = MaxX(geoRect);
 		b->tr.geo[1] = MaxY(geoRect);
 		b->tr.geo[2] = 0.;
-		b->br.tex[0] = MaxX(texRect);
-		b->br.tex[1] = MaxY(texRect);
+		b->tr.tex[0] = MaxX(texRect);
+		b->tr.tex[1] = MaxY(texRect);
 	}
 }
 void GLBufferQuadPopulate(GLBufferQuadXYZC *b, Rect geoRect, GLColor geoColor)	{
