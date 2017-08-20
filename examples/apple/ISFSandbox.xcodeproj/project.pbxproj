@@ -276,6 +276,7 @@
 		1AB0492A1DFDFE2500A59A85 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AB049291DFDFE2500A59A85 /* main.m */; };
 		1AB0492C1DFDFE2500A59A85 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AB0492B1DFDFE2500A59A85 /* Assets.xcassets */; };
 		1AB0492F1DFDFE2500A59A85 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AB0492D1DFDFE2500A59A85 /* MainMenu.xib */; };
+		1AD89DF01F4A341E0003D1FD /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
 		1AE177A71E2581EF00E978E5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; };
 		1AE177A91E2581F400E978E5 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177A81E2581F400E978E5 /* OpenGLES.framework */; };
 		1AE177AB1E2581FA00E978E5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177AA1E2581FA00E978E5 /* CoreGraphics.framework */; };
@@ -594,6 +595,13 @@
 			remoteInfo = VVGL;
 		};
 		1A901A341F464909009FEE74 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A44D2711E1BF7ED00F48E60;
+			remoteInfo = VVGL;
+		};
+		1AD89DD01F4A341B0003D1FD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
 			proxyType = 1;
@@ -1067,6 +1075,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AD89DF01F4A341E0003D1FD /* libVVGL.a in Frameworks */,
 				1AF28FAE1F311F50007D9901 /* CoreMedia.framework in Frameworks */,
 				1A350E301E1BF0E3004E0569 /* libVVISFKit.a in Frameworks */,
 				1AFC50611E04401F00728B39 /* CoreGraphics.framework in Frameworks */,
@@ -2056,6 +2065,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1AD89DD11F4A341B0003D1FD /* PBXTargetDependency */,
 				1A350E2F1E1BE363004E0569 /* PBXTargetDependency */,
 			);
 			name = ISFSandbox;
@@ -2809,6 +2819,11 @@
 			isa = PBXTargetDependency;
 			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
 			targetProxy = 1A901A341F464909009FEE74 /* PBXContainerItemProxy */;
+		};
+		1AD89DD11F4A341B0003D1FD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
+			targetProxy = 1AD89DD01F4A341B0003D1FD /* PBXContainerItemProxy */;
 		};
 		1AE177A61E2581EA00E978E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

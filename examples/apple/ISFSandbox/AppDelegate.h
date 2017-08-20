@@ -6,25 +6,42 @@
 
 
 
+using namespace VVISF;
+
+
+
+
 @interface AppDelegate : NSObject <NSApplicationDelegate>	{
-	VVGLContextRef		sharedCtx;
+	CVDisplayLinkRef			displayLink;
+	VVGLContextRef				sharedContext;
+	VVGLSceneRef				scene;
+	VVGLBufferRef				vao;
 	
-	VVISF::VVGLScene			*scene;
-	VVISF::ISFScene			*isfScene;
-	
-	GLuint						texture;	//	we're going to create this GL texture, upload an image to it, and then create a VVGLBuffer from it
-	NSSize						textureSize;	//	populated when we upload the image to the texture- this is the size of the texture
+	VVGLBufferRef				lastRenderedBuffer;
+	VVGLBufferRef				lastCopiedBuffer;
 	
 	IBOutlet ISFVVGLBufferView		*glView;
 }
 
-- (IBAction) buttonClicked:(id)sender;
-- (IBAction) flushClicked:(id)sender;
+- (void) loadBackendFromDefaults;
 
-- (IBAction) renderToTexture:(id)sender;
-- (IBAction) drawInOutput:(id)sender;
+- (void) initGL2;
+- (void) initGL4;
+
+@property (assign,readwrite,setter=setVAO:) VVGLBufferRef vao;
+
+- (void) renderCallback;
+
+- (IBAction) flushClicked:(id)sender;
+- (IBAction) renderClicked:(id)sender;
 
 @end
+
+
+
+
+CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow, const CVTimeStamp *inOutputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext);
+
 
 
 

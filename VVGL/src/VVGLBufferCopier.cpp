@@ -199,7 +199,7 @@ void main()	{\r\
 			inputImageLoc.cacheTheLoc(program);
 			inputImageRectLoc.cacheTheLoc(program);
 			isRectTexLoc.cacheTheLoc(program);
-			vboContents = GLBufferQuadXYZST();
+			vboContents = Quad<VertXYZST>();
 		}
 	});
 }
@@ -288,8 +288,9 @@ VVGLBufferRef VVGLBufferCopier::copyToNewBuffer(const VVGLBufferRef & n)	{
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
-	GLBufferQuadXYZST		targetQuad;
-	GLBufferQuadPopulate(&targetQuad, Rect(0,0,orthoSize.width,orthoSize.height), n->glReadySrcRect(), n->flipped);
+	Quad<VertXYZST>			targetQuad;
+	targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
+	targetQuad.populateTex(n->glReadySrcRect(), n->flipped);
 	
 	//	draw the texture in the target quad
 	_drawBuffer(n, targetQuad);
@@ -332,8 +333,9 @@ bool VVGLBufferCopier::copyFromTo(const VVGLBufferRef & a, const VVGLBufferRef &
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
-	GLBufferQuadXYZST		targetQuad;
-	GLBufferQuadPopulate(&targetQuad, Rect(0,0,a->srcRect.size.width,a->srcRect.size.height), a->glReadySrcRect(), a->flipped);
+	Quad<VertXYZST>			targetQuad;
+	targetQuad.populateGeo(Rect(0,0,a->srcRect.size.width,a->srcRect.size.height));
+	targetQuad.populateTex(a->glReadySrcRect(), a->flipped);
 	
 	//	draw the texture in the target quad
 	_drawBuffer(a, targetQuad);
@@ -373,9 +375,10 @@ void VVGLBufferCopier::sizeVariantCopy(const VVGLBufferRef & a, const VVGLBuffer
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
-	GLBufferQuadXYZST		targetQuad;
+	Quad<VertXYZST>			targetQuad;
 	Rect					geometryRect = ResizeRect(a->srcRect, Rect(0,0,orthoSize.width,orthoSize.height), copySizingMode);
-	GLBufferQuadPopulate(&targetQuad, geometryRect, a->glReadySrcRect(), a->flipped);
+	targetQuad.populateGeo(geometryRect);
+	targetQuad.populateTex(a->glReadySrcRect(), a->flipped);
 	
 	//	draw the texture in the target quad
 	_drawBuffer(a, targetQuad);
@@ -412,8 +415,9 @@ void VVGLBufferCopier::ignoreSizeCopy(const VVGLBufferRef & a, const VVGLBufferR
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
-	GLBufferQuadXYZST		targetQuad;
-	GLBufferQuadPopulate(&targetQuad, Rect(0,0,a->srcRect.size.width,a->srcRect.size.height), a->glReadySrcRect(), a->flipped);
+	Quad<VertXYZST>			targetQuad;
+	targetQuad.populateGeo(Rect(0,0,a->srcRect.size.width,a->srcRect.size.height));
+	targetQuad.populateTex(a->glReadySrcRect(), a->flipped);
 	
 	//	draw the texture in the target quad
 	_drawBuffer(a, targetQuad);
@@ -474,7 +478,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect
 }
 */
 #if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
-void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct)	{
+void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	//	if it's GL 2.x
@@ -504,9 +508,9 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBu
 		glDisableClientState(GL_COLOR_ARRAY);
 		GLERRLOG
 	
-		glVertexPointer(3, GL_FLOAT, inVertexStruct.stride(), (float*)&inVertexStruct);
+		glVertexPointer(3, GL_FLOAT, (int)inVertexStruct.stride(), (float*)&inVertexStruct);
 		GLERRLOG
-		glTexCoordPointer(2, GL_FLOAT, inVertexStruct.stride(), &inVertexStruct.bl.tex[0]);
+		glTexCoordPointer(2, GL_FLOAT, (int)inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
 		GLERRLOG
 		glBindTexture(inBufferRef->desc.target, inBufferRef->name);
 		GLERRLOG
@@ -544,12 +548,12 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBu
 			GLERRLOG
 			//	configure the attribute pointers to work with the VBO
 			if (inputXYZLoc.loc >= 0)	{
-				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)0);
+				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)inVertexStruct.geoOffset());
 				GLERRLOG
 				inputXYZLoc.enable();
 			}
 			if (inputSTLoc.loc >= 0)	{
-				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)(3*sizeof(float)));
+				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)inVertexStruct.texOffset());
 				GLERRLOG
 				inputSTLoc.enable();
 			}
@@ -631,7 +635,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBu
 	
 }
 #elif ISF_TARGET_GLES
-void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct)	{
+void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...

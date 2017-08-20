@@ -18,9 +18,11 @@
 //	a pool for recycling GL objects.  should be in the same sharegroup as all your other GL contexts.  has its own GL context, so it can create/delete GL resources (and can thus act as a sort of autorelease pool for VVGLBufferRefs)
 #include "VVGLBufferPool.hpp"
 /*
-#if ISF_TARGET_MAC
-#import "VVGLBufferPool_CocoaAdditions.h"
-#endif
+#ifdef __APPLE__
+	#if ISF_TARGET_MAC
+	#import "VVGLBufferPool_CocoaAdditions.h"
+	#endif
+#endif	//	__APPLE__
 */
 
 

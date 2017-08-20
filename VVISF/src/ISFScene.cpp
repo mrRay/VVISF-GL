@@ -376,8 +376,8 @@ void ISFScene::_setUpRenderCallback()	{
 		//	if we're in GL 2 then we can't use a VAO
 		if (s.getGLVersion() == GLVersion_2)	{
 			//	make a quad that describes the area we have to draw
-			GLBufferQuadXY		targetQuad;
-			GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+			Quad<VertXY>		targetQuad;
+			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
 			//	get the VBO
 			VVGLBufferRef		myVBO = getVBO();
@@ -419,8 +419,8 @@ void ISFScene::_setUpRenderCallback()	{
 		//	else we're in a flavor of GL that has VAOs
 		else	{
 			//	make a quad that describes the area we have to draw
-			GLBufferQuadXY		targetQuad;
-			GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+			Quad<VertXY>		targetQuad;
+			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
 			//	bind the VAO
 			VVGLBufferRef		myVAO = getVAO();
@@ -472,8 +472,8 @@ void ISFScene::_setUpRenderCallback()	{
 #else
 	setRenderCallback([&](const VVGLScene & s)	{
 		//	make a quad that describes the area we have to draw
-		GLBufferQuadXY		targetQuad;
-		GLBufferQuadPopulate(&targetQuad, VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+		Quad<VertXY>		targetQuad;
+		targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
 		
 		//	get the VBO
 		VVGLBufferRef		myVBO = getVBO();

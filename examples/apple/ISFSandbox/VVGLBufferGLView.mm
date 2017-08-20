@@ -15,7 +15,7 @@
 @property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::VVGLBufferRef vao;
 @property (assign,readwrite) BOOL initialized;
 @property (readonly) VVGL::VVGLBufferRef retainDrawBuffer;
-@property (assign,readwrite) VVGL::GLBufferQuadXYST lastVBOCoords;
+@property (assign,readwrite) VVGL::Quad<VertXYST> lastVBOCoords;
 @end
 
 
@@ -211,8 +211,9 @@
 				NSRect				rawBounds = [(id)selfPtr bounds];
 				VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 				VVGL::Rect			geometryRect = ResizeRect(bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
-				GLBufferQuadXYZST	targetQuad;
-				GLBufferQuadPopulate(&targetQuad, geometryRect, bufferToDraw->glReadySrcRect(), bufferToDraw->flipped);
+				Quad<VertXYZST>		targetQuad;
+				targetQuad.populateGeo(geometryRect);
+				targetQuad.populateTex(bufferToDraw->glReadySrcRect(), bufferToDraw->flipped);
 				
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -270,24 +271,24 @@ else\r\
 		//	destroyed and shared between the callback lambdas...
 		VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
 		VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
-		VVGLCachedUniRef		inputImage = make_shared<VVGLCachedUni>("inputImage");
-		VVGLCachedUniRef		inputImageRect = make_shared<VVGLCachedUni>("inputImageRect");
-		VVGLCachedUniRef		isRectTex = make_shared<VVGLCachedUni>("isRectTex");
+		VVGLCachedUniRef		inputImageUni = make_shared<VVGLCachedUni>("inputImage");
+		VVGLCachedUniRef		inputImageRectUni = make_shared<VVGLCachedUni>("inputImageRect");
+		VVGLCachedUniRef		isRectTexUni = make_shared<VVGLCachedUni>("isRectTex");
 		//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
-		scene->setRenderPrepCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+		scene->setRenderPrepCallback([xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 			//cout << __PRETTY_FUNCTION__ << endl;
 			if (inPgmChanged)	{
 				//	cache all the locations for the vertex attributes & uniform locations
 				GLint				myProgram = n.getProgram();
 				xyzAttr->cacheTheLoc(myProgram);
 				stAttr->cacheTheLoc(myProgram);
-				inputImage->cacheTheLoc(myProgram);
-				inputImageRect->cacheTheLoc(myProgram);
-				isRectTex->cacheTheLoc(myProgram);
+				inputImageUni->cacheTheLoc(myProgram);
+				inputImageRectUni->cacheTheLoc(myProgram);
+				isRectTexUni->cacheTheLoc(myProgram);
 			}
 		});
 		//	the render callback passes all the data to the GL program
-		scene->setRenderCallback([xyzAttr,stAttr,inputImage,inputImageRect,isRectTex,selfPtr](const VVGLScene & n)	{
+		scene->setRenderCallback([xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,selfPtr](const VVGLScene & n)	{
 			//cout << __PRETTY_FUNCTION__ << endl;
 			//	clear
 			glClearColor(0., 0., 0., 1.);
@@ -295,6 +296,8 @@ else\r\
 		
 			//	get the buffer we want to draw
 			VVGLBufferRef		bufferToDraw = [(id)selfPtr retainDrawBuffer];
+			if (bufferToDraw == nullptr)
+				return;
 			//	try to get the VAO.  if the VAO's null, create it and store it in the VVGLBufferGLView as an ivar. 
 			VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
 			if (tmpVAO == nullptr)	{
@@ -314,8 +317,9 @@ else\r\
 			NSRect				rawBounds = [(id)selfPtr bounds];
 			VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 			VVGL::Rect			geometryRect = ResizeRect((bufferToDraw==nullptr) ? viewBoundsRect : bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
-			GLBufferQuadXYST	targetQuad;
-			GLBufferQuadPopulate(&targetQuad, geometryRect, (bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
+			Quad<VertXYST>		targetQuad;
+			targetQuad.populateGeo(geometryRect);
+			targetQuad.populateTex((bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
 		
 			//	pass the 2D texture to the program (if there's a 2D texture)
 			glActiveTexture(GL_TEXTURE0);
@@ -324,8 +328,8 @@ else\r\
 			GLERRLOG
 			glBindTexture(VVGLBuffer::Target_Rect, 0);
 			GLERRLOG
-			if (inputImage->loc >= 0)	{
-				glUniform1i(inputImage->loc, 0);
+			if (inputImageUni->loc >= 0)	{
+				glUniform1i(inputImageUni->loc, 0);
 				GLERRLOG
 			}
 			//	pass the RECT texture to the program (if there's a RECT texture)
@@ -335,24 +339,24 @@ else\r\
 			GLERRLOG
 			glBindTexture(VVGLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_Rect) ? bufferToDraw->name : 0);
 			GLERRLOG
-			if (inputImageRect->loc >= 0)	{
-				glUniform1i(inputImageRect->loc, 1);
+			if (inputImageRectUni->loc >= 0)	{
+				glUniform1i(inputImageRectUni->loc, 1);
 				GLERRLOG
 			}
 			//	pass an int to the program that indicates whether we're passing no texture (0), a 2D texture (1) or a RECT texture (2)
-			if (isRectTex->loc >= 0)	{
+			if (isRectTexUni->loc >= 0)	{
 				if (bufferToDraw == nullptr)
-					glUniform1i(isRectTex->loc, 0);
+					glUniform1i(isRectTexUni->loc, 0);
 				else	{
 					switch (bufferToDraw->desc.target)	{
 					case VVGLBuffer::Target_2D:
-						glUniform1i(isRectTex->loc, 1);
+						glUniform1i(isRectTexUni->loc, 1);
 						break;
 					case VVGLBuffer::Target_Rect:
-						glUniform1i(isRectTex->loc, 2);
+						glUniform1i(isRectTexUni->loc, 2);
 						break;
 					default:
-						glUniform1i(isRectTex->loc, 0);
+						glUniform1i(isRectTexUni->loc, 0);
 						break;
 					}
 				}
@@ -379,7 +383,7 @@ else\r\
 					xyzAttr->enable();
 				}
 				if (stAttr->loc >= 0)	{
-					glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+					glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)targetQuad.texOffset());
 					GLERRLOG
 					stAttr->enable();
 				}

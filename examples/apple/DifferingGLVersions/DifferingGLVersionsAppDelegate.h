@@ -29,7 +29,7 @@ using namespace VVGL;
 	
 	NSDate						*date;	//	used to fade the texture in repeatedly
 	VVGLBufferRef				vao;
-	GLBufferQuadXYST	lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
+	Quad<VertXYST>				lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
 }
 
 - (void) initLegacyGL;

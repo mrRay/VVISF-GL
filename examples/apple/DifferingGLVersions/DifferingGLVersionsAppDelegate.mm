@@ -11,7 +11,7 @@
 
 
 @interface DifferingGLVersionsAppDelegate ()
-@property (assign,readwrite) VVGL::GLBufferQuadXYST lastVBOCoords;
+@property (assign,readwrite) VVGL::Quad<VertXYST> lastVBOCoords;
 @end
 
 
@@ -55,12 +55,13 @@
 			return;
 		}
 		//	populate a tex quad with the geometry & tex coords
-		GLBufferQuadXYST		texQuad;
+		Quad<VertXYST>			texQuad;
 		VVGL::Size				sceneSize = n.getOrthoSize();
 		//VVGL::Rect				geoRect(0, 0, sceneSize.width, sceneSize.height);
 		VVGL::Rect				geoRect = ResizeRect(imgBuffer->srcRect, VVGL::Rect(0,0,sceneSize.width,sceneSize.height), SizingMode_Fit);
 		VVGL::Rect				texRect = imgBuffer->glReadySrcRect();
-		GLBufferQuadPopulate(&texQuad, geoRect, texRect);
+		texQuad.populateGeo(geoRect);
+		texQuad.populateTex(texRect, imgBuffer->flipped);
 		
 		//	draw the VVGLBufferRef we created from the PNG, using the tex quad
 		glEnable(imgBuffer->desc.target);
@@ -75,8 +76,8 @@
 		//	we're going to draw a quad "over" the image, using the NSDate property of self to determine how long the app's been running
 		double					timeSinceStart = [[(id)selfPtr date] timeIntervalSinceNow] * -1.;
 		double					opacity = fmod(timeSinceStart, 1.);
-		GLBufferQuadXY			colorQuad;
-		GLBufferQuadPopulate(&colorQuad, geoRect);
+		Quad<VertXY>			colorQuad;
+		colorQuad.populateGeo(geoRect);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glVertexPointer(2, GL_FLOAT, texQuad.stride(), &texQuad);
 		glColor4f(0., 0., 0., opacity);
@@ -168,8 +169,9 @@ FragColor *= (1.-fadeVal);\r\
 		VVGL::Size			orthoSize = n.getOrthoSize();
 		VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
-		GLBufferQuadXYST	targetQuad;
-		GLBufferQuadPopulate(&targetQuad, geometryRect, (imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
+		Quad<VertXYST>		targetQuad;
+		targetQuad.populateGeo(geometryRect);
+		targetQuad.populateTex((imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
 		
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);
@@ -222,11 +224,11 @@ FragColor *= (1.-fadeVal);\r\
 			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
 			//	configure the attribute pointers to use the VBO
 			if (xyzAttr->loc >= 0)	{
-				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(targetQuad.geoOffset()));
 				xyzAttr->enable();
 			}
 			if (stAttr->loc >= 0)	{
-				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(targetQuad.texOffset()));
 				stAttr->enable();
 			}
 		}

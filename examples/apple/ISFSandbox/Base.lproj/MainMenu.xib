@@ -669,63 +669,41 @@
         <window title="ISFSandbox" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="360" height="361"/>
+            <rect key="contentRect" x="335" y="390" width="360" height="307"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="360" height="361"/>
+                <rect key="frame" x="0.0" y="0.0" width="360" height="307"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" id="f1t-d7-bYd">
-                        <rect key="frame" x="14" y="313" width="81" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qTf-xg-6nK">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="buttonClicked:" target="Voe-Tx-rLC" id="3YF-G0-cMj"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" id="8lZ-j6-bor">
-                        <rect key="frame" x="95" y="313" width="82" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="FLUSH" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="25x-cM-WNq">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="flushClicked:" target="Voe-Tx-rLC" id="VEw-b0-zMu"/>
-                        </connections>
-                    </button>
                     <openGLView useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" id="UWq-YP-lvO" customClass="VVGLBufferGLView">
-                        <rect key="frame" x="20" y="61" width="320" height="240"/>
+                        <rect key="frame" x="20" y="47" width="320" height="240"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </openGLView>
-                    <button verticalHuggingPriority="750" id="3RD-Kf-X1a">
-                        <rect key="frame" x="13" y="13" width="84" height="32"/>
+                    <button verticalHuggingPriority="750" id="14y-Pv-MbA">
+                        <rect key="frame" x="14" y="13" width="84" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="Render" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1eI-SC-uWr">
+                        <buttonCell key="cell" type="push" title="Render" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LSM-ml-ngM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="renderToTexture:" target="Voe-Tx-rLC" id="598-8t-TBz"/>
+                            <action selector="renderClicked:" target="Voe-Tx-rLC" id="ovD-7N-InY"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" id="hFK-0r-3aU">
-                        <rect key="frame" x="100" y="13" width="72" height="32"/>
+                    <button verticalHuggingPriority="750" id="g75-Hm-u9W">
+                        <rect key="frame" x="90" y="13" width="73" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="Draw" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QHm-oJ-5U5">
+                        <buttonCell key="cell" type="push" title="Flush" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bIY-mE-ejf">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="drawInOutput:" target="Voe-Tx-rLC" id="Smz-jP-8e8"/>
+                            <action selector="flushClicked:" target="Voe-Tx-rLC" id="M8x-DG-7O7"/>
                         </connections>
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="273" y="406.5"/>
+            <point key="canvasLocation" x="273" y="379.5"/>
         </window>
     </objects>
 </document>

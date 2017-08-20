@@ -14,205 +14,243 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 
 
 - (id) init	{
-	using namespace VVISF;
-	using namespace std;
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
 	self = [super init];
 	if (self != nil)	{
-		//CGLPixelFormatObj	pxlFmt = CreateDefaultPixelFormat();
-		//sharedContext = [[NSOpenGLContext alloc]
-		//	initWithFormat:[[[NSOpenGLPixelFormat alloc] initWithCGLPixelFormatObj:pxlFmt] autorelease]
-		//	shareContext:nil];
-		
-		
-		/*	make a shared context- this is required.  note that resources created by this context 
-		are not shared with anything (when this ctx was created, its sharegroup was null), so stuff 
-		you create in this context will not be shared.  which is okay- we're never going to tell this 
-		context to render anything (it exists merely to establish a sharegroup for other contexts)		*/
-		sharedCtx = make_shared<VVGLContext>();
-		/*	now make the global buffer pool with the shared context.  the buffer pool will create 
-		its own context, and that context will be a member of the sharegroup so its resources can be 
-		shared with other contexts.  create further GL contexts either using the original 
-		sharedContext, or using the buffer pool's context.		*/
-		CreateGlobalBufferPool(sharedCtx);
-		
-		
-		//	from here on out, we can proceed with making other contexts/scenes/etc.
-		
-		
-		//	make a new scene.  we aren't giving the scene a context to use, so it will create its own context in the global buffer pool's sharegroup.
-		scene = new VVGLScene();
-		scene->setClearColor(1., 0., 0., 1.);
-		//scene->setRenderCallback([](const VVGLScene & n){
-		//	cout << __PRETTY_FUNCTION__ << endl;
-		//});
-		
-		//	make a new ISFScene
-		isfScene = new ISFScene(GetGlobalBufferPool()->getContext());
+		sharedContext = nullptr;
+		scene = nullptr;
+		vao = nullptr;
 	}
 	return self;
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-	using namespace std;
-	using namespace VVISF;
+	[self loadBackendFromDefaults];
+	//	make the displaylink, which will drive rendering
+	CVReturn				err = kCVReturnSuccess;
+	CGOpenGLDisplayMask		totalDisplayMask = 0;
+	GLint					virtualScreen = 0;
+	GLint					displayMask = 0;
+	NSOpenGLPixelFormat		*format = [[[NSOpenGLPixelFormat alloc] initWithCGLPixelFormatObj:CreateCompatibilityGLPixelFormat()] autorelease];
 	
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	//NSString		*path = @"/Users/testAdmin/Library/Graphics/ISF/CellMod.fs";
-	/*
-	NSString		*path = @"/Users/testAdmin/Library/Graphics/ISF/Image_Based_PBR_Material_ld3SRr.fs";
-	*/
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"CellMod" ofType:@"fs"];
-	/*
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Audio" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-AudioFFT" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Bool" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Color" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Event" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Float" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Functionality" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-IMG_NORM_PIXEL" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-IMG_PIXEL" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-IMG_THIS_NORM_PIXEL" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-IMG_THIS_PIXEL" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-ImportedImage" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Long" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-MultiPassRendering" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-PersistentBuffer" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-PersistentBufferDifferingSizes" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Point" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Sampler" ofType:@"fs"];
-	NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-TempBufferDifferingSizes" ofType:@"fs"];
-	*/
-	std::string		tmpString = std::string([path UTF8String]);
-	isfScene->useFile(tmpString);
-	//cout << "doc is \n" << *(isfScene->getDoc()) << endl;
-	
-	/*
-	NSString		*viewPath = [[NSBundle mainBundle] pathForResource:@"PreviewPluginAlphaOverCheckerboard" ofType:@"fs"];
-	[glView useFile:viewPath];
-	*/
-	
-	[NSTimer
-		scheduledTimerWithTimeInterval:1./60.
-		target:self
-		selector:@selector(timerCallback:)
-		userInfo:nil
-		repeats:YES];
-	
-}
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
-	// Insert code here to tear down your application
+	for (virtualScreen=0; virtualScreen<[format numberOfVirtualScreens]; ++virtualScreen)	{
+		[format getValues:&displayMask forAttribute:NSOpenGLPFAScreenMask forVirtualScreen:virtualScreen];
+		totalDisplayMask |= displayMask;
+	}
+	err = CVDisplayLinkCreateWithOpenGLDisplayMask(totalDisplayMask, &displayLink);
+	if (err)	{
+		NSLog(@"\t\terr %d creating display link in %s",err,__func__);
+		displayLink = NULL;
+	}
+	else	{
+		CVDisplayLinkSetOutputCallback(displayLink, displayLinkCallback, self);
+		CVDisplayLinkStart(displayLink);
+	}
 }
 
-
-- (void) timerCallback:(NSTimer *)t	{
+- (void) loadBackendFromDefaults	{
 	//NSLog(@"%s",__func__);
+	@synchronized (self)	{
+		sharedContext = nullptr;
+		scene = nullptr;
 	
-	using namespace VVISF;
-	using namespace std;
+		//NSUserDefaults		*def = [NSUserDefaults standardUserDefaults];
+		//NSNumber			*tmpNum = [def objectForKey:@"glVers"];
+		//if (tmpNum == nil)
+		//	tmpNum = [NSNumber numberWithInteger:GLVersion_2];
 	
-	//cout << __PRETTY_FUNCTION__ << std::endl;
+		//switch ([tmpNum intValue])	{
+		//case GLVersion_2:
+			sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		//	break;
+		//default:
+		//	sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		//	break;
+		//}
+		
+		CreateGlobalBufferPool(sharedContext);
+		
+		scene = make_shared<VVGLScene>();
+		
+		[glView setSharedGLContext:sharedContext];
+		[glView setRetainDraw:YES];
+		
+		scene->setClearColor(0., 0., 0., 1.);
+		scene->setPerformClear(true);
+		
+		switch (scene->getGLVersion())	{
+		case GLVersion_2:
+			[self initGL2];
+			break;
+		case GLVersion_4:
+		default:
+			[self initGL4];
+			break;
+		}
+	}
+}
+- (void) initGL2	{
+	NSLog(@"%s",__func__);
+	scene->setRenderCallback([](const VVGLScene & n)	{
+		Quad<VertXYRGBA>		quad;
+		VVGL::Rect			geoRect(0, 0, 100, 100);
+		VVGL::VT_RGBA		tmpColor(0., 0., 1., 1.);
+		quad.populateGeo(geoRect);
+		quad.populateColor(tmpColor);
+		
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		
+		glVertexPointer(2, GL_FLOAT, quad.stride(), &quad);
+		glColorPointer(4, GL_FLOAT, quad.stride(), &quad.bl.color.r);
+		
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	});
+}
+- (void) initGL4	{
+	NSLog(@"%s",__func__);
+	string			vsString("\r\
+#version 330 core\r\
+in vec3		inXYZ;\r\
+in vec4		inRGBA;\r\
+uniform mat4	vvglOrthoProj;\r\
+out vec4		programColor;\r\
+void main()	{\r\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
+	programColor = inRGBA;\r\
+}\r\
+");
+	string			fsString("\r\
+#version 330 core\r\
+in vec4		programColor;\r\
+out vec4		FragColor;\r\
+void main()	{\r\
+	FragColor = programColor;\r\
+}\r\
+");
+	scene->setVertexShaderString(vsString);
+	scene->setFragmentShaderString(fsString);
 	
-	//VVGLBufferPoolRef	bp = GetGlobalBufferPool();
-	//VVGLBufferCopierRef	copier = GetGlobalBufferCopier();
-	/*
-	VVGLBufferRef	newFrame = scene->createAndRenderABuffer({1920,1080});
-	[glView drawBuffer:newFrame];
-	*/
+	VVGLCachedAttribRef		aXYZ = make_shared<VVGLCachedAttrib>("inXYZ");
+	VVGLCachedAttribRef		aRGBA = make_shared<VVGLCachedAttrib>("inRGBA");
 	
-	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
-	//[glView drawBuffer:newFrame];
-	VVGLBufferRef	copiedFrame = GetGlobalBufferCopier()->copyToNewBuffer(newFrame);
-	//cout << "\tnewFrame is " << *newFrame << ", drawing " << *copiedFrame << endl;
-	[glView drawBuffer:copiedFrame];
-	
-	/*
-	VVGLBufferRef		renderedBuffer = shaderScene->createAndRenderABuffer();
-	[glView drawBuffer:renderedBuffer];
-	*/
-	/*
-	VVGLBufferRef		copiedBuffer = copier->copyToNewBuffer(renderedBuffer);
-	*/
-	/*
-	VVGLBufferRef		copiedBuffer = ISFBPCreateRGBATex(bp, { 1920., 1080. });
-	if (!copier->copyFromTo(renderedBuffer, copiedBuffer))
-		cout << "\tERR: copy failed in " << __PRETTY_FUNCTION__ << endl;
-	*/
-	/*
-	VVGLBufferRef		copiedBuffer = ISFBPCreateRGBATex(bp, { 40., 30. });
-	copier->setCopyAndResize(true);
-	copier->setCopySize({40.,30.});
-	if (!copier->copyFromTo(renderedBuffer, copiedBuffer))
-		cout << "\tERR: copy failed in " << __PRETTY_FUNCTION__ << endl;
-	*/
-	/*
-	VVGLBufferRef		copiedBuffer = ISFBPCreateRGBATex(bp, { 40., 30. });
-	copier->sizeVariantCopy(renderedBuffer, copiedBuffer);
-	*/
-	/*
-	VVGLBufferRef		copiedBuffer = ISFBPCreateRGBATex(bp, { 320., 240. });
-	copier->ignoreSizeCopy(renderedBuffer, copiedBuffer);
-	*/
-	
-	//cout << "\trendered buffer " << *renderedBuffer << endl;
-	//cout << "\trendered buffer is " << *renderedBuffer << ", copied buffer is " << *copiedBuffer << endl;
-	//[glView drawBuffer:copiedBuffer];
-	
-	//bp->housekeeping();
-	GetGlobalBufferPool()->housekeeping();
+	void					*selfPtr = (void*)self;
+	scene->setRenderPrepCallback([aXYZ,aRGBA,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+		if (inPgmChanged)	{
+			GLint		myProgram = n.getProgram();
+			aXYZ->cacheTheLoc(myProgram);
+			aRGBA->cacheTheLoc(myProgram);
+			[(id)selfPtr setVAO:CreateVAO(true)];
+		}
+	});
+	scene->setRenderCallback([aXYZ,aRGBA,selfPtr](const VVGLScene & n)	{
+		
+		Quad<VertXYZRGBA>	targetQuad;
+		VVGL::Rect			geoRect(0, 0, 100, 100);
+		VVGL::VT_RGBA		tmpColor(0., 0., 1., 1.);
+		targetQuad.populateGeo(geoRect);
+		targetQuad.populateColor(tmpColor);
+		
+		//	bind the VAO
+		VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+		glBindVertexArray(tmpVAO->name);
+		
+		uint32_t			vbo = 0;
+		//if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+			//	make a new VBO to contain vertex + texture coord data
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
+			//	configure the attribute pointers to use the VBO
+			if (aXYZ->loc >= 0)	{
+				glVertexAttribPointer(aXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				aXYZ->enable();
+			}
+			if (aRGBA->loc >= 0)	{
+				glVertexAttribPointer(aRGBA->loc, 4, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(3*sizeof(float)));
+				aRGBA->enable();
+			}
+		//}
+		
+		//	draw
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		//	un-bind the VAO
+		glBindVertexArray(0);
+		
+		//if ([(id)selfPtr lastVBOCoords] != targetQuad)	{
+			//	delete the VBO we made earlier...
+			glDeleteBuffers(1, &vbo);
+			//	update the vbo coords ivar (we don't want to update the VBO contents every pass)
+		//	[(id)selfPtr setLastVBOCoords:targetQuad];
+		//}
+	});
 }
 
 
-- (IBAction) buttonClicked:(id)sender	{
-	using namespace std;
-	using namespace VVISF;
-	cout << __PRETTY_FUNCTION__ << std::endl;
-	
-	//cout << __PRETTY_FUNCTION__ << std::endl;
-	
-	//VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
-	//cout << "\tnewFrame is " << *newFrame << endl;
-	//[glView drawBuffer:newFrame];
-	
-	//VVGLBufferRef	newFrame = scene->createAndRenderABuffer({1920,1080});
-	//cout << "\tnewFrame is " << *newFrame << endl;
-	
-	VVGLBufferRef		renderedBuffer = isfScene->createAndRenderABuffer();
-	//VVGLBufferRef		renderedBuffer = scene->renderRedFrame();
-	cout << "\trenderedBuffer is " << *renderedBuffer << endl;
-	[glView drawBuffer:renderedBuffer];
-	//retainedBuffer = scene->createAndRenderABuffer();
-	
-	//VVGLBufferRef		renderedBuffer = shaderScene->createAndRenderABuffer();
-	//cout << "\trendered buffer " << *renderedBuffer << endl;
-	//[glView drawBuffer:renderedBuffer];
-	
-	//NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Functionality" ofType:@"fs"];
-	//NSString		*path = [[NSBundle mainBundle] pathForResource:@"Test-Float" ofType:@"fs"];
-	//NSString		*path = @"/Users/testAdmin/Library/Graphics/ISF/CellMod.fs";
-	//isfScene->useFile(string([path UTF8String]));
-	
+//	this method is called from the displaylink callback
+- (void) renderCallback	{
+	NSLog(@"%s",__func__);
+	@synchronized (self)	{
+		if (scene == nullptr)
+			return;
+		NSRect				viewFrame = [glView frame];
+		//VVGLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
+		VVGLBufferRef		tmpBuffer = CreateRGBATex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
+		//VVGLBufferRef		tmpBuffer = CreateRGBARectTex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
+		
+		scene->renderToBuffer(tmpBuffer);
+		
+		lastRenderedBuffer = tmpBuffer;
+		if (lastRenderedBuffer != nullptr)
+			cout << "\tlastRenderedBuffer is " << *lastRenderedBuffer << endl;
+		
+		VVGLBufferCopierRef	copier = GetGlobalBufferCopier();
+		if (copier != nullptr)	{
+			copier->setCopyAndResize(false);
+			lastCopiedBuffer = copier->copyToNewBuffer(lastRenderedBuffer);
+			if (lastCopiedBuffer != nullptr)
+				cout << "\tlastCopiedBuffer is " << *lastCopiedBuffer << endl;
+		}
+		
+		[glView drawBuffer:lastRenderedBuffer];
+		//	tell the buffer pool to do its housekeeping (releases any "old" resources in the pool that have been sticking around for a while)
+		GetGlobalBufferPool()->housekeeping();
+	}
 }
+
+
+@synthesize vao;
+
+
 - (IBAction) flushClicked:(id)sender	{
-	using namespace std;
-	using namespace VVISF;
-	cout << __PRETTY_FUNCTION__ << std::endl;
-	//GetGlobalBufferPool()->flush();
-	/*
-	VVGLBufferRef	newFrame = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
-	//cout << "\trendered frame is " << *newFrame << endl;
-	[glView drawBuffer:newFrame];
-	*/
+	NSLog(@"%s",__func__);
+	if (scene == nullptr)
+		return;
+	VVGLContextRef		ctx = scene->getContext();
+	if (ctx == nullptr)
+		return;
+	ctx->makeCurrentIfNotCurrent();
+	glFlush();
 }
-- (IBAction) renderToTexture:(id)sender	{
-	isfScene->getContext()->makeCurrent();
-	newTex = isfScene->createAndRenderABuffer(VVISF::Size(1920.,1080.));
-}
-- (IBAction) drawInOutput:(id)sender	{
-	[glView drawBuffer:newTex];
+- (IBAction) renderClicked:(id)sender	{
+	NSLog(@"%s",__func__);
+	[self renderCallback];
 }
 
 
 @end
+
+
+
+
+CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, 
+	const CVTimeStamp *inNow, 
+	const CVTimeStamp *inOutputTime, 
+	CVOptionFlags flagsIn, 
+	CVOptionFlags *flagsOut, 
+	void *displayLinkContext)
+{
+	NSAutoreleasePool		*pool =[[NSAutoreleasePool alloc] init];
+	//[(AppDelegate *)displayLinkContext renderCallback];
+	[pool release];
+	return kCVReturnSuccess;
+}

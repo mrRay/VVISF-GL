@@ -5,7 +5,7 @@
 
 
 @interface BasicGLFuncAppDelegate ()
-@property (assign,readwrite) VVGL::GLBufferQuadXYST lastVBOCoords;
+@property (assign,readwrite) VVGL::Quad<VertXYST> lastVBOCoords;
 @end
 
 
@@ -19,8 +19,8 @@
 	if (self != nil)	{
 		
 		//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-		//sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		//sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
 		
 		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.
 		CreateGlobalBufferPool(sharedContext);
@@ -86,12 +86,13 @@
 	
 	glScene->setRenderCallback([selfPtr, imgBuffer](const VVGLScene & n)	{
 		//	populate a tex quad with the geometry & tex coords
-		GLBufferQuadXYST		texQuad;
+		Quad<VertXYST>			texQuad;
 		VVGL::Size				sceneSize = n.getOrthoSize();
 		//VVGL::Rect				geoRect(0, 0, sceneSize.width, sceneSize.height);
 		VVGL::Rect				geoRect = ResizeRect(imgBuffer->srcRect, VVGL::Rect(0,0,sceneSize.width,sceneSize.height), SizingMode_Fit);
 		VVGL::Rect				texRect = imgBuffer->glReadySrcRect();
-		GLBufferQuadPopulate(&texQuad, geoRect, texRect);
+		texQuad.populateGeo(geoRect);
+		texQuad.populateTex(texRect, imgBuffer->flipped);
 		
 		//	draw the VVGLBufferRef we created from the PNG, using the tex quad
 		glEnable(imgBuffer->desc.target);
@@ -106,8 +107,8 @@
 		//	we're going to draw a quad "over" the image, using the NSDate property of self to determine how long the app's been running
 		double					timeSinceStart = [[(id)selfPtr date] timeIntervalSinceNow] * -1.;
 		double					opacity = fmod(timeSinceStart, 1.);
-		GLBufferQuadXY			colorQuad;
-		GLBufferQuadPopulate(&colorQuad, geoRect);
+		Quad<VertXY>			colorQuad;
+		colorQuad.populateGeo(geoRect);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glVertexPointer(2, GL_FLOAT, texQuad.stride(), &texQuad);
 		glColor4f(0., 0., 0., opacity);
@@ -182,7 +183,7 @@ FragColor *= (1.-fadeVal);\r\
 			fadeValUni->cacheTheLoc(myProgram);
 	
 			//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
-			GLBufferQuadXYST	targetQuad;
+			//Quad<VertXYST>	targetQuad;
 			
 			//	make a new VAO
 			[self setVAO:CreateVAO(true)];
@@ -202,8 +203,9 @@ FragColor *= (1.-fadeVal);\r\
 		VVGL::Size			orthoSize = n.getOrthoSize();
 		VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
-		GLBufferQuadXYST	targetQuad;
-		GLBufferQuadPopulate(&targetQuad, geometryRect, (imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
+		Quad<VertXYST>		targetQuad;
+		targetQuad.populateGeo(geometryRect);
+		targetQuad.populateTex((imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
 
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);

@@ -33,7 +33,7 @@ class VVGLBufferCopier : public VVGLScene	{
 #elif ISF_TARGET_GLES
 		VVGLBufferRef	vbo = nullptr;	//	geometry + tex coords, used to draw stuff if we're in GL ES
 #endif
-		GLBufferQuadXYZST	vboContents;	//	the VBO owned by 'vao' or the VBO 'vbo' is described by this var.  we check this, and if there's a delta the vao has to make a new vbo/'vbo' has to update its contents
+		Quad<VertXYZST>		vboContents;	//	the VBO owned by 'vao' or the VBO 'vbo' is described by this var.  we check this, and if there's a delta the vao has to make a new vbo/'vbo' has to update its contents
 		VVGLCachedAttrib	inputXYZLoc = VVGLCachedAttrib("inXYZ");	//	address of the attribute loc we pass geometry data to
 		VVGLCachedAttrib	inputSTLoc = VVGLCachedAttrib("inST");	//	address of the attribute loc we pass tex coord data to
 		VVGLCachedUni		inputImageLoc = VVGLCachedUni("inputImage");	//	address of the uniform loc we pass 2D texture IDs to
@@ -81,7 +81,7 @@ class VVGLBufferCopier : public VVGLScene	{
 	private:
 		//	acquire 'renderLock' and set current context before calling
 		//void _drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect);
-		void _drawBuffer(const VVGLBufferRef & inBufferRef, const GLBufferQuadXYZST & inVertexStruct);
+		void _drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct);
 };
 
 
