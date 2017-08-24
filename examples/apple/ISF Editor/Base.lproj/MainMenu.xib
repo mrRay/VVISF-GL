@@ -3182,11 +3182,11 @@ Gw
                                             </tabViewItem>
                                             <tabViewItem label="Compiled Vertex Shader" identifier="2" id="BsK-GQ-rEA">
                                                 <view key="view" id="gXV-KT-qyl">
-                                                    <rect key="frame" x="10" y="19" width="592" height="235.5"/>
+                                                    <rect key="frame" x="10" y="19" width="726" height="235"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ff4-MD-Pkh">
-                                                            <rect key="frame" x="15" y="219" width="495" height="14"/>
+                                                            <rect key="frame" x="15" y="218.5" width="495" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="This is the compiled vertex shader- it isn't directly editable (edit the ISF instead)" id="dP5-Fz-LPZ">
                                                                 <font key="font" metaFont="smallSystem"/>
@@ -3195,7 +3195,7 @@ Gw
                                                             </textFieldCell>
                                                         </textField>
                                                         <customView id="nKF-bf-jcK">
-                                                            <rect key="frame" x="2" y="2" width="588" height="209"/>
+                                                            <rect key="frame" x="2" y="2" width="722" height="208.5"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         </customView>
                                                     </subviews>

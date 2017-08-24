@@ -45,9 +45,9 @@ struct VVGLCachedUni	{
 		//	a valid GL context must be current before you call this function.  caches the loc if it hasn't been done yet, will only return -1 if there's a problem (if the attrib doesn't exist in the current program in use by the current context)
 		inline int32_t location(const int32_t & inGLProgram) { if (loc<0 || inGLProgram<0 || inGLProgram!=prog) cacheTheLoc(inGLProgram); return loc; }
 		//	a valid GL context must be current before you call this function.
-		void enable();
+		//void enable();
 		//	a valid GL context must be current before you call this function.  protip: don't call this function if you're using VAOs to draw.
-		void disable();
+		//void disable();
 		inline string getDescriptionString() const { return FmtString("<VVGLCachedUni \"%s\", %d>",this->name.c_str(),this->loc); }
 		friend ostream & operator<<(ostream & os, const VVGLCachedUni & n) { os<<n.getDescriptionString();return os; }
 };

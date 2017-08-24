@@ -9,8 +9,10 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <TargetConditionals.h>
 #import <CoreMedia/CoreMedia.h>
+#import <CoreVideo/CoreVideo.h>
 #elif ISF_TARGET_IOS
 #import <CoreGraphics/CoreGraphics.h>
+#import <CoreVideo/CoreVideo.h>
 #endif
 
 

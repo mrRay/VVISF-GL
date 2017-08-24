@@ -51,12 +51,16 @@ void VVGLCachedAttrib::enable()	{
 		glEnableVertexAttribArray(loc);
 		GLERRLOG
 	}
+	else
+		cout << "\terr: can't enable, loc is " << loc << " in " << __PRETTY_FUNCTION__ << endl;
 }
 void VVGLCachedAttrib::disable()	{
 	if (loc >= 0)	{
 		glDisableVertexAttribArray(loc);
 		GLERRLOG
 	}
+	else
+		cout << "\terr: can't disable, loc is " << loc << " in " << __PRETTY_FUNCTION__ << endl;
 }
 
 

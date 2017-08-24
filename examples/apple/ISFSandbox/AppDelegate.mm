@@ -162,11 +162,11 @@ void main()	{\r\
 			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
 			//	configure the attribute pointers to use the VBO
 			if (aXYZ->loc >= 0)	{
-				glVertexAttribPointer(aXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				glVertexAttribPointer(aXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
 				aXYZ->enable();
 			}
 			if (aRGBA->loc >= 0)	{
-				glVertexAttribPointer(aRGBA->loc, 4, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(3*sizeof(float)));
+				glVertexAttribPointer(aRGBA->loc, 4, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.colorOffset()));
 				aRGBA->enable();
 			}
 		//}

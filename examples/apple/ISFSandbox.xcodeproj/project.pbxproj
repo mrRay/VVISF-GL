@@ -182,6 +182,11 @@
 		1A7186C61F2A3B42004663CC /* ISFVVGLBufferView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A7186C51F2A3B42004663CC /* ISFVVGLBufferView.mm */; };
 		1A7757A31F29433300039E3D /* BufferObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A7757A21F29433300039E3D /* BufferObject.mm */; };
 		1A7757AD1F2A1C0E00039E3D /* ISFVVGLBufferView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A7757AC1F2A1C0E00039E3D /* ISFVVGLBufferView.mm */; };
+		1A7C037D1F4F0DA600A6534C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF28FAD1F311F50007D9901 /* CoreMedia.framework */; };
+		1A7C039C1F4F0DA900A6534C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2AF1E1BFD7B00F48E60 /* CoreVideo.framework */; };
+		1A7C03A01F4F3A5000A6534C /* GeoShaderTest.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C039D1F4F3A5000A6534C /* GeoShaderTest.fs */; };
+		1A7C03A11F4F3A5000A6534C /* GeoShaderTest.gs in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C039E1F4F3A5000A6534C /* GeoShaderTest.gs */; };
+		1A7C03A21F4F3A5000A6534C /* GeoShaderTest.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C039F1F4F3A5000A6534C /* GeoShaderTest.vs */; };
 		1A7CA96C1F4742C80051F3D6 /* DifferingGLVersionsAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A7CA96B1F4742C80051F3D6 /* DifferingGLVersionsAppDelegate.mm */; };
 		1A7CA96F1F4742C80051F3D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A7CA96E1F4742C80051F3D6 /* main.m */; };
 		1A7CA9711F4742C80051F3D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A7CA9701F4742C80051F3D6 /* Assets.xcassets */; };
@@ -276,7 +281,14 @@
 		1AB0492A1DFDFE2500A59A85 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AB049291DFDFE2500A59A85 /* main.m */; };
 		1AB0492C1DFDFE2500A59A85 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AB0492B1DFDFE2500A59A85 /* Assets.xcassets */; };
 		1AB0492F1DFDFE2500A59A85 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AB0492D1DFDFE2500A59A85 /* MainMenu.xib */; };
+		1AD86D061F4EFB4300DEED3E /* GeoShaderTestAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AD86D051F4EFB4300DEED3E /* GeoShaderTestAppDelegate.mm */; };
+		1AD86D091F4EFB4300DEED3E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD86D081F4EFB4300DEED3E /* main.m */; };
+		1AD86D0B1F4EFB4300DEED3E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AD86D0A1F4EFB4300DEED3E /* Assets.xcassets */; };
+		1AD86D0E1F4EFB4300DEED3E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD86D0C1F4EFB4300DEED3E /* MainMenu.xib */; };
+		1AD86D351F4EFB6500DEED3E /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
+		1AD86D361F4EFB9000DEED3E /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF2BE91E09652B00620148 /* VVGLBufferGLView.mm */; };
 		1AD89DF01F4A341E0003D1FD /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
+		1AD97B171F4F6202007252E0 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD97B161F4F6202007252E0 /* CoreVideo.framework */; };
 		1AE177A71E2581EF00E978E5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; };
 		1AE177A91E2581F400E978E5 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177A81E2581F400E978E5 /* OpenGLES.framework */; };
 		1AE177AB1E2581FA00E978E5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177AA1E2581FA00E978E5 /* CoreGraphics.framework */; };
@@ -601,6 +613,13 @@
 			remoteGlobalIDString = 1A44D2711E1BF7ED00F48E60;
 			remoteInfo = VVGL;
 		};
+		1AD86D331F4EFB5B00DEED3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A44D2711E1BF7ED00F48E60;
+			remoteInfo = VVGL;
+		};
 		1AD89DD01F4A341B0003D1FD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
@@ -870,6 +889,9 @@
 		1A7757A21F29433300039E3D /* BufferObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BufferObject.mm; sourceTree = "<group>"; };
 		1A7757AB1F2A1C0E00039E3D /* ISFVVGLBufferView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISFVVGLBufferView.h; sourceTree = "<group>"; };
 		1A7757AC1F2A1C0E00039E3D /* ISFVVGLBufferView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ISFVVGLBufferView.mm; sourceTree = "<group>"; };
+		1A7C039D1F4F3A5000A6534C /* GeoShaderTest.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest.fs; sourceTree = "<group>"; };
+		1A7C039E1F4F3A5000A6534C /* GeoShaderTest.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest.gs; sourceTree = "<group>"; };
+		1A7C039F1F4F3A5000A6534C /* GeoShaderTest.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest.vs; sourceTree = "<group>"; };
 		1A7CA9681F4742C70051F3D6 /* DifferingGLVersions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DifferingGLVersions.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A7CA96A1F4742C80051F3D6 /* DifferingGLVersionsAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DifferingGLVersionsAppDelegate.h; sourceTree = "<group>"; };
 		1A7CA96B1F4742C80051F3D6 /* DifferingGLVersionsAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DifferingGLVersionsAppDelegate.mm; sourceTree = "<group>"; };
@@ -922,6 +944,14 @@
 		1AB0492E1DFDFE2500A59A85 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1AB049301DFDFE2500A59A85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AB1479A1E1BDAA80041528E /* libVVISFKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVVISFKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AD86D021F4EFB4300DEED3E /* GeoShaderTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GeoShaderTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AD86D041F4EFB4300DEED3E /* GeoShaderTestAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoShaderTestAppDelegate.h; sourceTree = "<group>"; };
+		1AD86D051F4EFB4300DEED3E /* GeoShaderTestAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GeoShaderTestAppDelegate.mm; sourceTree = "<group>"; };
+		1AD86D081F4EFB4300DEED3E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1AD86D0A1F4EFB4300DEED3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1AD86D0D1F4EFB4300DEED3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1AD86D0F1F4EFB4300DEED3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1AD97B161F4F6202007252E0 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		1AE177631E2581B500E978E5 /* VVISFKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVISFKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE177671E2581B500E978E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AE177701E2581BB00E978E5 /* VVGL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVGL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1095,6 +1125,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AD86CFF1F4EFB4300DEED3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A7C039C1F4F0DA900A6534C /* CoreVideo.framework in Frameworks */,
+				1A7C037D1F4F0DA600A6534C /* CoreMedia.framework in Frameworks */,
+				1AD86D351F4EFB6500DEED3E /* libVVGL.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1AE1775F1E2581B500E978E5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1109,6 +1149,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AD97B171F4F6202007252E0 /* CoreVideo.framework in Frameworks */,
 				1AE177B31E259E1E00E978E5 /* UIKit.framework in Frameworks */,
 				1AE177B11E259E1600E978E5 /* GLKit.framework in Frameworks */,
 				1AE177AF1E25995400E978E5 /* CoreGraphics.framework in Frameworks */,
@@ -1711,6 +1752,7 @@
 		1AB049191DFDFE2500A59A85 = {
 			isa = PBXGroup;
 			children = (
+				1AD97B161F4F6202007252E0 /* CoreVideo.framework */,
 				1AA067461F48C41400FE0B53 /* Cocoa.framework */,
 				1AA067441F48C41100FE0B53 /* Foundation.framework */,
 				1A86136D1F31F93D00A79B96 /* AppKit.framework */,
@@ -1737,6 +1779,7 @@
 				1A901A061F4648C0009FEE74 /* BasicGLFunc */,
 				1A7CA9691F4742C70051F3D6 /* DifferingGLVersions */,
 				1A6ED6111F47A40A00227712 /* ISFFuncTest */,
+				1AD86D031F4EFB4300DEED3E /* GeoShaderTest */,
 				1AB049231DFDFE2500A59A85 /* Products */,
 				1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */,
 			);
@@ -1756,6 +1799,7 @@
 				1A901A051F4648C0009FEE74 /* BasicGLFunc.app */,
 				1A7CA9681F4742C70051F3D6 /* DifferingGLVersions.app */,
 				1A6ED6101F47A40A00227712 /* ISFFuncTest.app */,
+				1AD86D021F4EFB4300DEED3E /* GeoShaderTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1786,6 +1830,30 @@
 			isa = PBXGroup;
 			children = (
 				1AB049291DFDFE2500A59A85 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1AD86D031F4EFB4300DEED3E /* GeoShaderTest */ = {
+			isa = PBXGroup;
+			children = (
+				1AD86D041F4EFB4300DEED3E /* GeoShaderTestAppDelegate.h */,
+				1AD86D051F4EFB4300DEED3E /* GeoShaderTestAppDelegate.mm */,
+				1A7C039D1F4F3A5000A6534C /* GeoShaderTest.fs */,
+				1A7C039E1F4F3A5000A6534C /* GeoShaderTest.gs */,
+				1A7C039F1F4F3A5000A6534C /* GeoShaderTest.vs */,
+				1AD86D0A1F4EFB4300DEED3E /* Assets.xcassets */,
+				1AD86D0C1F4EFB4300DEED3E /* MainMenu.xib */,
+				1AD86D0F1F4EFB4300DEED3E /* Info.plist */,
+				1AD86D071F4EFB4300DEED3E /* Supporting Files */,
+			);
+			path = GeoShaderTest;
+			sourceTree = "<group>";
+		};
+		1AD86D071F4EFB4300DEED3E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1AD86D081F4EFB4300DEED3E /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2091,6 +2159,24 @@
 			productReference = 1AB1479A1E1BDAA80041528E /* libVVISFKit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		1AD86D011F4EFB4300DEED3E /* GeoShaderTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AD86D301F4EFB4300DEED3E /* Build configuration list for PBXNativeTarget "GeoShaderTest" */;
+			buildPhases = (
+				1AD86CFE1F4EFB4300DEED3E /* Sources */,
+				1AD86CFF1F4EFB4300DEED3E /* Frameworks */,
+				1AD86D001F4EFB4300DEED3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1AD86D341F4EFB5B00DEED3E /* PBXTargetDependency */,
+			);
+			name = GeoShaderTest;
+			productName = GeoShaderTest;
+			productReference = 1AD86D021F4EFB4300DEED3E /* GeoShaderTest.app */;
+			productType = "com.apple.product-type.application";
+		};
 		1AE177621E2581B500E978E5 /* VVISFKit_iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1AE177681E2581B500E978E5 /* Build configuration list for PBXNativeTarget "VVISFKit_iOS" */;
@@ -2115,8 +2201,8 @@
 			buildConfigurationList = 1AE177751E2581BB00E978E5 /* Build configuration list for PBXNativeTarget "VVGL_iOS" */;
 			buildPhases = (
 				1AE1776B1E2581BB00E978E5 /* Sources */,
-				1AE1776C1E2581BB00E978E5 /* Frameworks */,
 				1AE1776D1E2581BB00E978E5 /* Headers */,
+				1AE1776C1E2581BB00E978E5 /* Frameworks */,
 				1AE1776E1E2581BB00E978E5 /* Resources */,
 			);
 			buildRules = (
@@ -2164,6 +2250,9 @@
 					1AB147991E1BDAA80041528E = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
+					1AD86D011F4EFB4300DEED3E = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
 					1AE177621E2581B500E978E5 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
@@ -2202,6 +2291,7 @@
 				1A901A041F4648C0009FEE74 /* BasicGLFunc */,
 				1A7CA9671F4742C70051F3D6 /* DifferingGLVersions */,
 				1A6ED60F1F47A40A00227712 /* ISFFuncTest */,
+				1AD86D011F4EFB4300DEED3E /* GeoShaderTest */,
 			);
 		};
 /* End PBXProject section */
@@ -2549,6 +2639,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AD86D001F4EFB4300DEED3E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AD86D0B1F4EFB4300DEED3E /* Assets.xcassets in Resources */,
+				1AD86D0E1F4EFB4300DEED3E /* MainMenu.xib in Resources */,
+				1A7C03A11F4F3A5000A6534C /* GeoShaderTest.gs in Resources */,
+				1A7C03A21F4F3A5000A6534C /* GeoShaderTest.vs in Resources */,
+				1A7C03A01F4F3A5000A6534C /* GeoShaderTest.fs in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1AE177611E2581B500E978E5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2734,6 +2836,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AD86CFE1F4EFB4300DEED3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AD86D091F4EFB4300DEED3E /* main.m in Sources */,
+				1AD86D361F4EFB9000DEED3E /* VVGLBufferGLView.mm in Sources */,
+				1AD86D061F4EFB4300DEED3E /* GeoShaderTestAppDelegate.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1AE1775E1E2581B500E978E5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2820,6 +2932,11 @@
 			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
 			targetProxy = 1A901A341F464909009FEE74 /* PBXContainerItemProxy */;
 		};
+		1AD86D341F4EFB5B00DEED3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
+			targetProxy = 1AD86D331F4EFB5B00DEED3E /* PBXContainerItemProxy */;
+		};
 		1AD89DD11F4A341B0003D1FD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
@@ -2885,6 +3002,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				1AB0492E1DFDFE2500A59A85 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		1AD86D0C1F4EFB4300DEED3E /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1AD86D0D1F4EFB4300DEED3E /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -3285,10 +3410,35 @@
 			};
 			name = Release;
 		};
+		1AD86D101F4EFB4300DEED3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GeoShaderTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1AD86D111F4EFB4300DEED3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GeoShaderTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		1AE177691E2581B500E978E5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3316,7 +3466,6 @@
 		1AE1776A1E2581B500E978E5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -3486,6 +3635,15 @@
 			buildConfigurations = (
 				1AB147A31E1BDAA80041528E /* Debug */,
 				1AB147A41E1BDAA80041528E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1AD86D301F4EFB4300DEED3E /* Build configuration list for PBXNativeTarget "GeoShaderTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1AD86D101F4EFB4300DEED3E /* Debug */,
+				1AD86D111F4EFB4300DEED3E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

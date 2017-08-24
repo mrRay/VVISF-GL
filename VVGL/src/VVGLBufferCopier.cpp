@@ -99,7 +99,7 @@ VVGLBufferCopier::~VVGLBufferCopier()	{
 #endif
 }
 void VVGLBufferCopier::generalInit()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	//	set up simple frag & vert shaders that draw a tex
 #if ISF_TARGET_GL3PLUS
 	string			vsString("\r\
@@ -483,6 +483,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	
 	//	if it's GL 2.x
 	if (getGLVersion() == GLVersion_2)	{
+#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
 		glEnable(inBufferRef->desc.target);
@@ -523,6 +524,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	
 		glDisable(inBufferRef->desc.target);
 		GLERRLOG
+#endif
 	}
 	//	else it's not GL 2- it's GL3+ or GLES3+
 	else	{
@@ -548,12 +550,12 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 			GLERRLOG
 			//	configure the attribute pointers to work with the VBO
 			if (inputXYZLoc.loc >= 0)	{
-				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)inVertexStruct.geoOffset());
+				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.geoOffset()));
 				GLERRLOG
 				inputXYZLoc.enable();
 			}
 			if (inputSTLoc.loc >= 0)	{
-				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), (void*)inVertexStruct.texOffset());
+				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.texOffset()));
 				GLERRLOG
 				inputSTLoc.enable();
 			}
@@ -658,12 +660,12 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	//	configure the attribute pointers to work with the VBO
 	if (inputXYZLoc.loc >= 0)	{
 		inputXYZLoc.enable();
-		glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &(inVertexStruct.bl.geo[0]));
+		glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.geo.x);
 		GLERRLOG
 	}
 	if (inputSTLoc.loc >= 0)	{
 		inputSTLoc.enable();
-		glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &(inVertexStruct.bl.tex[0]));
+		glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
 		GLERRLOG
 	}
 	//	pass the 2D texture to the program (if there is a 2D texture)

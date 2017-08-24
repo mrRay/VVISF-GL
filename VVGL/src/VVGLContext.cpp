@@ -579,7 +579,7 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 void VVGLContext::calculateVersion()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
 	if (ctx == nullptr)
 		return;

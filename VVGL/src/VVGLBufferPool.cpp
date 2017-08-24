@@ -5,10 +5,6 @@
 #include <set>
 #include <algorithm>
 
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
-#import <CoreVideo/CoreVideo.h>
-#endif
-
 
 #define IDLEBUFFERCOUNT 30
 
@@ -161,7 +157,7 @@ VVGLBufferRef VVGLBufferPool::createBufferRef(const VVGLBuffer::Descriptor & d, 
 		//pixelFormat = kCVPixelFormatType_422YpCbCr8;
 		pixelFormat = '2vuy';
 		break;
-#elif ISF_TARGET_RPI
+#else
 	case VVGLBuffer::PF_BGRA:
 		pixelFormat = 'BGRA';
 		break;
@@ -1585,6 +1581,7 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLTextureRef & inTexRef, const bool &
 #elif ISF_TARGET_IOS
 VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool & createInCurrentContext, const VVGLBufferPoolRef & inPoolRef)
 #endif
+#if ISF_TARGET_MAC || ISF_TARGET_IOS
 {
 	//cout << __PRETTY_FUNCTION__ << " ... " << CVOpenGLTextureGetName(inTexRef) << endl;
 	if (inTexRef == NULL)	{
@@ -1636,7 +1633,7 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool
 	desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
 #else	//	NOT !ISF_TARGET_IOS
 	//desc->target = CVOpenGLESTextureGetTarget(inTexRef);
-	desc.target = CVOpenGLESTextureGetTarget(inTexRef);
+	desc.target = (VVGL::VVGLBuffer::Target)CVOpenGLESTextureGetTarget(inTexRef);
 	//desc->internalFormat = VVBufferIF_RGBA;
 	desc.internalFormat = VVGLBuffer::IF_RGBA;
 	//desc->pixelFormat = VVBufferPF_BGRA;
@@ -1701,7 +1698,7 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool
 	returnMe->backingReleaseCallback = [](VVGLBuffer& inBuffer, void* inReleaseContext)	{
 		CVOpenGLESTextureRef	tmpRef = (CVOpenGLESTextureRef)inReleaseContext;
 		if (tmpRef != NULL)
-			CVOpenGLESTextureRelease(tmpRef);
+			CFRelease(tmpRef);
 	};
 #endif
 	
@@ -1709,6 +1706,7 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool
 	returnMe->backingContext = inTexRef;
 	return returnMe;
 }
+#endif	//	ISF_TARGET_MAC || ISF_TARGET_IOS
 
 
 

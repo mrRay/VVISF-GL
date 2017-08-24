@@ -1021,7 +1021,8 @@
 			
 			@synchronized (self)	{
 				if (fetchShaders)	{
-					string					*tmpCPPString = nullptr;
+					string					tmpCPPString;
+					string					*tmpCPPStringPtr = nullptr;
 					NSString				*tmpString = nil;
 					NSMutableDictionary		*contentDict = MUTDICT;
 					ISFSceneRef				scene = [isfController scene];
@@ -1029,18 +1030,20 @@
 					
 					
 					
-					tmpCPPString = (doc==nullptr) ? nil : doc->getJSONString();
-					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					tmpCPPStringPtr = (doc==nullptr) ? nil : doc->getJSONString();
+					tmpString = (tmpCPPStringPtr==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPStringPtr->c_str()];
 					if (tmpString != nil)
 						[contentDict setObject:tmpString forKey:@"json"];
 					
-					tmpCPPString = (doc==nullptr) ? nil : doc->getVertShaderSource();
-					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					//tmpCPPString = (doc==nullptr) ? nil : doc->getVertShaderSource();
+					tmpCPPString = (scene==nullptr) ? nil : scene->getVertexShaderString();
+					tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
 					if (tmpString != nil)
 						[contentDict setObject:tmpString forKey:@"vertex"];
 					
-					tmpCPPString = (doc==nullptr) ? nil : doc->getFragShaderSource();
-					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					//tmpCPPString = (doc==nullptr) ? nil : doc->getFragShaderSource();
+					tmpCPPString = (scene==nullptr) ? nil : scene->getFragmentShaderString();
+					tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
 					if (tmpString != nil)
 						[contentDict setObject:tmpString forKey:@"fragment"];
 					

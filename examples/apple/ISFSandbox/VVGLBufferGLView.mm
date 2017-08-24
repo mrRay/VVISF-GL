@@ -378,12 +378,12 @@ else\r\
 				GLERRLOG
 				//	configure the attribute pointers to use the VBO
 				if (xyzAttr->loc >= 0)	{
-					glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+					glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
 					GLERRLOG
 					xyzAttr->enable();
 				}
 				if (stAttr->loc >= 0)	{
-					glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)targetQuad.texOffset());
+					glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.texOffset()));
 					GLERRLOG
 					stAttr->enable();
 				}

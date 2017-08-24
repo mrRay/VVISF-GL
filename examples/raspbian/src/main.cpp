@@ -40,8 +40,10 @@ int main(int argc, const char *argv[])	{
 	
 	/*			OpenGL setup				*/
 	//	make a VVGLContext from the EGL properties owned by the display manager
+	cout << "\tmaking base GL context...\n";
 	VVGLContextRef			baseCtx = make_shared<VVGLContext>(dm.eglDisplay, dm.eglWinSurface, EGL_NO_CONTEXT, dm.eglCtx);
 	//	make the global buffer pool
+	cout << "\tmaking global buffer pool...\n";
 	CreateGlobalBufferPool(baseCtx);
 	
 	
@@ -49,6 +51,7 @@ int main(int argc, const char *argv[])	{
 	//	this is the buffer we're going to display.  we render content into this, and the display scene displays it.
 	VVGLBufferRef			displayBuffer = CreateRGBATex({640.,480.});
 	//	make the scene we're going to use to display content on the screen, set it up
+	cout << "\tmaking display scene...\n";
 	VVGLScene				displayScene(baseCtx->newContextSharingMe());
 	displayScene.setAlwaysNeedsReshape(true);
 	//displayScene.setPerformClear(false);
@@ -62,7 +65,7 @@ varying vec2			vertSTVar;\n\
 void main()	{\n\
 	gl_FragColor = texture2D(inputImage, vertSTVar);\n\
 	//gl_FragColor = vec4(vertSTVar.x, vertSTVar.y, 0., 1.);\n\
-	//gl_FragColor = vec4(1., 1., 1., 1.);\n\
+	gl_FragColor = vec4(1., 0., 0., 1.);\n\
 }\n\
 ");
 	string			vsString("\n\
@@ -83,16 +86,21 @@ void main()	{\n\
 	VVGLCachedAttribRef		inputST = make_shared<VVGLCachedAttrib>("vertST");
 	VVGLCachedUniRef		inputTex = make_shared<VVGLCachedUni>("inputImage");
 	//	set up the scene's render prep callback
-	displayScene.setRenderPrepCallback([=](const VVGLScene & s, const bool & inReshaped, const bool & inPgmChanged)	{
+	displayScene.setRenderPrepCallback([inputXYZ,inputST,inputTex](const VVGLScene & s, const bool & inReshaped, const bool & inPgmChanged)	{
 		//	if the program's changed, we want to re-cache the locations of the attrib/uniforms
 		if (inPgmChanged)	{
+			cout << "\tpgm changed, caching GL vals.  pgm is " << s.getProgram() << endl;
 			inputXYZ->cacheTheLoc(s.getProgram());
 			inputST->cacheTheLoc(s.getProgram());
 			inputTex->cacheTheLoc(s.getProgram());
+			cout << "\tinputXYZ is now " << inputXYZ->loc << ", inputST is " << inputST->loc << ", inputTex is " << inputTex->loc << endl;
+			cout << "\taddress of inputTex is " << &(*inputTex) << endl;
 		}
 		else	{
-			if (inputXYZ->loc < 0)
+			if (inputXYZ->loc < 0)	{
+				cout << "\tpgm didn't change, but loc invalid- needs to be cached.  pgm is " << s.getProgram() << endl;
 				inputXYZ->cacheTheLoc(s.getProgram());
+			}
 			if (inputST->loc < 0)
 				inputST->cacheTheLoc(s.getProgram());
 			if (inputTex->loc < 0)
@@ -107,21 +115,23 @@ void main()	{\n\
 		//	set up some basic quad stuff
 		VVGL::Rect			geoRect = displayRect;
 		VVGL::Rect			texRect = (displayBuffer==nullptr) ? VVGL::Rect(0., 0., 1., 1.) : displayBuffer->glReadySrcRect();
-		GLBufferQuadXYZST	targetQuad;
-		GLBufferQuadPopulate(&targetQuad, geoRect, texRect, false);
+		Quad<VertXYZST>		targetQuad;
+		targetQuad.populateGeo(geoRect);
+		targetQuad.populateTex(texRect, false);
+		
 		//	populate the vertex attribute
 		if (inputXYZ->loc >= 0)	{
 			inputXYZ->enable();
-			glVertexAttribPointer(inputXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), &(targetQuad.bl.geo[0]));
+			glVertexAttribPointer(inputXYZ->loc, 3, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
 			GLERRLOG
 		}
 		else	{
-			cout << "\tERR: cannot populate inputXYZ, location not cached " << __PRETTY_FUNCTION__ << endl;
+			cout << "\tERR: cannot populate inputXYZ, location " << inputXYZ->loc << " not cached " << __PRETTY_FUNCTION__ << endl;
 		}
 		//	populate the tex coords attribute
 		if (inputST->loc >= 0)	{
 			inputST->enable();
-			glVertexAttribPointer(inputST->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), &(targetQuad.bl.tex[0]));
+			glVertexAttribPointer(inputST->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.texOffset()));
 			GLERRLOG
 		}
 		else	{
@@ -137,6 +147,7 @@ void main()	{\n\
 		}
 		else	{
 			cout << "\tERR: cannot populate tex, location or displayBuffer not cached " << __PRETTY_FUNCTION__ << endl;
+			cout << "\taddress of inputTex is " << &(*inputTex) << endl;
 		}
 		//	draw
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -152,12 +163,14 @@ void main()	{\n\
 		
 	});
 	//	tell the displayScene to render (this compiles the shaders so i'm ready to pass vars to them)
+	cout << "\trendering display scene once to compile stuff...\n";
 	displayScene.render();
 	
 	
 	/*			source scene setup			*/
 	
 	//	make the src scene
+	cout << "\tmaking src ISF scene...\n";
 	ISFScene				srcScene(baseCtx->newContextSharingMe());
 	bool					hasSrc = false;
 	srcScene.setAlwaysNeedsReshape(true);
@@ -176,6 +189,7 @@ void main()	{\n\
 	
 	
 	/*			fx scene setup				*/
+	cout << "\tmaking fx ISF scene...\n";
 	ISFScene				fxScene(baseCtx->newContextSharingMe());
 	bool					hasFX = false;
 	fxScene.setAlwaysNeedsReshape(true);
@@ -211,6 +225,7 @@ void main()	{\n\
 	
 	
 	/*			render stuff!				*/
+	cout << "\tabout to enter render loop...\n";
 	while (!quitFlag.load())
 	{
 		if (hasFX)	{
@@ -220,6 +235,10 @@ void main()	{\n\
 		}
 		else	{
 			displayBuffer = srcScene.createAndRenderABuffer(displayRect.size);
+			if (displayBuffer == nullptr)
+				cout << "\terr: displayBuffer NULL\n";
+			else
+				cout << "\tdisplayBuffer is " << *displayBuffer << endl;
 		}
 		displayScene.render();
 		

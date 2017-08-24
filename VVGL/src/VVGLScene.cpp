@@ -45,14 +45,20 @@ void VVGLScene::prepareToBeDeleted()	{
 				glDeleteShader(vs);
 				GLERRLOG
 			}
+			if (gs > 0)	{
+				glDeleteShader(gs);
+				GLERRLOG
+			}
 			if (fs > 0)	{
 				glDeleteShader(fs);
 				GLERRLOG
 			}
 		}
 		vsString = string("");
+		gsString = string("");
 		fsString = string("");
 		vsStringUpdated = true;
+		gsStringUpdated = true;
 		fsStringUpdated = true;
 	}
 	//	lock, delete the error dict
@@ -137,7 +143,7 @@ void VVGLScene::render(const RenderTarget & inRenderTarget)	{
 	_renderPrep();
 	
 	//	if there isn't a valid program then we shouldn't execute the client-provided render callback
-	bool		looksLikeItShouldHaveAProgram = (vsString.size()>0 || fsString.size()>0);
+	bool		looksLikeItShouldHaveAProgram = (vsString.size()>0 || gsString.size()>0 || fsString.size()>0);
 	if ((program==0 && !looksLikeItShouldHaveAProgram) ||	(program!=0 && looksLikeItShouldHaveAProgram))	{
 		//	execute the render callback
 		if (renderCallback != nullptr)
@@ -254,6 +260,9 @@ void VVGLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 void VVGLScene::setRenderPrepCallback(const RenderPrepCallback & n)	{
 	renderPrepCallback = n;
 }
+void VVGLScene::setRenderPreLinkCallback(const RenderCallback & n)	{
+	renderPreLinkCallback = n;
+}
 void VVGLScene::setRenderCallback(const RenderCallback & n)	{
 	renderCallback = n;
 }
@@ -319,6 +328,26 @@ string VVGLScene::getVertexShaderString()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return vsString;
 }
+void VVGLScene::setGeometryShaderString(const string & n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	//cout << "\tstring was:************************\n" << n << "\n************************\n";
+	if (n.size()<1)	{
+		cout << "\terr: passed a nil string, " << __PRETTY_FUNCTION__ << endl;
+		//	throw an exception
+		return;
+	}
+	
+	lock_guard<recursive_mutex>		lock(renderLock);
+	
+	gsString = string(n);
+	gsStringUpdated = true;
+	needsReshape = true;
+	orthoUni.purgeCache();
+}
+string VVGLScene::getGeometryShaderString()	{
+	lock_guard<recursive_mutex>		lock(renderLock);
+	return gsString;
+}
 void VVGLScene::setFragmentShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tstring was:************************\n" << n << "\n************************\n";
@@ -361,7 +390,7 @@ void VVGLScene::_renderPrep()	{
 		_initialize();
 	
 	//	if the vert/frag shader strings have been updated, they need to be recompiled & the program needs to be relinked
-	if (vsStringUpdated || fsStringUpdated)	{
+	if (vsStringUpdated || gsStringUpdated || fsStringUpdated)	{
 		pgmChangedFlag = true;
 		
 		glUseProgram(0);
@@ -376,6 +405,11 @@ void VVGLScene::_renderPrep()	{
 			glDeleteShader(vs);
 			GLERRLOG
 			vs = 0;
+		}
+		if (gs > 0)	{
+			glDeleteShader(gs);
+			GLERRLOG
+			gs = 0;
 		}
 		if (fs > 0)	{
 			glDeleteShader(fs);
@@ -426,6 +460,44 @@ void VVGLScene::_renderPrep()	{
 				vs = 0;
 			}
 		}
+		if (gsString.size() > 0)	{
+#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
+			gs = glCreateShader(GL_GEOMETRY_SHADER);
+			GLERRLOG
+			const char		*shaderSrc = gsString.c_str();
+			glShaderSource(gs, 1, &shaderSrc, NULL);
+			GLERRLOG
+			glCompileShader(gs);
+			GLERRLOG
+			int32_t			compiled;
+			glGetShaderiv(gs, GL_COMPILE_STATUS, &compiled);
+			GLERRLOG
+			if (!compiled)	{
+				int32_t			length;
+				char			*log;
+				glGetShaderiv(gs, GL_INFO_LOG_LENGTH, &length);
+				GLERRLOG
+				log = new char[length+1];
+				glGetShaderInfoLog(gs, length, &length, log);
+				GLERRLOG
+				cout << "\terr compiling geo shader in " << __PRETTY_FUNCTION__ << endl;
+				cout << "\terr: " << log << endl;
+				cout << "\traw shader is:\n" << gsString << endl;
+				encounteredError = true;
+				
+				{
+					lock_guard<mutex>		lock(errDictLock);
+					errDict.insert(pair<string,string>(string("geoErrLog"), string(log)));
+					errDict.insert(pair<string,string>(string("geoSrc"), string(gsString)));
+				}
+				
+				delete [] log;
+				glDeleteShader(gs);
+				GLERRLOG
+				gs = 0;
+			}
+#endif
+		}
 		if (fsString.size() > 0)	{
 			fs = glCreateShader(GL_FRAGMENT_SHADER);
 			GLERRLOG
@@ -462,17 +534,23 @@ void VVGLScene::_renderPrep()	{
 				fs = 0;
 			}
 		}
-		if ((vs>0 || fs>0) && !encounteredError)	{
+		if ((vs>0 || gs>0 || fs>0) && !encounteredError)	{
 			program = glCreateProgram();
 			GLERRLOG
 			if (vs > 0)	{
 				glAttachShader(program, vs);
 				GLERRLOG
 			}
+			if (gs > 0)	{
+				glAttachShader(program, gs);
+				GLERRLOG
+			}
 			if (fs > 0)	{
 				glAttachShader(program, fs);
 				GLERRLOG
 			}
+			if (renderPreLinkCallback != nullptr)
+				renderPreLinkCallback(*this);
 			glLinkProgram(program);
 			GLERRLOG
 			
@@ -492,6 +570,8 @@ void VVGLScene::_renderPrep()	{
 				cout << "\terr: " << log << endl;
 				cout << "********************\n";
 				cout << "\traw vert shader is:\n" << vsString << endl;
+				cout << "********************\n";
+				cout << "\traw geo shader is:\n" << gsString << endl;
 				cout << "********************\n";
 				cout << "\traw frag shader is:\n" << fsString << endl;
 				cout << "********************\n";
@@ -513,6 +593,7 @@ void VVGLScene::_renderPrep()	{
 		}
 		
 		vsStringUpdated = false;
+		gsStringUpdated = false;
 		fsStringUpdated = false;
 		needsReshape = true;
 	}
@@ -586,6 +667,7 @@ void VVGLScene::_initialize()	{
 	//glEnable(GL_TEXTURE_RECTANGLE);
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	if (getGLVersion() == GLVersion_2)	{
+#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
 		glEnable(GL_BLEND);
 		GLERRLOG
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -594,6 +676,7 @@ void VVGLScene::_initialize()	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GLERRLOG
 //#endif
+#endif
 	}
 	//const int32_t		swap = 0;
 	//CGLSetParameter(cgl_ctx, kCGLCPSwapInterval, &swap);
@@ -617,6 +700,17 @@ void VVGLScene::_reshape()	{
 	//cout << "\tthis is " << this << endl;
 	
 	if (orthoSize.width>0. && orthoSize.height>0.)	{
+		if (this->getGLVersion() == GLVersion_2)	{
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			if (!orthoFlipped)
+				glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
+			else
+				glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
+		}
+		
 		if (program > 0)	{
 			GLint			orthoUniLoc = orthoUni.location(program);
 			if (orthoUniLoc >= 0)	{
@@ -641,16 +735,20 @@ void VVGLScene::_reshape()	{
 			}
 			else	{
 				//cout << "\tERR: need to reshape, but no orhogonal uniform! " << __PRETTY_FUNCTION__ << endl;
+				//cout << "************* vsString is:\n" << vsString << endl;
 			}
 		}
 		else	{
 			//cout << "\tERR: need to reshape, but no pgm! " << __PRETTY_FUNCTION__ << endl;
 		}
+		
+		
 		glViewport(0,0,orthoSize.width,orthoSize.height);
 		GLERRLOG
 	}
 	
 	if (getGLVersion() == GLVersion_2)	{
+#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
 //#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 		glMatrixMode(GL_MODELVIEW);
 		GLERRLOG
@@ -671,6 +769,7 @@ void VVGLScene::_reshape()	{
 			}
 		}
 //#endif
+#endif
 		glViewport(0, 0, orthoSize.width, orthoSize.height);
 		GLERRLOG
 	}

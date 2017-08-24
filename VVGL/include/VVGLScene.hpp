@@ -61,6 +61,7 @@ class VVGLScene	{
 		bool				alwaysNeedsReshape = false;
 		
 		RenderPrepCallback		renderPrepCallback = nullptr;	//	every time the scene is doing its render prep, this lambda is executed.  drawing setup code goes here.
+		RenderCallback		renderPreLinkCallback = nullptr;	//	this callback gets hit immediately before the program is linked (after the shaders have been compiled & attached to the program, but before the program was linked).
 		RenderCallback		renderCallback = nullptr;	//	every time the scene renders, this lambda is executed.  drawing code goes here.
 		RenderCallback		renderCleanupCallback = nullptr;
 		RenderTarget		renderTarget;	//	the render target contains the GL framebuffer and relevant attachments (render to texture/buffer/depth buffer/etc)
@@ -78,11 +79,14 @@ class VVGLScene	{
 		
 		//	these vars pertain to the program being used by the GL context
 		string				vsString = string("");
+		string				gsString = string("");
 		string				fsString = string("");
 		bool				vsStringUpdated = false;
+		bool				gsStringUpdated = false;
 		bool				fsStringUpdated = false;
 		uint32_t			program = 0;	//	0, or the compiled program
 		uint32_t			vs = 0;
+		uint32_t			gs = 0;
 		uint32_t			fs = 0;
 		mutex				errLock;
 		mutex				errDictLock;
@@ -112,6 +116,7 @@ class VVGLScene	{
 		
 		//	getters/setters for the (optional) callbacks
 		void setRenderPrepCallback(const RenderPrepCallback & n);
+		void setRenderPreLinkCallback(const RenderCallback & n);
 		void setRenderCallback(const RenderCallback & n);
 		void setRenderCleanupCallback(const RenderCallback & n);
 		
@@ -131,6 +136,8 @@ class VVGLScene	{
 		//	getters/setters for program stuff
 		virtual void setVertexShaderString(const string & n);
 		virtual string getVertexShaderString();
+		virtual void setGeometryShaderString(const string & n);
+		virtual string getGeometryShaderString();
 		virtual void setFragmentShaderString(const string & n);
 		virtual string getFragmentShaderString();
 		inline uint32_t getProgram() const { return program; }

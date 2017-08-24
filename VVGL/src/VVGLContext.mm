@@ -169,7 +169,7 @@ void VVGLContext::makeCurrentIfNull()	{
 bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
 	EAGLSharegroup		*inSharegroup = (inCtx==nullptr || inCtx->ctx==nullptr) ? nil : [(EAGLContext *)inCtx->ctx sharegroup];
 	EAGLSharegroup		*mySharegroup = (ctx==nullptr) ? nil : [(EAGLContext *)ctx sharegroup];
-	if (inSharegroup!=nil && mySharegroup!=nil && [inSharegroup isEqualTo:mySharegroup])
+	if (inSharegroup!=nil && mySharegroup!=nil && [inSharegroup isEqual:mySharegroup])
 		return true;
 	return false;
 }

@@ -371,7 +371,7 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
-#if !ISF_TARET_GLES
+#if !ISF_TARGET_GLES
 	setRenderCallback([&](const VVGLScene & s)	{
 		//	if we're in GL 2 then we can't use a VAO
 		if (s.getGLVersion() == GLVersion_2)	{
@@ -399,7 +399,7 @@ void ISFScene::_setUpRenderCallback()	{
 			}
 			//	configure the attribute pointers to work with the VBO
 			if (vertexAttrib.loc >= 0)	{
-				glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
 				GLERRLOG
 				vertexAttrib.enable();
 			}
@@ -442,7 +442,7 @@ void ISFScene::_setUpRenderCallback()	{
 				GLERRLOG
 				//	configure the attribute pointer to work with the VBO
 				if (vertexAttrib.loc >= 0)	{
-					glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+					glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
 					GLERRLOG
 					vertexAttrib.enable();
 				}
@@ -487,6 +487,10 @@ void ISFScene::_setUpRenderCallback()	{
 			//	update the contents of the VBO
 			vboContents = targetQuad;
 		}
+		if (myVBO == nullptr)	{
+			cout << "\terr: VBO still null, bailing, " << __PRETTY_FUNCTION__ << endl;
+			return;
+		}
 		
 		//	bind the VBO
 		if (myVBO != nullptr)	{
@@ -495,7 +499,8 @@ void ISFScene::_setUpRenderCallback()	{
 		}
 		//	configure the attribute pointers to work with the VBO
 		if (vertexAttrib.loc >= 0)	{
-			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
+			//glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
 			GLERRLOG
 			vertexAttrib.enable();
 		}

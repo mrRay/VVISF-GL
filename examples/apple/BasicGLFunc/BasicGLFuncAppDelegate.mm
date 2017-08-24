@@ -258,11 +258,11 @@ FragColor *= (1.-fadeVal);\r\
 			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
 			//	configure the attribute pointers to use the VBO
 			if (xyzAttr->loc >= 0)	{
-				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)0);
+				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
 				xyzAttr->enable();
 			}
 			if (stAttr->loc >= 0)	{
-				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)(2*sizeof(float)));
+				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.texOffset()));
 				stAttr->enable();
 			}
 		}

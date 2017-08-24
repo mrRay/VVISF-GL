@@ -4,6 +4,10 @@
 #include <iostream>
 #include "VVBase.hpp"
 
+#define BUFFER_OFFSET(i) ((uint8_t*)NULL + (i))
+
+
+
 
 namespace VVGL
 {

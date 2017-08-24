@@ -45,6 +45,7 @@ void VVGLCachedUni::purgeCache()	{
 	prog = -1;
 }
 */
+/*
 void VVGLCachedUni::enable()	{
 	if (loc >= 0)	{
 		glEnableVertexAttribArray(loc);
@@ -57,7 +58,7 @@ void VVGLCachedUni::disable()	{
 		GLERRLOG
 	}
 }
-
+*/
 
 
 
