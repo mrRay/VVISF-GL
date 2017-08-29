@@ -700,77 +700,62 @@ void VVGLScene::_reshape()	{
 	//cout << "\tthis is " << this << endl;
 	
 	if (orthoSize.width>0. && orthoSize.height>0.)	{
-		if (this->getGLVersion() == GLVersion_2)	{
+		if (getGLVersion() == GLVersion_2)	{
+#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
 			glMatrixMode(GL_MODELVIEW);
+			GLERRLOG
 			glLoadIdentity();
+			GLERRLOG
 			glMatrixMode(GL_PROJECTION);
+			GLERRLOG
 			glLoadIdentity();
-			if (!orthoFlipped)
-				glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
-			else
-				glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
-		}
-		
-		if (program > 0)	{
-			GLint			orthoUniLoc = orthoUni.location(program);
-			if (orthoUniLoc >= 0)	{
-				//	calculate the orthographic projection transform for a viewport with the given size
-				Rect		tmpRect(0., 0., orthoSize.width, orthoSize.height);
-				//cout << "\treshaping with orthogonal rect " << tmpRect << endl;
-				float		right = MaxX(tmpRect);
-				float		left = MinX(tmpRect);
-				float		top = MaxY(tmpRect);
-				float		bottom = MinY(tmpRect);
-				float		near = -1.;
-				float		far = 1.;
-				GLfloat		projMatrix[] = {
-					2.f/(right - left), 0., 0., -1.f*(right+left)/(right-left),
-					0.,	2.f/(top-bottom), 0., -1.f*(top+bottom)/(top-bottom),
-					0., 0., -2.f/(far-near), -1.f*(far+near)/(far-near),
-					0., 0., 0., 1.
-				};
-				//	TODO: right now, flipped isn't supported!
-				glUniformMatrix4fv(orthoUniLoc, 1, GL_FALSE, projMatrix);
-				GLERRLOG
+			GLERRLOG
+			if (orthoSize.width>0 && orthoSize.height>0)	{
+				if (!orthoFlipped)	{
+					glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
+					GLERRLOG
+				}
+				else	{
+					glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
+					GLERRLOG
+				}
 			}
-			else	{
-				//cout << "\tERR: need to reshape, but no orhogonal uniform! " << __PRETTY_FUNCTION__ << endl;
-				//cout << "************* vsString is:\n" << vsString << endl;
-			}
+#endif
 		}
 		else	{
-			//cout << "\tERR: need to reshape, but no pgm! " << __PRETTY_FUNCTION__ << endl;
-		}
-		
-		
-		glViewport(0,0,orthoSize.width,orthoSize.height);
-		GLERRLOG
-	}
-	
-	if (getGLVersion() == GLVersion_2)	{
-#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
-//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
-		glMatrixMode(GL_MODELVIEW);
-		GLERRLOG
-		glLoadIdentity();
-		GLERRLOG
-		glMatrixMode(GL_PROJECTION);
-		GLERRLOG
-		glLoadIdentity();
-		GLERRLOG
-		if (orthoSize.width>0 && orthoSize.height>0)	{
-			if (!orthoFlipped)	{
-				glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
-				GLERRLOG
+			if (program > 0)	{
+				GLint			orthoUniLoc = orthoUni.location(program);
+				if (orthoUniLoc >= 0)	{
+					//	calculate the orthographic projection transform for a viewport with the given size
+					Rect		tmpRect(0., 0., orthoSize.width, orthoSize.height);
+					//cout << "\treshaping with orthogonal rect " << tmpRect << endl;
+					float		right = MaxX(tmpRect);
+					float		left = MinX(tmpRect);
+					float		top = MaxY(tmpRect);
+					float		bottom = MinY(tmpRect);
+					float		near = -1.;
+					float		far = 1.;
+					GLfloat		projMatrix[] = {
+						2.f/(right - left), 0., 0., -1.f*(right+left)/(right-left),
+						0.,	2.f/(top-bottom), 0., -1.f*(top+bottom)/(top-bottom),
+						0., 0., -2.f/(far-near), -1.f*(far+near)/(far-near),
+						0., 0., 0., 1.
+					};
+					//	TODO: right now, flipped isn't supported!
+					glUniformMatrix4fv(orthoUniLoc, 1, GL_FALSE, projMatrix);
+					GLERRLOG
+				}
+				else	{
+					//cout << "\tERR: need to reshape, but no orthogonal uniform! " << __PRETTY_FUNCTION__ << endl;
+					//cout << "************* vsString is:\n" << vsString << endl;
+				}
 			}
 			else	{
-				glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
-				GLERRLOG
+				//cout << "\tERR: need to reshape, but no pgm! " << __PRETTY_FUNCTION__ << endl;
 			}
 		}
-//#endif
-#endif
-		glViewport(0, 0, orthoSize.width, orthoSize.height);
+		
+		glViewport(0,0,orthoSize.width,orthoSize.height);
 		GLERRLOG
 	}
 	
