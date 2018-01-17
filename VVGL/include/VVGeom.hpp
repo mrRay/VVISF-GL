@@ -235,6 +235,15 @@ struct VertXYZSTRGBA	{
 	inline int colorOffset() const { return (sizeof(geo) + sizeof(tex)); }
 	inline void zero() { geo.zero(); tex.zero(); color.zero(); }
 };
+struct VertRGBA	{
+	VT_RGBA		color;
+	
+	inline bool operator== (const VertRGBA & n) const { return (this->color==n.color); }
+	inline bool operator!= (const VertRGBA & n) const { return !(*this==n); }
+	
+	inline int colorOffset() const { return 0; }
+	inline void zero() { color.zero(); }
+};
 
 
 //	this struct defines a quad- it's a template which is expected to be passed one of the above Vert_* struct types

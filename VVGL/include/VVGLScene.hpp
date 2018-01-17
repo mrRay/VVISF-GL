@@ -31,7 +31,7 @@ class VVGLScene	{
 	public:
 		//	this defines the interface for declaring a lambda as a member variable for encapsulating drawing code
 		using RenderCallback = std::function<void(const VVGLScene &)>;
-		using RenderPrepCallback = std::function<void(const VVGLScene &, const bool &, const bool &)>;
+		using RenderPrepCallback = std::function<void(const VVGLScene &, const bool & sceneReshaped, const bool & pgmChanged)>;
 		
 		//	RenderTarget has all the attachments for the GL framebuffer, which need to be tracked so we can bind/unbind appropriately
 		struct RenderTarget	{

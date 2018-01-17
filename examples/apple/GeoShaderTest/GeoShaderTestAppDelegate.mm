@@ -110,16 +110,16 @@
 		glVertexPointer(3, GL_FLOAT, quad.stride(), &quad.bl.geo);
 		glColorPointer(4, GL_FLOAT, quad.stride(), &quad.bl.color);
 		
-		glDrawArrays(GL_POINTS, 0, 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	});
 	
 	glScene->setRenderPreLinkCallback([](const VVGLScene & n)	{
 		GLint				myProgram = n.getProgram();
-		glProgramParameteriEXT(myProgram, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
-		glProgramParameteriEXT(myProgram, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_POINTS);
+		glProgramParameteriEXT(myProgram, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
+		glProgramParameteriEXT(myProgram, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
 		
 		glProgramParameteriEXT(myProgram, GL_GEOMETRY_VERTICES_OUT_EXT, 1);
-		//glProgramParameteriEXT(myProgram, GL_GEOMETRY_VERTICES_OUT_EXT, GL_POINTS);
+		//glProgramParameteriEXT(myProgram, GL_GEOMETRY_VERTICES_OUT_EXT, GL_TRIANGLE_STRIP);
 		
 		//glProgramParameteriEXT(myProgram, GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, 1);
 	});
@@ -137,63 +137,13 @@
 	*/
 	void			*selfPtr = (void*)self;
 	
-	string			vsString("\r\
-#version 330 core\r\
-\r\
-in vec3		inXYZ;\r\
-in vec4		inRGBA;\r\
-\r\
-out vec4	vsColorOut;\r\
-\r\
-void main()	{\r\
-	//	we'll apply the orthogonal model projection in the geometry shader\r\
-	gl_Position = vec4(inXYZ, 1.);\r\
-	vsColorOut = inRGBA;\r\
-}\r\
-\r\
-");
-	string			gsString("\r\
-#version 330 core\r\
-\r\
-layout (triangles) in;\r\
-layout (triangle_strip, max_vertices=6) out;\r\
-\r\
-in vec4		vsColorOut[3];\r\
-out vec4	gsColorOut;\r\
-\r\
-uniform mat4	vvglOrthoProj;\r\
-\r\
-void main()	{\r\
-	//	draw the original position\r\
-	for (int i=0; i<3; ++i)	{\r\
-		gl_Position = gl_in[i].gl_Position * vvglOrthoProj;\r\
-		gsColorOut = vsColorOut[i];\r\
-		EmitVertex();\r\
-	}\r\
-	EndPrimitive();\r\
-	\r\
-	//	draw another triangle shifted 50 pixels up and to the right\r\
-	for (int i=0; i<3; ++i)	{\r\
-		vec4		tmpCoord = vec4(gl_in[i].gl_Position.x, gl_in[i].gl_Position.y, gl_in[i].gl_Position.z, 1.);\r\
-		tmpCoord += vec4(50., 50., 0., 0.);\r\
-		//	this is where we apply the orthogonal modelview projection\r\
-		gl_Position = tmpCoord * vvglOrthoProj;\r\
-		gsColorOut = vsColorOut[i];\r\
-		EmitVertex();\r\
-	}\r\
-	EndPrimitive();\r\
-}\r\
-");
-	string			fsString("\r\
-#version 330 core\r\
-\r\
-in vec4		gsColorOut;\r\
-out vec4	FragColor;\r\
-\r\
-void main()	{\r\
-	FragColor = gsColorOut;\r\
-}\r\
-");
+	NSBundle		*mb = [NSBundle mainBundle];
+	NSString		*nsVSString = [NSString stringWithContentsOfFile:[mb pathForResource:@"GeoShaderTest_modern" ofType:@"vs"] encoding:NSUTF8StringEncoding error:nil];
+	NSString		*nsGSString = [NSString stringWithContentsOfFile:[mb pathForResource:@"GeoShaderTest_modern" ofType:@"gs"] encoding:NSUTF8StringEncoding error:nil];
+	NSString		*nsFSString = [NSString stringWithContentsOfFile:[mb pathForResource:@"GeoShaderTest_modern" ofType:@"fs"] encoding:NSUTF8StringEncoding error:nil];
+	string			vsString([nsVSString UTF8String]);
+	string			gsString([nsGSString UTF8String]);
+	string			fsString([nsFSString UTF8String]);
 	
 	glScene->setVertexShaderString(vsString);
 	glScene->setGeometryShaderString(gsString);

@@ -183,7 +183,7 @@
 			//glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			
 			//	set up the view to draw
-			NSRect				bounds = [(id)selfPtr bounds];
+			NSRect				bounds = [(id)selfPtr backingBounds];
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glMatrixMode(GL_PROJECTION);
@@ -208,7 +208,7 @@
 			VVGLBufferRef		bufferToDraw = [(id)selfPtr retainDrawBuffer];
 			if (bufferToDraw != nullptr)	{
 				//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
-				NSRect				rawBounds = [(id)selfPtr bounds];
+				NSRect				rawBounds = [(id)selfPtr backingBounds];
 				VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 				VVGL::Rect			geometryRect = ResizeRect(bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
 				Quad<VertXYZST>		targetQuad;
@@ -314,7 +314,7 @@ else\r\
 			}
 			
 			//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
-			NSRect				rawBounds = [(id)selfPtr bounds];
+			NSRect				rawBounds = [(id)selfPtr backingBounds];
 			VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 			VVGL::Rect			geometryRect = ResizeRect((bufferToDraw==nullptr) ? viewBoundsRect : bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
 			Quad<VertXYST>		targetQuad;

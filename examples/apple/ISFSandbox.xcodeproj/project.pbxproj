@@ -34,6 +34,9 @@
 		1A44D2AC1E1BFD6700F48E60 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2AB1E1BFD6700F48E60 /* CoreGraphics.framework */; };
 		1A44D2AE1E1BFD6A00F48E60 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2AD1E1BFD6A00F48E60 /* IOSurface.framework */; };
 		1A44D2B01E1BFD7B00F48E60 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2AF1E1BFD7B00F48E60 /* CoreVideo.framework */; };
+		1A47DFD8200EAA9B00FF206A /* GeoShaderTest_modern.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */; };
+		1A47DFD9200EAA9B00FF206A /* GeoShaderTest_modern.gs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */; };
+		1A47DFDA200EAA9B00FF206A /* GeoShaderTest_modern.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */; };
 		1A4EEA531F17B75B00B6C3F4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA521F17B75B00B6C3F4 /* main.m */; };
 		1A4EEA561F17B75B00B6C3F4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA551F17B75B00B6C3F4 /* AppDelegate.m */; };
 		1A4EEA591F17B75B00B6C3F4 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA581F17B75B00B6C3F4 /* ViewController.mm */; };
@@ -47,6 +50,23 @@
 		1A4EEAAE1F17C92A00B6C3F4 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A4FF9951F16CF39009F5440 /* VVGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A4FF9941F16CF39009F5440 /* VVGLContext.mm */; };
 		1A4FF9961F16CF39009F5440 /* VVGLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A4FF9941F16CF39009F5440 /* VVGLContext.mm */; };
+		1A56988A200F821500437867 /* TransFeedbackAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A569889200F821500437867 /* TransFeedbackAppDelegate.mm */; };
+		1A56988D200F821500437867 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A56988C200F821500437867 /* main.m */; };
+		1A56988F200F821500437867 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A56988E200F821500437867 /* Assets.xcassets */; };
+		1A569892200F821500437867 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A569890200F821500437867 /* MainMenu.xib */; };
+		1A5698B9200F822100437867 /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
+		1A5698BB200F967700437867 /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF2BE91E09652B00620148 /* VVGLBufferGLView.mm */; };
+		1A5698BC200F984300437867 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF28FAD1F311F50007D9901 /* CoreMedia.framework */; };
+		1A5698BF200F99C000437867 /* TransFeedback_Renderer.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698BD200F99C000437867 /* TransFeedback_Renderer.fs */; };
+		1A5698C0200F99C000437867 /* TransFeedback_Renderer.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698BE200F99C000437867 /* TransFeedback_Renderer.vs */; };
+		1A5698C220100EE400437867 /* TransFeedback_Feedback.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698C120100EE400437867 /* TransFeedback_Feedback.vs */; };
+		1A5698CB201012C100437867 /* JustTransFeedbackAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5698CA201012C100437867 /* JustTransFeedbackAppDelegate.mm */; };
+		1A5698CE201012C100437867 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A5698CD201012C100437867 /* main.m */; };
+		1A5698D0201012C100437867 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698CF201012C100437867 /* Assets.xcassets */; };
+		1A5698D3201012C200437867 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698D1201012C200437867 /* MainMenu.xib */; };
+		1A5698DA201012D800437867 /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
+		1A5698DC2010135D00437867 /* TransFeedback_Feedback.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A5698DB2010135D00437867 /* TransFeedback_Feedback.vs */; };
+		1A5698DD201019CB00437867 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF28FAD1F311F50007D9901 /* CoreMedia.framework */; };
 		1A5C20591F3F789500C09704 /* ISFObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C20581F3F789500C09704 /* ISFObjectAdditions.m */; };
 		1A5C20991F3F7A9600C09704 /* NSAlertAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C20981F3F7A9600C09704 /* NSAlertAdditions.m */; };
 		1A5C209B1F40F08300C09704 /* ISFBase.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C209A1F40F08300C09704 /* ISFBase.mm */; };
@@ -585,6 +605,20 @@
 			remoteGlobalIDString = 1AE1776F1E2581BB00E978E5;
 			remoteInfo = VVGL_iOS;
 		};
+		1A5698B7200F821D00437867 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A44D2711E1BF7ED00F48E60;
+			remoteInfo = VVGL;
+		};
+		1A5698D8201012D400437867 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A44D2711E1BF7ED00F48E60;
+			remoteInfo = VVGL;
+		};
 		1A6ED6211F47A44600227712 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
@@ -688,6 +722,9 @@
 		1A44D2AB1E1BFD6700F48E60 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		1A44D2AD1E1BFD6A00F48E60 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/IOSurface.framework; sourceTree = DEVELOPER_DIR; };
 		1A44D2AF1E1BFD7B00F48E60 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.fs; sourceTree = "<group>"; };
+		1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.gs; sourceTree = "<group>"; };
+		1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.vs; sourceTree = "<group>"; };
 		1A4EEA4F1F17B75B00B6C3F4 /* ISFonIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISFonIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A4EEA521F17B75B00B6C3F4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1A4EEA541F17B75B00B6C3F4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -701,6 +738,24 @@
 		1A4EEA841F17B7BE00B6C3F4 /* VVBufferGLKView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VVBufferGLKView.h; sourceTree = "<group>"; };
 		1A4EEA851F17B7BE00B6C3F4 /* VVBufferGLKView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VVBufferGLKView.mm; sourceTree = "<group>"; };
 		1A4FF9941F16CF39009F5440 /* VVGLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VVGLContext.mm; path = ../../../VVGL/src/VVGLContext.mm; sourceTree = "<group>"; };
+		1A569886200F821500437867 /* TransFeedbackTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransFeedbackTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A569888200F821500437867 /* TransFeedbackAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransFeedbackAppDelegate.h; sourceTree = "<group>"; };
+		1A569889200F821500437867 /* TransFeedbackAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TransFeedbackAppDelegate.mm; sourceTree = "<group>"; };
+		1A56988C200F821500437867 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1A56988E200F821500437867 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A569891200F821500437867 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1A569893200F821500437867 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A5698BD200F99C000437867 /* TransFeedback_Renderer.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransFeedback_Renderer.fs; sourceTree = "<group>"; };
+		1A5698BE200F99C000437867 /* TransFeedback_Renderer.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransFeedback_Renderer.vs; sourceTree = "<group>"; };
+		1A5698C120100EE400437867 /* TransFeedback_Feedback.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransFeedback_Feedback.vs; sourceTree = "<group>"; };
+		1A5698C7201012C100437867 /* JustTransFeedback.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JustTransFeedback.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A5698C9201012C100437867 /* JustTransFeedbackAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JustTransFeedbackAppDelegate.h; sourceTree = "<group>"; };
+		1A5698CA201012C100437867 /* JustTransFeedbackAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = JustTransFeedbackAppDelegate.mm; sourceTree = "<group>"; };
+		1A5698CD201012C100437867 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1A5698CF201012C100437867 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A5698D2201012C200437867 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1A5698D4201012C200437867 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A5698DB2010135D00437867 /* TransFeedback_Feedback.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransFeedback_Feedback.vs; sourceTree = "<group>"; };
 		1A5C20571F3F789500C09704 /* ISFObjectAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISFObjectAdditions.h; sourceTree = "<group>"; };
 		1A5C20581F3F789500C09704 /* ISFObjectAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISFObjectAdditions.m; sourceTree = "<group>"; };
 		1A5C20971F3F7A9600C09704 /* NSAlertAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSAlertAdditions.h; sourceTree = "<group>"; };
@@ -1067,6 +1122,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A569883200F821500437867 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A5698BC200F984300437867 /* CoreMedia.framework in Frameworks */,
+				1A5698B9200F822100437867 /* libVVGL.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A5698C4201012C100437867 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A5698DD201019CB00437867 /* CoreMedia.framework in Frameworks */,
+				1A5698DA201012D800437867 /* libVVGL.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1A6ED60D1F47A40A00227712 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1335,6 +1408,52 @@
 			isa = PBXGroup;
 			children = (
 				1A4EEA521F17B75B00B6C3F4 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1A569887200F821500437867 /* TransFeedbackTest */ = {
+			isa = PBXGroup;
+			children = (
+				1A5698C120100EE400437867 /* TransFeedback_Feedback.vs */,
+				1A5698BD200F99C000437867 /* TransFeedback_Renderer.fs */,
+				1A5698BE200F99C000437867 /* TransFeedback_Renderer.vs */,
+				1A569888200F821500437867 /* TransFeedbackAppDelegate.h */,
+				1A569889200F821500437867 /* TransFeedbackAppDelegate.mm */,
+				1A56988E200F821500437867 /* Assets.xcassets */,
+				1A569890200F821500437867 /* MainMenu.xib */,
+				1A569893200F821500437867 /* Info.plist */,
+				1A56988B200F821500437867 /* Supporting Files */,
+			);
+			path = TransFeedbackTest;
+			sourceTree = "<group>";
+		};
+		1A56988B200F821500437867 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1A56988C200F821500437867 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1A5698C8201012C100437867 /* JustTransFeedback */ = {
+			isa = PBXGroup;
+			children = (
+				1A5698C9201012C100437867 /* JustTransFeedbackAppDelegate.h */,
+				1A5698CA201012C100437867 /* JustTransFeedbackAppDelegate.mm */,
+				1A5698DB2010135D00437867 /* TransFeedback_Feedback.vs */,
+				1A5698CF201012C100437867 /* Assets.xcassets */,
+				1A5698D1201012C200437867 /* MainMenu.xib */,
+				1A5698D4201012C200437867 /* Info.plist */,
+				1A5698CC201012C100437867 /* Supporting Files */,
+			);
+			path = JustTransFeedback;
+			sourceTree = "<group>";
+		};
+		1A5698CC201012C100437867 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1A5698CD201012C100437867 /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1780,6 +1899,8 @@
 				1A7CA9691F4742C70051F3D6 /* DifferingGLVersions */,
 				1A6ED6111F47A40A00227712 /* ISFFuncTest */,
 				1AD86D031F4EFB4300DEED3E /* GeoShaderTest */,
+				1A569887200F821500437867 /* TransFeedbackTest */,
+				1A5698C8201012C100437867 /* JustTransFeedback */,
 				1AB049231DFDFE2500A59A85 /* Products */,
 				1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */,
 			);
@@ -1800,6 +1921,8 @@
 				1A7CA9681F4742C70051F3D6 /* DifferingGLVersions.app */,
 				1A6ED6101F47A40A00227712 /* ISFFuncTest.app */,
 				1AD86D021F4EFB4300DEED3E /* GeoShaderTest.app */,
+				1A569886200F821500437867 /* TransFeedbackTest.app */,
+				1A5698C7201012C100437867 /* JustTransFeedback.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1842,6 +1965,9 @@
 				1A7C039D1F4F3A5000A6534C /* GeoShaderTest.fs */,
 				1A7C039E1F4F3A5000A6534C /* GeoShaderTest.gs */,
 				1A7C039F1F4F3A5000A6534C /* GeoShaderTest.vs */,
+				1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */,
+				1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */,
+				1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */,
 				1AD86D0A1F4EFB4300DEED3E /* Assets.xcassets */,
 				1AD86D0C1F4EFB4300DEED3E /* MainMenu.xib */,
 				1AD86D0F1F4EFB4300DEED3E /* Info.plist */,
@@ -2067,6 +2193,42 @@
 			productReference = 1A4EEA4F1F17B75B00B6C3F4 /* ISFonIOS.app */;
 			productType = "com.apple.product-type.application";
 		};
+		1A569885200F821500437867 /* TransFeedbackTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A5698B4200F821500437867 /* Build configuration list for PBXNativeTarget "TransFeedbackTest" */;
+			buildPhases = (
+				1A569882200F821500437867 /* Sources */,
+				1A569883200F821500437867 /* Frameworks */,
+				1A569884200F821500437867 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A5698B8200F821D00437867 /* PBXTargetDependency */,
+			);
+			name = TransFeedbackTest;
+			productName = TransFeedbackTest;
+			productReference = 1A569886200F821500437867 /* TransFeedbackTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1A5698C6201012C100437867 /* JustTransFeedback */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A5698D5201012C200437867 /* Build configuration list for PBXNativeTarget "JustTransFeedback" */;
+			buildPhases = (
+				1A5698C3201012C100437867 /* Sources */,
+				1A5698C4201012C100437867 /* Frameworks */,
+				1A5698C5201012C100437867 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A5698D9201012D400437867 /* PBXTargetDependency */,
+			);
+			name = JustTransFeedback;
+			productName = JustTransFeedback;
+			productReference = 1A5698C7201012C100437867 /* JustTransFeedback.app */;
+			productType = "com.apple.product-type.application";
+		};
 		1A6ED60F1F47A40A00227712 /* ISFFuncTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1A6ED61E1F47A40A00227712 /* Build configuration list for PBXNativeTarget "ISFFuncTest" */;
@@ -2235,6 +2397,12 @@
 					1A4EEA4E1F17B75B00B6C3F4 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
+					1A569885200F821500437867 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					1A5698C6201012C100437867 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
 					1A6ED60F1F47A40A00227712 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
@@ -2292,6 +2460,8 @@
 				1A7CA9671F4742C70051F3D6 /* DifferingGLVersions */,
 				1A6ED60F1F47A40A00227712 /* ISFFuncTest */,
 				1AD86D011F4EFB4300DEED3E /* GeoShaderTest */,
+				1A569885200F821500437867 /* TransFeedbackTest */,
+				1A5698C6201012C100437867 /* JustTransFeedback */,
 			);
 		};
 /* End PBXProject section */
@@ -2575,6 +2745,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A569884200F821500437867 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A56988F200F821500437867 /* Assets.xcassets in Resources */,
+				1A5698BF200F99C000437867 /* TransFeedback_Renderer.fs in Resources */,
+				1A569892200F821500437867 /* MainMenu.xib in Resources */,
+				1A5698C0200F99C000437867 /* TransFeedback_Renderer.vs in Resources */,
+				1A5698C220100EE400437867 /* TransFeedback_Feedback.vs in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A5698C5201012C100437867 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A5698DC2010135D00437867 /* TransFeedback_Feedback.vs in Resources */,
+				1A5698D0201012C100437867 /* Assets.xcassets in Resources */,
+				1A5698D3201012C200437867 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1A6ED60E1F47A40A00227712 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2645,8 +2837,11 @@
 			files = (
 				1AD86D0B1F4EFB4300DEED3E /* Assets.xcassets in Resources */,
 				1AD86D0E1F4EFB4300DEED3E /* MainMenu.xib in Resources */,
+				1A47DFD9200EAA9B00FF206A /* GeoShaderTest_modern.gs in Resources */,
 				1A7C03A11F4F3A5000A6534C /* GeoShaderTest.gs in Resources */,
+				1A47DFDA200EAA9B00FF206A /* GeoShaderTest_modern.vs in Resources */,
 				1A7C03A21F4F3A5000A6534C /* GeoShaderTest.vs in Resources */,
+				1A47DFD8200EAA9B00FF206A /* GeoShaderTest_modern.fs in Resources */,
 				1A7C03A01F4F3A5000A6534C /* GeoShaderTest.fs in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2777,6 +2972,25 @@
 				1A4EEA561F17B75B00B6C3F4 /* AppDelegate.m in Sources */,
 				1A4EEA531F17B75B00B6C3F4 /* main.m in Sources */,
 				1A4EEA861F17B7BE00B6C3F4 /* VVBufferGLKView.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A569882200F821500437867 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A56988D200F821500437867 /* main.m in Sources */,
+				1A5698BB200F967700437867 /* VVGLBufferGLView.mm in Sources */,
+				1A56988A200F821500437867 /* TransFeedbackAppDelegate.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A5698C3201012C100437867 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A5698CE201012C100437867 /* main.m in Sources */,
+				1A5698CB201012C100437867 /* JustTransFeedbackAppDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2912,6 +3126,16 @@
 			target = 1AE1776F1E2581BB00E978E5 /* VVGL_iOS */;
 			targetProxy = 1A4EEAA81F17C90A00B6C3F4 /* PBXContainerItemProxy */;
 		};
+		1A5698B8200F821D00437867 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
+			targetProxy = 1A5698B7200F821D00437867 /* PBXContainerItemProxy */;
+		};
+		1A5698D9201012D400437867 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
+			targetProxy = 1A5698D8201012D400437867 /* PBXContainerItemProxy */;
+		};
 		1A6ED6221F47A44600227712 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1A44D2711E1BF7ED00F48E60 /* VVGL */;
@@ -2972,6 +3196,22 @@
 				1A4EEA601F17B75B00B6C3F4 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		1A569890200F821500437867 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1A569891200F821500437867 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		1A5698D1201012C200437867 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1A5698D2201012C200437867 /* Base */,
+			);
+			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
 		1A6ED61A1F47A40A00227712 /* MainMenu.xib */ = {
@@ -3175,6 +3415,58 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1A569894200F821500437867 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A569895200F821500437867 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1A5698D6201012C200437867 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = JustTransFeedback/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A5698D7201012C200437867 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = JustTransFeedback/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -3581,6 +3873,24 @@
 			buildConfigurations = (
 				1A4EEA631F17B75B00B6C3F4 /* Debug */,
 				1A4EEA641F17B75B00B6C3F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A5698B4200F821500437867 /* Build configuration list for PBXNativeTarget "TransFeedbackTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A569894200F821500437867 /* Debug */,
+				1A569895200F821500437867 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A5698D5201012C200437867 /* Build configuration list for PBXNativeTarget "JustTransFeedback" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A5698D6201012C200437867 /* Debug */,
+				1A5698D7201012C200437867 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

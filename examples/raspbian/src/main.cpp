@@ -65,7 +65,7 @@ varying vec2			vertSTVar;\n\
 void main()	{\n\
 	gl_FragColor = texture2D(inputImage, vertSTVar);\n\
 	//gl_FragColor = vec4(vertSTVar.x, vertSTVar.y, 0., 1.);\n\
-	gl_FragColor = vec4(1., 0., 0., 1.);\n\
+	//gl_FragColor = vec4(1., 0., 0., 1.);\n\
 }\n\
 ");
 	string			vsString("\n\
@@ -228,19 +228,20 @@ void main()	{\n\
 	cout << "\tabout to enter render loop...\n";
 	while (!quitFlag.load())
 	{
-		if (hasFX)	{
-			VVGLBufferRef		tmpBuffer = srcScene.createAndRenderABuffer(displayRect.size);
-			fxScene.setFilterInputBuffer(tmpBuffer);
-			displayBuffer = fxScene.createAndRenderABuffer(tmpBuffer->srcRect.size);
-		}
-		else	{
+		cout << "\tabout to render...\n";
+		//if (hasFX)	{
+		//	VVGLBufferRef		tmpBuffer = srcScene.createAndRenderABuffer(displayRect.size);
+		//	fxScene.setFilterInputBuffer(tmpBuffer);
+		//	displayBuffer = fxScene.createAndRenderABuffer(tmpBuffer->srcRect.size);
+		//}
+		//else	{
 			displayBuffer = srcScene.createAndRenderABuffer(displayRect.size);
 			if (displayBuffer == nullptr)
 				cout << "\terr: displayBuffer NULL\n";
 			else
 				cout << "\tdisplayBuffer is " << *displayBuffer << endl;
-		}
-		displayScene.render();
+		//}
+		//displayScene.render();
 		
 		cout << "\tDM swapping buffers\n";
 		dm.swapBuffers();

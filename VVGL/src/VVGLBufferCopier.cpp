@@ -550,14 +550,14 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 			GLERRLOG
 			//	configure the attribute pointers to work with the VBO
 			if (inputXYZLoc.loc >= 0)	{
+				inputXYZLoc.enable();
 				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.geoOffset()));
 				GLERRLOG
-				inputXYZLoc.enable();
 			}
 			if (inputSTLoc.loc >= 0)	{
+				inputSTLoc.enable();
 				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.texOffset()));
 				GLERRLOG
-				inputSTLoc.enable();
 			}
 			//	un-bind the VAO, we're done assembling it
 			glBindVertexArray(0);

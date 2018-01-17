@@ -585,7 +585,7 @@ void VVGLContext::calculateVersion()	{
 		return;
 	makeCurrentIfNotCurrent();
 	const unsigned char			*versString = glGetString(GL_VERSION);
-	cout << "\tversion string is " << versString << endl;
+	//cout << "\tversion string is " << versString << endl;
 	switch (*versString)	{
 	case '2': version = GLVersion_2; break;
 	case '3': version = GLVersion_33; break;

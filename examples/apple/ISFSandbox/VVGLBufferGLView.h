@@ -18,6 +18,7 @@ using namespace VVGL;
 	VVGL::VVGLSceneRef	scene;	//	this scene draws in the view
 	VVGL::VVGLBufferRef	vao;
 	Quad<VertXYST>		lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
+	double				localToBackingBoundsMultiplier;	//	used to adjust coords for retina displays
 	
 	VVGL::SizingMode	sizingMode;
 	
