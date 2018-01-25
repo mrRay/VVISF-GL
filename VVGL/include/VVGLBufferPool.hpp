@@ -141,6 +141,10 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool
 void CGBitmapContextUnpremultiply(CGContextRef ctx);
 #endif
 
+#if ISF_TARGET_QT
+VVGLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#endif
+
 
 }
 

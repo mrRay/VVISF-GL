@@ -108,6 +108,23 @@ void ISFScene::useFile(const string & inPath)	{
 	}
 	
 }
+void ISFScene::useDoc(ISFDocRef & inDoc)	{
+	lock_guard<recursive_mutex> rlock(renderLock);
+	lock_guard<mutex>	plock(propertyLock);
+	
+	doc = inDoc;
+	doc->setParentScene(this);
+	
+	//	reset the timestamper and render frame index
+	timestamper.reset();
+	renderTime = 0.;
+	renderTimeDelta = 0.;
+	passIndex = 0;
+	if (compiledInputTypeString!=nullptr)	{
+		delete compiledInputTypeString;
+		compiledInputTypeString=nullptr;
+	}
+}
 string ISFScene::getFilePath()	{
 	lock_guard<mutex>		lock(propertyLock);
 	return (doc==nullptr) ? string("") : doc->getPath();
@@ -618,7 +635,7 @@ void ISFScene::_renderPrep()	{
 	*/
 	
 	//	make sure there's a VAO
-#if !ISF_TARGET_GLES
+#if !ISF_TARGET_GLES && ISF_TARGET_GL3PLUS
 	if (getVAO() == nullptr)
 		setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
 #endif

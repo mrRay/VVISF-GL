@@ -132,7 +132,7 @@ VVGLBuffer::VVGLBuffer(const VVGLBuffer & n)	{
 }
 
 VVGLBuffer::~VVGLBuffer()	{
-	//cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << ", " << getDescriptionString() << endl;
 	
 	//	if this buffer was created by copying another buffer, clear out the source buffer
 	if (copySourceBuffer != nullptr)	{
@@ -194,6 +194,31 @@ ostream & operator<<(ostream & os, const VVGLBuffer & n)	{
 	
 	os << n.getDescriptionString();
 	return os;
+}
+
+
+VVGLBuffer * VVGLBuffer::allocShallowCopy()	{
+	VVGLBuffer		*returnMe = new VVGLBuffer;
+	returnMe->desc = desc;
+	returnMe->name = name;
+	returnMe->preferDeletion = preferDeletion;
+	returnMe->size = size;
+	returnMe->srcRect = srcRect;
+	returnMe->flipped = flipped;
+	returnMe->backingSize = backingSize;
+	returnMe->contentTimestamp = contentTimestamp;
+	returnMe->backingReleaseCallback = backingReleaseCallback;
+	returnMe->backingContext = backingContext;
+	returnMe->backingID = backingID;
+	returnMe->cpuBackingPtr = cpuBackingPtr;
+#if ISF_TARGET_MAC
+	returnMe->localSurfaceRef = (localSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(localSurfaceRef);
+	returnMe->remoteSurfaceRef = (remoteSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(remoteSurfaceRef);
+#endif//	ISF_TARGET_MAC
+	returnMe->parentBufferPool = parentBufferPool;
+	returnMe->copySourceBuffer = copySourceBuffer;
+	returnMe->idleCount = idleCount;
+	return returnMe;
 }
 
 

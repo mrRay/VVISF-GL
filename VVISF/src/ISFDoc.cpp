@@ -31,6 +31,17 @@ using namespace VVGL;
 #pragma mark --------------------- constructor/destructor
 
 
+ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene)	{
+	parentScene = inParentScene;
+	
+	path = new string("");
+	name = new string("");
+	
+	_initWithRawFragShaderString(inFSContents);
+	
+	//vertShaderSource = new string(ISFVertPassthru_GL2);
+	vertShaderSource = new string(inVSContents);
+}
 ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	cout << __PRETTY_FUNCTION__ << endl;
 	cout << "\t" << inPath << endl;
@@ -58,596 +69,9 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	cout << "**************************" << endl;
 	*/
 	
-	//	isolate the JSON blob that should be at the beginning of the file in a comment, save it as one string- save everything else as the raw shader source string
-	auto			openCommentIndex = rawFile.find("/*");	//	the "+2" is to move the index up past the string we're searching for
-	auto			closeCommentIndex = rawFile.find("*/");
-	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
-		throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", inPath);
-	}
-	jsonSourceString = new string(rawFile, 0, closeCommentIndex+2);
-	jsonString = new string(rawFile, openCommentIndex+2, closeCommentIndex - (openCommentIndex+2));
-	fragShaderSource = new string(rawFile, closeCommentIndex + 2);
 	
-	//	parse the JSON blob, turning it into objects we can parse programmatically
-	json			jblob;
-	try	{
-		jblob = json::parse(*jsonString);
-	}
-	catch (std::invalid_argument&)	{
-		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", inPath);
-	}
-	
-	//	parse the description
-	auto			anObj = jblob.value("DESCRIPTION",json());
-	if (anObj.is_string())	{
-		description = new string(anObj.get<string>());
-	}
-	
-	//	parse the credit
-	anObj = jblob.value("CREDIT",json());
-	if (anObj.is_string())	{
-		credit = new string(anObj.get<string>());
-	}
-	
-	//	parse the categories
-	anObj = jblob.value("CATEGORIES",json());
-	if (!anObj.is_null() && anObj.is_array())	{
-		for (auto catIt = anObj.begin(); catIt != anObj.end(); ++catIt)	{
-			json		catValue = catIt.value();
-			if (catValue.is_string())
-				categories.push_back(catValue.get<string>());
-		}
-	}
-	
-	//	parse the persistent buffers from the JSON dict (ISF v1, deprecated and no longer in use now)
-	anObj = jblob.value("PERSISTENT_BUFFERS",json());
-	if (!anObj.is_null())	{
-		//	if the persistent buffers object is an array, check that they're strings and add accordingly
-		if (anObj.type() == json::value_t::array)	{
-			//for (auto const & it : anObj)	{
-			for (auto & it : anObj)	{
-				if (it.type() == json::value_t::string)	{
-					persistentBuffers.emplace_back(ISFPassTarget::Create(it.get<string>(), this));
-				}
-			}
-		}
-		//	else if the persistent buffers object is a dict, add and populate the dict accordingly
-		else if (anObj.type() == json::value_t::object)	{
-			for (json::iterator		it = anObj.begin(); it != anObj.end(); ++it)	{
-				string				bufferName = it.key();
-				json				bufferDescription = it.value();
-				if (bufferDescription.type() == json::value_t::object)	{
-					ISFPassTargetRef		newTargetBuffer = ISFPassTarget::Create(bufferName, this);
-					json				tmpObj = bufferDescription.value("WIDTH",json());
-					if (tmpObj != nullptr)	{
-						if (tmpObj.type() == json::value_t::string)	{
-							//newTargetBuffer->setTargetWidthString(tmpObj.get<string>());
-							
-							//string			tmpString = tmpObj.get<string>();
-							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
-							//newTargetBuffer->setTargetWidthString(tmpString);
-							
-							string			tmpString = tmpObj.get<string>();
-							FindAndReplaceInPlace("$", "", tmpString);
-							newTargetBuffer->setTargetWidthString(tmpString);
-						}
-						else if (tmpObj.is_number())	{
-							double			tmpVal = tmpObj.get<float>();
-							newTargetBuffer->setTargetWidthString(FmtString("%f", tmpVal));
-						}
-					}
-					tmpObj = bufferDescription.value("HEIGHT",json());
-					if (tmpObj != nullptr)	{
-						if (tmpObj.type() == json::value_t::string)	{
-							//newTargetBuffer->setTargetHeightString(tmpObj.get<string>());
-							
-							//string			tmpString = tmpObj.get<string>();
-							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
-							//newTargetBuffer->setTargetHeightString(tmpString);
-							
-							string			tmpString = tmpObj.get<string>();
-							FindAndReplaceInPlace("$", "", tmpString);
-							newTargetBuffer->setTargetHeightString(tmpString);
-						}
-						else if (tmpObj.is_number())	{
-							double			tmpVal = tmpObj.get<float>();
-							newTargetBuffer->setTargetHeightString(FmtString("%f", tmpVal));
-						}
-					}
-					tmpObj = bufferDescription.value("FLOAT",json());
-					if (tmpObj != nullptr && tmpObj.is_number() && tmpObj.get<bool>())	{
-						newTargetBuffer->setFloatFlag(true);
-					}
-					//	add the new persistent buffer (as a render pass) to the array of render passes
-					persistentBuffers.push_back(newTargetBuffer);
-				}
-			}
-		}
-		
-	}
-	
-	
-	//	parse the array of imported images
-	anObj = jblob.value("IMPORTED",json());
-	if (anObj != nullptr)	{
-		string			parentDirectory = StringByDeletingLastPathComponent(inPath);
-		
-		//	this is the block that we're going to use to parse an import dict and import its contents.
-		function<void(const json &)>		parseImportedImageDict = [&](const json & importDict)	{
-			//cout << __PRETTY_FUNCTION__ << endl;
-			
-			json			samplerNameJ = importDict.value("NAME",json());
-			if (!samplerNameJ.is_null())	{
-				json			cubeFlagJ = importDict.value("TYPE",json());
-				if (!cubeFlagJ.is_null() && cubeFlagJ.get<string>() != "cube")
-					cubeFlagJ = json();
-				
-				VVGLBufferRef		importedBuffer = nullptr;
-				
-				//	are we a cube map?
-				if (!cubeFlagJ.is_null())	{
-					//	the PATH var should have an array of strings with the paths to the six files...
-					json			partialPathsJ = importDict.value("PATH",json());
-					if (!partialPathsJ.is_array())
-						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is not an array", inPath);
-					//	assemble an array with the full paths to the files
-					vector<string>		fullPaths(0);
-					for (auto it=partialPathsJ.begin(); it!=partialPathsJ.end(); ++it)	{
-						json		tmpPath = it.value();
-						if (!tmpPath.is_string())
-							throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", inPath);
-						fullPaths.emplace_back(FmtString("%s/%s",parentDirectory.c_str(),tmpPath.get<string>().c_str()));
-					}
-					//	make a cube texture from the array of paths
-					importedBuffer = CreateCubeTexFromImagePaths(fullPaths);
-					if (importedBuffer == nullptr)
-						throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", inPath);
-					//	make an attrib from the import and store it
-					//ISFAttr		newAttrib(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
-					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Cube, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					imageImports.emplace_back(newAttribRef);
-				}
-				//	else it's just a normal image
-				else	{
-					//	if the PATH entry isn't a string, throw an error
-					json			partialPathJ = importDict.value("PATH",json());
-					if (!partialPathJ.is_string())
-						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", inPath);
-					//	get the full path to the image we need to import
-					string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
-					//	import the image to an VVGLBufferRef
-					importedBuffer = CreateTexFromImage(fullPath);
-					if (importedBuffer == nullptr)
-						throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
-					//	make an attrib for the import and store it
-					//ISFAttr		newAttrib(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
-					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					imageImports.emplace_back(newAttribRef);
-				}
-			}
-			
-		};
-		
-		//	if i'm importing files from a dictionary, execute the block on all the elements in the dict (each element is another dict describing the thing to import)
-		if (anObj.type() == json::value_t::object)	{
-			for (auto it = anObj.begin(); it != anObj.end(); ++it)	{
-				string		itKey = it.key();
-				json			itVal = it.value();
-				//	if the value doesn't have a "NAME" key, add it
-				//if (itVal["NAME"] == nullptr)
-				//	itVal["NAME"] = itKey;
-				json			subVal = itVal.value("NAME",json());
-				if (subVal.is_null())
-					itVal["NAME"] = itKey;
-				parseImportedImageDict(itVal);
-			}
-		}
-		//	else it's an array- an array full of dictionaries, each of which describes a file to import
-		else if (anObj.type() == json::value_t::array)	{
-			for (auto const & subObj : anObj)	{
-				if (subObj.type() == json::value_t::object)	{
-					parseImportedImageDict(subObj);
-				}
-			}
-		}
-	}
-	
-	//	parse the PASSES array of dictionaries describing the various passes (which may need temp buffers)
-	anObj = jblob.value("PASSES",json());
-	if (!anObj.is_null())	{
-		if (!anObj.is_array())
-			throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", inPath);
-		for (auto passIt = anObj.begin(); passIt != anObj.end(); ++passIt)	{
-			json		rawPassDict = passIt.value();
-			//	make a new render pass and populate it from the raw pass dict
-			//ISFRenderPass			newPass = ISFRenderPass();
-			json				passTarget = rawPassDict.value("TARGET",json());
-			if (passTarget.is_string())	{
-				string				tmpBufferName = passTarget.get<string>();
-				//newPass.targetName = tmpBufferName;
-				//newPass.setTargetName(tmpBufferName);
-				//	find the target buffer for this pass- first check the persistent buffers
-				ISFPassTargetRef		targetBuffer = getPersistentTargetBuffer(tmpBufferName);
-				//	if i couldn't find a persistent buffer...
-				if (targetBuffer == nullptr)	{
-					//	create a new target buffer, set its name
-					targetBuffer = ISFPassTarget::Create(tmpBufferName, this);
-					//	check for PERSISTENT flag as per the ISF 2.0 spec
-					json				persistentObj = rawPassDict.value("PERSISTENT",json());
-					ISFVal				persistentVal = ISFNullVal();
-					if (persistentObj.is_string())	{
-						persistentVal = ParseStringAsBool(persistentObj);
-						//if (persistentVal.getType() == ISFValType_None)
-							//persistentVal = ISFValByEvaluatingString(persistentObj);
-					}
-					else if (persistentObj.is_boolean())
-						persistentVal = ISFBoolVal(persistentObj.get<bool>());
-					else if (persistentObj.is_number())
-						persistentVal = ISFFloatVal(persistentObj.get<double>());
-					//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
-					if (persistentVal.getDoubleVal() > 0.)
-						persistentBuffers.push_back(targetBuffer);
-					//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
-					else
-						tempBuffers.push_back(targetBuffer);
-				}
-				//	update the width/height stuff for the target buffer
-				json		tmpString;
-				tmpString = rawPassDict.value("WIDTH",json());
-				if (tmpString.is_string())	{
-					//targetBuffer->setTargetWidthString(tmpString);
-					//bufferRequiresEval = true;
-					
-					//string		tmpString2 = tmpString;
-					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
-					//targetBuffer->setTargetWidthString(tmpString2);
-					
-					string			tmpString2 = tmpString;
-					FindAndReplaceInPlace("$", "", tmpString2);
-					targetBuffer->setTargetWidthString(tmpString2);
-				}
-				tmpString = rawPassDict.value("HEIGHT",json());
-				if (tmpString.is_string())	{
-					//targetBuffer->setTargetHeightString(tmpString);
-					//bufferRequiresEval = true;
-					
-					//string		tmpString2 = tmpString;
-					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
-					//targetBuffer->setTargetHeightString(tmpString2);
-					
-					string			tmpString2 = tmpString;
-					FindAndReplaceInPlace("$", "", tmpString2);
-					targetBuffer->setTargetHeightString(tmpString2);
-				}
-				//	update the float flag for the target buffer
-				json		tmpFloatFlag = rawPassDict.value("FLOAT",json());
-				ISFVal		tmpFloatVal = ISFNullVal();
-				if (tmpFloatFlag.is_string())	{
-					tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
-					//if (tmpFloatVal.getType() == ISFValType_None)
-						//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
-				}
-				else if (tmpFloatFlag.is_boolean())
-					tmpFloatVal = ISFBoolVal(tmpFloatFlag.get<bool>());
-				else if (tmpFloatFlag.is_number())
-					tmpFloatVal = ISFBoolVal( (tmpFloatFlag.get<double>()>0.) ? true : false );
-				targetBuffer->setFloatFlag( (tmpFloatVal.getDoubleVal()>0.) ? true : false );
-				//	add the new render pass to the array of render passes
-				renderPasses.emplace_back(tmpBufferName);
-			}
-			else	{
-				//	add an empty render pass to the array of render passes
-				renderPasses.emplace_back("");
-			}
-		}
-	}
-	//	if at this point there aren't any passes, add an empty pass
-	if (renderPasses.size() < 1)
-		renderPasses.emplace_back("");
-	
-	//	parse the INPUTS from the JSON dict (these form the basis of user interaction)
-	auto			inputsArray = jblob.value("INPUTS",json());
-	if (inputsArray != nullptr && inputsArray.type()==json::value_t::array)	{
-		ISFValType			newAttribType = ISFValType_None;
-		ISFVal				minVal = ISFNullVal();
-		ISFVal				maxVal = ISFNullVal();
-		ISFVal				defVal = ISFNullVal();
-		ISFVal				idenVal = ISFNullVal();
-		vector<string>		labelArray;
-		vector<int32_t>		valArray;
-		bool				isImageInput = false;
-		bool				isAudioInput = false;
-		bool				isFilterImageInput = false;
-		
-		//	run through the array of inputs
-		for (auto it=inputsArray.begin(); it!=inputsArray.end(); ++it)	{
-			json		inputDict = it.value();
-			//	skip this input if the input isn't a dict
-			if (!inputDict.is_object())
-				continue;
-			//	skip this input if there isn't a name or type string
-			json		inputKeyJ = inputDict.value("NAME",json());
-			json		typeStringJ = inputDict.value("TYPE",json());
-			if (!inputKeyJ.is_string() || !typeStringJ.is_string())
-				continue;
-			//	we'll need the description and label too
-			json		descStringJ = inputDict.value("DESCRIPTION",json());
-			string		descString = (descStringJ.is_string()) ? descStringJ.get<string>() : string("");
-			json		labelStringJ = inputDict.value("LABEL",json());
-			string		labelString = (labelStringJ.is_string()) ? labelStringJ.get<string>() : string("");
-			
-			//	clear some state vars
-			newAttribType = ISFValType_None;
-			minVal = ISFNullVal();
-			maxVal = ISFNullVal();
-			defVal = ISFNullVal();
-			idenVal = ISFNullVal();
-			labelArray.clear();
-			valArray.clear();
-			isImageInput = false;
-			isAudioInput = false;
-			isFilterImageInput = false;
-			
-			//	update state vars based on the type and further parsing of the input dict
-			if (typeStringJ == "image")	{
-				newAttribType = ISFValType_Image;
-				isImageInput = true;
-				if (inputKeyJ == "inputImage")	{
-					isFilterImageInput = true;
-					type = ISFFileType_Filter;
-				}
-			}
-			else if (typeStringJ == "audio")	{
-				newAttribType = ISFValType_Audio;
-				isAudioInput = true;
-				json		tmpMaxJ = inputDict.value("MAX",json());
-				if (tmpMaxJ.is_number())
-					maxVal = ISFLongVal(tmpMaxJ.get<int32_t>());
-			}
-			else if (typeStringJ == "audioFFT")	{
-				newAttribType = ISFValType_AudioFFT;
-				isAudioInput = true;
-				json		tmpMaxJ = inputDict.value("MAX",json());
-				if (tmpMaxJ.is_number())
-					maxVal = ISFLongVal(tmpMaxJ.get<int32_t>());
-			}
-			else if (typeStringJ == "cube")	{
-				newAttribType = ISFValType_Cube;
-			}
-			else if (typeStringJ == "float")	{
-				newAttribType = ISFValType_Float;
-				json		tmpObj;
-				json		tmpMinJ;
-				json		tmpMaxJ;
-				tmpMinJ = inputDict.value("MIN",json());
-				if (tmpMinJ.is_number())
-					minVal = ISFFloatVal(tmpMinJ.get<double>());
-				tmpMaxJ = inputDict.value("MAX",json());
-				if (tmpMaxJ.is_number())
-					maxVal = ISFFloatVal(tmpMaxJ.get<double>());
-				
-				tmpObj = inputDict.value("DEFAULT",json());
-				if (tmpObj.is_number())
-					defVal = ISFFloatVal(tmpObj.get<double>());
-				tmpObj = inputDict.value("IDENTITY",json());
-				if (tmpObj.is_number())
-					idenVal = ISFFloatVal(tmpObj.get<double>());
-				
-				//	if i'm missing a min or a max val, reset both
-				if ((minVal.isNullVal() && !maxVal.isNullVal())	||
-				(!minVal.isNullVal() && maxVal.isNullVal()))	{
-					minVal = ISFNullVal();
-					maxVal = ISFNullVal();
-				}
-				
-				//	if i don't have a min/max val, default to a normalized range
-				if (minVal.isNullVal() && maxVal.isNullVal())	{
-					minVal = ISFFloatVal(0.);
-					maxVal = ISFFloatVal(1.);
-				}
-				if (defVal.isNullVal())
-					defVal = ISFFloatVal((maxVal.getDoubleVal()-minVal.getDoubleVal())/2. + minVal.getDoubleVal());
-				else	{
-					if (defVal.getDoubleVal()<minVal.getDoubleVal())
-						defVal = minVal;
-					else if (defVal.getDoubleVal()>maxVal.getDoubleVal())
-						defVal = maxVal;
-				}
-			}
-			else if (typeStringJ == "bool")	{
-				newAttribType = ISFValType_Bool;
-				json		tmpObj;
-				tmpObj = inputDict.value("DEFAULT",json());
-				if (tmpObj.is_boolean())
-					defVal = ISFBoolVal(tmpObj.get<bool>());
-				else if (tmpObj.is_number())
-					defVal = ISFBoolVal( (tmpObj.get<double>() > 0.) ? true : false );
-				else
-					defVal = ISFBoolVal(true);
-				tmpObj = inputDict.value("IDENTITY",json());
-				if (tmpObj.is_boolean())
-					idenVal = ISFBoolVal(tmpObj.get<bool>());
-				else if (tmpObj.is_number())
-					idenVal = ISFBoolVal( (tmpObj.get<double>() > 0.) ?  true : false );
-				
-				minVal = ISFBoolVal(false);
-				maxVal = ISFBoolVal(true);
-			}
-			else if (typeStringJ == "long")	{
-				newAttribType = ISFValType_Long;
-				json		tmpObj;
-				json		valArrayJ = inputDict.value("VALUES",json());
-				json		labelArrayJ = inputDict.value("LABELS",json());
-				//	look for VALUES and LABELS arrays (# of elements must match in both)
-				if (!valArrayJ.is_null() && !labelArrayJ.is_null() && valArrayJ.size()==labelArrayJ.size())	{
-					for (auto it=valArrayJ.begin(); it!=valArrayJ.end(); ++it)	{
-						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", inPath);
-						valArray.push_back(val.get<int32_t>());
-					}
-					for (auto it=labelArrayJ.begin(); it!=labelArrayJ.end(); ++it)	{
-						json &		label = it.value();
-						if (!label.is_string())
-							throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", inPath);
-						labelArray.push_back(label.get<string>());
-					}
-				}
-				//	else i couldn't find the values/labels arrays- look for MIN/MAX keys
-				else	{
-					tmpObj = inputDict.value("MIN",json());
-					if (tmpObj.is_number())
-						minVal = ISFLongVal(tmpObj.get<int32_t>());
-					tmpObj = inputDict.value("MAX",json());
-					if (tmpObj.is_number())
-						maxVal = ISFLongVal(tmpObj.get<int32_t>());
-					
-					//	if i'm missing a min or a max val, reset both
-					if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-					(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
-						minVal = ISFNullVal();
-						maxVal = ISFNullVal();
-					}
-				}
-				
-				tmpObj = inputDict.value("DEFAULT",json());
-				if (tmpObj.is_number())
-					defVal = ISFLongVal(tmpObj.get<int32_t>());
-				tmpObj = inputDict.value("IDENTITY",json());
-				if (tmpObj.is_number())
-					idenVal = ISFLongVal(tmpObj.get<int32_t>());
-			}
-			else if (typeStringJ == "event")	{
-				newAttribType = ISFValType_Event;
-			}
-			else if (typeStringJ == "color")	{
-				newAttribType = ISFValType_Color;
-				
-				minVal = ISFColorVal(0., 0., 0., 0.);
-				maxVal = ISFColorVal(1., 1., 1., 1.);
-				
-				json		tmpObj;
-				tmpObj = inputDict.value("DEFAULT",json());
-				if (tmpObj.is_array() && tmpObj.size()==4)	{
-					defVal = ISFColorVal(0., 0., 0., 0.);
-					json::iterator		it;
-					int			i;
-					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
-						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", inPath);
-						//defVal.val.colorVal[i] = val.get<double>();
-						defVal.setColorValByChannel(i, val.get<double>());
-					}
-				}
-				tmpObj = inputDict.value("IDENTITY",json());
-				if (tmpObj.is_array() && tmpObj.size()==4)	{
-					idenVal = ISFColorVal(0., 0., 0., 0.);
-					json::iterator		it;
-					int					i;
-					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
-						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", inPath);
-						//idenVal.val.colorVal[i] = val.get<double>();
-						idenVal.setColorValByChannel(i, val.get<double>());
-					}
-				}
-				//	if i'm missing a min or a max val, reset both
-				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
-					minVal = ISFNullVal();
-					maxVal = ISFNullVal();
-				}
-			}
-			else if (typeStringJ == "point2D")	{
-				newAttribType = ISFValType_Point2D;
-				
-				json		tmpObj;
-				tmpObj = inputDict.value("DEFAULT",json());
-				if (tmpObj.is_array() && tmpObj.size()==2)	{
-					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", inPath);
-					});
-					defVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
-				}
-				tmpObj = inputDict.value("IDENTITY",json());
-				if (tmpObj.is_array() && tmpObj.size()==2)	{
-					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", inPath);
-					});
-					idenVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
-				}
-				tmpObj = inputDict.value("MIN",json());
-				if (tmpObj.is_array() && tmpObj.size()==2)	{
-					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", inPath);
-					});
-					minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
-				}
-				tmpObj = inputDict.value("MAX",json());
-				if (tmpObj.is_array() && tmpObj.size()==2)	{
-					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", inPath);
-					});
-					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
-				}
-				//	if i'm missing a min or a max val, reset both
-				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
-					minVal = ISFNullVal();
-					maxVal = ISFNullVal();
-				}
-			}
-			//	else the attribute wasn't recognized- skip it
-			else
-				continue;
-			
-			//	if i'm here, i've got all the data necessary to create an input/attribute and need to do so
-			ISFAttrRef		newAttribRef = make_shared<ISFAttr>(inputKeyJ,
-				descString,
-				labelString,
-				newAttribType,
-				minVal,
-				maxVal,
-				defVal,
-				idenVal,
-				&labelArray,
-				&valArray);
-			newAttribRef->setIsFilterInputImage(isFilterImageInput);
-			inputs.push_back(newAttribRef);
-			if (isImageInput)
-				imageInputs.push_back(newAttribRef);
-			if (isAudioInput)
-				audioInputs.push_back(newAttribRef);
-			
-		}
-		
-		//	check to see if this is a transition
-		bool		hasStartImage = false;
-		bool		hasEndImage = false;
-		bool		hasProgress = false;
-		for (const auto & input : inputs)	{
-			if (input!=nullptr)	{
-				if (input->getType()==ISFValType_Image)	{
-					if (input->getName() == "startImage")
-						hasStartImage = true;
-					if (input->getName() == "endImage")
-						hasEndImage = true;
-				}
-				else if (input->getType() == ISFValType_Float)	{
-					if (input->getName() == "progress")
-						hasProgress = true;
-				}
-			}
-			if (hasStartImage && hasEndImage && hasProgress)
-				break;
-		}
-		if (hasStartImage && hasEndImage && hasProgress)
-			type = ISFFileType_Transition;
-	}
+	//	call the init method with the contents of the file we read in
+	_initWithRawFragShaderString(rawFile);
 	
 	
 	//	look for a vert shader that matches the name of the frag shader
@@ -1684,6 +1108,598 @@ void ISFDoc::evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize)	{
 #pragma mark --------------------- protected methods
 
 
+void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
+	//	isolate the JSON blob that should be at the beginning of the file in a comment, save it as one string- save everything else as the raw shader source string
+	auto			openCommentIndex = inRawFile.find("/*");	//	the "+2" is to move the index up past the string we're searching for
+	auto			closeCommentIndex = inRawFile.find("*/");
+	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
+		throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *path);
+	}
+	jsonSourceString = new string(inRawFile, 0, closeCommentIndex+2);
+	jsonString = new string(inRawFile, openCommentIndex+2, closeCommentIndex - (openCommentIndex+2));
+	fragShaderSource = new string(inRawFile, closeCommentIndex + 2);
+	
+	//	parse the JSON blob, turning it into objects we can parse programmatically
+	json			jblob;
+	try	{
+		jblob = json::parse(*jsonString);
+	}
+	catch (std::invalid_argument&)	{
+		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
+	}
+	
+	//	parse the description
+	auto			anObj = jblob.value("DESCRIPTION",json());
+	if (anObj.is_string())	{
+		description = new string(anObj.get<string>());
+	}
+	
+	//	parse the credit
+	anObj = jblob.value("CREDIT",json());
+	if (anObj.is_string())	{
+		credit = new string(anObj.get<string>());
+	}
+	
+	//	parse the categories
+	anObj = jblob.value("CATEGORIES",json());
+	if (!anObj.is_null() && anObj.is_array())	{
+		for (auto catIt = anObj.begin(); catIt != anObj.end(); ++catIt)	{
+			json		catValue = catIt.value();
+			if (catValue.is_string())
+				categories.push_back(catValue.get<string>());
+		}
+	}
+	
+	//	parse the persistent buffers from the JSON dict (ISF v1, deprecated and no longer in use now)
+	anObj = jblob.value("PERSISTENT_BUFFERS",json());
+	if (!anObj.is_null())	{
+		//	if the persistent buffers object is an array, check that they're strings and add accordingly
+		if (anObj.type() == json::value_t::array)	{
+			//for (auto const & it : anObj)	{
+			for (auto & it : anObj)	{
+				if (it.type() == json::value_t::string)	{
+					persistentBuffers.emplace_back(ISFPassTarget::Create(it.get<string>(), this));
+				}
+			}
+		}
+		//	else if the persistent buffers object is a dict, add and populate the dict accordingly
+		else if (anObj.type() == json::value_t::object)	{
+			for (json::iterator		it = anObj.begin(); it != anObj.end(); ++it)	{
+				string				bufferName = it.key();
+				json				bufferDescription = it.value();
+				if (bufferDescription.type() == json::value_t::object)	{
+					ISFPassTargetRef		newTargetBuffer = ISFPassTarget::Create(bufferName, this);
+					json				tmpObj = bufferDescription.value("WIDTH",json());
+					if (tmpObj != nullptr)	{
+						if (tmpObj.type() == json::value_t::string)	{
+							//newTargetBuffer->setTargetWidthString(tmpObj.get<string>());
+							
+							//string			tmpString = tmpObj.get<string>();
+							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
+							//newTargetBuffer->setTargetWidthString(tmpString);
+							
+							string			tmpString = tmpObj.get<string>();
+							FindAndReplaceInPlace("$", "", tmpString);
+							newTargetBuffer->setTargetWidthString(tmpString);
+						}
+						else if (tmpObj.is_number())	{
+							double			tmpVal = tmpObj.get<float>();
+							newTargetBuffer->setTargetWidthString(FmtString("%f", tmpVal));
+						}
+					}
+					tmpObj = bufferDescription.value("HEIGHT",json());
+					if (tmpObj != nullptr)	{
+						if (tmpObj.type() == json::value_t::string)	{
+							//newTargetBuffer->setTargetHeightString(tmpObj.get<string>());
+							
+							//string			tmpString = tmpObj.get<string>();
+							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
+							//newTargetBuffer->setTargetHeightString(tmpString);
+							
+							string			tmpString = tmpObj.get<string>();
+							FindAndReplaceInPlace("$", "", tmpString);
+							newTargetBuffer->setTargetHeightString(tmpString);
+						}
+						else if (tmpObj.is_number())	{
+							double			tmpVal = tmpObj.get<float>();
+							newTargetBuffer->setTargetHeightString(FmtString("%f", tmpVal));
+						}
+					}
+					tmpObj = bufferDescription.value("FLOAT",json());
+					if (tmpObj != nullptr && tmpObj.is_number() && tmpObj.get<bool>())	{
+						newTargetBuffer->setFloatFlag(true);
+					}
+					//	add the new persistent buffer (as a render pass) to the array of render passes
+					persistentBuffers.push_back(newTargetBuffer);
+				}
+			}
+		}
+		
+	}
+	
+	
+	//	parse the array of imported images
+	anObj = jblob.value("IMPORTED",json());
+	if (anObj != nullptr)	{
+		string			parentDirectory = StringByDeletingLastPathComponent(*path);
+		
+		//	this is the block that we're going to use to parse an import dict and import its contents.
+		function<void(const json &)>		parseImportedImageDict = [&](const json & importDict)	{
+			//cout << __PRETTY_FUNCTION__ << endl;
+			
+			json			samplerNameJ = importDict.value("NAME",json());
+			if (!samplerNameJ.is_null())	{
+				json			cubeFlagJ = importDict.value("TYPE",json());
+				if (!cubeFlagJ.is_null() && cubeFlagJ.get<string>() != "cube")
+					cubeFlagJ = json();
+				
+				VVGLBufferRef		importedBuffer = nullptr;
+				
+				//	are we a cube map?
+				if (!cubeFlagJ.is_null())	{
+					//	the PATH var should have an array of strings with the paths to the six files...
+					json			partialPathsJ = importDict.value("PATH",json());
+					if (partialPathsJ.is_null() || !partialPathsJ.is_array())
+						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", *path);
+					//	assemble an array with the full paths to the files
+					vector<string>		fullPaths(0);
+					for (auto it=partialPathsJ.begin(); it!=partialPathsJ.end(); ++it)	{
+						json		tmpPath = it.value();
+						if (!tmpPath.is_string())
+							throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", *path);
+						fullPaths.emplace_back(FmtString("%s/%s",parentDirectory.c_str(),tmpPath.get<string>().c_str()));
+					}
+					//	make a cube texture from the array of paths
+					importedBuffer = CreateCubeTexFromImagePaths(fullPaths);
+					if (importedBuffer == nullptr)
+						throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", *path);
+					//	make an attrib from the import and store it
+					//ISFAttr		newAttrib(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
+					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Cube, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+					imageImports.emplace_back(newAttribRef);
+				}
+				//	else it's just a normal image
+				else	{
+					//	if the PATH entry isn't a string, throw an error
+					json			partialPathJ = importDict.value("PATH",json());
+					if (partialPathJ.is_null() || !partialPathJ.is_string())
+						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *path);
+					//	get the full path to the image we need to import
+					string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
+					//	import the image to an VVGLBufferRef
+					importedBuffer = CreateTexFromImage(fullPath);
+					if (importedBuffer == nullptr)
+						throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
+					//	make an attrib for the import and store it
+					//ISFAttr		newAttrib(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
+					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+					imageImports.emplace_back(newAttribRef);
+				}
+			}
+			
+		};
+		
+		//	if i'm importing files from a dictionary, execute the block on all the elements in the dict (each element is another dict describing the thing to import)
+		if (anObj.type() == json::value_t::object)	{
+			for (auto it = anObj.begin(); it != anObj.end(); ++it)	{
+				string		itKey = it.key();
+				json			itVal = it.value();
+				//	if the value doesn't have a "NAME" key, add it
+				//if (itVal["NAME"] == nullptr)
+				//	itVal["NAME"] = itKey;
+				json			subVal = itVal.value("NAME",json());
+				if (subVal.is_null())
+					itVal["NAME"] = itKey;
+				parseImportedImageDict(itVal);
+			}
+		}
+		//	else it's an array- an array full of dictionaries, each of which describes a file to import
+		else if (anObj.type() == json::value_t::array)	{
+			for (auto const & subObj : anObj)	{
+				if (subObj.type() == json::value_t::object)	{
+					parseImportedImageDict(subObj);
+				}
+			}
+		}
+	}
+	
+	//	parse the PASSES array of dictionaries describing the various passes (which may need temp buffers)
+	anObj = jblob.value("PASSES",json());
+	if (!anObj.is_null())	{
+		if (!anObj.is_array())
+			throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", *path);
+		for (auto passIt = anObj.begin(); passIt != anObj.end(); ++passIt)	{
+			json		rawPassDict = passIt.value();
+			//	make a new render pass and populate it from the raw pass dict
+			//ISFRenderPass			newPass = ISFRenderPass();
+			json				passTarget = rawPassDict.value("TARGET",json());
+			if (passTarget.is_string())	{
+				string				tmpBufferName = passTarget.get<string>();
+				//newPass.targetName = tmpBufferName;
+				//newPass.setTargetName(tmpBufferName);
+				//	find the target buffer for this pass- first check the persistent buffers
+				ISFPassTargetRef		targetBuffer = getPersistentTargetBuffer(tmpBufferName);
+				//	if i couldn't find a persistent buffer...
+				if (targetBuffer == nullptr)	{
+					//	create a new target buffer, set its name
+					targetBuffer = ISFPassTarget::Create(tmpBufferName, this);
+					//	check for PERSISTENT flag as per the ISF 2.0 spec
+					json				persistentObj = rawPassDict.value("PERSISTENT",json());
+					ISFVal				persistentVal = ISFNullVal();
+					if (persistentObj.is_string())	{
+						persistentVal = ParseStringAsBool(persistentObj);
+						//if (persistentVal.getType() == ISFValType_None)
+							//persistentVal = ISFValByEvaluatingString(persistentObj);
+					}
+					else if (persistentObj.is_boolean())
+						persistentVal = ISFBoolVal(persistentObj.get<bool>());
+					else if (persistentObj.is_number())
+						persistentVal = ISFFloatVal(persistentObj.get<double>());
+					//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
+					if (persistentVal.getDoubleVal() > 0.)
+						persistentBuffers.push_back(targetBuffer);
+					//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
+					else
+						tempBuffers.push_back(targetBuffer);
+				}
+				//	update the width/height stuff for the target buffer
+				json		tmpString;
+				tmpString = rawPassDict.value("WIDTH",json());
+				if (tmpString.is_string())	{
+					//targetBuffer->setTargetWidthString(tmpString);
+					//bufferRequiresEval = true;
+					
+					//string		tmpString2 = tmpString;
+					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
+					//targetBuffer->setTargetWidthString(tmpString2);
+					
+					string			tmpString2 = tmpString;
+					FindAndReplaceInPlace("$", "", tmpString2);
+					targetBuffer->setTargetWidthString(tmpString2);
+				}
+				tmpString = rawPassDict.value("HEIGHT",json());
+				if (tmpString.is_string())	{
+					//targetBuffer->setTargetHeightString(tmpString);
+					//bufferRequiresEval = true;
+					
+					//string		tmpString2 = tmpString;
+					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
+					//targetBuffer->setTargetHeightString(tmpString2);
+					
+					string			tmpString2 = tmpString;
+					FindAndReplaceInPlace("$", "", tmpString2);
+					targetBuffer->setTargetHeightString(tmpString2);
+				}
+				//	update the float flag for the target buffer
+				json		tmpFloatFlag = rawPassDict.value("FLOAT",json());
+				ISFVal		tmpFloatVal = ISFNullVal();
+				if (tmpFloatFlag.is_string())	{
+					tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
+					//if (tmpFloatVal.getType() == ISFValType_None)
+						//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
+				}
+				else if (tmpFloatFlag.is_boolean())
+					tmpFloatVal = ISFBoolVal(tmpFloatFlag.get<bool>());
+				else if (tmpFloatFlag.is_number())
+					tmpFloatVal = ISFBoolVal( (tmpFloatFlag.get<double>()>0.) ? true : false );
+				targetBuffer->setFloatFlag( (tmpFloatVal.getDoubleVal()>0.) ? true : false );
+				//	add the new render pass to the array of render passes
+				renderPasses.emplace_back(tmpBufferName);
+			}
+			else	{
+				//	add an empty render pass to the array of render passes
+				renderPasses.emplace_back("");
+			}
+		}
+	}
+	//	if at this point there aren't any passes, add an empty pass
+	if (renderPasses.size() < 1)
+		renderPasses.emplace_back("");
+	
+	//	parse the INPUTS from the JSON dict (these form the basis of user interaction)
+	auto			inputsArray = jblob.value("INPUTS",json());
+	if (inputsArray != nullptr && inputsArray.type()==json::value_t::array)	{
+		ISFValType			newAttribType = ISFValType_None;
+		ISFVal				minVal = ISFNullVal();
+		ISFVal				maxVal = ISFNullVal();
+		ISFVal				defVal = ISFNullVal();
+		ISFVal				idenVal = ISFNullVal();
+		vector<string>		labelArray;
+		vector<int32_t>		valArray;
+		bool				isImageInput = false;
+		bool				isAudioInput = false;
+		bool				isFilterImageInput = false;
+		
+		//	run through the array of inputs
+		for (auto it=inputsArray.begin(); it!=inputsArray.end(); ++it)	{
+			json		inputDict = it.value();
+			//	skip this input if the input isn't a dict
+			if (!inputDict.is_object())
+				continue;
+			//	skip this input if there isn't a name or type string
+			json		inputKeyJ = inputDict.value("NAME",json());
+			json		typeStringJ = inputDict.value("TYPE",json());
+			if (!inputKeyJ.is_string() || !typeStringJ.is_string())
+				continue;
+			//	we'll need the description and label too
+			json		descStringJ = inputDict.value("DESCRIPTION",json());
+			string		descString = (descStringJ.is_string()) ? descStringJ.get<string>() : string("");
+			json		labelStringJ = inputDict.value("LABEL",json());
+			string		labelString = (labelStringJ.is_string()) ? labelStringJ.get<string>() : string("");
+			
+			//	clear some state vars
+			newAttribType = ISFValType_None;
+			minVal = ISFNullVal();
+			maxVal = ISFNullVal();
+			defVal = ISFNullVal();
+			idenVal = ISFNullVal();
+			labelArray.clear();
+			valArray.clear();
+			isImageInput = false;
+			isAudioInput = false;
+			isFilterImageInput = false;
+			
+			//	update state vars based on the type and further parsing of the input dict
+			if (typeStringJ == "image")	{
+				newAttribType = ISFValType_Image;
+				isImageInput = true;
+				if (inputKeyJ == "inputImage")	{
+					isFilterImageInput = true;
+					type = ISFFileType_Filter;
+				}
+			}
+			else if (typeStringJ == "audio")	{
+				newAttribType = ISFValType_Audio;
+				isAudioInput = true;
+				json		tmpMaxJ = inputDict.value("MAX",json());
+				if (tmpMaxJ.is_number())
+					maxVal = ISFLongVal(tmpMaxJ.get<int32_t>());
+			}
+			else if (typeStringJ == "audioFFT")	{
+				newAttribType = ISFValType_AudioFFT;
+				isAudioInput = true;
+				json		tmpMaxJ = inputDict.value("MAX",json());
+				if (tmpMaxJ.is_number())
+					maxVal = ISFLongVal(tmpMaxJ.get<int32_t>());
+			}
+			else if (typeStringJ == "cube")	{
+				newAttribType = ISFValType_Cube;
+			}
+			else if (typeStringJ == "float")	{
+				newAttribType = ISFValType_Float;
+				json		tmpObj;
+				json		tmpMinJ;
+				json		tmpMaxJ;
+				tmpMinJ = inputDict.value("MIN",json());
+				if (tmpMinJ.is_number())
+					minVal = ISFFloatVal(tmpMinJ.get<double>());
+				tmpMaxJ = inputDict.value("MAX",json());
+				if (tmpMaxJ.is_number())
+					maxVal = ISFFloatVal(tmpMaxJ.get<double>());
+				
+				tmpObj = inputDict.value("DEFAULT",json());
+				if (tmpObj.is_number())
+					defVal = ISFFloatVal(tmpObj.get<double>());
+				tmpObj = inputDict.value("IDENTITY",json());
+				if (tmpObj.is_number())
+					idenVal = ISFFloatVal(tmpObj.get<double>());
+				
+				//	if i'm missing a min or a max val, reset both
+				if ((minVal.isNullVal() && !maxVal.isNullVal())	||
+				(!minVal.isNullVal() && maxVal.isNullVal()))	{
+					minVal = ISFNullVal();
+					maxVal = ISFNullVal();
+				}
+				
+				//	if i don't have a min/max val, default to a normalized range
+				if (minVal.isNullVal() && maxVal.isNullVal())	{
+					minVal = ISFFloatVal(0.);
+					maxVal = ISFFloatVal(1.);
+				}
+				if (defVal.isNullVal())
+					defVal = ISFFloatVal((maxVal.getDoubleVal()-minVal.getDoubleVal())/2. + minVal.getDoubleVal());
+				else	{
+					if (defVal.getDoubleVal()<minVal.getDoubleVal())
+						defVal = minVal;
+					else if (defVal.getDoubleVal()>maxVal.getDoubleVal())
+						defVal = maxVal;
+				}
+			}
+			else if (typeStringJ == "bool")	{
+				newAttribType = ISFValType_Bool;
+				json		tmpObj;
+				tmpObj = inputDict.value("DEFAULT",json());
+				if (tmpObj.is_boolean())
+					defVal = ISFBoolVal(tmpObj.get<bool>());
+				else if (tmpObj.is_number())
+					defVal = ISFBoolVal( (tmpObj.get<double>() > 0.) ? true : false );
+				else
+					defVal = ISFBoolVal(true);
+				tmpObj = inputDict.value("IDENTITY",json());
+				if (tmpObj.is_boolean())
+					idenVal = ISFBoolVal(tmpObj.get<bool>());
+				else if (tmpObj.is_number())
+					idenVal = ISFBoolVal( (tmpObj.get<double>() > 0.) ?  true : false );
+				
+				minVal = ISFBoolVal(false);
+				maxVal = ISFBoolVal(true);
+			}
+			else if (typeStringJ == "long")	{
+				newAttribType = ISFValType_Long;
+				json		tmpObj;
+				json		valArrayJ = inputDict.value("VALUES",json());
+				json		labelArrayJ = inputDict.value("LABELS",json());
+				//	look for VALUES and LABELS arrays (# of elements must match in both)
+				if (!valArrayJ.is_null() && !labelArrayJ.is_null() && valArrayJ.size()==labelArrayJ.size())	{
+					for (auto it=valArrayJ.begin(); it!=valArrayJ.end(); ++it)	{
+						json &		val = it.value();
+						if (!val.is_number())
+							throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", *path);
+						valArray.push_back(val.get<int32_t>());
+					}
+					for (auto it=labelArrayJ.begin(); it!=labelArrayJ.end(); ++it)	{
+						json &		label = it.value();
+						if (!label.is_string())
+							throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", *path);
+						labelArray.push_back(label.get<string>());
+					}
+				}
+				//	else i couldn't find the values/labels arrays- look for MIN/MAX keys
+				else	{
+					tmpObj = inputDict.value("MIN",json());
+					if (tmpObj.is_number())
+						minVal = ISFLongVal(tmpObj.get<int32_t>());
+					tmpObj = inputDict.value("MAX",json());
+					if (tmpObj.is_number())
+						maxVal = ISFLongVal(tmpObj.get<int32_t>());
+					
+					//	if i'm missing a min or a max val, reset both
+					if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
+					(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+						minVal = ISFNullVal();
+						maxVal = ISFNullVal();
+					}
+				}
+				
+				tmpObj = inputDict.value("DEFAULT",json());
+				if (tmpObj.is_number())
+					defVal = ISFLongVal(tmpObj.get<int32_t>());
+				tmpObj = inputDict.value("IDENTITY",json());
+				if (tmpObj.is_number())
+					idenVal = ISFLongVal(tmpObj.get<int32_t>());
+			}
+			else if (typeStringJ == "event")	{
+				newAttribType = ISFValType_Event;
+			}
+			else if (typeStringJ == "color")	{
+				newAttribType = ISFValType_Color;
+				
+				minVal = ISFColorVal(0., 0., 0., 0.);
+				maxVal = ISFColorVal(1., 1., 1., 1.);
+				
+				json		tmpObj;
+				tmpObj = inputDict.value("DEFAULT",json());
+				if (tmpObj.is_array() && tmpObj.size()==4)	{
+					defVal = ISFColorVal(0., 0., 0., 0.);
+					json::iterator		it;
+					int			i;
+					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
+						json &		val = it.value();
+						if (!val.is_number())
+							throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", *path);
+						//defVal.val.colorVal[i] = val.get<double>();
+						defVal.setColorValByChannel(i, val.get<double>());
+					}
+				}
+				tmpObj = inputDict.value("IDENTITY",json());
+				if (tmpObj.is_array() && tmpObj.size()==4)	{
+					idenVal = ISFColorVal(0., 0., 0., 0.);
+					json::iterator		it;
+					int					i;
+					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
+						json &		val = it.value();
+						if (!val.is_number())
+							throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", *path);
+						//idenVal.val.colorVal[i] = val.get<double>();
+						idenVal.setColorValByChannel(i, val.get<double>());
+					}
+				}
+				//	if i'm missing a min or a max val, reset both
+				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
+				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+					minVal = ISFNullVal();
+					maxVal = ISFNullVal();
+				}
+			}
+			else if (typeStringJ == "point2D")	{
+				newAttribType = ISFValType_Point2D;
+				
+				json		tmpObj;
+				tmpObj = inputDict.value("DEFAULT",json());
+				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
+						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", *path);
+					});
+					defVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+				}
+				tmpObj = inputDict.value("IDENTITY",json());
+				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
+						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", *path);
+					});
+					idenVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+				}
+				tmpObj = inputDict.value("MIN",json());
+				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
+						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *path);
+					});
+					minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+				}
+				tmpObj = inputDict.value("MAX",json());
+				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
+						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *path);
+					});
+					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+				}
+				//	if i'm missing a min or a max val, reset both
+				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
+				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+					minVal = ISFNullVal();
+					maxVal = ISFNullVal();
+				}
+			}
+			//	else the attribute wasn't recognized- skip it
+			else
+				continue;
+			
+			//	if i'm here, i've got all the data necessary to create an input/attribute and need to do so
+			ISFAttrRef		newAttribRef = make_shared<ISFAttr>(inputKeyJ,
+				descString,
+				labelString,
+				newAttribType,
+				minVal,
+				maxVal,
+				defVal,
+				idenVal,
+				&labelArray,
+				&valArray);
+			newAttribRef->setIsFilterInputImage(isFilterImageInput);
+			inputs.push_back(newAttribRef);
+			if (isImageInput)
+				imageInputs.push_back(newAttribRef);
+			if (isAudioInput)
+				audioInputs.push_back(newAttribRef);
+			
+		}
+		
+		//	check to see if this is a transition
+		bool		hasStartImage = false;
+		bool		hasEndImage = false;
+		bool		hasProgress = false;
+		for (const auto & input : inputs)	{
+			if (input!=nullptr)	{
+				if (input->getType()==ISFValType_Image)	{
+					if (input->getName() == "startImage")
+						hasStartImage = true;
+					if (input->getName() == "endImage")
+						hasEndImage = true;
+				}
+				else if (input->getType() == ISFValType_Float)	{
+					if (input->getName() == "progress")
+						hasProgress = true;
+				}
+			}
+			if (hasStartImage && hasEndImage && hasProgress)
+				break;
+		}
+		if (hasStartImage && hasEndImage && hasProgress)
+			type = ISFFileType_Transition;
+	}
+}
 bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	

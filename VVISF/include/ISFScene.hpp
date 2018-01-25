@@ -74,6 +74,7 @@ class ISFScene : public VVGLScene	{
 		
 		void useFile();
 		void useFile(const string & inPath);
+		void useDoc(ISFDocRef & inDoc);
 		string getFilePath();
 		string getFileName();
 		string getFileDescription();

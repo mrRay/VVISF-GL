@@ -71,6 +71,8 @@ class VVGLBuffer	{
 		#include "VVGLBuffer_IOS_Enums.h"
 #elif ISF_TARGET_GLFW
 		#include "VVGLBuffer_GLFW_Enums.h"
+#elif ISF_TARGET_QT
+		#include "VVGLBuffer_Qt_Enums.h"
 #endif
 		
 		
@@ -87,7 +89,8 @@ class VVGLBuffer	{
 			BackingID_CVTex,
 			BackingID_NSBitImgRep,
 			BackingID_RemoteIOSrf,
-			BackingID_External
+			BackingID_External,
+			BackingID_QImage
 		};
 	
 	
@@ -156,6 +159,9 @@ class VVGLBuffer	{
 		VVGLBuffer& operator=(const VVGLBuffer&) = delete;
 		VVGLBuffer& operator=(VVGLBuffer&) = delete;
 		//VVGLBuffer (VVGLBuffer&&) = default;
+		
+		//	use this to create a shallow copy (memberwise copy)
+		VVGLBuffer * allocShallowCopy();
 		
 #if ISF_TARGET_MAC
 		//	getter/setters

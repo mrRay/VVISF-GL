@@ -2,8 +2,14 @@
 #include "VVGLBuffer.hpp"
 #include "VVGLBufferCopier.hpp"
 
+#include "VVBase.hpp"
+
 #include <set>
 #include <algorithm>
+
+#if ISF_TARGET_QT
+#include <QImage>
+#endif
 
 
 #define IDLEBUFFERCOUNT 30
@@ -60,7 +66,7 @@ VVGLBufferPool::VVGLBufferPool(const VVGLContext * inShareCtx)	{
 }
 */
 VVGLBufferPool::~VVGLBufferPool()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	lock_guard<recursive_mutex>		lock(contextLock);
 	if (context != nullptr)	{
@@ -592,6 +598,27 @@ void VVGLBufferPool::releaseBufferResources(VVGLBuffer * inBuffer)	{
 	lock_guard<recursive_mutex>		lock(contextLock);
 	if (context == nullptr)
 		return;
+	
+	//	Qt has thread-specific contexts: you cannot make them current on any other threads or they crash
+#if ISF_TARGET_QT
+	//	if we can't make the context current on this thread
+	QThread			*currentThread = QThread::currentThread();
+	QObject			*qCtxAsObj = (QObject*)context->getContext();
+	QThread			*ctxThread = (qCtxAsObj==nullptr) ? nullptr : qCtxAsObj->thread();
+	
+	if (currentThread != ctxThread)	{
+		//cout << "\terr: can't release buffer " << inBuffer->getDescriptionString() << " on this thread..." << endl;
+		//	make a new VVGLBuffer that duplicates the VVGLBuffer we were passed (which is being freed)
+		VVGLBuffer		*copiedBuffer = inBuffer->allocShallowCopy();
+		//	now we want this buffer to get deleted on the context's thread...
+		perform_async([=](){
+			//cout << "\tshould be deleting the copied buffer now..." << endl;
+			delete copiedBuffer;
+		}, qCtxAsObj);
+		//	return- we can't make the context current or delete anything on this thread
+		return;
+	}
+#endif	//	ISF_TARGET_QT
 	
 	//context->makeCurrentIfNull();
 	//context->makeCurrent();
@@ -1707,6 +1734,59 @@ VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool
 	return returnMe;
 }
 #endif	//	ISF_TARGET_MAC || ISF_TARGET_IOS
+
+
+
+
+#if ISF_TARGET_QT
+VVGLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext, const VVGLBufferPoolRef & inPoolRef)	{
+	if (inImg==nullptr || inPoolRef==nullptr)
+		return nullptr;
+	void			*pixelData = inImg->bits();
+	QSize			imgSize = inImg->size();
+	VVGL::Size		repSize(imgSize.width(), imgSize.height());
+	VVGL::Size		gpuSize = repSize;
+	
+	VVGLBuffer::Descriptor		desc;
+	desc.type = VVGLBuffer::Type_Tex;
+	desc.target = VVGLBuffer::Target_2D;
+	desc.internalFormat = VVGLBuffer::IF_RGBA8;
+	desc.pixelFormat = VVGLBuffer::PF_BGRA;
+	desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;
+	desc.cpuBackingType = VVGLBuffer::Backing_External;
+	desc.gpuBackingType = VVGLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	//VVBuffer			*returnMe = [self allocBufferForDescriptor:&desc sized:gpuSize backingPtr:pixelData backingSize:repSize];
+	VVGLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	//[returnMe setSrcRect:VVMAKERECT(0,0,repSize.width,repSize.height)];
+	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
+	//	the backing release callback should release a bitmap rep- set it, and the context (which is the rep)
+	//[returnMe setBackingID:VVBufferBackID_NSBitImgRep];
+	returnMe->backingID = VVGLBuffer::BackingID_None;
+	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseBitmapRep];
+	//[inRep retain];	//	we want to explicitly retain the rep we were passed- when the underlying VVGLBuffer is freed, its backing release callback will release the rep
+	//returnMe->backingReleaseCallback = [](VVGLBuffer & inBuffer, void * inReleaseContext)	{
+	//	if (inReleaseContext != nil)	{
+	//		NSBitmapImageRep	*tmpRep = (NSBitmapImageRep *)inReleaseContext;
+	//		[tmpRep release];
+	//	}
+	//};
+	//[returnMe setBackingReleaseCallbackContextObject:inRep];
+	//returnMe->backingContext = (void*)inRep;
+	//[returnMe setBackingSize:repSize];
+	returnMe->backingSize = repSize;
+	returnMe->flipped = true;
+	
+	returnMe->preferDeletion = true;
+	
+	return returnMe;
+}
+#endif
 
 
 

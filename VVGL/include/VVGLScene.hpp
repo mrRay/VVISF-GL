@@ -142,7 +142,7 @@ class VVGLScene	{
 		virtual string getFragmentShaderString();
 		inline uint32_t getProgram() const { return program; }
 		
-		GLVersion getGLVersion() const { if (context==nullptr) return GLVersion_Unknown; return context->version; }
+		inline GLVersion getGLVersion() const { if (context==nullptr) return GLVersion_Unknown; return context->version; }
 		
 	protected:
 		virtual void _renderPrep();	//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.

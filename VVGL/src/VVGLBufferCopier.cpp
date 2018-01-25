@@ -483,48 +483,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	
 	//	if it's GL 2.x
 	if (getGLVersion() == GLVersion_2)	{
-#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
-		glActiveTexture(GL_TEXTURE0);
-		GLERRLOG
-		glEnable(inBufferRef->desc.target);
-		GLERRLOG
-		/*
-		float			verts[] = {
-			(float)MinX(inDstRect), (float)MinY(inDstRect), 0.0,
-			(float)MaxX(inDstRect), (float)MinY(inDstRect), 0.0,
-			(float)MaxX(inDstRect), (float)MaxY(inDstRect), 0.0,
-			(float)MinX(inDstRect), (float)MaxY(inDstRect), 0.0
-		};
-		float			texs[] = {
-			(float)MinX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
-			(float)MaxX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
-			(float)MaxX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect),
-			(float)MinX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect)
-		};
-		*/
-		glEnableClientState(GL_VERTEX_ARRAY);
-		GLERRLOG
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		GLERRLOG
-		glDisableClientState(GL_COLOR_ARRAY);
-		GLERRLOG
-	
-		glVertexPointer(3, GL_FLOAT, (int)inVertexStruct.stride(), (float*)&inVertexStruct);
-		GLERRLOG
-		glTexCoordPointer(2, GL_FLOAT, (int)inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
-		GLERRLOG
-		glBindTexture(inBufferRef->desc.target, inBufferRef->name);
-		GLERRLOG
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		GLERRLOG
-		glBindTexture(inBufferRef->desc.target, 0);
-		GLERRLOG
-		glDisable(inBufferRef->desc.target);
-		GLERRLOG
-	
-		glDisable(inBufferRef->desc.target);
-		GLERRLOG
-#endif
+		//	intentionally blank, handled below in another section of the ifdef
 	}
 	//	else it's not GL 2- it's GL3+ or GLES3+
 	else	{
@@ -719,6 +678,56 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	//	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//	GLERRLOG
 	//}
+}
+//	else it's neither GL3+ nor GLES nor GLES3- it's probably GL2
+#else
+void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	//	if it's GL 2.x
+	if (getGLVersion() == GLVersion_2)	{
+		glActiveTexture(GL_TEXTURE0);
+		GLERRLOG
+		glEnable(inBufferRef->desc.target);
+		GLERRLOG
+		/*
+		float			verts[] = {
+			(float)MinX(inDstRect), (float)MinY(inDstRect), 0.0,
+			(float)MaxX(inDstRect), (float)MinY(inDstRect), 0.0,
+			(float)MaxX(inDstRect), (float)MaxY(inDstRect), 0.0,
+			(float)MinX(inDstRect), (float)MaxY(inDstRect), 0.0
+		};
+		float			texs[] = {
+			(float)MinX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
+			(float)MaxX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
+			(float)MaxX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect),
+			(float)MinX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect)
+		};
+		*/
+		glEnableClientState(GL_VERTEX_ARRAY);
+		GLERRLOG
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		GLERRLOG
+		glDisableClientState(GL_COLOR_ARRAY);
+		GLERRLOG
+	
+		glVertexPointer(3, GL_FLOAT, (int)inVertexStruct.stride(), (float*)&inVertexStruct);
+		GLERRLOG
+		glTexCoordPointer(2, GL_FLOAT, (int)inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
+		GLERRLOG
+		glBindTexture(inBufferRef->desc.target, inBufferRef->name);
+		GLERRLOG
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+		glBindTexture(inBufferRef->desc.target, 0);
+		GLERRLOG
+		glDisable(inBufferRef->desc.target);
+		GLERRLOG
+	
+		glDisable(inBufferRef->desc.target);
+		GLERRLOG
+	}
+	
 }
 #endif
 

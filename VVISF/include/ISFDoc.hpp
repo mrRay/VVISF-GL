@@ -58,6 +58,7 @@ class ISFDoc	{
 		
 	public:
 		ISFDoc(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr);
+		ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr);
 		~ISFDoc();
 		
 		string getPath() const { return (path==nullptr) ? string("") : string(*path); }
@@ -110,6 +111,8 @@ class ISFDoc	{
 		friend ostream & operator<<(ostream & os, const ISFDoc & n);
 		
 	protected:
+		//	used so we can have two constructors without duplicating code
+		void _initWithRawFragShaderString(const string & inRawFile);
 		//	returns a true if successful.  populates a string with variable declarations for a frag shader
 		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers);
 		//	returns a true if successful.  populates a map with string/value pairs that will be used to evaluate variable names in strings

@@ -25,6 +25,12 @@
 #elif ISF_TARGET_GLFW
 	#include <glad/glad.h>
 	#include <GLFW/glfw3.h>
+#elif ISF_TARGET_QT
+	//#define GLEW_STATIC 1
+	#include <GL/glew.h>
+	#include <QPointer>
+	#include "VVGLQtCtxWrapper.hpp"
+	class QOpenGLContext;
 #endif
 
 #include "VVBase.hpp"
@@ -47,6 +53,11 @@ CGLPixelFormatObj CreateDefaultPixelFormat();
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
 CGLPixelFormatObj CreateGL3PixelFormat();
 CGLPixelFormatObj CreateGL4PixelFormat();
+#elif ISF_TARGET_QT
+QSurfaceFormat CreateDefaultSurfaceFormat();
+QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
+QSurfaceFormat CreateGL3SurfaceFormat();
+QSurfaceFormat CreateGL4SurfaceFormat();
 #endif
 
 
@@ -83,6 +94,10 @@ class VVGLContext	{
 		EGLContext			sharedCtx = EGL_NO_CONTEXT;	//	weak ref, potentially unsafe
 		bool				ownsTheCtx = false;	//	set to true when i "own" ctx and must destroy it on my release
 		EGLContext			ctx = EGL_NO_CONTEXT;	//	owned by this object
+#elif ISF_TARGET_QT
+		VVGLQtCtxWrapper	*ctx = nullptr;	//	we have to wrap all the QOpenGL* stuff because if its headers and GLEW's headers are in the same #include paths it breaks compilation
+		QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
+		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
 #endif
 		GLVersion			version = GLVersion_Unknown;
 		
@@ -107,6 +122,25 @@ class VVGLContext	{
 		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx);
 		//	this function creates a new GL context using the passed shared context
 		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx);
+#elif ISF_TARGET_QT
+		//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
+		//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
+		//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
+		VVGLContext(QSurface * inTargetSurface, QOpenGLContext * inCtx, bool inCreateCtx=true, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat());
+		
+		static QOpenGLContext * GetCurrentContext();
+		
+		void setSurface(const QSurface * inTargetSurface);
+		void swap();
+		void moveToThread(QThread * inThread);
+		QOpenGLContext * getContext();
+		
+		/*
+		//	this function doesn't create anything- it just obtains a weak ref to the passed var
+		VVGLContext(const QOpenGLContext * inCtx, const QOpenGLContext * inShareCtx);
+		//	this function creates a new QOpenGLContext in the backend sharing the passed context
+		VVGLContext(const QOpenGLContext * inShareCtx);
+		*/
 #endif
 		//	this function creates a context using the default pixel format
 		VVGLContext();

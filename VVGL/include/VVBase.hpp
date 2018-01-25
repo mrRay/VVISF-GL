@@ -78,6 +78,35 @@ inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if 
 
 
 
+#if ISF_TARGET_QT
+#include <QThread>
+#include <QCoreApplication>
+// 		this template establishes a function for asynchronously performing a lambda on the passed 
+// 		object's thread (or the main thread if there's no passed object).
+// 	
+// 	usage:
+// 		perform_async([]() { qDebug() << __PRETTY_FUNCTION__; });
+// 	
+// 		perform_async([&]{ o.setObjectName("hello"); }, &o);
+// 		perform_async(std::bind(&QObject::setObjectName, &o, "hello"), &o);
+template <typename FTYPE>
+static void perform_async(FTYPE && inFunc, QObject * inObj=qApp)
+{
+	struct Event : public QEvent
+	{
+		using Fun = typename std::decay<FTYPE>::type;
+		Fun			varFunc;
+		Event(Fun && declInFunc) : QEvent(QEvent::None), varFunc(std::move(declInFunc)) {}
+		Event(const Fun & declInFunc) : QEvent(QEvent::None), varFunc(declInFunc) {}
+		~Event() { this->varFunc(); }
+	};
+	QCoreApplication::postEvent(inObj, new Event(std::forward<FTYPE>(inFunc)));
+}
+#endif
+
+
+
+
 //	load some basic geometry structs and functions
 #include "VVGeom.hpp"
 

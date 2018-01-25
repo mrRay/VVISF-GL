@@ -6,6 +6,9 @@
 #include <iostream>
 #include <cassert>
 #include <regex>
+#if ISF_TARGET_QT
+	#include <QDebug>
+#endif
 
 
 
@@ -133,6 +136,7 @@ VVGLContext::VVGLContext()	{
 	
 	sharedCtx = nullptr;
 	pxlFmt = CGLRetainPixelFormat(CreateDefaultPixelFormat());
+	//pxlFmt = CGLRetainPixelFormat(CreateGL4PixelFormat());
 	
 	CGLError		cglErr = CGLCreateContext(pxlFmt, sharedCtx, &ctx);
 	if (cglErr != kCGLNoError)	{
@@ -331,14 +335,17 @@ VVGLContext::~VVGLContext()	{
 
 //	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
 VVGLContext::VVGLContext(const VVGLContext * n)	{
+	qDebug() << __PRETTY_FUNCTION__;
 	win = n->win;
 	generalInit();
 }
 VVGLContext::VVGLContext(const VVGLContext & n)	{
+	qDebug() << __PRETTY_FUNCTION__;
 	win = n.win;
 	generalInit();
 }
 VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	qDebug() << __PRETTY_FUNCTION__;
 	win = n->win;
 	generalInit();
 }
@@ -568,8 +575,236 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 
+#pragma mark ******************************************** ISF_TARGET_QT
+#elif ISF_TARGET_QT
 
-#endif	//	ISF_TARGET_MAC
+
+
+/*	========================================	*/
+#pragma mark --------------------- non-class functions
+
+
+QSurfaceFormat CreateDefaultSurfaceFormat()	{
+	return VVGLQtCtxWrapper::CreateDefaultSurfaceFormat();
+}
+QSurfaceFormat CreateCompatibilityGLSurfaceFormat()	{
+	return VVGLQtCtxWrapper::CreateCompatibilityGLSurfaceFormat();
+}
+QSurfaceFormat CreateGL3SurfaceFormat()	{
+	return VVGLQtCtxWrapper::CreateGL3SurfaceFormat();
+}
+QSurfaceFormat CreateGL4SurfaceFormat()	{
+	return VVGLQtCtxWrapper::CreateGL4SurfaceFormat();
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- static class functions
+
+
+QOpenGLContext * VVGLContext::GetCurrentContext()	{
+	return VVGLQtCtxWrapper::GetCurrentContext();
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- constructor/destructor
+
+
+//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
+//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
+//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
+VVGLContext::VVGLContext(QSurface * inTargetSurface, QOpenGLContext * inCtx, bool inCreateCtx, QSurfaceFormat inSfcFmt)	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	if (ctx != nullptr)
+		delete ctx;
+	ctx = new VVGLQtCtxWrapper(inTargetSurface, inCtx, inCreateCtx, inSfcFmt);
+	initializedFuncs = false;
+	sfcFmt = inSfcFmt;
+	generalInit();
+}
+VVGLContext::VVGLContext()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	if (ctx != nullptr)
+		delete ctx;
+	ctx = new VVGLQtCtxWrapper(nullptr,nullptr,true,CreateDefaultSurfaceFormat());
+	initializedFuncs = false;
+	sfcFmt = CreateDefaultSurfaceFormat();
+	generalInit();
+}
+VVGLContext::~VVGLContext()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (ctx != nullptr)	{
+		delete ctx;
+		ctx = nullptr;
+		initializedFuncs = false;
+	}
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- copy constructor
+
+//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
+VVGLContext::VVGLContext(const VVGLContext * n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (ctx != nullptr)
+		delete ctx;
+	if (n == nullptr)
+		ctx = new VVGLQtCtxWrapper();
+	else
+		ctx = new VVGLQtCtxWrapper(n->ctx);
+	initializedFuncs = false;
+	generalInit();
+}
+VVGLContext::VVGLContext(const VVGLContext & n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (ctx != nullptr)
+		delete ctx;
+	ctx = new VVGLQtCtxWrapper(n.ctx);
+	initializedFuncs = false;
+	generalInit();
+}
+VVGLContext::VVGLContext(const VVGLContextRef & n)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (ctx != nullptr)
+		delete ctx;
+	if (n == nullptr)
+		ctx = new VVGLQtCtxWrapper();
+	else
+		ctx = new VVGLQtCtxWrapper(n->ctx);
+	initializedFuncs = false;
+	generalInit();
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- factory method
+
+/*
+VVGLContext * VVGLContext::allocNewContextSharingMe() const	{
+	return new VVGLContext(display, winSurface, ctx);
+}
+VVGLContext VVGLContext::newContextSharingMe() const	{
+	return VVGLContext(display, winSurface, ctx);
+}
+*/
+VVGLContextRef VVGLContext::newContextSharingMe() const	{
+	/*
+	return make_shared<VVGLContext>(display, winSurface, ctx);
+	*/
+	if (ctx == nullptr)
+		return nullptr;
+	return make_shared<VVGLContext>(nullptr, ctx->getContext(), true, sfcFmt);
+}
+
+/*	========================================	*/
+#pragma mark --------------------- general init/delete
+
+void VVGLContext::generalInit()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	//qDebug() << __PRETTY_FUNCTION__ << ctx->getContext();
+	/*
+	if (display != nullptr)	{
+		eglSwapInterval(display, 0);
+	}
+	*/
+	//	figure out what version of GL we're working with
+	if (ctx != nullptr)	{
+		ctx->makeCurrentIfNotCurrent();
+		calculateVersion();
+	}
+}
+
+/*	========================================	*/
+#pragma mark --------------------- public methods
+
+void VVGLContext::setSurface(const QSurface * inTargetSurface)	{
+	if (ctx != nullptr)	{
+		ctx->setSurface(inTargetSurface);
+	}
+}
+void VVGLContext::swap()	{
+	if (ctx != nullptr)	{
+		ctx->swap();
+	}
+}
+void VVGLContext::moveToThread(QThread * inThread)	{
+	if (ctx != nullptr)	{
+		ctx->moveToThread(inThread);
+		initializedFuncs = false;
+	}
+}
+QOpenGLContext * VVGLContext::getContext()	{
+	QOpenGLContext		*returnMe = nullptr;
+	if (ctx != nullptr)	{
+		returnMe = ctx->getContext();
+	}
+	return returnMe;
+}
+void VVGLContext::makeCurrent()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	if (ctx != nullptr)	{
+		ctx->makeCurrent();
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+void VVGLContext::makeCurrentIfNotCurrent()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	if (ctx != nullptr)	{
+		ctx->makeCurrentIfNotCurrent();
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+void VVGLContext::makeCurrentIfNull()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	if (ctx != nullptr)	{
+		ctx->makeCurrentIfNull();
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+bool VVGLContext::sameShareGroupAs(const VVGLContextRef & inCtx)	{
+	//cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
+	if (ctx == nullptr)
+		return false;
+	if (inCtx == nullptr)
+		return false;
+	VVGLQtCtxWrapper		*otherCtx = inCtx->ctx;
+	if (otherCtx == nullptr)
+		return false;
+	return ctx->isSharingWith(otherCtx->getContext());
+}
+VVGLContext & VVGLContext::operator=(const VVGLContext & n)	{
+	/*
+	display = n.display;
+	winSurface = n.winSurface;
+	ctx = n.ctx;
+	*/
+	return *this;
+}
+ostream & operator<<(ostream & os, const VVGLContext & n)	{
+	os << &n;
+	return os;
+}
+ostream & operator<<(ostream & os, const VVGLContext * n)	{
+	//os << "<VVGLContext " << (void *)n << ">";
+	os << "<VVGLContext " << static_cast<void*>(const_cast<VVGLContext*>(n)) << ">";
+	return os;
+}
+
+
+
+
+#endif	//	ISF_TARGET_QT
 
 
 

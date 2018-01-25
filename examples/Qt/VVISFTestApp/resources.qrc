@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/files">
+        <file>CellMod.fs</file>
+    </qresource>
+</RCC>
