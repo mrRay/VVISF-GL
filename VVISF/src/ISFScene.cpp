@@ -907,7 +907,7 @@ void ISFScene::_renderPrep()	{
 			//currentVal.val.boolVal = false;
 			//currentVal = ISFBoolVal(false);
 			//tmpInt = currentVal.getBoolVal();
-			attribRef->setCurrentVal(ISFBoolVal(false));
+			//attribRef->setCurrentVal(ISFBoolVal(false));
 			//cout << "\tchecking: " << attribRef->getCurrentVal().getBoolVal() << endl;
 			break;
 			}
