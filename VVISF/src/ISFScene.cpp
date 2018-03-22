@@ -1214,6 +1214,23 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			}
 		}
 		
+		//	now we have to run through the inputs, and set the value of any 'event'-type inputs that were YES to NO
+		vector<ISFAttrRef> &	inputs = tmpDoc->getInputs();
+		for (const auto attribRef : inputs)	{
+			ISFValType		attribType = attribRef->getType();
+			ISFVal &		currentVal = attribRef->getCurrentVal();
+			
+			switch (attribType)	{
+			case ISFValType_Event:
+				if (currentVal.getBoolVal())	{
+					attribRef->setCurrentVal(ISFBoolVal(false));
+				}
+				break;
+			default:	//	intentionally blank, only disabling events
+				break;
+			}
+		}
+		
 		//	increment the rendered frame index!
 		++renderFrameIndex;
 		
