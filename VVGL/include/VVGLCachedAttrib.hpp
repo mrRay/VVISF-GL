@@ -1,6 +1,10 @@
 #ifndef VVGLAttrib_h
 #define VVGLAttrib_h
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include <iostream>
 
 #include "VVStringUtils.hpp"

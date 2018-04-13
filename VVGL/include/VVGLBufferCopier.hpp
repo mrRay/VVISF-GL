@@ -1,6 +1,10 @@
 #ifndef VVGLBufferCopier_hpp
 #define VVGLBufferCopier_hpp
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include "VVGLScene.hpp"
 
 #if ISF_TARGET_MAC

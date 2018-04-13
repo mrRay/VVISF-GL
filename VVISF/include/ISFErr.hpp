@@ -1,6 +1,10 @@
 #ifndef ISFErr_h
 #define ISFErr_h
 
+#if ISF_TARGET_QT
+#include "vvisf_qt_global.h"
+#endif
+
 
 namespace VVISF
 {

@@ -1,6 +1,10 @@
 #ifndef VVStringUtils_hpp
 #define VVStringUtils_hpp
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include <string>
 #include <vector>
 

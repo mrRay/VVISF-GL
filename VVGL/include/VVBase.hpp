@@ -1,6 +1,10 @@
 #ifndef VVBase_h
 #define VVBase_h
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include <vector>
 #include <memory>
 

@@ -6,6 +6,10 @@
 #include "ISFAttr.hpp"
 #include "ISFPassTarget.hpp"
 
+#if ISF_TARGET_QT
+#include "vvisf_qt_global.h"
+#endif
+
 
 
 

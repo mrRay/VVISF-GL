@@ -1,6 +1,10 @@
 #ifndef VVGLBufferPool_h
 #define VVGLBufferPool_h
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include "VVGLBuffer.hpp"
 #include "VVGLBufferPool.hpp"
 

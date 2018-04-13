@@ -1,6 +1,10 @@
 #ifndef VVGLContext_hpp
 #define VVGLContext_hpp
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include <iostream>
 #if ISF_TARGET_MAC
 	#import <OpenGL/OpenGL.h>
@@ -70,7 +74,7 @@ QSurfaceFormat CreateGL4SurfaceFormat();
 
 
 
-/*		VVGLContext is an attempt to make a platform-agnostic representation of an OpenGL context.  
+/*		VVGLContext is an attempt to make a platform/SDK-agnostic representation of an OpenGL context.  
 this is useful if you want to perform common functions on a GL context (setting the current context, 
 making another context in the same sharegroup), but you don't want to have to write any platform-specific code.
 

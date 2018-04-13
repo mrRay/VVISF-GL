@@ -9,17 +9,17 @@ QT       += opengl
 TARGET = VVGL
 TEMPLATE = lib
 
+# this along with vvgl_qt_global.h are used to configured the publicly-exported symbols
 DEFINES += VVGL_LIBRARY
 
 CONFIG += c++14
+CONFIG += shared
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-
-
 
 
 # these defines are specific to these libs
@@ -39,7 +39,6 @@ DEFINES += ISF_TARGET_QT
 
 # additions for GLEW
 unix: LIBS += -L/usr/local/lib/ -lGLEW
-
 INCLUDEPATH += /usr/local/include
 DEPENDPATH += /usr/local/include
 unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
@@ -49,6 +48,8 @@ unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
 
 # additions for the VVGL header files
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
+
+
 
 
 # actual source
@@ -87,7 +88,19 @@ HEADERS += \
     ../../../VVGL/include/VVStringUtils.hpp \
     ../../../VVGL/include/VVTime.hpp
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
+
+#unix {
+	#target.path = /usr/local/lib
+	#INSTALLS += target
+	#header_files.path = /usr/local/include/VVGL/
+	#header_files.files = $$_PRO_FILE_PWD_/../../../VVGL/include/*.h
+	#header_files.files += $$_PRO_FILE_PWD_/../../../VVGL/include/*.hpp
+	#INSTALLS += header_files
+#}
+
+
+mac	{
+	# This adds the @rpath prefix to the lib install name (the lib is expected to be bundled with the app package)
+	QMAKE_SONAME_PREFIX = @rpath
 }
+

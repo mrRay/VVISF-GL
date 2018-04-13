@@ -3,6 +3,10 @@
 
 #include <vector>
 
+#if ISF_TARGET_QT
+#include "vvisf_qt_global.h"
+#endif
+
 #include "VVGL.hpp"
 using namespace VVGL;
 

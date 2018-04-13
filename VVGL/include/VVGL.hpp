@@ -2,11 +2,6 @@
 #define VVGL_h
 
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
-
-
 //	base types- basic time structs, range structs, string utils, geometry types, things like that
 #include "VVBase.hpp"
 

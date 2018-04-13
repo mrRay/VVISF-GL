@@ -1,7 +1,11 @@
 QT += gui
+QT += opengl
+
+TARGET = VVGLTestApp
+TEMPLATE = app
 
 CONFIG += c++14 console
-CONFIG -= app_bundle
+#CONFIG -= app_bundle
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -41,17 +45,23 @@ else:unix: LIBS += -L$$OUT_PWD/../VVGL/ -lVVGL
 
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
-DEPENDPATH += $$PWD/../VVGL
+#DEPENDPATH += $$PWD/../VVGL
+
+
+
+
+# make sure the rpath includes both ways of getting libs
+QMAKE_RPATHDIR = @executable_path/../Frameworks
+QMAKE_RPATHDIR += @loader_path/../Frameworks
 
 
 
 
 # additions for GLEW
 unix: LIBS += -L/usr/local/lib/ -lGLEW
-
 INCLUDEPATH += /usr/local/include
 DEPENDPATH += /usr/local/include
-unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
+#unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
 
 
 
@@ -59,5 +69,23 @@ unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
 RESOURCES += \
     vvgltestappresources.qrc
 
+
+
+
+# macs need some assembly for deployment
+mac	{
+	CONFIG(debug, debug|release)	{
+		# intentionally blank, debug builds don't need any work (build & run works just fine)
+	}
+	# release builds need to have the libs bundled up and macdeployqt executed on the output app package to relink them
+	else	{
+		framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
+		QMAKE_POST_LINK += echo "****************************";
+		QMAKE_POST_LINK += mkdir -pv $$framework_dir;
+		QMAKE_POST_LINK += cp -vaRf /usr/local/lib/libGLEW.dylib $$framework_dir;
+		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../VVGL/libVVGL*.dylib $$framework_dir;
+		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+	}
+}
 
 

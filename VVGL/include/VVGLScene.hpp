@@ -1,6 +1,10 @@
 #ifndef VVGLScene_hpp
 #define VVGLScene_hpp
 
+#if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
 #include <functional>
 #include <mutex>
 #include <map>

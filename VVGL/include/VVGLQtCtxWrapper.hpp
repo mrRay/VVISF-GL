@@ -2,6 +2,10 @@
 #define VVGLQTCTXWRAPPER_H
 
 #if ISF_TARGET_QT
+#include "vvgl_qt_global.h"
+#endif
+
+#if ISF_TARGET_QT
 
 #include <QSurfaceFormat>
 #include <QThread>
