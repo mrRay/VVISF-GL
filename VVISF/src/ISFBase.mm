@@ -15,7 +15,7 @@ class ISFDoc;
 
 
 
-#if (ISF_TARGET_MAC || ISF_TARGET_IOS)
+#if (ISF_SDK_MAC || ISF_SDK_IOS)
 
 shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath, const ISFFileType & inType, const bool & inRecursive)	{
 	//cout << __PRETTY_FUNCTION__ << "..." << inFolderPath << endl;

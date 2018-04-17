@@ -1,11 +1,9 @@
 #ifndef VVGLQTCTXWRAPPER_H
 #define VVGLQTCTXWRAPPER_H
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 
 #include <QSurfaceFormat>
 #include <QThread>
@@ -75,6 +73,6 @@ public:
 
 }
 
-#endif	//	ISF_TARGET_QT
+#endif	//	ISF_SDK_QT
 
 #endif // VVGLQTCTXWRAPPER_H

@@ -1,9 +1,7 @@
 #ifndef VVRange_h
 #define VVRange_h
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 
 

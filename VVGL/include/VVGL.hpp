@@ -2,6 +2,10 @@
 #define VVGL_h
 
 
+//	base SDK defines.  the SDK will define the range of GL calls that are available (not all flavors of GL are available in all SDKs- for example, you're not going to get GL3+ on a raspberry pi, nor are you likely to see GL ES on a desktop).
+#include "VVGL_Defines.hpp"
+
+
 //	base types- basic time structs, range structs, string utils, geometry types, things like that
 #include "VVBase.hpp"
 
@@ -15,13 +19,9 @@
 #include "VVGLBuffer.hpp"
 //	a pool for recycling GL objects.  should be in the same sharegroup as all your other GL contexts.  has its own GL context, so it can create/delete GL resources (and can thus act as a sort of autorelease pool for VVGLBufferRefs)
 #include "VVGLBufferPool.hpp"
-/*
-#ifdef __APPLE__
-	#if ISF_TARGET_MAC
-	#import "VVGLBufferPool_CocoaAdditions.h"
-	#endif
-#endif	//	__APPLE__
-*/
+//#if ISF_SDK_MAC
+//#import "VVGLBufferPool_CocoaAdditions.h"
+//#endif
 
 
 //	basic render-to-texture class, API geared towards rendering to VVGLBuffers.  encapsulates a GL context

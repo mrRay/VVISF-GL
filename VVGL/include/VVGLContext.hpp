@@ -1,24 +1,22 @@
 #ifndef VVGLContext_hpp
 #define VVGLContext_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <iostream>
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	#import <OpenGL/OpenGL.h>
 	#import <OpenGL/gl.h>
 	#import <OpenGL/glext.h>
 	#import <OpenGL/gl3.h>
 	#import <OpenGL/gl3ext.h>
-#elif ISF_TARGET_IOS
+#elif ISF_SDK_IOS
 	//#ifndef __cplusplus
 		//#import <OpenGLES/EAGL.h>
 		#import <OpenGLES/ES3/glext.h>
 		//#import <GLKit/GLKit.h>
 	//#endif
-#elif ISF_TARGET_RPI
+#elif ISF_SDK_RPI
 	#include "bcm_host.h"
 	//#include <GLES/gl.h>
 	//#include <GLES/glext.h>
@@ -26,10 +24,10 @@
 	#include <GLES2/gl2ext.h>
 	#include <EGL/egl.h>
 	#include <EGL/eglext.h>
-#elif ISF_TARGET_GLFW
+#elif ISF_SDK_GLFW
 	#include <glad/glad.h>
 	#include <GLFW/glfw3.h>
-#elif ISF_TARGET_QT
+#elif ISF_SDK_QT
 	//#define GLEW_STATIC 1
 	#include <GL/glew.h>
 	#include <QPointer>
@@ -51,13 +49,13 @@ using namespace std;
 
 
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 uint32_t GLDisplayMaskForAllScreens();
 CGLPixelFormatObj CreateDefaultPixelFormat();
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
 CGLPixelFormatObj CreateGL3PixelFormat();
 CGLPixelFormatObj CreateGL4PixelFormat();
-#elif ISF_TARGET_QT
+#elif ISF_SDK_QT
 QSurfaceFormat CreateDefaultSurfaceFormat();
 QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
 QSurfaceFormat CreateGL3SurfaceFormat();
@@ -79,26 +77,26 @@ this is useful if you want to perform common functions on a GL context (setting 
 making another context in the same sharegroup), but you don't want to have to write any platform-specific code.
 
 if you're porting VVGL to another platform, one of the first things you need to do is to make a 
-new ISF_TARGET_XXXX macro, and use that macro to add your platform's GL implementation to this class.  
+new ISF_TARGETENV_XXXX macro, and use that macro to add your platform's GL implementation to this class.  
 you should be able to following along pretty well here using the other platforms as an example.			*/
 class VVGLContext	{
 	public:
 		
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		CGLContextObj		ctx = nullptr;
 		CGLContextObj		sharedCtx = nullptr;
 		CGLPixelFormatObj	pxlFmt = nullptr;
-#elif ISF_TARGET_IOS
+#elif ISF_SDK_IOS
 		void				*ctx = nullptr;	//	really an EAGLContext under iOS
-#elif ISF_TARGET_GLFW
+#elif ISF_SDK_GLFW
 		GLFWwindow			*win = nullptr;
-#elif ISF_TARGET_RPI
+#elif ISF_SDK_RPI
 		EGLDisplay			display = EGL_NO_DISPLAY;	//	weak ref, potentially unsafe
 		EGLSurface			winSurface = EGL_NO_SURFACE;	//	weak ref, potentially unsafe
 		EGLContext			sharedCtx = EGL_NO_CONTEXT;	//	weak ref, potentially unsafe
 		bool				ownsTheCtx = false;	//	set to true when i "own" ctx and must destroy it on my release
 		EGLContext			ctx = EGL_NO_CONTEXT;	//	owned by this object
-#elif ISF_TARGET_QT
+#elif ISF_SDK_QT
 		VVGLQtCtxWrapper	*ctx = nullptr;	//	we have to wrap all the QOpenGL* stuff because if its headers and GLEW's headers are in the same #include paths it breaks compilation
 		QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
 		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
@@ -107,26 +105,26 @@ class VVGLContext	{
 		
 		
 	public:
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		//	this function doesn't create anything- it just retains the passed ctx/share ctx/pxl fmt, leaving them null if that's how they were passed in
 		VVGLContext(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFm=CreateDefaultPixelFormat());
 		//	this function creates a context using the passed pixel format and share context
 		VVGLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat());
-#elif ISF_TARGET_IOS
+#elif ISF_SDK_IOS
 		//	"inCtx" is an EAGLContext! this function doesn't create anything- it just retains the passed ctx
 		VVGLContext(const void * inEAGLContext);
 		//	this function doesn't create a new GL context- it "wraps" (and retains) the passed context
 		//VVGLContext(const EAGLContext * inCtx);
 		//	this function actually creates a new GL context using the passed sharegroup and rendering API
 		//VVGLContext(const EAGLSharegroup * inSharegroup, const EAGLRenderingAPI & inRenderAPI);
-#elif ISF_TARGET_GLFW
+#elif ISF_SDK_GLFW
 		VVGLContext(GLFWwindow * inWindow);
-#elif ISF_TARGET_RPI
+#elif ISF_SDK_RPI
 		//	this function doesn't create anything- it just obtains a weak ref to the passed EGL vars
 		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx);
 		//	this function creates a new GL context using the passed shared context
 		VVGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx);
-#elif ISF_TARGET_QT
+#elif ISF_SDK_QT
 		//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
 		//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 		//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
@@ -172,7 +170,7 @@ class VVGLContext	{
 		void makeCurrentIfNull();
 		
 		bool sameShareGroupAs(const VVGLContextRef & inCtx);
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		bool sameShareGroupAs(const CGLContextObj & inCtx);
 #endif
 		

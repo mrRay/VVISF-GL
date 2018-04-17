@@ -7,7 +7,7 @@
 //#include "VVRange.hpp"
 #include "VVGL.hpp"
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 #include "vvisf_qt_global.h"
 #endif
 

@@ -1,14 +1,16 @@
 #include "VVGLContext.hpp"
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	#import <CoreGraphics/CoreGraphics.h>
 #endif
+
+#if ISF_SDK_QT
+	#include <QDebug>
+#endif
+
 #include <iostream>
 #include <cassert>
 #include <regex>
-#if ISF_TARGET_QT
-	#include <QDebug>
-#endif
 
 
 
@@ -22,8 +24,8 @@ using namespace std;
 
 
 
-#if ISF_TARGET_MAC
-#pragma mark ******************************************** ISF_TARGET_MAC
+#if ISF_SDK_MAC
+#pragma mark ******************************************** ISF_SDK_MAC
 
 
 
@@ -244,7 +246,7 @@ void VVGLContext::makeCurrentIfNotCurrent()	{
 	if (ctx != nullptr)	{
 		CGLContextObj		orig_ctx = CGLGetCurrentContext();
 		if (orig_ctx != ctx)	{
-			//cout << "\tsetting current context\n";
+			//cout << "\tchanging current context!\n";
 			CGLSetCurrentContext(ctx);
 		}
 	}
@@ -303,15 +305,16 @@ ostream & operator<<(ostream & os, const VVGLContext & n)	{
 }
 ostream & operator<<(ostream & os, const VVGLContext * n)	{
 	//os << "<VVGLContext " << (void *)n << ">";
-	os << "<VVGLContext " << n->ctx << "/" << n->sharedCtx << ">";
+	//os << "<VVGLContext " << n->ctx << "/" << n->sharedCtx << ">";
+	os << "<VVGLContext " << n->ctx << ">";
 	return os;
 }
 
 
 
 
-#pragma mark ******************************************** ISF_TARGET_GLFW
-#elif ISF_TARGET_GLFW
+#pragma mark ******************************************** ISF_SDK_GLFW
+#elif ISF_SDK_GLFW
 
 
 
@@ -417,8 +420,8 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_TARGET_RPI
-#elif ISF_TARGET_RPI
+#pragma mark ******************************************** ISF_SDK_RPI
+#elif ISF_SDK_RPI
 
 
 
@@ -575,8 +578,8 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_TARGET_QT
-#elif ISF_TARGET_QT
+#pragma mark ******************************************** ISF_SDK_QT
+#elif ISF_SDK_QT
 
 
 
@@ -804,7 +807,7 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 
 
 
-#endif	//	ISF_TARGET_QT
+#endif	//	ISF_SDK_QT
 
 
 

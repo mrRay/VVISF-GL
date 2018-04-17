@@ -20,7 +20,7 @@ using namespace std;
 #pragma mark --------------------- ISF file management methods
 
 
-#if !ISF_TARGET_MAC && !ISF_TARGET_IOS
+#if !ISF_SDK_MAC && !ISF_SDK_IOS
 
 shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inPath, const ISFFileType & inType, const bool & inRecursive)	{
 	cout << "ERR empty: " << __PRETTY_FUNCTION__ << endl;

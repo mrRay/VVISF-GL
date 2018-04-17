@@ -14,7 +14,7 @@ ifeq ($(PLATFORM),Raspbian GNU/Linux)
 	CXX = g++
 	
 	CPPFLAGS := -Wall -g -std=c++11 -fPIC 
-	CPPFLAGS += -I./include/ -DISF_TARGET_RPI -DISF_TARGET_GLES
+	CPPFLAGS += -I./include/ -DISF_SDK_RPI
 	#CPPFLAGS += -O3
 	CPPFLAGS += -O0
 	CPPFLAGS += -I$(SDKSTAGE)/opt/vc/include/
@@ -32,7 +32,7 @@ else ifeq ($(shell uname),Linux)
 else ifeq ($(PLATFORM),Darwin)
 	CXX = clang
 	CPPFLAGS := -Wall -g -arch x86_64 -O3 -std=c++11 -stdlib=libc++ -fPIC 
-	CPPFLAGS += -I./include/ -DISF_TARGET_MAC -DISF_TARGET_GL3PLUS
+	CPPFLAGS += -I./include/ -DISF_SDK_MAC
 	OBJCPPFLAGS := $(CPPFLAGS)
 	
 	CPPFLAGS += -x c++

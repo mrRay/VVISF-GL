@@ -303,11 +303,11 @@ string ISFDoc::generateTextureTypeString()	{
 			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
 				returnMe.append("2");
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -318,11 +318,11 @@ string ISFDoc::generateTextureTypeString()	{
 			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
 				returnMe.append("2");
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -333,11 +333,11 @@ string ISFDoc::generateTextureTypeString()	{
 			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
 				returnMe.append("2");
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -347,11 +347,11 @@ string ISFDoc::generateTextureTypeString()	{
 		VVGLBufferRef		tmpBuffer = targetBufIt->getBuffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
 			returnMe.append("2");
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
@@ -360,11 +360,11 @@ string ISFDoc::generateTextureTypeString()	{
 		VVGLBufferRef		tmpBuffer = targetBufIt->getBuffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
 			returnMe.append("2");
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
@@ -428,6 +428,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_2:
 			newFragShaderSrc.insert(0, string("#version 110\n"));
 			break;
+		case GLVersion_ES:
 		case GLVersion_ES2:
 			newFragShaderSrc.insert(0, string("#version 100\n"));
 			break;
@@ -448,6 +449,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_2:
 			//	intentionally blank
 			break;
+		case GLVersion_ES:
 		case GLVersion_ES2:
 		case GLVersion_ES3:
 		case GLVersion_33:
@@ -594,6 +596,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					switch (inGLVers)	{
 					case GLVersion_Unknown:
 					case GLVersion_2:
+					case GLVersion_ES:
 					case GLVersion_ES2:
 						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
 							newFuncString = FmtString("texture2D(%s, _%s_texCoord)",samplerNameC,samplerNameC);
@@ -619,6 +622,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				switch (inGLVers)	{
 				case GLVersion_Unknown:
 				case GLVersion_2:
+				case GLVersion_ES:
 				case GLVersion_ES2:
 					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
 					break;
@@ -657,6 +661,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					switch (inGLVers)	{
 					case GLVersion_Unknown:
 					case GLVersion_2:
+					case GLVersion_ES:
 					case GLVersion_ES2:
 						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
 							newFuncString = FmtString("texture2D(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
@@ -682,6 +687,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				switch (inGLVers)	{
 				case GLVersion_Unknown:
 				case GLVersion_2:
+				case GLVersion_ES:
 				case GLVersion_ES2:
 					newFragShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
 					break;
@@ -723,6 +729,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		switch (inGLVers)	{
 		case GLVersion_Unknown:
 		case GLVersion_2:
+		case GLVersion_ES:
 		case GLVersion_ES2:
 			if (requires2DMacro)
 				newFragShaderSrc.append(ISFGLMacro2D_GL2);
@@ -776,6 +783,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_2:
 			newVertShaderSrc.insert(0, string("#version 110\n"));
 			break;
+		case GLVersion_ES:
 		case GLVersion_ES2:
 			newVertShaderSrc.insert(0, string("#version 100\n"));
 			break;
@@ -796,6 +804,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		case GLVersion_2:
 			//	intentionally blank
 			break;
+		case GLVersion_ES:
 		case GLVersion_ES2:
 		case GLVersion_ES3:
 		case GLVersion_33:
@@ -807,6 +816,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		switch (inGLVers)	{
 		case GLVersion_Unknown:
 		case GLVersion_2:
+		case GLVersion_ES:
 		case GLVersion_ES2:
 			newVertShaderSrc.append(ISFVertVarDec_GLES2);
 			break;
@@ -826,6 +836,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					switch (inGLVers)	{
 					case GLVersion_Unknown:
 					case GLVersion_2:
+					case GLVersion_ES:
 					case GLVersion_ES2:
 						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_texCoord;\n",it.c_str()));
 						break;
@@ -842,6 +853,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					switch (inGLVers)	{
 					case GLVersion_Unknown:
 					case GLVersion_2:
+					case GLVersion_ES:
 					case GLVersion_ES2:
 						newVertShaderSrc.append(FmtString("varying vec2\t\t_%s_normTexCoord;\n",it.c_str()));
 						break;
@@ -1023,7 +1035,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	run through the IMG_THIS_PIXEL sampler names, populating the varying vec2 variables i declared
 		for (const auto & it : imgThisPixelSamplerNames)	{
 			const char *	samplerName = it.c_str();
-			newVertShaderSrc.append(FmtString("\t_%s_texCoord = (_%s_flip) ? vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-(isf_fragCoord.y/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) : vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (isf_fragCoord.y/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			newVertShaderSrc.append(FmtString("\t_%s_texCoord = (_%s_flip) ? vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-(isf_fragCoord.y/(_%s_imgSize.y-1.0)*_%s_imgRect.w)+_%s_imgRect.y)) : vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (isf_fragCoord.y/(_%s_imgSize.y-1.0)*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
 		}
 		//	run through the IMG_THIS_NORM_PIXEL sampler names, populating the varying vec2 variables i declared
 		for (const auto & it : imgThisNormPixelSamplerNames)	{
@@ -1125,6 +1137,15 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 		jblob = json::parse(*jsonString);
 	}
 	catch (std::invalid_argument&)	{
+		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
+	}
+	catch (const std::exception& ex) {
+		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
+	}
+	catch (const std::string& ex) {
+		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
+	}
+	catch (...) {
 		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
 	}
 	
@@ -1716,6 +1737,7 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	switch (inGLVers)	{
 	case GLVersion_Unknown:
 	case GLVersion_2:
+	case GLVersion_ES:
 	case GLVersion_ES2:
 		break;
 	case GLVersion_ES3:
@@ -1734,6 +1756,7 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	switch (inGLVers)	{
 	case GLVersion_Unknown:
 	case GLVersion_2:
+	case GLVersion_ES:
 	case GLVersion_ES2:
 		vsDeclarations.emplace_back("varying vec2\t\tisf_FragNormCoord;\n");
 		fsDeclarations.emplace_back("varying vec2\t\tisf_FragNormCoord;\n");

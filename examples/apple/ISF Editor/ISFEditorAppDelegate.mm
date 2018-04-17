@@ -488,6 +488,10 @@
 		//[filterList addObjectsFromArray:dirContents];
 	}
 	
+	[[filterList array] sortUsingComparator:^(NSString *obj1, NSString *obj2)	{
+		return [obj1 caseInsensitiveCompare:obj2];
+	}];
+	
 	[filterList unlock];
 }
 
@@ -958,7 +962,7 @@
 			//	[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:buffer2d];
 			//	[buffer2d setSrcRect:[lastSourceBuffer srcRect]];
 			//}
-			
+			/*
 			//NSLog(@"\t\tlastSourceBuffer is %@",lastSourceBuffer);
 			VVGLBufferRef		srcBuffer = nullptr;
 			if (lastSourceBuffer!=nullptr)	{
@@ -1015,8 +1019,10 @@
 					break;
 				}
 			}
+			*/
 			
-			outBuffer = [isfController renderFXOnThisBuffer:srcBuffer passDict:newOutDict];
+			//outBuffer = [isfController renderFXOnThisBuffer:srcBuffer passDict:newOutDict];
+			outBuffer = [isfController renderFXOnThisBuffer:lastSourceBuffer passDict:newOutDict];
 			//NSLog(@"\t\tnewOutDict is %@",newOutDict);
 			
 			@synchronized (self)	{
@@ -1139,7 +1145,8 @@
 			//NSLog(@"\t\tdisplayBuffer is %@",displayBuffer);
 			if (displayBuffer==nil)	{
 				//NSLog(@"\t\terr: displayBuffer was nil, localOutputSource was %d dict was %@",localOutputSource,newOutDict);
-				displayBuffer = [BufferObject createWithBuffer:srcBuffer];
+				//displayBuffer = [BufferObject createWithBuffer:srcBuffer];
+				displayBuffer = [BufferObject createWithBuffer:lastSourceBuffer];
 			}
 			[outputView drawBuffer:[displayBuffer bufferRef]];
 			//[outputView drawBuffer:(outBuffer!=nil) ? outBuffer : ((use2D) ? buffer2d : lastSourceBuffer)];
@@ -1161,7 +1168,8 @@
 				if (syphonServerContext != nullptr)
 					syphonServerContext->makeCurrent();
 				//VVBuffer		*preFXBuffer = srcBuffer;
-				VVGLBufferRef	preFXBuffer = srcBuffer;
+				//VVGLBufferRef	preFXBuffer = srcBuffer;
+				VVGLBufferRef	preFXBuffer = lastSourceBuffer;
 				if (outBuffer!=nullptr)	{
 					//cout << "\tshould be publishing " << *outBuffer << endl;
 					

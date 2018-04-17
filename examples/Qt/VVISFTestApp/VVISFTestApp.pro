@@ -16,9 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 
-# these defines are specific to these libs
-DEFINES += ISF_TARGET_QT
-#DEFINES += ISF_TARGET_GL3PLUS
+# these libs require an ISF_SDK define
+DEFINES += ISF_SDK_QT
 
 
 

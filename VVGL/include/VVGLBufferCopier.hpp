@@ -1,13 +1,11 @@
 #ifndef VVGLBufferCopier_hpp
 #define VVGLBufferCopier_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include "VVGLScene.hpp"
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 #import <TargetConditionals.h>
 #endif
 
@@ -22,9 +20,7 @@ namespace VVGL
 
 class VVGLBufferCopier : public VVGLScene	{
 	private:
-#if ISF_TARGET_MAC
 		bool			copyToIOSurface = false;
-#endif
 		bool			copyAndResize = false;
 		Size			copySize = { 320., 240. };
 		SizingMode		copySizingMode = SizingMode_Stretch;
@@ -32,9 +28,9 @@ class VVGLBufferCopier : public VVGLScene	{
 		//VVGLBufferRef	geoXYVBO = nullptr;
 		//VVGLBufferRef	geoSTVBO = nullptr;
 		
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
 		VVGLBufferRef	vao = nullptr;	//	"owns" its own VBO, used to draw stuff if we're in GL 3
-#elif ISF_TARGET_GLES
+#elif defined(ISF_TARGETENV_GLES)
 		VVGLBufferRef	vbo = nullptr;	//	geometry + tex coords, used to draw stuff if we're in GL ES
 #endif
 		Quad<VertXYZST>		vboContents;	//	the VBO owned by 'vao' or the VBO 'vbo' is described by this var.  we check this, and if there's a delta the vao has to make a new vbo/'vbo' has to update its contents
@@ -54,10 +50,8 @@ class VVGLBufferCopier : public VVGLScene	{
 		
 		virtual void prepareToBeDeleted();
 		
-#if ISF_TARGET_MAC
 		void setCopyToIOSurface(const bool & n);
 		bool getCopyToIOSurface();
-#endif
 		void setCopyAndResize(const bool & n);
 		bool getCopyAndResize();
 		void setCopySize(const Size & n);
@@ -84,7 +78,6 @@ class VVGLBufferCopier : public VVGLScene	{
 	
 	private:
 		//	acquire 'renderLock' and set current context before calling
-		//void _drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect);
 		void _drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct);
 };
 

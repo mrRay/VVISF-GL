@@ -1,9 +1,7 @@
 #ifndef VVStringUtils_hpp
 #define VVStringUtils_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <string>
 #include <vector>

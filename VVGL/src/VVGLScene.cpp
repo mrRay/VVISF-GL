@@ -100,7 +100,7 @@ VVGLBufferRef VVGLScene::createAndRenderABuffer(const Size & inSize, const VVGLB
 	//	set the orthogonal size
 	setOrthoSize(inSize);
 	//	make the buffers i'll be rendering into
-#if ISF_TARGET_RPI
+#if ISF_SDK_RPI
 	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), nullptr);
 #else
 	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), CreateDepthBuffer(orthoSize, false, inPool));
@@ -116,7 +116,7 @@ void VVGLScene::renderToBuffer(const VVGLBufferRef & inBuffer)	{
 	if (inBuffer != nullptr)
 		setOrthoSize(inBuffer->srcRect.size);
 	//	make the buffers i'll be rendering into
-#if ISF_TARGET_RPI
+#if ISF_SDK_RPI
 	RenderTarget		tmpTarget(CreateFBO(), inBuffer, nullptr);
 #else
 	RenderTarget		tmpTarget(CreateFBO(), inBuffer, CreateDepthBuffer(orthoSize));
@@ -176,7 +176,7 @@ void VVGLScene::renderBlackFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(0., 0., 0., 0.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -207,7 +207,7 @@ void VVGLScene::renderOpaqueBlackFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(0., 0., 0., 1.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -238,7 +238,7 @@ void VVGLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(1., 0., 0., 1.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -461,7 +461,7 @@ void VVGLScene::_renderPrep()	{
 			}
 		}
 		if (gsString.size() > 0)	{
-#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
+#if !defined(ISF_TARGETENV_GLES) && !defined(ISF_TARGETENV_GLES3)
 			gs = glCreateShader(GL_GEOMETRY_SHADER);
 			GLERRLOG
 			const char		*shaderSrc = gsString.c_str();
@@ -622,6 +622,24 @@ void VVGLScene::_renderPrep()	{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.colorTarget(), 0, 0);
 			GLERRLOG
 		}
+		
+		/*
+		GLenum		check = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		GLERRLOG
+		if (check == GL_FRAMEBUFFER_COMPLETE)	{
+			//	intentionally blank, FBO complete is good!
+		}
+		else	{
+			cout << "ERR: framebuffer check failed in " << __PRETTY_FUNCTION__ << endl;
+			switch (check)	{
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:	cout << "ERR: incomplete attachment framebuffer\n"; break;
+			//case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:	NSLog(@"\t\terr: incomplete dimensions framebuffer"); break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:	cout << "ERR: incomplete missing attachment framebuffer\n"; break;
+			case GL_FRAMEBUFFER_UNSUPPORTED:	cout << "ERR: unsupported framebuffer\n"; break;
+			default:	cout << "ERR: unrecognized framebuffer error, " << check << endl; break;
+			}
+		}
+		*/
 	}
 	
 	//	clear
@@ -632,7 +650,7 @@ void VVGLScene::_renderPrep()	{
 	}
 	if (performClear)	{
 		uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 		mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 		glClear(mask);
@@ -667,15 +685,13 @@ void VVGLScene::_initialize()	{
 	//glEnable(GL_TEXTURE_RECTANGLE);
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	if (getGLVersion() == GLVersion_2)	{
-#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
+#if defined(ISF_TARGETENV_GL2)
 		glEnable(GL_BLEND);
 		GLERRLOG
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		GLERRLOG
-//#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GLERRLOG
-//#endif
 #endif
 	}
 	//const int32_t		swap = 0;
@@ -701,7 +717,7 @@ void VVGLScene::_reshape()	{
 	
 	if (orthoSize.width>0. && orthoSize.height>0.)	{
 		if (getGLVersion() == GLVersion_2)	{
-#if !ISF_TARGET_GLES && !ISF_TARGET_GLES3
+#if defined(ISF_TARGETENV_GL2)
 			glMatrixMode(GL_MODELVIEW);
 			GLERRLOG
 			glLoadIdentity();
@@ -723,6 +739,7 @@ void VVGLScene::_reshape()	{
 #endif
 		}
 		else	{
+#if defined(ISF_TARGETENV_GLES) || defined(ISF_TARGETENV_GLES3) || defined(ISF_TARGETENV_GL3PLUS)
 			if (program > 0)	{
 				GLint			orthoUniLoc = orthoUni.location(program);
 				if (orthoUniLoc >= 0)	{
@@ -753,6 +770,7 @@ void VVGLScene::_reshape()	{
 			else	{
 				//cout << "\tERR: need to reshape, but no pgm! " << __PRETTY_FUNCTION__ << endl;
 			}
+#endif
 		}
 		
 		glViewport(0,0,orthoSize.width,orthoSize.height);

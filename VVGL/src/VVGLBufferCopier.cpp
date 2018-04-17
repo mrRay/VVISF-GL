@@ -92,16 +92,16 @@ VVGLBufferCopier::~VVGLBufferCopier()	{
 	if (!deleted)
 		prepareToBeDeleted();
 	
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
 	vao = nullptr;
-#elif ISF_TARGET_GLES
+#elif defined(ISF_TARGETENV_GLES)
 	vbo = nullptr;
 #endif
 }
 void VVGLBufferCopier::generalInit()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//	set up simple frag & vert shaders that draw a tex
-#if ISF_TARGET_GL3PLUS
+#if defined(ISF_TARGETENV_GL3PLUS)
 	string			vsString("\r\
 #version 330 core\r\
 in vec3		inXYZ;\r\
@@ -129,7 +129,7 @@ void main()	{\r\
 		FragColor = texture(inputImageRect,programST);\r\
 }\r\
 ");
-#elif ISF_TARGET_GLES
+#elif defined(ISF_TARGETENV_GLES)
 	string			vsString("\n\
 attribute vec3		inXYZ;\n\
 attribute vec2		inST;\n\
@@ -156,7 +156,7 @@ void main()	{\n\
 		//gl_FragColor = texture2DRect(inputImageRect,programST);\n\
 }\n\
 ");
-#elif ISF_TARGET_GLES3
+#elif defined(ISF_TARGETENV_GLES3)
 	string			vsString("\r\
 #version 300 es\r\
 in vec3		inXYZ;\r\
@@ -185,6 +185,8 @@ void main()	{\r\
 		FragColor = texture(inputImageRect,programST);\r\
 }\r\
 ");
+#elif defined(ISF_TARGETENV_GL2)
+//	intentionally blank, no shaders used
 #endif
 	
 	if (getGLVersion() != GLVersion_2)	{
@@ -218,7 +220,6 @@ void VVGLBufferCopier::_initialize()	{
 #pragma mark --------------------- getter/setter
 
 
-#if ISF_TARGET_MAC
 void VVGLBufferCopier::setCopyToIOSurface(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copyToIOSurface = n;
@@ -227,7 +228,6 @@ bool VVGLBufferCopier::getCopyToIOSurface()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return copyToIOSurface;
 }
-#endif
 void VVGLBufferCopier::setCopyAndResize(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copyAndResize = n;
@@ -268,7 +268,7 @@ VVGLBufferRef VVGLBufferCopier::copyToNewBuffer(const VVGLBufferRef & n)	{
 		setOrthoSize(n->srcRect.size);
 	
 	//	make the buffers i'll be rendering into
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	VVGLBufferRef		color = (copyToIOSurface) ? CreateRGBATexIOSurface(orthoSize) : CreateRGBATex(orthoSize);
 #else
 	VVGLBufferRef		color = CreateRGBATex(orthoSize);
@@ -472,21 +472,10 @@ void VVGLBufferCopier::copyRedFrameTo(const VVGLBufferRef & n)	{
 	renderRedFrame(newTarget);
 	
 }
-/*
-void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Rect & inGLSrcRect, const Rect & inDstRect)	{
-	cout << __PRETTY_FUNCTION__ << "- DISABLED!" << endl;
-}
-*/
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	//	if it's GL 2.x
-	if (getGLVersion() == GLVersion_2)	{
-		//	intentionally blank, handled below in another section of the ifdef
-	}
-	//	else it's not GL 2- it's GL3+ or GLES3+
-	else	{
+	GLVersion		myVers = getGLVersion();
+	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
+#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
 		//	make the VAO if we don't already have one
 		if (vao == nullptr)
 			vao = CreateVAO(true);
@@ -546,7 +535,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 			glUniform1i(inputImageLoc.loc, 0);
 			GLERRLOG
 		}
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		//	pass the RECT texture to the program (if there is a RECT texture)
 		glActiveTexture(GL_TEXTURE1);
 		GLERRLOG
@@ -558,7 +547,7 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 			glUniform1i(inputImageRectLoc.loc, 1);
 			GLERRLOG
 		}
-#endif
+#endif	//	ISF_SDK_MAC
 		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
 		if (isRectTexLoc.loc >= 0)	{
 			if (inBufferRef == nullptr)	{
@@ -571,12 +560,12 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 					glUniform1i(isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 				case VVGLBuffer::Target_Rect:
 					glUniform1i(isRectTexLoc.loc, 2);
 					GLERRLOG
 					break;
-#endif
+#endif	//	ISF_SDK_MAC
 				default:
 					glUniform1i(isRectTexLoc.loc, 0);
 					GLERRLOG
@@ -592,100 +581,93 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 		//	unbind the VAO
 		glBindVertexArray(0);
 		GLERRLOG
+#endif	//	ISF_TARGETENV_GL3PLUS || ISF_TARGETENV_GLES3
 	}
-	
-}
-#elif ISF_TARGET_GLES
-void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...
-	//if (vbo==nullptr || inVertexStruct!=vboContents)	{
-		//	create a new VBO with the passed vertex data
-	//	vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true);
+	else if (myVers==GLVersion_ES)	{
+#if defined(ISF_TARGETENV_GLES)
+		//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...
+		//if (vbo==nullptr || inVertexStruct!=vboContents)	{
+			//	create a new VBO with the passed vertex data
+		//	vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true);
 		
-	//	vboContents = inVertexStruct;
-	//}
+		//	vboContents = inVertexStruct;
+		//}
 	
-	//	at this point, we've got a VBO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
-	//glClearColor(1., 0., 0., 1.);
-	//glClear(GL_COLOR_BUFFER_BIT);
+		//	at this point, we've got a VBO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
+		//glClearColor(1., 0., 0., 1.);
+		//glClear(GL_COLOR_BUFFER_BIT);
 	
-	//	bind the VBO
-	//if (vbo != nullptr)	{
-	//	glBindBuffer(GL_ARRAY_BUFFER, vbo->name);
-	//	GLERRLOG
-	//}
-	//	configure the attribute pointers to work with the VBO
-	if (inputXYZLoc.loc >= 0)	{
-		inputXYZLoc.enable();
-		glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.geo.x);
-		GLERRLOG
-	}
-	if (inputSTLoc.loc >= 0)	{
-		inputSTLoc.enable();
-		glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
-		GLERRLOG
-	}
-	//	pass the 2D texture to the program (if there is a 2D texture)
-	//glEnable(GL_TEXTURE_2D);
-	//GLERRLOG
-	glActiveTexture(GL_TEXTURE0);
-	GLERRLOG
-	glBindTexture(GL_TEXTURE_2D, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_2D) ? inBufferRef->name : 0);
-	GLERRLOG
-	//glBindTexture(VVGLBuffer::Target_2D, 0);
-	//GLERRLOG
-	if (inputImageLoc.loc >= 0)	{
-		glUniform1i(inputImageLoc.loc, 0);
-		GLERRLOG
-	}
-	//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
-	if (isRectTexLoc.loc >= 0)	{
-		if (inBufferRef == nullptr)	{
-			glUniform1i(isRectTexLoc.loc, 0);
+		//	bind the VBO
+		//if (vbo != nullptr)	{
+		//	glBindBuffer(GL_ARRAY_BUFFER, vbo->name);
+		//	GLERRLOG
+		//}
+		//	configure the attribute pointers to work with the VBO
+		if (inputXYZLoc.loc >= 0)	{
+			inputXYZLoc.enable();
+			glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.geo.x);
 			GLERRLOG
 		}
-		else	{
-			switch (inBufferRef->desc.target)	{
-			case VVGLBuffer::Target_2D:
-				glUniform1i(isRectTexLoc.loc, 1);
-				GLERRLOG
-				break;
-			default:
+		if (inputSTLoc.loc >= 0)	{
+			inputSTLoc.enable();
+			glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
+			GLERRLOG
+		}
+		//	pass the 2D texture to the program (if there is a 2D texture)
+		//glEnable(GL_TEXTURE_2D);
+		//GLERRLOG
+		glActiveTexture(GL_TEXTURE0);
+		GLERRLOG
+		glBindTexture(GL_TEXTURE_2D, (inBufferRef!=nullptr && inBufferRef->desc.target==VVGLBuffer::Target_2D) ? inBufferRef->name : 0);
+		GLERRLOG
+		//glBindTexture(VVGLBuffer::Target_2D, 0);
+		//GLERRLOG
+		if (inputImageLoc.loc >= 0)	{
+			glUniform1i(inputImageLoc.loc, 0);
+			GLERRLOG
+		}
+		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
+		if (isRectTexLoc.loc >= 0)	{
+			if (inBufferRef == nullptr)	{
 				glUniform1i(isRectTexLoc.loc, 0);
 				GLERRLOG
-				break;
+			}
+			else	{
+				switch (inBufferRef->desc.target)	{
+				case VVGLBuffer::Target_2D:
+					glUniform1i(isRectTexLoc.loc, 1);
+					GLERRLOG
+					break;
+				default:
+					glUniform1i(isRectTexLoc.loc, 0);
+					GLERRLOG
+					break;
+				}
 			}
 		}
+	
+		//	draw!
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+	
+		//	disable the relevant attrib pointers & textures
+		if (inputXYZLoc.loc >= 0)	{
+			inputXYZLoc.disable();
+		}
+		if (inputSTLoc.loc >= 0)	{
+			inputSTLoc.disable();
+		}
+		glDisable(GL_TEXTURE_2D);
+	
+		//	un-bind the VBO
+		//if (vbo != nullptr)	{
+		//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//	GLERRLOG
+		//}
+#endif
 	}
-	
-	//	draw!
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	GLERRLOG
-	
-	//	disable the relevant attrib pointers & textures
-	if (inputXYZLoc.loc >= 0)	{
-		inputXYZLoc.disable();
-	}
-	if (inputSTLoc.loc >= 0)	{
-		inputSTLoc.disable();
-	}
-	glDisable(GL_TEXTURE_2D);
-	
-	//	un-bind the VBO
-	//if (vbo != nullptr)	{
-	//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//	GLERRLOG
-	//}
-}
-//	else it's neither GL3+ nor GLES nor GLES3- it's probably GL2
-#else
-void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	//	if it's GL 2.x
-	if (getGLVersion() == GLVersion_2)	{
+	else if (myVers==GLVersion_2)	{
+#if defined(ISF_TARGETENV_GL2)
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
 		glEnable(inBufferRef->desc.target);
@@ -726,10 +708,9 @@ void VVGLBufferCopier::_drawBuffer(const VVGLBufferRef & inBufferRef, const Quad
 	
 		glDisable(inBufferRef->desc.target);
 		GLERRLOG
-	}
-	
-}
 #endif
+	}
+}
 
 
 

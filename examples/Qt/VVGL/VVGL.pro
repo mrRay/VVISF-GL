@@ -22,9 +22,8 @@ CONFIG += shared
 DEFINES += QT_DEPRECATED_WARNINGS
 
 
-# these defines are specific to these libs
-DEFINES += ISF_TARGET_QT
-#DEFINES += ISF_TARGET_GL3PLUS
+# these libs require an ISF_SDK define
+DEFINES += ISF_SDK_QT
 
 
 
@@ -69,6 +68,7 @@ HEADERS += \
     ../../../VVGL/include/VVBase.hpp \
     ../../../VVGL/include/VVGeom.hpp \
     ../../../VVGL/include/VVGL.hpp \
+	../../../VVGL/include/VVGL_Defines.hpp \
     ../../../VVGL/include/vvgl_qt_global.h \
     ../../../VVGL/include/VVGLBuffer.hpp \
     ../../../VVGL/include/VVGLBuffer_GLFW_Enums.h \

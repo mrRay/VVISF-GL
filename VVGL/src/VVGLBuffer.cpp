@@ -21,7 +21,7 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	switch (this->pixelType)	{
 	case PT_Float:
 		switch (this->internalFormat)	{
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 		case IF_R:
 			bytesPerRow = 32 * 1 * s.width / 8;
 			break;
@@ -31,7 +31,7 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 			break;
 		}
 		break;
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 	case PT_HalfFloat:
 		switch (this->internalFormat)	{
 		case IF_R:
@@ -57,7 +57,7 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 #endif
 	case PT_UByte:
 		switch (this->internalFormat)	{
-#if !ISF_TARGET_RPI
+#if !ISF_SDK_RPI
 		case IF_R:
 			bytesPerRow = 8 * 1 * s.width / 8;
 			break;
@@ -67,7 +67,7 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 			break;
 		}
 		break;
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 	case PT_UInt_8888_Rev:
 		bytesPerRow = 8 * 4 * s.width / 8;
 		break;
@@ -78,7 +78,7 @@ uint32_t VVGLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	}
 	
 	switch (this->internalFormat)	{
-#if !ISF_TARGET_IOS && !ISF_TARGET_RPI
+#if !ISF_SDK_IOS && !ISF_SDK_RPI
 	case IF_RGB_DXT1:
 	case IF_A_RGTC:
 		bytesPerRow = 4 * s.width / 8;
@@ -122,7 +122,7 @@ VVGLBuffer::VVGLBuffer(const VVGLBuffer & n)	{
 	
 	backingID = n.backingID;
 	cpuBackingPtr = n.cpuBackingPtr;
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	//setUserInfo(n.getUserInfo());
 	setLocalSurfaceRef(n.getLocalSurfaceRef());
 	setRemoteSurfaceRef(n.getRemoteSurfaceRef());
@@ -180,7 +180,7 @@ VVGLBuffer::~VVGLBuffer()	{
 		}
 	}
 	
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	//setUserInfo(nullptr);
 	setLocalSurfaceRef(nullptr);
 	setRemoteSurfaceRef(nullptr);
@@ -211,10 +211,10 @@ VVGLBuffer * VVGLBuffer::allocShallowCopy()	{
 	returnMe->backingContext = backingContext;
 	returnMe->backingID = backingID;
 	returnMe->cpuBackingPtr = cpuBackingPtr;
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	returnMe->localSurfaceRef = (localSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(localSurfaceRef);
 	returnMe->remoteSurfaceRef = (remoteSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(remoteSurfaceRef);
-#endif//	ISF_TARGET_MAC
+#endif	//	ISF_SDK_MAC
 	returnMe->parentBufferPool = parentBufferPool;
 	returnMe->copySourceBuffer = copySourceBuffer;
 	returnMe->idleCount = idleCount;
@@ -226,7 +226,7 @@ VVGLBuffer * VVGLBuffer::allocShallowCopy()	{
 #pragma mark --------------------- getter/setter- mac stuff
 
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 /*
 id VVGLBuffer::getUserInfo() const	{
 	return userInfo;
@@ -271,7 +271,7 @@ void VVGLBuffer::setRemoteSurfaceRef(const IOSurfaceRef & n)	{
 		preferDeletion = true;
 	}
 }
-#endif	//	ISF_TARGET_MAC
+#endif	//	ISF_SDK_MAC
 
 
 /*	========================================	*/
@@ -312,7 +312,7 @@ uint32_t VVGLBuffer::backingLengthForSize(Size s) const	{
 }
 
 Rect VVGLBuffer::glReadySrcRect() const	{
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	if (this->desc.target == Target_Rect)
 		return srcRect;
 #endif
@@ -381,7 +381,7 @@ bool VVGLBuffer::isPOT2DTex() const	{
 	return returnMe;
 }
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 bool VVGLBuffer::safeToPublishToSyphon() const	{
 	if (localSurfaceRef == nil)
 		return false;
@@ -400,7 +400,7 @@ bool VVGLBuffer::isContentMatch(VVGLBuffer & n) const	{
 void VVGLBuffer::draw(const Rect & dst) const	{
 	if (desc.type != Type_Tex)
 		return;
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	//inCtx.makeCurrentIfNotCurrent();
 	float			verts[] = {
 		(float)MinX(dst), (float)MinY(dst), 0.0,
@@ -431,8 +431,8 @@ void VVGLBuffer::draw(const Rect & dst) const	{
 }
 */
 string VVGLBuffer::getDescriptionString() const	{
-	if (this == nullptr)
-		return string("nullptr");
+	//if (this == nullptr)
+	//	return string("nullptr");
 	char		typeChar = '?';
 	switch (this->desc.type)	{
 	case VVGLBuffer::Type_RB:	typeChar='R'; break;
@@ -441,9 +441,7 @@ string VVGLBuffer::getDescriptionString() const	{
 	case VVGLBuffer::Type_PBO:	typeChar='P'; break;
 	case VVGLBuffer::Type_VBO:	typeChar='V'; break;
 	case VVGLBuffer::Type_EBO:	typeChar='E'; break;
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 	case VVGLBuffer::Type_VAO:	typeChar='A'; break;
-#endif
 	}
 	return FmtString("<VVGLBuffer %c, %d, %dx%d>",typeChar,name,(int)this->size.width,(int)this->size.height);
 }
@@ -475,7 +473,7 @@ VVGLBufferRef VVGLBufferCopy(const VVGLBufferRef & n)	{
 	newBuffer->backingSize = srcBuffer->backingSize;
 	newBuffer->contentTimestamp = srcBuffer->contentTimestamp;
 	
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	newBuffer->setLocalSurfaceRef(srcBuffer->getLocalSurfaceRef());
 	newBuffer->setRemoteSurfaceRef(srcBuffer->getRemoteSurfaceRef());
 #endif

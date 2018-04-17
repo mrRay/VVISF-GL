@@ -217,6 +217,7 @@
 		1A7CA99C1F47441E0051F3D6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AFC50551E0218B200728B39 /* OpenGL.framework */; };
 		1A7CA99D1F47442F0051F3D6 /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF2BE91E09652B00620148 /* VVGLBufferGLView.mm */; };
 		1A7CA99E1F4765450051F3D6 /* SampleImg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A901A371F464949009FEE74 /* SampleImg.png */; };
+		1A85957F20867483000840CE /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A85957E20867482000840CE /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A8613711F32052400A79B96 /* VVCURLDL.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A8613701F32052400A79B96 /* VVCURLDL.m */; };
 		1A8613741F322EFF00A79B96 /* ISFStringAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A8613731F322EFF00A79B96 /* ISFStringAdditions.mm */; };
 		1A901A091F4648C0009FEE74 /* BasicGLFuncAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A901A081F4648C0009FEE74 /* BasicGLFuncAppDelegate.mm */; };
@@ -954,6 +955,7 @@
 		1A7CA9701F4742C80051F3D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1A7CA9731F4742C80051F3D6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1A7CA9751F4742C80051F3D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A85957E20867482000840CE /* VVGL_Defines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Defines.hpp; path = ../../../VVGL/include/VVGL_Defines.hpp; sourceTree = "<group>"; };
 		1A86136D1F31F93D00A79B96 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		1A86136F1F32052400A79B96 /* VVCURLDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VVCURLDL.h; sourceTree = "<group>"; };
 		1A8613701F32052400A79B96 /* VVCURLDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VVCURLDL.m; sourceTree = "<group>"; };
@@ -1761,6 +1763,7 @@
 				1AF5E90F1F14FF6200E9245E /* VVBase.hpp */,
 				1AF5E9101F14FF6200E9245E /* VVGeom.hpp */,
 				1AF5E9111F14FF6200E9245E /* VVGL.hpp */,
+				1A85957E20867482000840CE /* VVGL_Defines.hpp */,
 				1AF5E9121F14FF6200E9245E /* VVGLBuffer_GLFW_Enums.h */,
 				1AF5E9131F14FF6200E9245E /* VVGLBuffer_IOS_Enums.h */,
 				1AF5E9141F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h */,
@@ -2048,6 +2051,7 @@
 				1AF5E9311F14FF6200E9245E /* VVStringUtils.hpp in Headers */,
 				1AF5E9261F14FF6200E9245E /* VVGLBuffer_Mac_Enums.h in Headers */,
 				1AF5E9281F14FF6200E9245E /* VVGLBuffer.hpp in Headers */,
+				1A85957F20867483000840CE /* VVGL_Defines.hpp in Headers */,
 				1AF5E9211F14FF6200E9245E /* VVBase.hpp in Headers */,
 				1AF5E9271F14FF6200E9245E /* VVGLBuffer_RPI_Enums.h in Headers */,
 			);
@@ -3269,10 +3273,7 @@
 				);
 				INFOPLIST_FILE = "ISF Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				OTHER_LDFLAGS = (
 					"-lcurl",
 					"-licucore",
@@ -3294,10 +3295,7 @@
 				);
 				INFOPLIST_FILE = "ISF Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				OTHER_LDFLAGS = (
 					"-lcurl",
 					"-licucore",
@@ -3323,7 +3321,7 @@
 				INFOPLIST_FILE = GLFWGears/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_TARGET_GLFW";
+				OTHER_CFLAGS = "-DISF_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GLFWGears;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3345,7 +3343,7 @@
 				INFOPLIST_FILE = GLFWGears/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_TARGET_GLFW";
+				OTHER_CFLAGS = "-DISF_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GLFWGears;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3357,10 +3355,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -3371,10 +3366,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -3387,10 +3379,7 @@
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_GLES3",
-					"-DISF_TARGET_IOS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.ISFonIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -3406,10 +3395,7 @@
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_GLES3",
-					"-DISF_TARGET_IOS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.ISFonIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -3426,6 +3412,7 @@
 				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3439,6 +3426,7 @@
 				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3452,6 +3440,7 @@
 				INFOPLIST_FILE = JustTransFeedback/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3465,6 +3454,7 @@
 				INFOPLIST_FILE = JustTransFeedback/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3478,6 +3468,7 @@
 				INFOPLIST_FILE = ISFFuncTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFFuncTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3491,6 +3482,7 @@
 				INFOPLIST_FILE = ISFFuncTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFFuncTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3504,6 +3496,7 @@
 				INFOPLIST_FILE = DifferingGLVersions/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.DifferingGLVersions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3517,6 +3510,7 @@
 				INFOPLIST_FILE = DifferingGLVersions/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.DifferingGLVersions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3530,6 +3524,7 @@
 				INFOPLIST_FILE = BasicGLFunc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.BasicGLFunc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3543,6 +3538,7 @@
 				INFOPLIST_FILE = BasicGLFunc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.BasicGLFunc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3590,10 +3586,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -3634,10 +3627,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -3680,10 +3670,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -3694,10 +3681,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_MAC",
-					"-DISF_TARGET_GL3PLUS",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -3710,6 +3694,7 @@
 				INFOPLIST_FILE = GeoShaderTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3723,6 +3708,7 @@
 				INFOPLIST_FILE = GeoShaderTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DISF_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3741,10 +3727,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_IOS",
-					"-DISF_TARGET_GLES3",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISFKit-iOS";
 				PRODUCT_NAME = VVISFKit;
 				SDKROOT = iphoneos;
@@ -3768,10 +3751,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_IOS",
-					"-DISF_TARGET_GLES3",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISFKit-iOS";
 				PRODUCT_NAME = VVISFKit;
 				SDKROOT = iphoneos;
@@ -3796,10 +3776,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_IOS",
-					"-DISF_TARGET_GLES3",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
@@ -3823,10 +3800,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_CFLAGS = (
-					"-DISF_TARGET_IOS",
-					"-DISF_TARGET_GLES3",
-				);
+				OTHER_CFLAGS = "-DISF_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;

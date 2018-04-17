@@ -5,7 +5,7 @@
 //#include "VVGLBuffer.hpp"
 #include "ISFStringUtils.hpp"
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 #include "vvisf_qt_global.h"
 #endif
 

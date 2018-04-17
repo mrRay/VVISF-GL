@@ -1,6 +1,6 @@
 #include "VVGLQtCtxWrapper.hpp"
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 
 #include <QOpenGLContext>
 #include <QSurface>
@@ -499,4 +499,4 @@ void VVGLQtCtxWrapper::makeCurrentIfNull()	{
 
 }
 
-#endif	//	ISF_TARGET_QT
+#endif	//	ISF_SDK_QT

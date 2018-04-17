@@ -41,7 +41,7 @@ public slots:
 	//Q_SLOT void aboutToQuit();
 protected:
 	bool event(QEvent * inEvent) Q_DECL_OVERRIDE;
-	void exposeEvent(QExposeEvent * inEvent) Q_DECL_OVERRIDE;
+	//void exposeEvent(QExposeEvent * inEvent) Q_DECL_OVERRIDE;
 private:
 	void renderNow();
 

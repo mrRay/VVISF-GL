@@ -40,7 +40,7 @@ ISFScene::~ISFScene()	{
 	}
 	
 	//geoXYVBO = nullptr;
-#if !ISF_TARGET_GLES
+#if !defined(ISF_TARGETENV_GLES)
 	vao = nullptr;
 #endif
 	vbo = nullptr;
@@ -62,6 +62,7 @@ void ISFScene::useFile()	{
 	timestamper.reset();
 	renderTime = 0.;
 	renderTimeDelta = 0.;
+	renderFrameIndex = 0;
 	passIndex = 0;
 	if (compiledInputTypeString!=nullptr)	{
 		delete compiledInputTypeString;
@@ -83,6 +84,7 @@ void ISFScene::useFile(const string & inPath)	{
 		timestamper.reset();
 		renderTime = 0.;
 		renderTimeDelta = 0.;
+		renderFrameIndex = 0;
 		passIndex = 0;
 		if (compiledInputTypeString!=nullptr)	{
 			delete compiledInputTypeString;
@@ -96,6 +98,7 @@ void ISFScene::useFile(const string & inPath)	{
 		timestamper.reset();
 		renderTime = 0.;
 		renderTimeDelta = 0.;
+		renderFrameIndex = 0;
 		passIndex = 0;
 		if (compiledInputTypeString!=nullptr)	{
 			delete compiledInputTypeString;
@@ -119,6 +122,7 @@ void ISFScene::useDoc(ISFDocRef & inDoc)	{
 	timestamper.reset();
 	renderTime = 0.;
 	renderTimeDelta = 0.;
+	renderFrameIndex = 0;
 	passIndex = 0;
 	if (compiledInputTypeString!=nullptr)	{
 		delete compiledInputTypeString;
@@ -242,11 +246,46 @@ void ISFScene::setValueForInputNamed(const ISFVal & inVal, const string & inName
 	ISFAttrRef		inputRef = getInputNamed(inName);
 	if (inputRef == nullptr)
 		return;
-	if (inVal.getType() != inputRef->getType())	{
-		cout << "\tERR: tried to pass val to input of wrong type, " << __PRETTY_FUNCTION__ << endl;
-		return;
+	
+	ISFValType		inValType = inVal.getType();
+	ISFValType		attrType = inputRef->getType();
+	bool			reportFailure = false;
+	if (inValType == attrType)	{
+		inputRef->setCurrentVal(inVal);
 	}
-	inputRef->setCurrentVal(inVal);
+	else	{
+		switch (attrType)	{
+		case ISFValType_None:
+			break;
+		case ISFValType_Event:
+			if (inValType == ISFValType_None)
+				inputRef->setCurrentVal(ISFBoolVal(false));
+			else
+				reportFailure = true;
+			break;
+		case ISFValType_Bool:
+		case ISFValType_Long:
+		case ISFValType_Float:
+		case ISFValType_Point2D:
+		case ISFValType_Color:
+		case ISFValType_Cube:
+		case ISFValType_Image:
+			reportFailure = true;
+			break;
+		case ISFValType_Audio:
+		case ISFValType_AudioFFT:
+			if (inValType == ISFValType_Image)
+				inputRef->setCurrentVal(inVal);
+			else
+				reportFailure = true;
+			break;
+		}
+	}
+	
+	if (reportFailure)	{
+		cout << "\tERR: tried to pass val to input of wrong type, " << __PRETTY_FUNCTION__ << endl;
+		cout << "\tERR: name was " << inName << " val is " << inVal << endl;
+	}
 }
 ISFVal ISFScene::valueForInputNamed(const string & inName)	{
 	ISFAttrRef		inputRef = getInputNamed(inName);
@@ -302,10 +341,20 @@ vector<ISFAttrRef> ISFScene::getImageImports()	{
 #pragma mark --------------------- public rendering interface
 
 
+/*
 VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
-	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), inPoolRef);
+	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), nullptr, inPoolRef);
 }
+*/
+VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, map<int32_t,VVGLBufferRef> * outPassDict, const VVGLBufferPoolRef & inPoolRef)	{
+	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), outPassDict, inPoolRef);
+}
+/*
 VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef)	{
+	return createAndRenderABuffer(inSize, inRenderTime, nullptr, inPoolRef);
+}
+*/
+VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict, const VVGLBufferPoolRef & inPoolRef)	{
 	ISFDocRef		tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -339,14 +388,14 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 	//	: CreateRGBATex(inSize, bp);
 	
 	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 	if (persistentToIOSurface)
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
 	else
 #endif
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, false, bp) : CreateRGBATex(inSize, false, bp);
 	
-	renderToBuffer(returnMe, inSize, inRenderTime);
+	renderToBuffer(returnMe, inSize, inRenderTime, outPassDict);
 	
 	return returnMe;
 	/*
@@ -388,8 +437,59 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
-#if !ISF_TARGET_GLES
+#if defined(ISF_TARGETENV_GLES)
 	setRenderCallback([&](const VVGLScene & s)	{
+		//	make a quad that describes the area we have to draw
+		Quad<VertXY>		targetQuad;
+		targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
+		
+		//	get the VBO
+		VVGLBufferRef		myVBO = getVBO();
+		
+		//	if there's no VBO, or the target quad doesn't match the VBO's contents
+		if (myVBO==nullptr || targetQuad!=vboContents)	{
+			//	make the VBO, populate it with vertex data
+			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
+			//	update the instance's copy of the VBO
+			setVBO(myVBO);
+			//	update the contents of the VBO
+			vboContents = targetQuad;
+		}
+		if (myVBO == nullptr)	{
+			cout << "\terr: VBO still null, bailing, " << __PRETTY_FUNCTION__ << endl;
+			return;
+		}
+		
+		//	bind the VBO
+		if (myVBO != nullptr)	{
+			glBindBuffer(GL_ARRAY_BUFFER, myVBO->name);
+			GLERRLOG
+		}
+		//	configure the attribute pointers to work with the VBO
+		if (vertexAttrib.loc >= 0)	{
+			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
+			//glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
+			GLERRLOG
+			vertexAttrib.enable();
+		}
+		
+		//	draw!
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GLERRLOG
+		
+		//	disable the relevant attribute pointers
+		if (vertexAttrib.loc >= 0)	{
+			vertexAttrib.disable();
+		}
+		//	un-bind the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		GLERRLOG
+	});
+#else
+	setRenderCallback([&](const VVGLScene & s)	{
+		//cout << __PRETTY_FUNCTION__ << endl;
+		//CGLContextObj		orig_ctx = CGLGetCurrentContext();
+		//cout << "\tin render callback, my context is " << *context << ", current context is " << orig_ctx << endl;
 		//	if we're in GL 2 then we can't use a VAO
 		if (s.getGLVersion() == GLVersion_2)	{
 			//	make a quad that describes the area we have to draw
@@ -407,6 +507,8 @@ void ISFScene::_setUpRenderCallback()	{
 				setVBO(myVBO);
 				//	update the contents of the VBO
 				vboContents = targetQuad;
+				//	if the VBO is deleted & its resources destroyed the buffer pool's ctx will be current!
+				context->makeCurrentIfNotCurrent();
 			}
 		
 			//	bind the VBO
@@ -420,7 +522,7 @@ void ISFScene::_setUpRenderCallback()	{
 				GLERRLOG
 				vertexAttrib.enable();
 			}
-		
+			
 			//	draw!
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			GLERRLOG
@@ -486,54 +588,6 @@ void ISFScene::_setUpRenderCallback()	{
 			GLERRLOG
 		}
 	});
-#else
-	setRenderCallback([&](const VVGLScene & s)	{
-		//	make a quad that describes the area we have to draw
-		Quad<VertXY>		targetQuad;
-		targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
-		
-		//	get the VBO
-		VVGLBufferRef		myVBO = getVBO();
-		
-		//	if there's no VBO, or the target quad doesn't match the VBO's contents
-		if (myVBO==nullptr || targetQuad!=vboContents)	{
-			//	make the VBO, populate it with vertex data
-			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
-			//	update the instance's copy of the VBO
-			setVBO(myVBO);
-			//	update the contents of the VBO
-			vboContents = targetQuad;
-		}
-		if (myVBO == nullptr)	{
-			cout << "\terr: VBO still null, bailing, " << __PRETTY_FUNCTION__ << endl;
-			return;
-		}
-		
-		//	bind the VBO
-		if (myVBO != nullptr)	{
-			glBindBuffer(GL_ARRAY_BUFFER, myVBO->name);
-			GLERRLOG
-		}
-		//	configure the attribute pointers to work with the VBO
-		if (vertexAttrib.loc >= 0)	{
-			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
-			//glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
-			GLERRLOG
-			vertexAttrib.enable();
-		}
-		
-		//	draw!
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		GLERRLOG
-		
-		//	disable the relevant attribute pointers
-		if (vertexAttrib.loc >= 0)	{
-			vertexAttrib.disable();
-		}
-		//	un-bind the VBO
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		GLERRLOG
-	});
 #endif
 	
 	
@@ -546,7 +600,7 @@ void ISFScene::_setUpRenderCallback()	{
 		VVGL::Rect				tmpRect(0,0,0,0);
 		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
 		//cout << "\tverts based on rect " << tmpRect << endl;
-#if ISF_TARGET_MAC || ISF_TARGET_GLFW
+#if ISF_SDK_MAC || ISF_SDK_GLFW
 		glColor4f(1., 1., 1., 1.);
 		GLERRLOG
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -565,7 +619,7 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 		glDrawArrays(GL_QUADS, 0, 4);
 		GLERRLOG
-#elif ISF_TARGET_IOS || ISF_TARGET_RPI
+#elif ISF_SDK_IOS || ISF_SDK_RPI
 		GLfloat			geoCoords[] = {
 			(GLfloat)MinX(tmpRect), (GLfloat)MinY(tmpRect),
 			(GLfloat)MaxX(tmpRect), (GLfloat)MinY(tmpRect),
@@ -635,9 +689,11 @@ void ISFScene::_renderPrep()	{
 	*/
 	
 	//	make sure there's a VAO
-#if !ISF_TARGET_GLES && ISF_TARGET_GL3PLUS
-	if (getVAO() == nullptr)
-		setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
+#if !defined(ISF_TARGETENV_GLES)
+	if (getGLVersion() != GLVersion_2)	{
+		if (getVAO() == nullptr)
+			setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
+	}
 #endif
 	
 	//	...if either of these values have changed, the program has been recompiled and i need to find new uniform locations for all the attributes (the uniforms in the GLSL programs)
@@ -1108,7 +1164,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 	if (tmpDoc == nullptr)
 		return;
 	
-#if ISF_TARGET_IOS
+#if ISF_SDK_IOS
 	glPushGroupMarkerEXT(0, "All ISF-specific rendering");
 	GLERRLOG
 #endif
@@ -1183,18 +1239,20 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
 				
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 				if (shouldBeIOSurface)
 					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
 #endif
 					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
 				
-				context->makeCurrentIfNotCurrent();
+				//context->makeCurrentIfNotCurrent();
 			}
-			//cout << "\ttargetBufferSize is " << targetBufferSize << ", and has target color buffer " << tmpRenderTarget.color << " and size " << targetBufferSize << endl;
+			//cout << "\ttargetBufferSize is " << targetBufferSize << ", and has target color buffer " << *(tmpRenderTarget.color) << endl;
 			
 			setSize(targetBufferSize);
+			
+			//context->makeCurrentIfNotCurrent();
 			
 			render(tmpRenderTarget);
 			
@@ -1282,7 +1340,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 		}
 	}
 	
-#if ISF_TARGET_IOS
+#if ISF_SDK_IOS
 	glPopGroupMarkerEXT();
 	GLERRLOG
 #endif

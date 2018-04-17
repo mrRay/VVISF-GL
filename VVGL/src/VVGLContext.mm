@@ -1,6 +1,6 @@
 #include "VVGLContext.hpp"
 
-#if ISF_TARGET_IOS
+#if ISF_SDK_IOS
 	#import <OpenGLES/EAGL.h>
 	#import <OpenGLES/ES3/glext.h>
 	#import <GLKit/GLKit.h>
@@ -20,7 +20,7 @@ namespace VVGL
 
 
 
-#if ISF_TARGET_IOS
+#if ISF_SDK_IOS
 
 
 /*	========================================	*/
@@ -186,7 +186,7 @@ ostream & operator<<(ostream & os, const VVGLContext * n)	{
 }
 
 
-#endif	//	ISF_TARGET_IOS
+#endif	//	ISF_SDK_IOS
 
 
 

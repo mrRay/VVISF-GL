@@ -1,20 +1,18 @@
 #ifndef VVGLBufferPool_hpp
 #define VVGLBufferPool_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <mutex>
 
 #include "VVGLBuffer.hpp"
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 #import <CoreGraphics/CoreGraphics.h>
 #import <TargetConditionals.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
-#elif ISF_TARGET_IOS
+#elif ISF_SDK_IOS
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreVideo/CoreVideo.h>
 #endif
@@ -44,7 +42,7 @@ class VVGLBufferPool	{
 		
 		Timestamper			timestamper;
 		
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
+#if ISF_SDK_MAC || ISF_SDK_IOS
 		CGColorSpaceRef		colorSpace = nullptr;
 #endif
 		
@@ -67,7 +65,7 @@ class VVGLBufferPool	{
 		inline void timestampThisBuffer(const VVGLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
 		inline VVGLContextRef & getContext() { return context; }
 		inline recursive_mutex & getContextLock() { return contextLock; }
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
+#if ISF_SDK_MAC || ISF_SDK_IOS
 		inline CGColorSpaceRef getColorSpace() const { return colorSpace; }
 #endif
 		
@@ -90,7 +88,12 @@ VVGLBufferPoolRef CreateGlobalBufferPool(const VVGLContextRef & inShareCtx=nullp
 //VVGLBufferPoolRef GetGlobalBufferPool();
 const VVGLBufferPoolRef & GetGlobalBufferPool();
 
-//	these functions create buffers
+//	these methods create VVGLBuffers that aren't actually images at all
+VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateVAO(const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+//	these functions create buffers that are images/textures
 VVGLBufferRef CreateRGBATex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRGBAFloatTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRB(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -99,54 +102,48 @@ VVGLBufferRef CreateDepthBuffer(const Size & size, const bool & createInCurrentC
 
 VVGLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const VVGLBuffer::BackingReleaseCallback & inReleaseCallback, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
-#if ISF_TARGET_MAC
-VVGLBufferRef CreateRGBARectTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#endif
-
-#if !ISF_TARGET_IOS
+#if !ISF_SDK_IOS
 VVGLBufferRef CreateBGRATex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#if !ISF_SDK_RPI
 VVGLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 void PushTexRangeBufferRAMtoVRAM(const VVGLBufferRef & inBufferRef, const VVGLContextRef & inContextRef=nullptr);
-#endif
+#endif	//	!ISF_SDK_RPI
+#endif	//	!ISF_SDK_IOS
 
-//	these methods create VVGLBuffers that aren't actually images at all
-VVGLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-VVGLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
-VVGLBufferRef CreateVAO(const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#endif
 
 VVGLBufferRef CreateTexFromImage(const string & inPath, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
-VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#endif
-
 VVGLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
-VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inPaths, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+
+//	Qt-only func
+#if ISF_SDK_QT
+VVGLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 
-#if ISF_TARGET_MAC
+
+//	mac-only funcs
+#if ISF_SDK_MAC
 VVGLBufferRef CreateRGBATexIOSurface(const Size & inSize, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool & inTexRange, const bool & inIOSurface, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGLBufferRef CreateTexRangeFromCMSampleBuffer(CMSampleBufferRef & n, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateRGBARectTex(const Size & size, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 
-#if ISF_TARGET_MAC
-VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLTextureRef & inTexRef, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#elif ISF_TARGET_IOS
-VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#endif
 
-#if ISF_TARGET_MAC || ISF_TARGET_IOS
+//	mac & ios funcs
+#if ISF_SDK_MAC || ISF_SDK_IOS
+VVGLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 void CGBitmapContextUnpremultiply(CGContextRef ctx);
 #endif
 
-#if ISF_TARGET_QT
-VVGLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#if ISF_SDK_MAC
+VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLTextureRef & inTexRef, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#elif ISF_SDK_IOS
+VVGLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool & createInCurrentContext=false, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 
 

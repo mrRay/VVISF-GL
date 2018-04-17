@@ -164,7 +164,21 @@
 		//[scene _renderLock];
 		//sceneIsFilter = [ISFFileManager _isAFilter:f];
 		//[scene useFile:f];
-		scene->useFile(string([f UTF8String]));
+		try	{
+			scene->useFile(string([f UTF8String]));
+		}
+		catch (ISFErr & exc)	{
+			NSString	*generalString = [NSString stringWithFormat:@"%s", exc.getTypeString().c_str()];
+			NSString	*specificString = [NSString stringWithFormat:@"%s, %s", exc.general.c_str(), exc.specific.c_str()];
+			dispatch_async(dispatch_get_main_queue(), ^{
+				//NSString	*tmpString = [err reason];
+				VVRunAlertPanel(generalString,specificString,@"Oh snap!",nil,nil);
+			});
+		}
+		catch (...)	{
+		}
+		
+		
 		ISFDocRef		sceneDoc = scene->getDoc();
 		sceneIsFilter = (sceneDoc==nullptr || sceneDoc->getType()!=ISFFileType_Filter) ? NO : YES;
 	}
@@ -241,11 +255,15 @@
 	//	prefer2DTex:NO
 	//	passDict:d];
 	//returnMe = [scene allocAndRenderToBufferSized:[n srcRect].size prefer2DTex:NO passDict:d];
-	returnMe = CreateRGBATex(VVGL::Size(n->srcRect.size));
+	
+	//returnMe = CreateRGBATex(VVGL::Size(n->srcRect.size));
 	map<int32_t,VVGLBufferRef>		tmpPassDict;
 	
 	try	{
-		scene->renderToBuffer(returnMe, n->srcRect.size, (d==nil) ? nullptr : &tmpPassDict);
+		//scene->renderToBuffer(returnMe, n->srcRect.size, (d==nil) ? nullptr : &tmpPassDict);
+		NSSize		tmpSize = [self renderSize];
+		VVGL::Size		renderSize = (sceneIsFilter) ? VVGL::Size(n->srcRect.size) : VVGL::Size(tmpSize.width, tmpSize.height);
+		returnMe = scene->createAndRenderABuffer(renderSize, (d==nil)?nullptr:&tmpPassDict, GetGlobalBufferPool());
 	}
 	catch (ISFErr & exc)	{
 		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;

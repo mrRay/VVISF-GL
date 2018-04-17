@@ -1,9 +1,7 @@
 #ifndef VVTime_h
 #define VVTime_h
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <math.h>
 #include <chrono>

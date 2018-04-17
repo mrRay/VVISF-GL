@@ -1,41 +1,12 @@
 #ifndef VVGLBuffer_hpp
 #define VVGLBuffer_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <vector>
 #include <chrono>
 #include "VVGLContext.hpp"
 
-/*
-#if ISF_TARGET_MAC
-	//#import <TargetConditionals.h>
-	//#include <objc/objc.h>
-	//#include <IOSurface/IOSurface.h>
-	//#import <OpenGL/OpenGL.h>
-	//#import <OpenGL/gl.h>
-	//#import <OpenGL/glext.h>
-	//#import <OpenGL/gl3.h>
-	//#import <OpenGL/gl3ext.h>
-#elif ISF_TARGET_IOS
-	//#import <OpenGLES/EAGL.h>
-	#import <OpenGLES/ES3/glext.h>
-	//#import <GLKit/GLKit.h>
-#elif ISF_TARGET_GLFW
-	#include <glad/glad.h>
-	#include <GLFW/glfw3.h>
-#elif ISF_TARGET_RPI
-	#include "bcm_host.h"
-	//#include <GLES/gl.h>
-	//#include <GLES/glext.h>
-	#include <GLES2/gl2.h>
-	#include <GLES2/gl2ext.h>
-	#include <EGL/egl.h>
-	#include <EGL/eglext.h>
-#endif
-*/
 
 
 
@@ -61,21 +32,19 @@ class VVGLBuffer	{
 			Type_PBO,
 			Type_VBO,
 			Type_EBO,
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
 			Type_VAO,
-#endif
 		};
 		
 		//	enums describing the various GL object (usually texture) properties- split up b/c availability depends on platform
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		#include "VVGLBuffer_Mac_Enums.h"
-#elif ISF_TARGET_RPI
+#elif ISF_SDK_RPI
 		#include "VVGLBuffer_RPI_Enums.h"
-#elif ISF_TARGET_IOS
+#elif ISF_SDK_IOS
 		#include "VVGLBuffer_IOS_Enums.h"
-#elif ISF_TARGET_GLFW
+#elif ISF_SDK_GLFW
 		#include "VVGLBuffer_GLFW_Enums.h"
-#elif ISF_TARGET_QT
+#elif ISF_SDK_QT
 		#include "VVGLBuffer_Qt_Enums.h"
 #endif
 		
@@ -102,8 +71,8 @@ class VVGLBuffer	{
 	public:
 		struct Descriptor	{
 			Type					type = Type_Tex;
-			Target					target = Target_2D;
-#if ISF_TARGET_MAC
+			Target		target = Target_2D;
+#if ISF_SDK_MAC
 			InternalFormat			internalFormat = IF_RGBA8;
 #else
 			InternalFormat			internalFormat = IF_RGBA;
@@ -139,7 +108,7 @@ class VVGLBuffer	{
 		void					*cpuBackingPtr = nullptr;
 	
 	private:
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		//id						userInfo = nullptr;	//	RETAINED, nil by default.  not used by this class- stick whatever you want here and it will be retained for the lifetime of this buffer.  retained if you copy the buffer!
 		IOSurfaceRef			localSurfaceRef = nullptr;	//	RETAINED, nil by default.  the "local" surface ref was created by this process.
 		IOSurfaceRef			remoteSurfaceRef = nullptr;	//	RETAINED, nil by default.  the "remote" surface ref was created by another process (so this should probably be released immediately).
@@ -167,7 +136,7 @@ class VVGLBuffer	{
 		//	use this to create a shallow copy (memberwise copy)
 		VVGLBuffer * allocShallowCopy();
 		
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		//	getter/setters
 		//id getUserInfo() const;
 		//void setUserInfo(id n);
@@ -187,7 +156,7 @@ class VVGLBuffer	{
 		bool isFullFrame() const;
 		bool isNPOT2DTex() const;
 		bool isPOT2DTex() const;
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		bool safeToPublishToSyphon() const;
 #endif
 		bool isContentMatch(VVGLBuffer & n) const;

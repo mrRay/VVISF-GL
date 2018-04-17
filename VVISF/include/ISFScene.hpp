@@ -2,11 +2,11 @@
 #define ISFScene_hpp
 
 #include "ISFDoc.hpp"
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 #import <TargetConditionals.h>
 #endif
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 #include "vvisf_qt_global.h"
 #endif
 
@@ -56,7 +56,7 @@ class ISFScene : public VVGLScene	{
 		
 		//	access to these vars should be restricted by the 'renderLock' var inherited from VVGLScene
 		//VVGLBufferRef		geoXYVBO = nullptr;
-#if !ISF_TARGET_GLES
+#if !defined(ISF_TARGETENV_GLES)
 		VVGLBufferRef		vao = nullptr;
 #endif
 		VVGLBufferRef		vbo = nullptr;
@@ -107,8 +107,10 @@ class ISFScene : public VVGLScene	{
 		void setValueForInputNamed(const ISFVal & inVal, const string & inName);
 		ISFVal valueForInputNamed(const string & inName);
 		
-		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), const VVGLBufferPoolRef & inPoolRef=nullptr);
-		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef=nullptr);
+		//virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), map<int32_t,VVGLBufferRef> * outPassDict=nullptr, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+		//virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+		virtual VVGLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 		
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime);
@@ -137,7 +139,7 @@ class ISFScene : public VVGLScene	{
 		virtual void setFragmentShaderString(const string & n);
 		
 	protected:
-#if !ISF_TARGET_GLES
+#if !defined(ISF_TARGETENV_GLES)
 		inline VVGLBufferRef getVAO() const { return vao; }
 		inline void setVAO(const VVGLBufferRef & n) { vao = n; }
 #endif

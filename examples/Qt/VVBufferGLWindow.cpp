@@ -144,6 +144,7 @@ void VVBufferGLWindow::stopRendering()
 	
 }
 void VVBufferGLWindow::stopRenderingImmediately()	{
+	//qDebug() << __PRETTY_FUNCTION__;
 	{
 		lock_guard<mutex>		lock(ctxLock);
 		if (ctxThread == nullptr)
@@ -509,13 +510,13 @@ bool VVBufferGLWindow::event(QEvent * inEvent)
 	//qDebug() << __PRETTY_FUNCTION__;
 	switch (inEvent->type()) {
 	case QEvent::UpdateRequest:
-		//m_update_pending = false;
 		renderNow();
 		return true;
 	default:
 		return QWindow::event(inEvent);
 	}
 }
+/*
 void VVBufferGLWindow::exposeEvent(QExposeEvent * inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -523,4 +524,5 @@ void VVBufferGLWindow::exposeEvent(QExposeEvent * inEvent)
 	if (isExposed())
 		renderNow();
 }
+*/
 

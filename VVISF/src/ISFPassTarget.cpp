@@ -102,7 +102,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 			//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
 			//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 			
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 			if (shouldBeIOSurface)
 				buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 			else
@@ -122,7 +122,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 				VVGLBufferRef		newBuffer;
 				
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 				if (shouldBeIOSurface)
 					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 				else
@@ -139,7 +139,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 					//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
 					//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 					
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 					if (shouldBeIOSurface)
 						buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 					else
@@ -241,7 +241,7 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
 		VVGLBufferRef		newBuffer;
 		
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 		if (shouldBeIOSurface)
 			newBuffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(targetSize(), true, bp) : CreateRGBATexIOSurface(targetSize(), true, bp);
 		else

@@ -1,7 +1,7 @@
 #ifndef ISFConstants_h
 #define ISFConstants_h
 
-#if ISF_TARGET_QT
+#if ISF_SDK_QT
 #include "vvisf_qt_global.h"
 #endif
 

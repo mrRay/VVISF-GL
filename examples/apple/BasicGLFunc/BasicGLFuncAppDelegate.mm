@@ -181,9 +181,6 @@ FragColor *= (1.-fadeVal);\r\
 			inputImageRectUni->cacheTheLoc(myProgram);
 			isRectTexUni->cacheTheLoc(myProgram);
 			fadeValUni->cacheTheLoc(myProgram);
-	
-			//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
-			//Quad<VertXYST>	targetQuad;
 			
 			//	make a new VAO
 			[self setVAO:CreateVAO(true)];

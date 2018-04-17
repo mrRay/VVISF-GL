@@ -1,9 +1,7 @@
 #ifndef VVGLScene_hpp
 #define VVGLScene_hpp
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <functional>
 #include <mutex>
@@ -12,7 +10,7 @@
 #include "VVGLCachedUni.hpp"
 #include "VVGLCachedAttrib.hpp"
 
-#if ISF_TARGET_MAC
+#if ISF_SDK_MAC
 #import <TargetConditionals.h>
 #endif
 

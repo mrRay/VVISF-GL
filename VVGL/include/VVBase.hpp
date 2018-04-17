@@ -1,9 +1,7 @@
 #ifndef VVBase_h
 #define VVBase_h
 
-#if ISF_TARGET_QT
-#include "vvgl_qt_global.h"
-#endif
+#include "VVGL_Defines.hpp"
 
 #include <vector>
 #include <memory>
@@ -45,6 +43,7 @@ using VVGLCachedUniRef = shared_ptr<VVGLCachedUni>;
 enum GLVersion	{
 	GLVersion_Unknown,
 	GLVersion_2,
+	GLVersion_ES,
 	GLVersion_ES2,
 	GLVersion_ES3,
 	GLVersion_33,
@@ -77,12 +76,14 @@ struct GLColor	{
 inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if (destCharPtr==nullptr) return; for (int i=0; i<4; ++i) destCharPtr[i] = (fourCC >> ((3-i)*8)) & 0xFF; }
 
 
-}
+
+
+}	//	namespace VVGL
 
 
 
 
-#if ISF_TARGET_QT
+#if defined(ISF_SDK_QT)
 #include <QThread>
 #include <QCoreApplication>
 // 		this template establishes a function for asynchronously performing a lambda on the passed 
