@@ -72,8 +72,8 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	
 	
 	//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
-	VVGLBufferPoolRef		bp = nullptr;
-	VVGLBufferCopierRef		copier = nullptr;
+	GLBufferPoolRef		bp = nullptr;
+	GLBufferCopierRef		copier = nullptr;
 	bool					shouldBeFloat = false;
 	bool					shouldBeIOSurface = false;
 	if (parentDoc != nullptr)	{
@@ -118,9 +118,9 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 		if (inSize != buffer->srcRect.size)	{
 			//	if i'm supposed to resize, do so
 			if (inResize)	{
-				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
-				//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
-				VVGLBufferRef		newBuffer;
+				//GLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+				//GLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				GLBufferRef		newBuffer;
 				
 #if ISF_SDK_MAC
 				if (shouldBeIOSurface)
@@ -213,8 +213,8 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 	floatFlag = n;
 	if (buffer != nullptr)	{
 		//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
-		VVGLBufferPoolRef		bp = nullptr;
-		VVGLBufferCopierRef		copier = nullptr;
+		GLBufferPoolRef		bp = nullptr;
+		GLBufferCopierRef		copier = nullptr;
 		bool					shouldBeFloat = false;
 		bool					shouldBeIOSurface = false;
 		if (parentDoc != nullptr)	{
@@ -237,9 +237,9 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 			return;
 		}
 		
-		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
-		//VVGLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
-		VVGLBufferRef		newBuffer;
+		//GLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
+		//GLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		GLBufferRef		newBuffer;
 		
 #if ISF_SDK_MAC
 		if (shouldBeIOSurface)

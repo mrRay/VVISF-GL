@@ -30,8 +30,8 @@ using namespace VVGL;
 	NSArray					*fftResults;
 	
 	OSSpinLock				bufferLock;
-	VVGLBufferRef			audioBuffer;
-	VVGLBufferRef			fftBuffer;
+	GLBufferRef			audioBuffer;
+	GLBufferRef			fftBuffer;
 }
 
 - (void) prepareToBeDeleted;
@@ -45,10 +45,10 @@ using namespace VVGL;
 
 - (void) audioInputsChangedNotification:(NSNotification *)note;
 
-- (VVGLBufferRef) allocAudioImageBuffer;
-- (VVGLBufferRef) allocAudioImageBufferWithWidth:(long)w;
-- (VVGLBufferRef) allocAudioFFTImageBuffer;
-- (VVGLBufferRef) allocAudioFFTImageBufferWithWidth:(long)w;
+- (GLBufferRef) allocAudioImageBuffer;
+- (GLBufferRef) allocAudioImageBufferWithWidth:(long)w;
+- (GLBufferRef) allocAudioFFTImageBuffer;
+- (GLBufferRef) allocAudioFFTImageBufferWithWidth:(long)w;
 
 
 @end

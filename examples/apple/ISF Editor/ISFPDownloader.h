@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-//#import <VVISFKit/VVISFKit.h>
+//#import <VVISF/VVISF.h>
 //#import <VVBasics/VVBasics.h>
-//#include "ISFKit.h"
+//#include "VVISF.h"
 #import "ISFController.h"
 #import "DocController.h"
 #import "ISFPDownload.h"

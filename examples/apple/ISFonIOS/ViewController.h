@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <VVGL/VVGL.hpp>
-#import <VVISFKit/ISFKit.h>
+#import <VVISF/VVISF.h>
 #import "VVBufferGLKView.h"
 
 
@@ -13,7 +13,7 @@ using namespace VVISF;
 
 
 @interface ViewController : UIViewController	{
-	VVGLContextRef		baseCtx;
+	GLContextRef		baseCtx;
 	ISFSceneRef			isfScene;
 	
 	IBOutlet VVBufferGLKView		*bufferView;

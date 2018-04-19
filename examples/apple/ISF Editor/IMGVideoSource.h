@@ -6,7 +6,7 @@
 
 @interface IMGVideoSource : VideoSource	{
 	//VVBuffer					*propLastBuffer;
-	VVGLBufferRef			propLastBuffer;
+	GLBufferRef			propLastBuffer;
 }
 
 - (void) loadFileAtPath:(NSString *)p;

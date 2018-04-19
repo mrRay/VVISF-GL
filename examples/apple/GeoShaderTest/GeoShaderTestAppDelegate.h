@@ -14,12 +14,12 @@ using namespace VVGL;
 
 @interface GeoShaderTestAppDelegate : NSObject <NSApplicationDelegate>	{
 	CVDisplayLinkRef			displayLink;
-	VVGLContextRef				sharedContext;
+	GLContextRef				sharedContext;
 	IBOutlet VVGLBufferGLView	*bufferView;
 	
-	VVGLSceneRef				glScene;	//	this renders-to-texture
+	GLSceneRef				glScene;	//	this renders-to-texture
 	NSDate						*date;	//	used to fade the texture in repeatedly
-	VVGLBufferRef				vao;
+	GLBufferRef				vao;
 	Quad<VertXYZRGBA>		lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
 }
 
@@ -29,7 +29,7 @@ using namespace VVGL;
 - (void) renderCallback;
 
 @property (retain,readwrite) NSDate *date;
-@property (assign,readwrite,setter=setVAO:) VVGLBufferRef vao;
+@property (assign,readwrite,setter=setVAO:) GLBufferRef vao;
 
 @end
 

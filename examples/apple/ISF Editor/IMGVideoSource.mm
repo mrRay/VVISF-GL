@@ -1,6 +1,6 @@
 #import "IMGVideoSource.h"
 #import <AppKit/AppKit.h>
-#import "VVGLBufferPool_CocoaAdditions.h"
+#import "GLBufferPool_CocoaAdditions.h"
 
 
 
@@ -53,9 +53,9 @@
 	}
 	
 	//VVBuffer		*newBuffer = [_globalVVBufferPool allocBufferForNSImage:img];
-	VVGLBufferRef	newBuffer = CreateBufferForNSImage(img);
+	GLBufferRef	newBuffer = CreateBufferForNSImage(img);
 	if (newBuffer==nullptr)	{
-		NSLog(@"\t\terr: couldn't make VVGLBuffer from NSImage in %s",__func__);
+		NSLog(@"\t\terr: couldn't make GLBuffer from NSImage in %s",__func__);
 	}
 	else	{
 		//[newBuffer setFlipped:YES];
@@ -74,9 +74,9 @@
 	//VVRELEASE(propLastBuffer);
 	propLastBuffer = nullptr;
 }
-- (VVGLBufferRef) allocBuffer	{
+- (GLBufferRef) allocBuffer	{
 	//VVBuffer		*returnMe = nil;
-	VVGLBufferRef	returnMe = nullptr;
+	GLBufferRef	returnMe = nullptr;
 	OSSpinLockLock(&propLock);
 	//returnMe = (propLastBuffer==nil) ? nil : [propLastBuffer retain];
 	returnMe = propLastBuffer;

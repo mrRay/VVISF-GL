@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/VVISFKit.h>
-#include "ISFKit.h"
+//#import <VVISF/VVISF.h>
+#include "VVISF.h"
 #import <Syphon/Syphon.h>
 #import "SyphonVVBufferPoolAdditions.h"
 #import "ISFAudioFFT.h"

@@ -2,7 +2,7 @@
 #define ISFVal_h
 
 #include "ISFBase.hpp"
-//#include "VVGLBuffer.hpp"
+//#include "GLBuffer.hpp"
 #include "ISFStringUtils.hpp"
 
 #if ISF_SDK_QT
@@ -50,7 +50,7 @@ struct ISFVal	{
 	private:
 		ISFValType		type = ISFValType_None;
 		ISFValUnion		val = { .boolVal = false };
-		VVGLBufferRef	imageVal = nullptr;	//	we store the VVGLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
+		GLBufferRef	imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
 	
 	public:
 		//	constructor methods
@@ -62,7 +62,7 @@ struct ISFVal	{
 		ISFVal(const ISFValType & inType, const double & inX, const double & inY);
 		ISFVal(const ISFValType & inType, const double * inXY, const size_t inSizeToCopy);
 		ISFVal(const ISFValType & inType, const double & inR, const double & inG, const double & inB, const double & inA);
-		ISFVal(const ISFValType & inType, const VVGLBufferRef & inImage);
+		ISFVal(const ISFValType & inType, const GLBufferRef & inImage);
 	public:
 		//	accessor methods
 		inline ISFValType getType() const { return type; }
@@ -75,8 +75,8 @@ struct ISFVal	{
 		inline double * getColorValPtr() { if (type!=ISFValType_Color) return nullptr; return &(val.colorVal[0]); }
 		inline double getColorValByChannel(const int & inIndex) { if (type!=ISFValType_Color || inIndex<0 || inIndex>3) return 0.; return val.colorVal[inIndex]; }
 		inline void setColorValByChannel(const int & inIndex, const double & inVal) { if (type!=ISFValType_Color) return; val.colorVal[inIndex]=inVal; }
-		VVGLBufferRef getImageBuffer() const;
-		void setImageBuffer(const VVGLBufferRef & n);
+		GLBufferRef getImageBuffer() const;
+		void setImageBuffer(const GLBufferRef & n);
 		string getTypeString() const;
 		string getValString() const;
 		
@@ -104,7 +104,7 @@ ISFVal ISFLongVal(const int32_t & n);
 ISFVal ISFFloatVal(const double & n);
 ISFVal ISFPoint2DVal(const double & inX, const double & inY);
 ISFVal ISFColorVal(const double & inR, const double & inG, const double & inB, const double & inA);
-ISFVal ISFImageVal(const VVGLBufferRef & n);
+ISFVal ISFImageVal(const GLBufferRef & n);
 ISFVal ISFAudioVal();
 
 

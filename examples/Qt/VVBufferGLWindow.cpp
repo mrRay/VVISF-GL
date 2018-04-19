@@ -9,7 +9,7 @@
 #pragma mark --------------------- constructors/destructors
 
 
-VVBufferGLWindow::VVBufferGLWindow(VVGLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)
+VVBufferGLWindow::VVBufferGLWindow(GLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)
 {
 	setSurfaceType(QWindow::OpenGLSurface);
 	//lock_guard<mutex>		lock(ctxLock);
@@ -153,7 +153,7 @@ void VVBufferGLWindow::stopRenderingImmediately()	{
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-void VVBufferGLWindow::setContext(const VVGLContextRef & inCtx)
+void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
 {
 	lock_guard<mutex>		lock(ctxLock);
 	ctx = inCtx;
@@ -161,15 +161,15 @@ void VVBufferGLWindow::setContext(const VVGLContextRef & inCtx)
 	
 	if (ctx != nullptr)	{
 		ctx->setSurface(this);
-		scene = make_shared<VVGLScene>(ctx);
+		scene = make_shared<GLScene>(ctx);
 		scene->setPerformClear(true);
 		scene->setClearColor(0., 0., 0., 0.);
 		
 		if (ctx->version == GLVersion_2)	{
 			
-			scene->setRenderPrepCallback([](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged){
+			scene->setRenderPrepCallback([](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged){
 			});
-			scene->setRenderCallback([&](const VVGLScene & n){
+			scene->setRenderCallback([&](const GLScene & n){
 				double		ltbbm = devicePixelRatio();
 				//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
 				glEnableClientState(GL_VERTEX_ARRAY);
@@ -217,7 +217,7 @@ void VVBufferGLWindow::setContext(const VVGLContextRef & inCtx)
 			
 			
 				//	get the buffer we want to draw
-				VVGLBufferRef		bufferToDraw = _getBuffer();
+				GLBufferRef		bufferToDraw = _getBuffer();
 				if (bufferToDraw != nullptr)	{
 					//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
 					//NSRect				rawBounds = [(id)selfPtr backingBounds];

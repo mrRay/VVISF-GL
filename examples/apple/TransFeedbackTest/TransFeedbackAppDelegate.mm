@@ -18,14 +18,14 @@
 	if (self != nil)	{
 		
 		//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-		//sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		//sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
 		
 		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.
 		CreateGlobalBufferPool(sharedContext);
 		
-		feedbackScene = make_shared<VVGLScene>(sharedContext->newContextSharingMe());
-		rasterScene = make_shared<VVGLScene>(sharedContext->newContextSharingMe());
+		feedbackScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
+		rasterScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
 		if (rasterScene->getGLVersion() == GLVersion_2)
 			[self initForGL2];
@@ -75,7 +75,7 @@
 	feedbackVBO = nullptr;
 	
 	//	tell the raster scene to render.  this reads from 'feedbackVBO'.
-	VVGLBufferRef		newTex = rasterScene->createAndRenderABuffer(VVGL::Size(150.,150.));
+	GLBufferRef		newTex = rasterScene->createAndRenderABuffer(VVGL::Size(150.,150.));
 	//if (newTex == nullptr)
 	//	NSLog(@"\t\terr: couldn't render a tex");
 	//else
@@ -114,12 +114,12 @@
 	//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
 	//	the same underlying vars, which will be retained until these callback blocks are 
 	//	destroyed and shared between the callback lambdas...
-	VVGLBufferRef			vao = nullptr;
-	VVGLCachedAttribRef		inXYZAttr = nullptr;
-	VVGLCachedAttribRef		inRGBAAttr = nullptr;
+	GLBufferRef			vao = nullptr;
+	GLCachedAttribRef		inXYZAttr = nullptr;
+	GLCachedAttribRef		inRGBAAttr = nullptr;
 	//	we also need an FBO- if we don't have one, we get a GL error- and of course the FBO needs an attachment or there's an error for that, too.
-	VVGLBufferRef			fbo = nullptr;
-	VVGLBufferRef			fboTex = nullptr;
+	GLBufferRef			fbo = nullptr;
+	GLBufferRef			fboTex = nullptr;
 	
 	
 	
@@ -142,18 +142,18 @@
 	
 	//	make a vao and new attrib refs to simplify tracking shader attributes
 	vao = CreateVAO(true);
-	inXYZAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-	inRGBAAttr = make_shared<VVGLCachedAttrib>("inRGBA");
+	inXYZAttr = make_shared<GLCachedAttrib>("inXYZ");
+	inRGBAAttr = make_shared<GLCachedAttrib>("inRGBA");
 	fbo = CreateFBO();
 	fboTex = CreateBGRATex(VVGL::Size(50.,50.));
 	
 	//	transform feedbacks require a special step after shader compilation but before program linking
-	feedbackScene->setRenderPreLinkCallback([](const VVGLScene & n)	{
+	feedbackScene->setRenderPreLinkCallback([](const GLScene & n)	{
 		const GLchar * feedbackVaryings[] = { "outXYZ", "outRGBA" };
 		glTransformFeedbackVaryings(n.getProgram(), 2, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
 	});
 	//	render prep only has to make sure the attrib locations are cached
-	feedbackScene->setRenderPrepCallback([=](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	feedbackScene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
 			GLint				myProgram = n.getProgram();
@@ -163,7 +163,7 @@
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo->name);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, fboTex->desc.target, fboTex->name, 0);
 	});
-	feedbackScene->setRenderCallback([=](const VVGLScene & n)	{
+	feedbackScene->setRenderCallback([=](const GLScene & n)	{
 		//	bind the VAO
 		glBindVertexArray(vao->name);
 		
@@ -189,7 +189,7 @@
 		
 		
 		//	make a new VBO- the transform feedback will render into this.  bind it.
-		VVGLBufferRef			feedbackBuffer = CreateVBO(NULL, sizeof(Quad<VVGL::VertXYZRGBA>), GL_STREAM_DRAW, true);
+		GLBufferRef			feedbackBuffer = CreateVBO(NULL, sizeof(Quad<VVGL::VertXYZRGBA>), GL_STREAM_DRAW, true);
 		[(id)selfPtr setFeedbackVBO:feedbackBuffer];
 		//glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer->name);
 		
@@ -227,7 +227,7 @@
 		//	un-bind the VAO
 		glBindVertexArray(0);
 	});
-	feedbackScene->setRenderCleanupCallback([=](const VVGLScene & n)	{
+	feedbackScene->setRenderCleanupCallback([=](const GLScene & n)	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	});
 	
@@ -251,11 +251,11 @@
 	
 	//	create a new VAO/new attrib caches for the new scene
 	vao = CreateVAO(true);
-	inXYZAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-	inRGBAAttr = make_shared<VVGLCachedAttrib>("inRGBA");
+	inXYZAttr = make_shared<GLCachedAttrib>("inXYZ");
+	inRGBAAttr = make_shared<GLCachedAttrib>("inRGBA");
 	
 	//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-	rasterScene->setRenderPrepCallback([=](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	rasterScene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
@@ -265,7 +265,7 @@
 		}
 	});
 	//	the render callback passes all the data to the GL program
-	rasterScene->setRenderCallback([=](const VVGLScene & n)	{
+	rasterScene->setRenderCallback([=](const GLScene & n)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		
 		glBindVertexArray(vao->name);

@@ -6,8 +6,8 @@
 - (id) init	{
 	self = [super init];
 	if (self != nil)	{
-		//sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		//sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
 		
 		CreateGlobalBufferPool(sharedContext);
 		
@@ -16,7 +16,7 @@
 		dstGeoVBO = CreateVBO(nullptr, sizeof(Quad<VVGL::VertXYZ>), GL_STREAM_DRAW);
 		dstColorVBO = CreateVBO(nullptr, sizeof(Quad<VVGL::VertRGBA>), GL_STREAM_DRAW);
 		
-		scene = make_shared<VVGLScene>(sharedContext->newContextSharingMe());
+		scene = make_shared<GLScene>(sharedContext->newContextSharingMe());
 		
 		//	init the scene differently depending on the version of GL running the backend
 		if (scene->getGLVersion() == GLVersion_2)
@@ -160,20 +160,20 @@
 	scene->setPerformClear(false);
 	
 	//	make a VAO and the attrib caches we'll need to render stuff
-	VVGLBufferRef	vao = CreateVAO(true);
-	VVGLCachedAttribRef		inXYZAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-	VVGLCachedAttribRef		inRGBAAttr = make_shared<VVGLCachedAttrib>("inRGBA");
-	//VVGLCachedAttribRef		outXYZAttr = make_shared<VVGLCachedAttrib>("outXYZ");
+	GLBufferRef	vao = CreateVAO(true);
+	GLCachedAttribRef		inXYZAttr = make_shared<GLCachedAttrib>("inXYZ");
+	GLCachedAttribRef		inRGBAAttr = make_shared<GLCachedAttrib>("inRGBA");
+	//GLCachedAttribRef		outXYZAttr = make_shared<GLCachedAttrib>("outXYZ");
 	//	we also need an FBO- if we don't have one, we get a GL error- and of course the FBO needs an attachment or there's an error for that, too.
-	VVGLBufferRef			fbo = CreateFBO();
-	VVGLBufferRef			fboTex = CreateBGRATex(VVGL::Size(50.,50.));
+	GLBufferRef			fbo = CreateFBO();
+	GLBufferRef			fboTex = CreateBGRATex(VVGL::Size(50.,50.));
 	//	transform feedbacks require a special step after shader compilation but before program linking
-	scene->setRenderPreLinkCallback([](const VVGLScene & n)	{
+	scene->setRenderPreLinkCallback([](const GLScene & n)	{
 		NSLog(@"\t\trender pre-link called...");
 		const GLchar * feedbackVaryings[] = { "outXYZ", "outRGBA" };
 		glTransformFeedbackVaryings(n.getProgram(), 2, feedbackVaryings, GL_SEPARATE_ATTRIBS);
 	});
-	scene->setRenderPrepCallback([=](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	scene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		NSLog(@"\t\trender prep called...");
 		if (inPgmChanged)	{
 			GLint				myProgram = n.getProgram();
@@ -201,7 +201,7 @@
 		}
 		*/
 	});
-	scene->setRenderCallback([=](const VVGLScene & n)	{
+	scene->setRenderCallback([=](const GLScene & n)	{
 		NSLog(@"\t\trender called...");
 		//	bind the VAO
 		glBindVertexArray(vao->name);
@@ -258,7 +258,7 @@
 		//	un-bind the VAO
 		glBindVertexArray(0);
 	});
-	scene->setRenderCleanupCallback([=](const VVGLScene & n)	{
+	scene->setRenderCleanupCallback([=](const GLScene & n)	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	});
 }

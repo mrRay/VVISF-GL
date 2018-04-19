@@ -7,10 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#include "ISFKit.h"
+#include "VVISF.h"
 //#import <VVBasics/VVBasics.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/ISFKit.h>
+//#import <VVISF/VVISF.h>
 //#import <DDMathParser/DDMathParser.h>
 #import "ISFController.h"
 #import "VVKQueueCenter.h"
@@ -39,14 +39,14 @@ NSInteger VVRunAlertPanelSuppressString(NSString *title, NSString *msg, NSString
 	IBOutlet NSWindow			*mainWindow;
 	
 	//NSOpenGLContext				*sharedContext;
-	VVGLContextRef				sharedContext;
+	GLContextRef				sharedContext;
 	
 	SyphonServer				*syphonServer;
 	//NSOpenGLContext				*syphonServerContext;
-	VVGLContextRef				syphonServerContext;
+	GLContextRef				syphonServerContext;
 	
 	CVDisplayLinkRef			displayLink;
-	VVGLBufferRef				lastSourceBuffer;
+	GLBufferRef				lastSourceBuffer;
 	int							outputSource;	//	-1 if the post-ISF-filter output.  if between 0 and 99, it's the index of the rendering pass to display.  if it's between 100 and 199, it's the index of the image input to display (minus 100).  if it's between 200 and 299, it's the index of the audio input to display (minus 200)
 	BOOL						outputFreeze;
 	NSMutableDictionary			*outputDict;
@@ -101,7 +101,7 @@ NSInteger VVRunAlertPanelSuppressString(NSString *title, NSString *msg, NSString
 - (void) _renderCallback;
 
 //- (void) renderIntoBuffer:(VVBuffer *)b atTime:(double)t;	//	used to render for recording
-- (void) renderIntoBuffer:(VVGL::VVGLBufferRef)b atTime:(double)t;	//	used to render for recording
+- (void) renderIntoBuffer:(VVGL::GLBufferRef)b atTime:(double)t;	//	used to render for recording
 - (void) reloadSelectedISF;
 - (NSString *) targetFile;
 

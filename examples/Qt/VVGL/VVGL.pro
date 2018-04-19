@@ -53,40 +53,40 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 
 # actual source
 SOURCES += \
-    ../../../VVGL/src/VVGeom.cpp \
-    ../../../VVGL/src/VVGLBuffer.cpp \
-    ../../../VVGL/src/VVGLBufferCopier.cpp \
-    ../../../VVGL/src/VVGLBufferPool.cpp \
-    ../../../VVGL/src/VVGLCachedAttrib.cpp \
-    ../../../VVGL/src/VVGLCachedUni.cpp \
-    ../../../VVGL/src/VVGLContext.cpp \
-    ../../../VVGL/src/VVGLQtCtxWrapper.cpp \
-    ../../../VVGL/src/VVGLScene.cpp \
-    ../../../VVGL/src/VVStringUtils.cpp
+	../../../VVGL/src/Geom.cpp \
+	../../../VVGL/src/GLBuffer.cpp \
+	../../../VVGL/src/GLBufferCopier.cpp \
+	../../../VVGL/src/GLBufferPool.cpp \
+	../../../VVGL/src/GLCachedAttrib.cpp \
+	../../../VVGL/src/GLCachedUni.cpp \
+	../../../VVGL/src/GLContext.cpp \
+	../../../VVGL/src/GLQtCtxWrapper.cpp \
+	../../../VVGL/src/GLScene.cpp \
+	../../../VVGL/src/StringUtils.cpp
 
 HEADERS += \
-    ../../../VVGL/include/VVBase.hpp \
-    ../../../VVGL/include/VVGeom.hpp \
-    ../../../VVGL/include/VVGL.hpp \
+	../../../VVGL/include/Base.hpp \
+	../../../VVGL/include/Geom.hpp \
+	../../../VVGL/include/VVGL.hpp \
 	../../../VVGL/include/VVGL_Defines.hpp \
     ../../../VVGL/include/vvgl_qt_global.h \
-    ../../../VVGL/include/VVGLBuffer.hpp \
-    ../../../VVGL/include/VVGLBuffer_GLFW_Enums.h \
-    ../../../VVGL/include/VVGLBuffer_IOS_Enums.h \
-    ../../../VVGL/include/VVGLBuffer_Mac_Enums.h \
-    ../../../VVGL/include/VVGLBuffer_Qt_Enums.h \
-    ../../../VVGL/include/VVGLBuffer_RPI_Enums.h \
-    ../../../VVGL/include/VVGLBufferCopier.hpp \
-    ../../../VVGL/include/VVGLBufferPool.hpp \
-    ../../../VVGL/include/VVGLBufferPool_CocoaAdditions.h \
-    ../../../VVGL/include/VVGLCachedAttrib.hpp \
-    ../../../VVGL/include/VVGLCachedUni.hpp \
-    ../../../VVGL/include/VVGLContext.hpp \
-    ../../../VVGL/include/VVGLQtCtxWrapper.hpp \
-    ../../../VVGL/include/VVGLScene.hpp \
-    ../../../VVGL/include/VVRange.hpp \
-    ../../../VVGL/include/VVStringUtils.hpp \
-    ../../../VVGL/include/VVTime.hpp
+	../../../VVGL/include/GLBuffer.hpp \
+	../../../VVGL/include/GLBuffer_GLFW_Enums.h \
+	../../../VVGL/include/GLBuffer_IOS_Enums.h \
+	../../../VVGL/include/GLBuffer_Mac_Enums.h \
+	../../../VVGL/include/GLBuffer_Qt_Enums.h \
+	../../../VVGL/include/GLBuffer_RPI_Enums.h \
+	../../../VVGL/include/GLBufferCopier.hpp \
+	../../../VVGL/include/GLBufferPool.hpp \
+	../../../VVGL/include/GLBufferPool_CocoaAdditions.h \
+	../../../VVGL/include/GLCachedAttrib.hpp \
+	../../../VVGL/include/GLCachedUni.hpp \
+	../../../VVGL/include/GLContext.hpp \
+	../../../VVGL/include/GLQtCtxWrapper.hpp \
+	../../../VVGL/include/GLScene.hpp \
+	../../../VVGL/include/Range.hpp \
+	../../../VVGL/include/StringUtils.hpp \
+	../../../VVGL/include/Time.hpp
 
 
 #unix {

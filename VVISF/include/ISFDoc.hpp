@@ -83,9 +83,9 @@ class ISFDoc	{
 		vector<ISFPassTargetRef> getPersistentBuffers() const { return persistentBuffers; }
 		vector<ISFPassTargetRef> getTempBuffers() const { return tempBuffers; }
 		vector<string> & getRenderPasses() { return renderPasses; }
-		const VVGLBufferRef getBufferForKey(const string & n);
-		const VVGLBufferRef getPersistentBufferForKey(const string & n);
-		const VVGLBufferRef getTempBufferForKey(const string & n);
+		const GLBufferRef getBufferForKey(const string & n);
+		const GLBufferRef getPersistentBufferForKey(const string & n);
+		const GLBufferRef getTempBufferForKey(const string & n);
 		const ISFPassTargetRef getPersistentTargetForKey(const string & n);
 		const ISFPassTargetRef getTempTargetForKey(const string & n);
 		

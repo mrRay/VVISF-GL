@@ -1,5 +1,5 @@
 #import "ISFStringAdditions.h"
-#import "ISFKit.h"
+#import "VVISF.h"
 
 #include <string>
 

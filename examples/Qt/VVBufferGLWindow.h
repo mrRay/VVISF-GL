@@ -19,19 +19,19 @@ class VVBufferGLWindow : public QWindow	{
 	Q_OBJECT
 
 public:
-	explicit VVBufferGLWindow(VVGLContextRef & inSharedContext, QWindow * inParent=nullptr);
+	explicit VVBufferGLWindow(GLContextRef & inSharedContext, QWindow * inParent=nullptr);
 	~VVBufferGLWindow();
 	
 	void startRendering();
 	void stopRendering();
 	
 	
-	void setContext(const VVGLContextRef & inCtx);
+	void setContext(const GLContextRef & inCtx);
 	
 	QThread * getRenderThread();
 	
-	inline void drawBuffer(VVGLBufferRef & inBuffer) { lock_guard<mutex> lock(ctxLock); buffer = inBuffer; }
-	inline VVGLBufferRef getBuffer() { lock_guard<mutex> lock(ctxLock); return _getBuffer(); }
+	inline void drawBuffer(GLBufferRef & inBuffer) { lock_guard<mutex> lock(ctxLock); buffer = inBuffer; }
+	inline GLBufferRef getBuffer() { lock_guard<mutex> lock(ctxLock); return _getBuffer(); }
 	
 signals:
 	Q_SIGNAL void renderedAFrame();
@@ -47,17 +47,17 @@ private:
 
 private:
 	mutex				ctxLock;
-	VVGLContextRef		ctx = nullptr;
-	VVGLSceneRef		scene = nullptr;
+	GLContextRef		ctx = nullptr;
+	GLSceneRef		scene = nullptr;
 	QThread				*ctxThread = nullptr;
-	VVGLBufferRef		vao = nullptr;
+	GLBufferRef		vao = nullptr;
 	Quad<VertXYST>		lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
-	VVGLBufferRef		buffer = nullptr;
+	GLBufferRef		buffer = nullptr;
 	
 	//bool		lastFill = false;
 	
 	void stopRenderingImmediately();
-	inline VVGLBufferRef _getBuffer() const { return buffer; }
+	inline GLBufferRef _getBuffer() const { return buffer; }
 };
 
 

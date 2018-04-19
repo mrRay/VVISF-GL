@@ -41,7 +41,7 @@ typedef enum	{
 	SyphonVideoSource		*syphonSrc;
 	
 	OSSpinLock		lastBufferLock;
-	VVGLBufferRef	lastBuffer;
+	GLBufferRef	lastBuffer;
 }
 
 - (void) loadVidInWithUniqueID:(NSString *)u;
@@ -53,7 +53,7 @@ typedef enum	{
 - (void) eject;
 
 - (NSMenu *) allocStaticSourcesMenu;
-- (VVGLBufferRef) allocBuffer;
+- (GLBufferRef) allocBuffer;
 
 - (void) _useMode:(SrcMode)n;
 

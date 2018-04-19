@@ -1,7 +1,7 @@
 #include "ISFBase.hpp"
 
-//#include "VVGLBuffer.hpp"
-//#include "VVGLBufferPool.hpp"
+//#include "GLBuffer.hpp"
+//#include "GLBufferPool.hpp"
 #include "ISFDoc.hpp"
 
 
@@ -22,11 +22,11 @@ using namespace std;
 
 #if !ISF_SDK_MAC && !ISF_SDK_IOS
 
-shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inPath, const ISFFileType & inType, const bool & inRecursive)	{
+shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & /*inPath*/, const ISFFileType & /*inType*/, const bool & /*inRecursive*/)	{
 	cout << "ERR empty: " << __PRETTY_FUNCTION__ << endl;
 	return nullptr;
 }
-shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & inType)	{
+shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & /*inType*/)	{
 	cout << "ERR empty: " << __PRETTY_FUNCTION__ << endl;
 	return nullptr;
 }

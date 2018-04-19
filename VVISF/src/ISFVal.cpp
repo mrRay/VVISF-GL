@@ -1,7 +1,7 @@
 #include "ISFVal.hpp"
 #include "ISFStringUtils.hpp"
 
-//#include "VVGLBuffer.hpp"
+//#include "GLBuffer.hpp"
 
 
 
@@ -84,7 +84,7 @@ ISFVal::ISFVal(const ISFValType & inType, const double & inR, const double & inG
 	val.colorVal[2] = inB;
 	val.colorVal[3] = inA;
 }
-ISFVal::ISFVal(const ISFValType & inType, const VVGLBufferRef & inImage) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const GLBufferRef & inImage) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	imageVal = inImage;
 }
@@ -173,7 +173,7 @@ int32_t ISFVal::getLongVal() const	{
 	}
 	return returnMe;
 }
-VVGLBufferRef ISFVal::getImageBuffer() const	{
+GLBufferRef ISFVal::getImageBuffer() const	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
 	switch (type)	{
 	case ISFValType_None:
@@ -196,7 +196,7 @@ VVGLBufferRef ISFVal::getImageBuffer() const	{
 	}
 	return nullptr;
 }
-void ISFVal::setImageBuffer(const VVGLBufferRef & n)	{
+void ISFVal::setImageBuffer(const GLBufferRef & n)	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
 	imageVal=n;
 	//cout << "\timageVal is now " << imageVal << endl;
@@ -263,7 +263,7 @@ ISFVal ISFPoint2DVal(const double & inX, const double & inY)	{
 ISFVal ISFColorVal(const double & inR, const double & inG, const double & inB, const double & inA)	{
 	return ISFVal(ISFValType_Color, inR, inG, inB, inA);
 }
-ISFVal ISFImageVal(const VVGLBufferRef & n)	{
+ISFVal ISFImageVal(const GLBufferRef & n)	{
 	return ISFVal(ISFValType_Image, n);
 }
 ISFVal ISFAudioVal()	{

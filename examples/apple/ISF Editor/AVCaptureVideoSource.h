@@ -10,9 +10,9 @@
 	AVCaptureSession			*propSession;
 	AVCaptureVideoDataOutput	*propOutput;
 	dispatch_queue_t			propQueue;
-	VVGLContextRef				propGLCtx;
+	GLContextRef				propGLCtx;
 	CVOpenGLTextureCacheRef		propTextureCache;
-	VVGLBufferRef				propLastBuffer;
+	GLBufferRef				propLastBuffer;
 	
 	//OSSpinLock					lastBufferLock;
 	//VVBuffer					*lastBuffer;

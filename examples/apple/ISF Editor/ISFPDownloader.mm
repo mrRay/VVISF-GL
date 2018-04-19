@@ -1,5 +1,5 @@
 #import "ISFPDownloader.h"
-//#import <VVISFKit/VVISFKit.h>
+//#import <VVISF/VVISF.h>
 #import "ISFPDownload.h"
 #import "ISFPDownloadTableCellView.h"
 #import "RegexKitLite.h"

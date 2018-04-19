@@ -64,8 +64,8 @@ class ISFAttr	{
 		inline void setCurrentVal(const ISFVal & n) { currentVal=n; }
 		double * updateAndGetEvalVariable();	//	updates this attribute's eval variable with the double val of "currentVal", and returns a ptr to the eval variable
 		inline bool shouldHaveImageBuffer() const { return (type==ISFValType_Cube || type==ISFValType_Image || type==ISFValType_Audio || type==ISFValType_AudioFFT); }
-		inline VVGLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return currentVal.getImageBuffer(); }
-		inline void setCurrentImageBuffer(const VVGLBufferRef & n) { if (ISFValTypeUsesImage(type)) currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << name << ")\n"; }
+		inline GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return currentVal.getImageBuffer(); }
+		inline void setCurrentImageBuffer(const GLBufferRef & n) { if (ISFValTypeUsesImage(type)) currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << name << ")\n"; }
 		inline ISFVal & getMinVal() { return minVal; }
 		inline ISFVal & getMaxVal() { return maxVal; }
 		inline ISFVal & getDefaultVal() { return defaultVal; }

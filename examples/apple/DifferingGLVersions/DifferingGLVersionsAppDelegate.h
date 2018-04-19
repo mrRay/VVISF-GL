@@ -15,20 +15,20 @@ using namespace VVGL;
 @interface DifferingGLVersionsAppDelegate : NSObject <NSApplicationDelegate>	{
 	CVDisplayLinkRef			displayLink;
 	
-	VVGLContextRef				legacyGLCtx;
-	VVGLContextRef				modernGLCtx;
+	GLContextRef				legacyGLCtx;
+	GLContextRef				modernGLCtx;
 	
-	VVGLBufferPoolRef			legacyBufferPool;
-	VVGLBufferPoolRef			modernBufferPool;
+	GLBufferPoolRef			legacyBufferPool;
+	GLBufferPoolRef			modernBufferPool;
 	
 	IBOutlet VVGLBufferGLView	*legacyBufferView;
 	IBOutlet VVGLBufferGLView	*modernBufferView;
 	
-	VVGLSceneRef				legacyGLScene;
-	VVGLSceneRef				modernGLScene;
+	GLSceneRef				legacyGLScene;
+	GLSceneRef				modernGLScene;
 	
 	NSDate						*date;	//	used to fade the texture in repeatedly
-	VVGLBufferRef				vao;
+	GLBufferRef				vao;
 	Quad<VertXYST>				lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
 }
 
@@ -38,7 +38,7 @@ using namespace VVGL;
 - (void) renderCallback;
 
 @property (retain,readwrite) NSDate *date;
-@property (assign,readwrite,setter=setVAO:) VVGLBufferRef vao;
+@property (assign,readwrite,setter=setVAO:) GLBufferRef vao;
 
 @end
 

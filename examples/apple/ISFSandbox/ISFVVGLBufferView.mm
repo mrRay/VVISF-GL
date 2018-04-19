@@ -1,5 +1,5 @@
 #import "ISFVVGLBufferView.h"
-//#include "VVGLContext.hpp"
+//#include "GLContext.hpp"
 
 
 
@@ -12,9 +12,9 @@
 @interface ISFVVGLBufferView()	{
 	
 }
-@property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::VVGLBufferRef vao;
+@property (assign,readwrite,setter=setVAO:,getter=vao) VVGL::GLBufferRef vao;
 @property (assign,readwrite) BOOL initialized;
-@property (readonly) VVGL::VVGLBufferRef retainDrawBuffer;
+@property (readonly) VVGL::GLBufferRef retainDrawBuffer;
 @end
 
 
@@ -88,7 +88,7 @@
 		if (!initialized)	{
 			//using namespace VVISF;
 			
-			VVGLBufferPoolRef		bp = GetGlobalBufferPool();
+			GLBufferPoolRef		bp = GetGlobalBufferPool();
 			if (bp != nullptr)	{
 				[self setSharedGLContext:bp->getContext()];
 				initialized = YES;
@@ -103,14 +103,14 @@
 - (void) redraw	{
 	//using namespace VVISF;
 	
-	VVGLBufferRef	lastBuffer = nullptr;
+	GLBufferRef	lastBuffer = nullptr;
 	OSSpinLockLock(&retainDrawLock);
 	lastBuffer = (!retainDraw || retainDrawBuffer==nullptr) ? nullptr : retainDrawBuffer;
 	OSSpinLockUnlock(&retainDrawLock);
 	
 	[self drawBuffer:lastBuffer];
 }
-- (void) drawBuffer:(VVGL::VVGLBufferRef)b	{
+- (void) drawBuffer:(VVGL::GLBufferRef)b	{
 	//NSLog(@"%s ... %s",__func__,b->getDescriptionString().c_str());
 	
 	BOOL			bail = NO;
@@ -154,7 +154,7 @@
 	}
 	OSSpinLockUnlock(&retainDrawLock);
 }
-- (void) setSharedGLContext:(const VVGLContextRef)n	{
+- (void) setSharedGLContext:(const GLContextRef)n	{
 	using namespace VVISF;
 	
 	pthread_mutex_lock(&renderLock);
@@ -164,7 +164,7 @@
 	scene = make_shared<ISFScene>(n->newContextSharingMe());
 	if (sceneFilePath != nil)
 		scene->useFile(string([sceneFilePath UTF8String]));
-	//	make an NSOpenGLContext wrapping the CGLContext inside the VVGLContextRef, make it draw into the view
+	//	make an NSOpenGLContext wrapping the CGLContext inside the GLContextRef, make it draw into the view
 	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->getContext()->ctx];
 	if (sceneCtxWrapper != nil)	{
 		[self setOpenGLContext:sceneCtxWrapper];
@@ -207,7 +207,7 @@
 	retainDraw = n;
 	OSSpinLockUnlock(&retainDrawLock);
 }
-- (void) setRetainDrawBuffer:(VVGL::VVGLBufferRef)n	{
+- (void) setRetainDrawBuffer:(VVGL::GLBufferRef)n	{
 	OSSpinLockLock(&retainDrawLock);
 	retainDrawBuffer = n;
 	OSSpinLockUnlock(&retainDrawLock);

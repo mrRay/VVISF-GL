@@ -13,10 +13,10 @@
 
 @implementation BufferObject
 
-+ (id) createWithBuffer:(VVGL::VVGLBufferRef)n	{
++ (id) createWithBuffer:(VVGL::GLBufferRef)n	{
 	return [[[BufferObject alloc] initWithBuffer:n] autorelease];
 }
-- (id) initWithBuffer:(VVGL::VVGLBufferRef)n	{
+- (id) initWithBuffer:(VVGL::GLBufferRef)n	{
 	self = [super init];
 	if (self != nil)	{
 		bufferRef = n;
@@ -32,11 +32,11 @@
 	[super dealloc];
 }
 /*
-- (VVGL::VVGLBufferRef) bufferRef	{
+- (VVGL::GLBufferRef) bufferRef	{
 	return buffer;
 }
 */
-- (const VVGL::VVGLBufferRef &) bufferRef	{
+- (const VVGL::GLBufferRef &) bufferRef	{
 	return bufferRef;
 }
 

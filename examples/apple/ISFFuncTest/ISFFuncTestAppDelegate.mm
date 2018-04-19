@@ -57,11 +57,11 @@ using namespace VVGL;
 	
 		switch ([tmpNum intValue])	{
 		case GLVersion_2:
-			sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+			sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
 			[glVersPUB selectItemWithTag:2];
 			break;
 		default:
-			sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+			sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
 			[glVersPUB selectItemWithTag:4];
 			break;
 		}
@@ -112,7 +112,7 @@ using namespace VVGL;
 		if (scene == nullptr)
 			return;
 		NSRect				viewFrame = [bufferView frame];
-		VVGLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
+		GLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
 		[bufferView drawBuffer:tmpBuffer];
 		//	tell the buffer pool to do its housekeeping (releases any "old" resources in the pool that have been sticking around for a while)
 		GetGlobalBufferPool()->housekeeping();

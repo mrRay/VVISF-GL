@@ -11,7 +11,7 @@
 
 
 
-VVGLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const VVGLBufferPoolRef & inPoolRef)	{
+GLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const GLBufferPoolRef & inPoolRef)	{
 	if (c == nil)	{
 		NSLog(@"\t\terr: passed nil img %s",__func__);
 		return nullptr;
@@ -19,7 +19,7 @@ VVGLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const VVGLBufferPool
 	if (inPoolRef==nullptr)
 		return nullptr;
 	
-	VVGLContextRef		tmpCtx = inPoolRef->getContext();
+	GLContextRef		tmpCtx = inPoolRef->getContext();
 	if (tmpCtx == nullptr)
 		return nullptr;
 	
@@ -43,17 +43,17 @@ VVGLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const VVGLBufferPool
 	and then set up the VVBuffer to retain the underlying SyphonImage resource (which will be freed 
 	when the VVBuffer is released)		*/
 	//VVBuffer			*returnMe = [[VVBuffer alloc] initWithPool:self];
-	VVGLBufferRef		returnMe = make_shared<VVGLBuffer>(inPoolRef);
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
 	inPoolRef->timestampThisBuffer(returnMe);		//	timestamp the buffer.  if done judiciously, can help with tracking "new" content
-	VVGLBuffer::Descriptor	&desc = returnMe->desc;	//	get the buffer's descriptor.  this is a ptr to a C structure which contains the basic properties of the buffer.  C struct because its contents are used to compare buffers/locate "free" buffers in the pool, and as such its contents need to be immediately accessible
+	GLBuffer::Descriptor	&desc = returnMe->desc;	//	get the buffer's descriptor.  this is a ptr to a C structure which contains the basic properties of the buffer.  C struct because its contents are used to compare buffers/locate "free" buffers in the pool, and as such its contents need to be immediately accessible
 	
-	desc.type = VVGLBuffer::Type_Tex;						//	it's a GL texture resources (there are other values in this typdef representing other types of resources)
-	desc.target = VVGLBuffer::Target_Rect;			//	this is what kind of texture it is (rect or 2d)
-	desc.internalFormat = VVGLBuffer::IF_RGBA8;			//	the GL texture internal format (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
-	desc.pixelFormat = VVGLBuffer::PF_BGRA;				//	the GL texture pixel format (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
-	desc.pixelType = VVGLBuffer::PT_UInt_8888_Rev;		//	the GL texture pixel type (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
-	desc.cpuBackingType = VVGLBuffer::Backing_None;		//	what kind of CPU backing there is- none, internal (created/freed by this framework/API), or external (created/freed by another API)
-	desc.gpuBackingType = VVGLBuffer::Backing_External;	//	what kind of GPU backing there is- none, internal (created/freed by this framework/API), or external (created/freed by another API)
+	desc.type = GLBuffer::Type_Tex;						//	it's a GL texture resources (there are other values in this typdef representing other types of resources)
+	desc.target = GLBuffer::Target_Rect;			//	this is what kind of texture it is (rect or 2d)
+	desc.internalFormat = GLBuffer::IF_RGBA8;			//	the GL texture internal format (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
+	desc.pixelFormat = GLBuffer::PF_BGRA;				//	the GL texture pixel format (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;		//	the GL texture pixel type (tex will be created with this property- if tex is created externally, this should match the tex's actual properties)
+	desc.cpuBackingType = GLBuffer::Backing_None;		//	what kind of CPU backing there is- none, internal (created/freed by this framework/API), or external (created/freed by another API)
+	desc.gpuBackingType = GLBuffer::Backing_External;	//	what kind of GPU backing there is- none, internal (created/freed by this framework/API), or external (created/freed by another API)
 	//desc.name = [newImage textureName];				//	the actual GL texture name.  this is what you bind when you want to draw a texture.
 	desc.texRangeFlag = false;							//	reserved, set to NO for now.
 	desc.texClientStorageFlag = false;					//	reserved, set to NO for now.
@@ -65,11 +65,11 @@ VVGLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const VVGLBufferPool
 	returnMe->size = newSrcRect.size;	//	set the buffer's size.  the "size" is the size of the GL resource, and is always in pixels.
 	returnMe->srcRect = newSrcRect;		//	set the buffer's "srcRect".  the "srcRect" is the area of the GL resource that is used to describe the image this VVBuffer represents.  the units are always in pixels (even if the buffer is a GL_TEXTURE_2D, and its tex coords are normalized).  this is used to describe images that don't occupy the full region of a texture, and do zero-cost cropping.  the srcRect is respected by everything in this framework.
 	returnMe->backingSize = newSrcRect.size;	//	the backing size is the size (in pixels) of whatever's backing the GL resource.  there's no CPU backing in this case- just set it to be the same as the buffer's "size".
-	returnMe->backingID = (VVGL::VVGLBuffer::BackingID)VVGLBufferBackingID_Syphon;	//	set the backing ID to indicate that this buffer was created by wrapping a syphon image.
+	returnMe->backingID = (VVGL::GLBuffer::BackingID)VVGLBufferBackingID_Syphon;	//	set the backing ID to indicate that this buffer was created by wrapping a syphon image.
 	
 	
 	//	set up the buffer i'm returning to use this callback when it's released- we'll free the SyphonImage in this callback
-	returnMe->backingReleaseCallback = [](VVGLBuffer& inBuffer, void* inReleaseContext)	{
+	returnMe->backingReleaseCallback = [](GLBuffer& inBuffer, void* inReleaseContext)	{
 		SyphonImage		*tmpImg = (SyphonImage*)inReleaseContext;
 		if (tmpImg != nil)	{
 			[tmpImg release];

@@ -23,13 +23,13 @@
 - (id) init	{
 	self = [super init];
 	if (self != nil)	{
-		legacyGLCtx = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		legacyBufferPool = make_shared<VVGLBufferPool>(legacyGLCtx);
-		legacyGLScene = make_shared<VVGLScene>(legacyGLCtx->newContextSharingMe());
+		legacyGLCtx = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		legacyBufferPool = make_shared<GLBufferPool>(legacyGLCtx);
+		legacyGLScene = make_shared<GLScene>(legacyGLCtx->newContextSharingMe());
 		
-		modernGLCtx = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
-		modernBufferPool = make_shared<VVGLBufferPool>(modernGLCtx);
-		modernGLScene = make_shared<VVGLScene>(modernGLCtx->newContextSharingMe());
+		modernGLCtx = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
+		modernBufferPool = make_shared<GLBufferPool>(modernGLCtx);
+		modernGLScene = make_shared<GLScene>(modernGLCtx->newContextSharingMe());
 		
 		[self setDate:[NSDate date]];
 		
@@ -41,15 +41,15 @@
 
 
 - (void) initLegacyGL	{
-	//	make an NSImage from the PNG included with the app, create a VVGLBufferRef from it
+	//	make an NSImage from the PNG included with the app, create a GLBufferRef from it
 	NSImage			*tmpImg = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SampleImg" ofType:@"png"]];
-	VVGLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg, false, legacyBufferPool);
+	GLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg, false, legacyBufferPool);
 	[tmpImg release];
 	tmpImg = nil;
 	
 	void			*selfPtr = (void*)self;
 	
-	legacyGLScene->setRenderCallback([selfPtr, imgBuffer](const VVGLScene & n)	{
+	legacyGLScene->setRenderCallback([selfPtr, imgBuffer](const GLScene & n)	{
 		if (imgBuffer == nullptr)	{
 			NSLog(@"\t\terr: legacy imgBuffer null, bailing");
 			return;
@@ -63,7 +63,7 @@
 		texQuad.populateGeo(geoRect);
 		texQuad.populateTex(texRect, imgBuffer->flipped);
 		
-		//	draw the VVGLBufferRef we created from the PNG, using the tex quad
+		//	draw the GLBufferRef we created from the PNG, using the tex quad
 		glEnable(imgBuffer->desc.target);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -87,9 +87,9 @@
 
 
 - (void) initModernGL	{
-	//	make an NSImage from the PNG included with the app, create a VVGLBufferRef from it
+	//	make an NSImage from the PNG included with the app, create a GLBufferRef from it
 	NSImage			*tmpImg = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SampleImg" ofType:@"png"]];
-	VVGLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg, false, modernBufferPool);
+	GLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg, false, modernBufferPool);
 	[tmpImg release];
 	tmpImg = nil;
 	
@@ -131,15 +131,15 @@ FragColor *= (1.-fadeVal);\r\
 	//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
 	//	the same underlying vars, which will be retained until these callback blocks are 
 	//	destroyed and shared between the callback lambdas...
-	VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-	VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
-	VVGLCachedUniRef		inputImageUni = make_shared<VVGLCachedUni>("inputImage");
-	VVGLCachedUniRef		inputImageRectUni = make_shared<VVGLCachedUni>("inputImageRect");
-	VVGLCachedUniRef		isRectTexUni = make_shared<VVGLCachedUni>("isRectTex");
-	VVGLCachedUniRef		fadeValUni = make_shared<VVGLCachedUni>("fadeVal");
+	GLCachedAttribRef		xyzAttr = make_shared<GLCachedAttrib>("inXYZ");
+	GLCachedAttribRef		stAttr = make_shared<GLCachedAttrib>("inST");
+	GLCachedUniRef		inputImageUni = make_shared<GLCachedUni>("inputImage");
+	GLCachedUniRef		inputImageRectUni = make_shared<GLCachedUni>("inputImageRect");
+	GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
+	GLCachedUniRef		fadeValUni = make_shared<GLCachedUni>("fadeVal");
 	
 	//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-	modernGLScene->setRenderPrepCallback([xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,self](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	modernGLScene->setRenderPrepCallback([xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,self](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
@@ -157,7 +157,7 @@ FragColor *= (1.-fadeVal);\r\
 	});
 	
 	//	the render callback passes all the data to the GL program
-	modernGLScene->setRenderCallback([imgBuffer,xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,selfPtr](const VVGLScene & n)	{
+	modernGLScene->setRenderCallback([imgBuffer,xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,selfPtr](const GLScene & n)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (imgBuffer == nullptr)
 			return;
@@ -175,15 +175,15 @@ FragColor *= (1.-fadeVal);\r\
 		
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(VVGLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==VVGLBuffer::Target_2D) ? imgBuffer->name : 0);
-		glBindTexture(VVGLBuffer::Target_Rect, 0);
+		glBindTexture(GLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==GLBuffer::Target_2D) ? imgBuffer->name : 0);
+		glBindTexture(GLBuffer::Target_Rect, 0);
 		if (inputImageUni->loc >= 0)	{
 			glUniform1i(inputImageUni->loc, 0);
 		}
 		//	pass the RECT texture to the program (if there's a RECT texture)
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(VVGLBuffer::Target_2D, 0);
-		glBindTexture(VVGLBuffer::Target_Rect, (imgBuffer!=nullptr && imgBuffer->desc.target==VVGLBuffer::Target_Rect) ? imgBuffer->name : 0);
+		glBindTexture(GLBuffer::Target_2D, 0);
+		glBindTexture(GLBuffer::Target_Rect, (imgBuffer!=nullptr && imgBuffer->desc.target==GLBuffer::Target_Rect) ? imgBuffer->name : 0);
 		if (inputImageRectUni->loc >= 0)	{
 			glUniform1i(inputImageRectUni->loc, 1);
 		}
@@ -193,10 +193,10 @@ FragColor *= (1.-fadeVal);\r\
 				glUniform1i(isRectTexUni->loc, 0);
 			else	{
 				switch (imgBuffer->desc.target)	{
-				case VVGLBuffer::Target_2D:
+				case GLBuffer::Target_2D:
 					glUniform1i(isRectTexUni->loc, 1);
 					break;
-				case VVGLBuffer::Target_Rect:
+				case GLBuffer::Target_Rect:
 					glUniform1i(isRectTexUni->loc, 2);
 					break;
 				default:
@@ -213,7 +213,7 @@ FragColor *= (1.-fadeVal);\r\
 		}
 		
 		//	bind the VAO
-		VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+		GLBufferRef		tmpVAO = [(id)selfPtr vao];
 		glBindVertexArray(tmpVAO->name);
 		
 		uint32_t			vbo = 0;
@@ -278,12 +278,12 @@ FragColor *= (1.-fadeVal);\r\
 	//NSLog(@"%s",__func__);
 	
 	NSRect				legacyFrame = [legacyBufferView frame];
-	VVGLBufferRef		legacyTex = legacyGLScene->createAndRenderABuffer(NSTOVVGLSIZE(legacyFrame.size), legacyBufferPool);
+	GLBufferRef		legacyTex = legacyGLScene->createAndRenderABuffer(NSTOVVGLSIZE(legacyFrame.size), legacyBufferPool);
 	[legacyBufferView drawBuffer:legacyTex];
 	legacyBufferPool->housekeeping();
 	
 	NSRect				modernFrame = [modernBufferView frame];
-	VVGLBufferRef		modernTex = modernGLScene->createAndRenderABuffer(NSTOVVGLSIZE(modernFrame.size), modernBufferPool);
+	GLBufferRef		modernTex = modernGLScene->createAndRenderABuffer(NSTOVVGLSIZE(modernFrame.size), modernBufferPool);
 	[modernBufferView drawBuffer:modernTex];
 	modernBufferPool->housekeeping();
 }

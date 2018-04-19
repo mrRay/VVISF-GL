@@ -1,6 +1,6 @@
 #import "ISFPropInputTableCellView.h"
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/VVISFKit.h>
+//#import <VVISF/VVISF.h>
 #import "JSONGUIController.h"
 //#import <DDMathParser/DDMathParser.h>
 #import "RegexKitLite.h"

@@ -138,7 +138,7 @@ ISFDoc::~ISFDoc()	{
 #pragma mark --------------------- getters
 
 
-const VVGLBufferRef ISFDoc::getBufferForKey(const string & n)	{
+const GLBufferRef ISFDoc::getBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	for (const auto & attribRefIt : imageInputs)	{
@@ -164,7 +164,7 @@ const VVGLBufferRef ISFDoc::getBufferForKey(const string & n)	{
 	}
 	return nullptr;
 }
-const VVGLBufferRef ISFDoc::getPersistentBufferForKey(const string & n)	{
+const GLBufferRef ISFDoc::getPersistentBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	for (const auto & targetBufIt : persistentBuffers)	{
@@ -173,7 +173,7 @@ const VVGLBufferRef ISFDoc::getPersistentBufferForKey(const string & n)	{
 	}
 	return nullptr;
 }
-const VVGLBufferRef ISFDoc::getTempBufferForKey(const string & n)	{
+const GLBufferRef ISFDoc::getTempBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	for (const auto & targetBufIt : tempBuffers)	{
@@ -300,72 +300,72 @@ string ISFDoc::generateTextureTypeString()	{
 	
 	for (const auto & attribRefIt : imageInputs)	{
 		if (attribRefIt->shouldHaveImageBuffer())	{
-			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
-			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
+			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
+			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
 #if ISF_SDK_MAC
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
 #if !ISF_SDK_RPI
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
 		}
 	}
 	for (const auto & attribRefIt : audioInputs)	{
 		if (attribRefIt->shouldHaveImageBuffer())	{
-			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
-			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
+			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
+			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
 #if ISF_SDK_MAC
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
 #if !ISF_SDK_RPI
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
 		}
 	}
 	for (const auto & attribRefIt : imageImports)	{
 		if (attribRefIt->shouldHaveImageBuffer())	{
-			VVGLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
-			if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
+			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
+			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
 #if ISF_SDK_MAC
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
 #if !ISF_SDK_RPI
-			else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
+			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
 		}
 	}
 	for (const auto & targetBufIt : persistentBuffers)	{
-		VVGLBufferRef		tmpBuffer = targetBufIt->getBuffer();
-		if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
+		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
+		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
 #if ISF_SDK_MAC
-		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
+		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
 #if !ISF_SDK_RPI
-		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
+		else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
 	}
 	for (const auto & targetBufIt : tempBuffers)	{
-		VVGLBufferRef		tmpBuffer = targetBufIt->getBuffer();
-		if (tmpBuffer==nullptr || tmpBuffer->desc.target==VVGLBuffer::Target_2D)
+		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
+		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
 #if ISF_SDK_MAC
-		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Rect)
+		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
 #if !ISF_SDK_RPI
-		else if (tmpBuffer->desc.target==VVGLBuffer::Target_Cube)
+		else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
 	}
@@ -397,9 +397,9 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	bool			requires2DRectMacro = false;
 	bool			requires2DRectBiasMacro = false;
 	//size_t			findIndex;
-	VVRange		tmpRange(0,0);
+	Range		tmpRange(0,0);
 	string			searchString("");
-	VVGLBufferRef	imgBuffer = nullptr;
+	GLBufferRef	imgBuffer = nullptr;
 	string			modSrcString("");
 	string			newString("");
 	size_t			tmpIndex;
@@ -410,7 +410,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	{
 		//	remove any lines containing #version tags
 		searchString = string("#version");
-		tmpRange = VVRange(newFragShaderSrc.find(searchString), searchString.size());
+		tmpRange = Range(newFragShaderSrc.find(searchString), searchString.size());
 		do	{
 			if (tmpRange.loc != string::npos)	{
 				tmpIndex = modSrcString.find_first_of("\n\r\f", tmpRange.max());
@@ -418,7 +418,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					tmpRange.len = tmpIndex - tmpRange.loc;
 					newFragShaderSrc.erase(tmpRange.loc, tmpRange.len);
 					
-					tmpRange = VVRange(newFragShaderSrc.find(searchString), searchString.size());
+					tmpRange = Range(newFragShaderSrc.find(searchString), searchString.size());
 				}
 			}
 		} while (tmpRange.loc != string::npos);
@@ -467,7 +467,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	find-and-replace vv_FragNormCoord (v1 of the ISF spec) with isf_FragNormCoord (v2 of the ISF spec)
 		searchString = string("vv_FragNormCoord");
 		newString = string("isf_FragNormCoord");
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
 			tmpRange.loc = modSrcString.find(searchString);
 			if (tmpRange.loc != string::npos)
@@ -478,13 +478,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_PIXEL
 		searchString = string("IMG_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *path);
@@ -496,7 +496,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					string &		samplerCoord = varArray[1];
 					const char *	samplerCoordC = samplerCoord.c_str();
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+					if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 						if (varArrayCount==3)	{
 							newFuncString = FmtString("VVSAMPLER_2DBYPIXEL(%s, _%s_imgRect, _%s_imgSize, _%s_flip, %s, %s)",samplerNameC,samplerNameC,samplerNameC,samplerNameC,samplerCoordC,varArray[2].c_str());
 							requires2DBiasMacro = true;
@@ -525,13 +525,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_NORM_PIXEL
 		searchString = string("IMG_NORM_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *path);
@@ -543,7 +543,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					string &		samplerCoord = varArray[1];
 					const char *	samplerCoordC = samplerCoord.c_str();
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+					if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 						if (varArrayCount==3)	{
 							newFuncString = FmtString("VVSAMPLER_2DBYNORM(%s, _%s_imgRect, _%s_imgSize, _%s_flip, %s, %s)",samplerNameC,samplerNameC,samplerNameC,samplerNameC,samplerCoordC,varArray[2].c_str());
 							requires2DBiasMacro = true;
@@ -572,13 +572,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_THIS_PIXEL
 		searchString = string("IMG_THIS_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *path);
@@ -598,7 +598,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					case GLVersion_2:
 					case GLVersion_ES:
 					case GLVersion_ES2:
-						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+						if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 							newFuncString = FmtString("texture2D(%s, _%s_texCoord)",samplerNameC,samplerNameC);
 						}
 						else	{
@@ -638,13 +638,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_THIS_NORM_PIXEL
 		searchString = string("IMG_THIS_NORM_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *path);
@@ -663,7 +663,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					case GLVersion_2:
 					case GLVersion_ES:
 					case GLVersion_ES2:
-						if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+						if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 							newFuncString = FmtString("texture2D(%s, _%s_normTexCoord)",samplerNameC,samplerNameC);
 						}
 						else	{
@@ -703,13 +703,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_SIZE
 		searchString = string("IMG_SIZE");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *path);
@@ -765,7 +765,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	{
 		//	remove any lines containing #version tags
 		searchString = string("#version");
-		tmpRange = VVRange(newVertShaderSrc.find(searchString), searchString.size());
+		tmpRange = Range(newVertShaderSrc.find(searchString), searchString.size());
 		do	{
 			if (tmpRange.loc != string::npos)	{
 				tmpIndex = modSrcString.find_first_of("\n\r\f", tmpRange.max());
@@ -773,7 +773,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					tmpRange.len = tmpIndex - tmpRange.loc;
 					newVertShaderSrc.erase(tmpRange.loc, tmpRange.len);
 					
-					tmpRange = VVRange(newVertShaderSrc.find(searchString), searchString.size());
+					tmpRange = Range(newVertShaderSrc.find(searchString), searchString.size());
 				}
 			}
 		} while (tmpRange.loc != string::npos);
@@ -880,7 +880,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	find-and-replace vv_FragNormCoord (v1 of the ISF spec) with isf_FragNormCoord (v2 of the ISF spec)
 		searchString = string("vv_FragNormCoord");
 		newString = string("isf_FragNormCoord");
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
 			tmpRange.loc = modSrcString.find(searchString);
 			if (tmpRange.loc != string::npos)
@@ -890,7 +890,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	find-and-replace vv_vertShaderInit (v1 of the ISF spec) with isf_vertShaderInit (v2 of the ISF spec)
 		searchString = string("vv_vertShaderInit");
 		newString = string("isf_vertShaderInit");
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
 			tmpRange.loc = modSrcString.find(searchString);
 			if (tmpRange.loc != string::npos)
@@ -900,13 +900,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_PIXEL
 		searchString = string("IMG_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *path);
@@ -918,7 +918,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					string &		samplerCoord = varArray[1];
 					const char *	samplerCoordC = samplerCoord.c_str();
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+					if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 						if (varArrayCount==3)	{
 							newFuncString = FmtString("VVSAMPLER_2DBYPIXEL(%s, _%s_imgRect, _%s_imgSize, _%s_flip, %s, %s)",samplerNameC,samplerNameC,samplerNameC,samplerNameC,samplerCoordC,varArray[2].c_str());
 							requires2DBiasMacro = true;
@@ -947,13 +947,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_NORM_PIXEL
 		searchString = string("IMG_NORM_PIXEL");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *path);
@@ -965,7 +965,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 					string &		samplerCoord = varArray[1];
 					const char *	samplerCoordC = samplerCoord.c_str();
 					imgBuffer = getBufferForKey(samplerName);
-					if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)	{
+					if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
 						if (varArrayCount==3)	{
 							newFuncString = FmtString("VVSAMPLER_2DBYNORM(%s, _%s_imgRect, _%s_imgSize, _%s_flip, %s, %s)",samplerNameC,samplerNameC,samplerNameC,samplerNameC,samplerCoordC,varArray[2].c_str());
 							requires2DBiasMacro = true;
@@ -994,13 +994,13 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	now find-and-replace IMG_SIZE
 		searchString = string("IMG_SIZE");
 		imgBuffer = nullptr;
-		tmpRange = VVRange(0, searchString.size());
+		tmpRange = Range(0, searchString.size());
 		do	{
-			tmpRange = VVRange(modSrcString.find(searchString), searchString.size());
+			tmpRange = Range(modSrcString.find(searchString), searchString.size());
 			if (tmpRange.loc != string::npos)	{
 				vector<string>		varArray(0);
 				varArray.reserve(5);
-				VVRange		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
+				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
 					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *path);
@@ -1041,7 +1041,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		for (const auto & it : imgThisNormPixelSamplerNames)	{
 			const char *	samplerName = it.c_str();
 			imgBuffer = getBufferForKey(it);
-			if (imgBuffer==nullptr || imgBuffer->desc.target==VVGLBuffer::Target_2D)
+			if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)
 				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) ? vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) : vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
 			else
 				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) ? vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) : vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
@@ -1055,7 +1055,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	string			fragVersionString("");
 	string			vertVersionString("");
 	searchString = string("#version ");
-	tmpRange = VVRange(0, searchString.size());
+	tmpRange = Range(0, searchString.size());
 	tmpRange.loc = newFragShaderSrc.find(searchString);
 	if (tmpRange.loc != string::npos)	{
 		tmpRange.len = newFragShaderSrc.find_first_of("\n\r\f", tmpRange.max()) - tmpRange.loc;
@@ -1064,7 +1064,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		newFragShaderSrc.insert(0, fragVersionString);
 	}
 	
-	tmpRange = VVRange(0, searchString.size());
+	tmpRange = Range(0, searchString.size());
 	tmpRange.loc = newVertShaderSrc.find(searchString);
 	if (tmpRange.loc != string::npos)	{
 		tmpRange.len = newVertShaderSrc.find_first_of("\n\r\f", tmpRange.max()) - tmpRange.loc;
@@ -1254,7 +1254,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (!cubeFlagJ.is_null() && cubeFlagJ.get<string>() != "cube")
 					cubeFlagJ = json();
 				
-				VVGLBufferRef		importedBuffer = nullptr;
+				GLBufferRef		importedBuffer = nullptr;
 				
 				//	are we a cube map?
 				if (!cubeFlagJ.is_null())	{
@@ -1288,7 +1288,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *path);
 					//	get the full path to the image we need to import
 					string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
-					//	import the image to an VVGLBufferRef
+					//	import the image to an GLBufferRef
 					importedBuffer = CreateTexFromImage(fullPath);
 					if (importedBuffer == nullptr)
 						throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
@@ -1826,8 +1826,8 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 		case ISFValType_AudioFFT:
 			{
 				ISFVal			attribVal = inRef->getCurrentVal();
-				VVGLBufferRef	attribBuffer = attribVal.getImageBuffer();
-				if (attribBuffer==nullptr || attribBuffer->desc.target==VVGLBuffer::Target_2D)	{
+				GLBufferRef	attribBuffer = attribVal.getImageBuffer();
+				if (attribBuffer==nullptr || attribBuffer->desc.target==GLBuffer::Target_2D)	{
 					vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 					fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 				}
@@ -1853,8 +1853,8 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	auto		targetBufferBlock = [&](const ISFPassTargetRef & inRef)	{
 		const string &		tmpName = inRef->getName();
 		const char *		nameCStr = tmpName.c_str();
-		VVGLBufferRef		bufferRef = inRef->getBuffer();
-		if (bufferRef==nullptr || bufferRef->desc.target==VVGLBuffer::Target_2D)	{
+		GLBufferRef		bufferRef = inRef->getBuffer();
+		if (bufferRef==nullptr || bufferRef->desc.target==GLBuffer::Target_2D)	{
 			vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 			fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 		}

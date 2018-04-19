@@ -19,14 +19,14 @@
 	if (self != nil)	{
 		
 		//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-		//sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		//sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
 		
 		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.
 		CreateGlobalBufferPool(sharedContext);
 		
 		//	make the GL scene we're going to use to render to texture (the texture will then be drawn in a view)
-		glScene = make_shared<VVGLScene>(sharedContext->newContextSharingMe());
+		glScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
 		if (glScene->getGLVersion() == GLVersion_2)
 			[self initForGL2];
@@ -67,7 +67,7 @@
 - (void) renderCallback	{
 	//NSLog(@"%s",__func__);
 	//	tell the GL scene to allocate and render itself to a buffer
-	VVGLBufferRef		newTex = glScene->createAndRenderABuffer(VVGL::Size(150.,150.));
+	GLBufferRef		newTex = glScene->createAndRenderABuffer(VVGL::Size(150.,150.));
 	//if (newTex == nullptr)
 	//	NSLog(@"\t\terr: couldn't render a tex");
 	//else
@@ -98,7 +98,7 @@
 	glScene->setClearColor(0., 1., 0., 1.);
 	glScene->setPerformClear(true);
 	
-	glScene->setRenderCallback([selfPtr](const VVGLScene & n)	{
+	glScene->setRenderCallback([selfPtr](const GLScene & n)	{
 		Quad<VertXYZRGBA>		quad;
 		quad.populateGeo(VVGL::Rect(50., 50., 50., 50.));
 		quad.populateColor(VVGL::VT_RGBA(1., 0., 0., 1.));
@@ -113,7 +113,7 @@
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	});
 	
-	glScene->setRenderPreLinkCallback([](const VVGLScene & n)	{
+	glScene->setRenderPreLinkCallback([](const GLScene & n)	{
 		GLint				myProgram = n.getProgram();
 		glProgramParameteriEXT(myProgram, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
 		glProgramParameteriEXT(myProgram, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
@@ -129,9 +129,9 @@
 - (void) initForModernGL	{
 	NSLog(@"%s",__func__);
 	/*
-	//	make an NSImage from the PNG included with the app, create a VVGLBufferRef from it
+	//	make an NSImage from the PNG included with the app, create a GLBufferRef from it
 	NSImage			*tmpImg = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SampleImg" ofType:@"png"]];
-	VVGLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg);
+	GLBufferRef	imgBuffer = CreateBufferForNSImage(tmpImg);
 	[tmpImg release];
 	tmpImg = nil;
 	*/
@@ -156,11 +156,11 @@
 	//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
 	//	the same underlying vars, which will be retained until these callback blocks are 
 	//	destroyed and shared between the callback lambdas...
-	VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-	VVGLCachedAttribRef		rgbaAttr = make_shared<VVGLCachedAttrib>("inRGBA");
+	GLCachedAttribRef		xyzAttr = make_shared<GLCachedAttrib>("inXYZ");
+	GLCachedAttribRef		rgbaAttr = make_shared<GLCachedAttrib>("inRGBA");
 	
 	//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-	glScene->setRenderPrepCallback([xyzAttr,rgbaAttr,self](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	glScene->setRenderPrepCallback([xyzAttr,rgbaAttr,self](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
@@ -174,7 +174,7 @@
 	});
 	
 	//	the render callback passes all the data to the GL program
-	glScene->setRenderCallback([xyzAttr,rgbaAttr,selfPtr](const VVGLScene & n)	{
+	glScene->setRenderCallback([xyzAttr,rgbaAttr,selfPtr](const GLScene & n)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		//if (imgBuffer == nullptr)
 		//	return;
@@ -191,7 +191,7 @@
 		
 		
 		//	bind the VAO
-		VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+		GLBufferRef		tmpVAO = [(id)selfPtr vao];
 		if (tmpVAO == nullptr)
 			return;
 		glBindVertexArray(tmpVAO->name);

@@ -149,10 +149,10 @@
 	}
 	return returnMe;
 }
-- (VVGLBufferRef) allocBuffer	{
+- (GLBufferRef) allocBuffer	{
 	//NSLog(@"%s",__func__);
-	VVGLBufferRef	returnMe = nullptr;
-	VVGLBufferRef	newBuffer = nullptr;
+	GLBufferRef	returnMe = nullptr;
+	GLBufferRef	newBuffer = nullptr;
 	VideoSource		*src = nil;
 	OSSpinLockLock(&srcLock);
 	switch (srcMode)	{

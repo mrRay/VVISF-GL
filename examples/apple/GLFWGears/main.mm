@@ -11,15 +11,15 @@
 #include <GLFW/glfw3.h>
 
 #include "VVGL.hpp"
-#include "ISFKit.h"
+#include "VVISF.h"
 
 
 
 
-VVGL::VVGLScene			*displayScene = nullptr;
+VVGL::GLScene			*displayScene = nullptr;
 VVISF::ISFScene		*isfScene = nullptr;
 //	create the texture variable we're eventually going to render into
-VVGL::VVGLBufferRef		targetTex = nullptr;
+VVGL::GLBufferRef		targetTex = nullptr;
 
 
 void key( GLFWwindow* window, int k, int s, int action, int mods )	{
@@ -92,21 +92,21 @@ int main(int argc, char *argv[])	{
 	
 	//	...at this point, GLFW has been set up and is ready to go.
 	
-	//	wrap the window's GL context with a VVGLContext, which we're going to use to screate a couple other resources
-	VVGLContext		ctx(window);
-	VVGLContextRef	ctxRef = make_shared<VVGLContext>(ctx);
+	//	wrap the window's GL context with a GLContext, which we're going to use to screate a couple other resources
+	GLContext		ctx(window);
+	GLContextRef	ctxRef = make_shared<GLContext>(ctx);
 	//	first make the buffer pool
-	CreateGlobalBufferPool(make_shared<VVGLContext>(ctx));
+	CreateGlobalBufferPool(make_shared<GLContext>(ctx));
 	
 	
 	
 	
 	//	now create the display scene (this is what we're going to use to draw into the GLFWwindow)
-	displayScene = new VVGLScene(make_shared<VVGLContext>(ctx));
+	displayScene = new GLScene(make_shared<GLContext>(ctx));
 	displayScene->setAlwaysNeedsReshape(true);
 	displayScene->setClearColor(1., 0., 0., 1.);
 	//	set the display scene's render callback, which will draw 'targetTex' in the scene
-	displayScene->setRenderCallback([&](const VVGLScene & s){
+	displayScene->setRenderCallback([&](const GLScene & s){
 		if (targetTex == nullptr)
 			return;
 		//cout << "\tshould be drawing buffer " << *targetTex << endl;
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])	{
 	
 	
 	//	create the ISF scene, which is going to render-to-texture
-	isfScene = new ISFScene(make_shared<VVGLContext>(ctx));
+	isfScene = new ISFScene(make_shared<GLContext>(ctx));
 	isfScene->useFile(string("/Users/testAdmin/Documents/ISFSandbox/examples/apple/GLFWGears/CellMod.fs"));
 	cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
 	

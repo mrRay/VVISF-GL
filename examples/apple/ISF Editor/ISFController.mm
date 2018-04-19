@@ -55,7 +55,7 @@
 	[VVKQueueCenter removeObserver:self];
 	[super dealloc];
 }
-- (void) setSharedGLContext:(VVGLContextRef)n	{
+- (void) setSharedGLContext:(GLContextRef)n	{
 	//NSLog(@"%s",__func__);
 	if (n==nullptr)
 		return;
@@ -208,7 +208,7 @@
 		tmpPath = nil;
 	}
 }
-- (VVGL::VVGLBufferRef) renderFXOnThisBuffer:(VVGL::VVGLBufferRef)n passDict:(NSMutableDictionary *)d	{
+- (VVGL::GLBufferRef) renderFXOnThisBuffer:(VVGL::GLBufferRef)n passDict:(NSMutableDictionary *)d	{
 	//NSLog(@"%s",__func__);
 	if (n==nullptr)	{
 		//NSLog(@"\t\terr: bailing, passed a null buffer, %s",__func__);
@@ -248,7 +248,7 @@
 	[itemArray unlock];
 	
 	//VVBuffer		*returnMe = nil;
-	VVGL::VVGLBufferRef		returnMe = nullptr;
+	VVGL::GLBufferRef		returnMe = nullptr;
 	
 	//returnMe = [scene
 	//	allocAndRenderToBufferSized:((sceneIsFilter) ? [n srcRect].size : [self renderSize])
@@ -257,7 +257,7 @@
 	//returnMe = [scene allocAndRenderToBufferSized:[n srcRect].size prefer2DTex:NO passDict:d];
 	
 	//returnMe = CreateRGBATex(VVGL::Size(n->srcRect.size));
-	map<int32_t,VVGLBufferRef>		tmpPassDict;
+	map<int32_t,GLBufferRef>		tmpPassDict;
 	
 	try	{
 		//scene->renderToBuffer(returnMe, n->srcRect.size, (d==nil) ? nullptr : &tmpPassDict);
@@ -303,7 +303,7 @@
 	return returnMe;
 }
 //	only used to render for recording
-- (void) renderIntoBuffer:(VVGL::VVGLBufferRef)b atTime:(double)t	{
+- (void) renderIntoBuffer:(VVGL::GLBufferRef)b atTime:(double)t	{
 	if (b==nullptr)
 		return;
 	//if ([scene filePath]==nil)

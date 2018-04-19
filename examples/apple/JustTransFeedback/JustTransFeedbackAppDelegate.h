@@ -5,13 +5,13 @@ using namespace VVGL;
 using namespace std;
 
 @interface JustTransFeedbackAppDelegate : NSObject <NSApplicationDelegate>	{
-	VVGLContextRef		sharedContext;
+	GLContextRef		sharedContext;
 	
-	VVGLSceneRef		scene;
-	VVGLBufferRef		srcGeoVBO;
-	VVGLBufferRef		srcColorVBO;
-	VVGLBufferRef		dstGeoVBO;
-	VVGLBufferRef		dstColorVBO;
+	GLSceneRef		scene;
+	GLBufferRef		srcGeoVBO;
+	GLBufferRef		srcColorVBO;
+	GLBufferRef		dstGeoVBO;
+	GLBufferRef		dstColorVBO;
 }
 
 - (void) initForGL2;
@@ -19,10 +19,10 @@ using namespace std;
 
 - (IBAction) renderClicked:(id)sender;
 
-@property (assign,readwrite) VVGLBufferRef srcGeoVBO;
-@property (assign,readwrite) VVGLBufferRef srcColorVBO;
-@property (assign,readwrite) VVGLBufferRef dstGeoVBO;
-@property (assign,readwrite) VVGLBufferRef dstColorVBO;
+@property (assign,readwrite) GLBufferRef srcGeoVBO;
+@property (assign,readwrite) GLBufferRef srcColorVBO;
+@property (assign,readwrite) GLBufferRef dstGeoVBO;
+@property (assign,readwrite) GLBufferRef dstColorVBO;
 
 @end
 

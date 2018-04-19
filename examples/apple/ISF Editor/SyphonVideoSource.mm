@@ -74,8 +74,8 @@
 - (void) _stop	{
 	VVRELEASE(propClient);
 }
-- (VVGLBufferRef) allocBuffer	{
-	VVGLBufferRef		newBuffer = nullptr;
+- (GLBufferRef) allocBuffer	{
+	GLBufferRef		newBuffer = nullptr;
 	
 	OSSpinLockLock(&propLock);
 	if (propClient!=nil && [propClient hasNewFrame])	{

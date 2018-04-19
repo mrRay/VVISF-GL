@@ -49,7 +49,7 @@ to block of function calls that won't compile/link against a given SDK's headers
 
 
 #if ISF_SDK_QT
-#include "vvgl_qt_global.h"
+#include "VVGL_Qt_global.h"
 #endif
 
 

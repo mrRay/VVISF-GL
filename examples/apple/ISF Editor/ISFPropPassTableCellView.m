@@ -1,6 +1,6 @@
 #import "ISFPropPassTableCellView.h"
 #import "JSONGUIPersistentBuffer.h"
-//#import <VVISFKit/VVISFKit.h>
+//#import <VVISF/VVISF.h>
 //#import <DDMathParser/DDMathParser.h>
 #import "JSONGUIController.h"
 #import "ISFStringAdditions.h"

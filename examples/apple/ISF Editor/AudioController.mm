@@ -290,17 +290,17 @@ int		fftQuality = 512;
 	//	retain newBuffer in case we need to create an image with a different width
 }
 
-- (VVGLBufferRef) allocAudioImageBuffer	{
+- (GLBufferRef) allocAudioImageBuffer	{
 	//[self updateAudioResults];
-	VVGLBufferRef		returnMe = nullptr;
+	GLBufferRef		returnMe = nullptr;
 	LOCK(&bufferLock);
 	returnMe = audioBuffer;
 	UNLOCK(&bufferLock);
 	return returnMe;
 }
-- (VVGLBufferRef) allocAudioImageBufferWithWidth:(long)w	{
+- (GLBufferRef) allocAudioImageBufferWithWidth:(long)w	{
 	//NSLog(@"%s ... %d",__func__,w);
-	VVGLBufferRef		returnMe = nullptr;
+	GLBufferRef		returnMe = nullptr;
 	LOCK(&bufferLock);
 	ISFAudioBufferList	*myABL = (rawABL==nil) ? nil : [[rawABL retain] autorelease];
 	UNLOCK(&bufferLock);
@@ -368,18 +368,18 @@ int		fftQuality = 512;
 	return returnMe;
 	return nil;
 }
-- (VVGLBufferRef) allocAudioFFTImageBuffer	{
+- (GLBufferRef) allocAudioFFTImageBuffer	{
 	//[self updateAudioResults];
-	VVGLBufferRef		returnMe = nil;
+	GLBufferRef		returnMe = nil;
 	LOCK(&bufferLock);
 	returnMe = fftBuffer;
 	UNLOCK(&bufferLock);
 	return returnMe;
 }
-- (VVGLBufferRef) allocAudioFFTImageBufferWithWidth:(long)w	{
+- (GLBufferRef) allocAudioFFTImageBufferWithWidth:(long)w	{
 	//NSLog(@"%s ... %ld",__func__,w);
 	
-	VVGLBufferRef		returnMe = nullptr;
+	GLBufferRef		returnMe = nullptr;
 	LOCK(&bufferLock);
 	NSArray			*myFFTResults = (fftResults==nil) ? nil : [[fftResults retain] autorelease];
 	UNLOCK(&bufferLock);

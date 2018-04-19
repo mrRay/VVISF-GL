@@ -1,5 +1,5 @@
-#ifndef VVGL_GLOBAL_H
-#define VVGL_GLOBAL_H
+#ifndef VVGL_QT_GLOBAL_H
+#define VVGL_QT_GLOBAL_H
 
 #include <QtCore/qglobal.h>
 
@@ -9,4 +9,4 @@
 #  define VVGLSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif // VVGL_GLOBAL_H
+#endif // VVGL_QT_GLOBAL_H

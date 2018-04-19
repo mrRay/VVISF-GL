@@ -35,7 +35,7 @@
 	*/
 	[super dealloc];
 }
-- (VVGLBufferRef) allocBuffer	{
+- (GLBufferRef) allocBuffer	{
 	return nullptr;
 }
 - (NSArray *) arrayOfSourceMenuItems	{

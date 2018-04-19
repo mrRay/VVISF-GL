@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/VVISFKit.h>
-#include "ISFKit.h"
+//#import <VVISF/VVISF.h>
+#include "VVISF.h"
 #import "ISFUIItem.h"
 #import "MutLockArray.h"
 
@@ -38,7 +38,7 @@ using namespace VVGL;
 	MutLockArray			*itemArray;
 }
 
-- (void) setSharedGLContext:(VVGLContextRef)n;
+- (void) setSharedGLContext:(GLContextRef)n;
 
 - (IBAction) widthFieldUsed:(id)sender;
 - (IBAction) heightFieldUsed:(id)sender;
@@ -49,9 +49,9 @@ using namespace VVGL;
 @property (assign,readwrite) NSSize renderSize;
 
 - (void) loadFile:(NSString *)f;
-- (VVGL::VVGLBufferRef) renderFXOnThisBuffer:(VVGL::VVGLBufferRef)n passDict:(NSMutableDictionary *)d;
+- (VVGL::GLBufferRef) renderFXOnThisBuffer:(VVGL::GLBufferRef)n passDict:(NSMutableDictionary *)d;
 //	only used to render for recording!
-- (void) renderIntoBuffer:(VVGL::VVGLBufferRef)b atTime:(double)t;
+- (void) renderIntoBuffer:(VVGL::GLBufferRef)b atTime:(double)t;
 
 - (void) populateUI;
 

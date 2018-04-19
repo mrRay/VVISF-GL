@@ -697,7 +697,7 @@ using namespace VVISF;
 		{
 			//VVBuffer	*tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? [_globalVVBufferPool allocBufferForSyphonClient:syphonClient] : nil;
 			//return [tmpBuffer autorelease];
-			VVGLBufferRef	tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? CreateBufferForSyphonClient(syphonClient) : nullptr;
+			GLBufferRef	tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? CreateBufferForSyphonClient(syphonClient) : nullptr;
 			return [BufferObject createWithBuffer:tmpBuffer];
 		}
 		break;
@@ -710,7 +710,7 @@ using namespace VVISF;
 			NSNumber		*maxNum = (tmpDict==nil) ? nil : [tmpDict objectForKey:@"MAX"];
 			long			maxVal = (maxNum==nil) ? 0 : [maxNum longValue];
 			//VVBuffer		*tmpBuffer = nil;
-			VVGLBufferRef	tmpBuffer = nullptr;
+			GLBufferRef	tmpBuffer = nullptr;
 			if (maxVal <= 0)	{
 				if (type == ISFValType_Audio)
 					tmpBuffer = [_globalAudioController allocAudioImageBuffer];
@@ -801,7 +801,7 @@ using namespace VVISF;
 	case ISFValType_Image:	{
 		//VVBuffer	*tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? [_globalVVBufferPool allocBufferForSyphonClient:syphonClient] : nil;
 		//return [tmpBuffer autorelease];
-		VVGLBufferRef	tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? CreateBufferForSyphonClient(syphonClient) : nullptr;
+		GLBufferRef	tmpBuffer = (syphonClient!=nil && [syphonClient hasNewFrame]) ? CreateBufferForSyphonClient(syphonClient) : nullptr;
 		return ISFImageVal(tmpBuffer);
 		break;
 	}
@@ -813,7 +813,7 @@ using namespace VVISF;
 		NSNumber		*maxNum = (tmpDict==nil) ? nil : [tmpDict objectForKey:@"MAX"];
 		long			maxVal = (maxNum==nil) ? 0 : [maxNum longValue];
 		//VVBuffer		*tmpBuffer = nil;
-		VVGLBufferRef	tmpBuffer = nullptr;
+		GLBufferRef	tmpBuffer = nullptr;
 		if (maxVal <= 0)	{
 			if (type == ISFValType_Audio)
 				tmpBuffer = [_globalAudioController allocAudioImageBuffer];

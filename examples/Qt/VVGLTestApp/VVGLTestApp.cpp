@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-	VVGLContextRef		sharedContext = make_shared<VVGLContext>(nullptr, nullptr, true, sfcFmt);
+	GLContextRef		sharedContext = make_shared<GLContext>(nullptr, nullptr, true, sfcFmt);
 	
 	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
 	CreateGlobalBufferPool(sharedContext);
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	
 	//	load the image file we include with the sample app, convert it to a VVGLBufferRef
 	QImage		tmpImg(":/files/SampleImg.png");
-	VVGLBufferRef		imgBuffer = CreateBufferForQImage(&tmpImg);
+	GLBufferRef		imgBuffer = CreateBufferForQImage(&tmpImg);
 	
 	//	make the window, open it, give it an initial buffer to draw
 	VVBufferGLWindow			window(sharedContext);
@@ -42,20 +42,20 @@ int main(int argc, char *argv[])
 	
 	
 	//	set up the render-to-texture scene.  this is big because we're settup up different draw methods for different GL flavors; you probably only need one.
-	VVGLSceneRef		renderScene = nullptr;
-	VVGLBufferRef		vao = nullptr;
+	GLSceneRef		renderScene = nullptr;
+	GLBufferRef		vao = nullptr;
 	Quad<VertXYST>		lastVBOCoords;	//	the last coords used in the VBO associated with 'vao' (the VAO implicitly retains the VBO, so we only need to update it when the coords change- which we track with this)
 	{
 		QTime				myTimer;
 		myTimer.start();
 		//	make a new scene.  we're going to use this scene to render-to-texture, and we're going to display the texture.
-		renderScene = make_shared<VVGLScene>(sharedContext->newContextSharingMe());
+		renderScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
 		//	move the render scene to the window's render thread!
 		renderScene->getContext()->moveToThread(window.getRenderThread());
 		//	set up the render scene's draw callback, depending on the version of GL in use
 		//	if the shared context (from which all other contexts derive) is using GL 2...
 		if (sharedContext->version == GLVersion_2)	{
-			renderScene->setRenderCallback([imgBuffer,&myTimer](const VVGLScene & n)	{
+			renderScene->setRenderCallback([imgBuffer,&myTimer](const GLScene & n)	{
 				//	populate a tex quad with the geometry & tex coords
 				Quad<VertXYST>			texQuad;
 				VVGL::Size				sceneSize = n.getOrthoSize();
@@ -259,7 +259,7 @@ FragColor *= (1.-fadeVal);\r\
 		//	size the target texture so it's the same size as the window
 		double				ltbbm = window.devicePixelRatio();
 		VVGL::Size			windowSize = VVGL::Size(window.width()*ltbbm, window.height()*ltbbm);
-		VVGLBufferRef		newBuffer = CreateRGBATex(windowSize,true);
+		GLBufferRef		newBuffer = CreateRGBATex(windowSize,true);
 		//	tell the scene to render to the target texture
 		renderScene->renderToBuffer(newBuffer);
 		//	tell the window to draw the texture we just rendered!

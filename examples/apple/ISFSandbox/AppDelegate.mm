@@ -5,7 +5,7 @@
 
 
 
-VVGL::VVGLBufferRef		newTex = nullptr;
+VVGL::GLBufferRef		newTex = nullptr;
 
 
 
@@ -59,16 +59,16 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 	
 		//switch ([tmpNum intValue])	{
 		//case GLVersion_2:
-			sharedContext = make_shared<VVGLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+			sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
 		//	break;
 		//default:
-		//	sharedContext = make_shared<VVGLContext>(nullptr, CreateGL4PixelFormat());
+		//	sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
 		//	break;
 		//}
 		
 		CreateGlobalBufferPool(sharedContext);
 		
-		scene = make_shared<VVGLScene>();
+		scene = make_shared<GLScene>();
 		
 		[glView setSharedGLContext:sharedContext];
 		[glView setRetainDraw:YES];
@@ -89,7 +89,7 @@ VVGL::VVGLBufferRef		newTex = nullptr;
 }
 - (void) initGL2	{
 	NSLog(@"%s",__func__);
-	scene->setRenderCallback([](const VVGLScene & n)	{
+	scene->setRenderCallback([](const GLScene & n)	{
 		Quad<VertXYRGBA>		quad;
 		VVGL::Rect			geoRect(0, 0, 100, 100);
 		VVGL::VT_RGBA		tmpColor(0., 0., 1., 1.);
@@ -130,11 +130,11 @@ void main()	{\r\
 	scene->setVertexShaderString(vsString);
 	scene->setFragmentShaderString(fsString);
 	
-	VVGLCachedAttribRef		aXYZ = make_shared<VVGLCachedAttrib>("inXYZ");
-	VVGLCachedAttribRef		aRGBA = make_shared<VVGLCachedAttrib>("inRGBA");
+	GLCachedAttribRef		aXYZ = make_shared<GLCachedAttrib>("inXYZ");
+	GLCachedAttribRef		aRGBA = make_shared<GLCachedAttrib>("inRGBA");
 	
 	void					*selfPtr = (void*)self;
-	scene->setRenderPrepCallback([aXYZ,aRGBA,selfPtr](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	scene->setRenderPrepCallback([aXYZ,aRGBA,selfPtr](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		if (inPgmChanged)	{
 			GLint		myProgram = n.getProgram();
 			aXYZ->cacheTheLoc(myProgram);
@@ -142,7 +142,7 @@ void main()	{\r\
 			[(id)selfPtr setVAO:CreateVAO(true)];
 		}
 	});
-	scene->setRenderCallback([aXYZ,aRGBA,selfPtr](const VVGLScene & n)	{
+	scene->setRenderCallback([aXYZ,aRGBA,selfPtr](const GLScene & n)	{
 		
 		Quad<VertXYZRGBA>	targetQuad;
 		VVGL::Rect			geoRect(0, 0, 100, 100);
@@ -151,7 +151,7 @@ void main()	{\r\
 		targetQuad.populateColor(tmpColor);
 		
 		//	bind the VAO
-		VVGLBufferRef		tmpVAO = [(id)selfPtr vao];
+		GLBufferRef		tmpVAO = [(id)selfPtr vao];
 		glBindVertexArray(tmpVAO->name);
 		
 		uint32_t			vbo = 0;
@@ -193,9 +193,9 @@ void main()	{\r\
 		if (scene == nullptr)
 			return;
 		NSRect				viewFrame = [glView frame];
-		//VVGLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
-		VVGLBufferRef		tmpBuffer = CreateRGBATex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
-		//VVGLBufferRef		tmpBuffer = CreateRGBARectTex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
+		//GLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
+		GLBufferRef		tmpBuffer = CreateRGBATex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
+		//GLBufferRef		tmpBuffer = CreateRGBARectTex(VVGL::Size(viewFrame.size.width,viewFrame.size.height));
 		
 		scene->renderToBuffer(tmpBuffer);
 		
@@ -203,7 +203,7 @@ void main()	{\r\
 		if (lastRenderedBuffer != nullptr)
 			cout << "\tlastRenderedBuffer is " << *lastRenderedBuffer << endl;
 		
-		VVGLBufferCopierRef	copier = GetGlobalBufferCopier();
+		GLBufferCopierRef	copier = GetGlobalBufferCopier();
 		if (copier != nullptr)	{
 			copier->setCopyAndResize(false);
 			lastCopiedBuffer = copier->copyToNewBuffer(lastRenderedBuffer);
@@ -225,7 +225,7 @@ void main()	{\r\
 	NSLog(@"%s",__func__);
 	if (scene == nullptr)
 		return;
-	VVGLContextRef		ctx = scene->getContext();
+	GLContextRef		ctx = scene->getContext();
 	if (ctx == nullptr)
 		return;
 	ctx->makeCurrentIfNotCurrent();

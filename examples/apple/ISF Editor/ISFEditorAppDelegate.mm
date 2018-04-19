@@ -86,7 +86,7 @@
 		
 		[QCGLScene prepCommonQCBackendToRenderOnContext:sharedContext pixelFormat:[GLScene defaultPixelFormat]];
 		*/
-		sharedContext = make_shared<VVGLContext>();
+		sharedContext = make_shared<GLContext>();
 		CreateGlobalBufferPool(sharedContext);
 		
 		/*
@@ -878,7 +878,7 @@
 	//NSLog(@"%s",__func__);
 	/*
 	//	make sure we have an active GL context
-	VVGLContextRef		ctx = (GetGlobalBufferPool()==nullptr) ? nullptr : GetGlobalBufferPool()->getContext();
+	GLContextRef		ctx = (GetGlobalBufferPool()==nullptr) ? nullptr : GetGlobalBufferPool()->getContext();
 	if (ctx != nullptr)
 		ctx->makeCurrent();
 	
@@ -904,7 +904,7 @@
 		[outputView drawBuffer:lastSourceBuffer];
 	
 	
-	const VVGLBufferPoolRef		&bp = GetGlobalBufferPool();
+	const GLBufferPoolRef		&bp = GetGlobalBufferPool();
 	if (bp != nullptr)
 		bp->housekeeping();
 	*/
@@ -922,9 +922,9 @@
 	//	get a frame from syphon
 	//VVBuffer			*syphonBuffer = nil;
 	//VVBuffer			*buffer2d = nil;
-	VVGLBufferRef		buffer2d = nullptr;
+	GLBufferRef		buffer2d = nullptr;
 	//VVBuffer			*outBuffer = nil;
-	VVGLBufferRef		outBuffer = nullptr;
+	GLBufferRef		outBuffer = nullptr;
 	//BOOL				use2D = ([textureToggle intValue]==NSOnState) ? YES : NO;
 	NSUInteger			textureMatrixVal = (textureMatrix==nil) ? 0 : [textureMatrix selectedRow];
 	NSMutableDictionary		*newOutDict = MUTDICT;
@@ -964,12 +964,12 @@
 			//}
 			/*
 			//NSLog(@"\t\tlastSourceBuffer is %@",lastSourceBuffer);
-			VVGLBufferRef		srcBuffer = nullptr;
+			GLBufferRef		srcBuffer = nullptr;
 			if (lastSourceBuffer!=nullptr)	{
 				switch (textureMatrixVal)	{
 				case 0:	//	nothing specified/rect
 					//NSLog(@"\t\ttexture mode is rect");
-					if (lastSourceBuffer->desc.target != VVGLBuffer::Target_Rect)
+					if (lastSourceBuffer->desc.target != GLBuffer::Target_Rect)
 					{
 						//srcBuffer = [_globalVVBufferPool allocBGRTexSized:lastSourceBuffer->srcRect.size];
 						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
@@ -1168,8 +1168,8 @@
 				if (syphonServerContext != nullptr)
 					syphonServerContext->makeCurrent();
 				//VVBuffer		*preFXBuffer = srcBuffer;
-				//VVGLBufferRef	preFXBuffer = srcBuffer;
-				VVGLBufferRef	preFXBuffer = lastSourceBuffer;
+				//GLBufferRef	preFXBuffer = srcBuffer;
+				GLBufferRef	preFXBuffer = lastSourceBuffer;
 				if (outBuffer!=nullptr)	{
 					//cout << "\tshould be publishing " << *outBuffer << endl;
 					
@@ -1448,7 +1448,7 @@
 		
 	}
 	//[_globalVVBufferPool housekeeping];
-	const VVGLBufferPoolRef		&bp = GetGlobalBufferPool();
+	const GLBufferPoolRef		&bp = GetGlobalBufferPool();
 	if (bp != nullptr)
 		bp->housekeeping();
 	
@@ -1462,7 +1462,7 @@
 }
 */
 //	used to render for recording
-- (void) renderIntoBuffer:(VVGL::VVGLBufferRef)b atTime:(double)t	{
+- (void) renderIntoBuffer:(VVGL::GLBufferRef)b atTime:(double)t	{
 	if (b == nullptr)
 		return;
 	[isfController renderIntoBuffer:b atTime:t];

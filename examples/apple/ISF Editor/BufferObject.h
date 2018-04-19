@@ -11,11 +11,11 @@
 
 
 @interface BufferObject : NSObject	{
-	VVGL::VVGLBufferRef		bufferRef;
+	VVGL::GLBufferRef		bufferRef;
 }
-+ (id) createWithBuffer:(VVGL::VVGLBufferRef)n;
-- (id) initWithBuffer:(VVGL::VVGLBufferRef)n;
-//- (VVGL::VVGLBufferRef) bufferRef;
-- (const VVGL::VVGLBufferRef &) bufferRef;
++ (id) createWithBuffer:(VVGL::GLBufferRef)n;
+- (id) initWithBuffer:(VVGL::GLBufferRef)n;
+//- (VVGL::GLBufferRef) bufferRef;
+- (const VVGL::GLBufferRef &) bufferRef;
 
 @end

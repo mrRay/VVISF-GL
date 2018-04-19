@@ -9,8 +9,8 @@
 #import <Cocoa/Cocoa.h>
 //#import <VVGLKit/VVGLKit.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/VVISFKit.h>
-#include "ISFKit.h"
+//#import <VVISF/VVISF.h>
+#include "VVISF.h"
 #import <Syphon/Syphon.h>
 
 
@@ -21,5 +21,5 @@
 
 
 
-VVGLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const VVGLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+GLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 

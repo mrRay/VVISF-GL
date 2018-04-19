@@ -46,13 +46,13 @@
 			NSLog(@"\t\terr %d at CVOpenGLTextureCacheCreate, %s",err,__func__);
 		}
 		*/
-		const VVGLBufferPoolRef		&bp = GetGlobalBufferPool();
+		const GLBufferPoolRef		&bp = GetGlobalBufferPool();
 		if (bp == nullptr)	{
 			NSLog(@"\t\terr: no global buffer pool, bailing, %s",__func__);
 			[self release];
 			return nil;
 		}
-		VVGLContextRef			poolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+		GLContextRef			poolCtx = (bp==nullptr) ? nullptr : bp->getContext();
 		if (poolCtx!=nullptr)	{
 			propGLCtx = poolCtx->newContextSharingMe();
 			err = CVOpenGLTextureCacheCreate(
@@ -131,8 +131,8 @@
 	//VVRELEASE(propLastBuffer);
 	propLastBuffer = nullptr;
 }
-- (VVGLBufferRef) allocBuffer	{
-	VVGLBufferRef		returnMe = nil;
+- (GLBufferRef) allocBuffer	{
+	GLBufferRef		returnMe = nil;
 	OSSpinLockLock(&propLock);
 	returnMe = propLastBuffer;
 	OSSpinLockUnlock(&propLock);
@@ -220,14 +220,14 @@
 	OSSpinLockLock(&propLock);
 	if (propGLCtx != nullptr)
 		propGLCtx->makeCurrentIfNotCurrent();
-	VVGLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
+	GLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
 	if (newBuffer != nullptr)	{
 		propLastBuffer = newBuffer;
 	}
 	
 	/*
 	//	if this came from a connection belonging to the data output
-	VVGLBufferRef			newBuffer = nullptr;
+	GLBufferRef			newBuffer = nullptr;
 	//CMBlockBufferRef		blockBufferRef = CMSampleBufferGetDataBuffer(b)
 	CVImageBufferRef		imgBufferRef = CMSampleBufferGetImageBuffer(b);
 	if (imgBufferRef != NULL)	{

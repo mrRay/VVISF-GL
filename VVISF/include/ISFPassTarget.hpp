@@ -31,7 +31,7 @@ using namespace std;
 	
 	
 	/*		this class represents a target buffer for a render pass in an ISF shader- it stores the 
-	VVGLBuffer (the GL resource) as well as the expressions determining the width/height (the raw 
+	GLBuffer (the GL resource) as well as the expressions determining the width/height (the raw 
 	string, the evaluated expression- capable of being executed with substitutions for variables, 
 	and the evaluated value), and the cached uniform locations for this target buffer's attributes 
 	in the compiled GL program (so you don't have to look up the uniform location every frame).			*/
@@ -40,7 +40,7 @@ using namespace std;
 	class ISFPassTarget	{
 		private:
 			string			name;
-			VVGLBufferRef		buffer = nullptr;
+			GLBufferRef		buffer = nullptr;
 			ISFDoc			*parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
 			
 			mutex			targetLock;
@@ -81,8 +81,8 @@ using namespace std;
 			void evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer);
 	
 			string & getName() { return name; }
-			VVGLBufferRef & getBuffer() { return buffer; }
-			void setBuffer(const VVGLBufferRef & n) { buffer=n; }
+			GLBufferRef & getBuffer() { return buffer; }
+			void setBuffer(const GLBufferRef & n) { buffer=n; }
 	
 			VVGL::Size targetSize() { return { targetWidth, targetHeight }; }
 	

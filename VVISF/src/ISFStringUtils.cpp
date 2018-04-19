@@ -1,7 +1,7 @@
 #include "ISFStringUtils.hpp"
 
 #include "ISFVal.hpp"
-//#include "VVRange.hpp"
+//#include "Range.hpp"
 
 #include "exprtk/exprtk.hpp"
 
@@ -70,17 +70,17 @@ ISFVal ISFValByEvaluatingString(const string & n, const map<string, double> & in
 	return ISFFloatVal(expr.value());
 }
 
-VVRange LexFunctionCall(const string & inBaseStr, const VVRange & inFuncNameRange, vector<string> & outVarArray)	{
+Range LexFunctionCall(const string & inBaseStr, const Range & inFuncNameRange, vector<string> & outVarArray)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	if (inFuncNameRange.len==0 || inFuncNameRange.max()>inBaseStr.size())
-		return VVRange(0,0);
+		return Range(0,0);
 	//if (inFuncLen==0 || ((inFuncLen+inFuncLen)>inBaseStr.size()))
-	//	return VVRange(0,0);
+	//	return Range(0,0);
 	size_t		searchStartIndex = inFuncNameRange.max();
 	size_t		lexIndex = searchStartIndex;
 	size_t		openGroupingCount = 0;
-	VVRange	substringRange(0,0);
+	Range	substringRange(0,0);
 	substringRange.loc = searchStartIndex + 1;
 	do	{
 		switch (inBaseStr[lexIndex])	{
@@ -110,15 +110,15 @@ VVRange LexFunctionCall(const string & inBaseStr, const VVRange & inFuncNameRang
 		}
 		++lexIndex;
 	} while (openGroupingCount > 0);
-	VVRange	rangeToReplace = VVRange(inFuncNameRange.loc, lexIndex-inFuncNameRange.loc);
+	Range	rangeToReplace = Range(inFuncNameRange.loc, lexIndex-inFuncNameRange.loc);
 	return rangeToReplace;
 }
 string TrimWhitespace(const string & inBaseStr)	{
-	VVRange		wholeRange(0, inBaseStr.size());
+	Range		wholeRange(0, inBaseStr.size());
 	//cout << "\t" << __PRETTY_FUNCTION__ << "- FINISHED\n";
 	//return inBaseStr.substr(wholeRange.loc, wholeRange.len);
 	
-	VVRange		trimmedRange = wholeRange;
+	Range		trimmedRange = wholeRange;
 	size_t			tmpPos = inBaseStr.find_last_not_of(" \t\r\n");
 	if (tmpPos != string::npos)
 		trimmedRange.len = tmpPos+1;

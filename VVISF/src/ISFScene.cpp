@@ -15,12 +15,12 @@ namespace VVISF
 
 
 ISFScene::ISFScene()
-: VVGLScene()	{
+: GLScene()	{
 	cout << __PRETTY_FUNCTION__ << endl;
 	_setUpRenderCallback();
 }
-ISFScene::ISFScene(const VVGLContextRef & inCtx)
-: VVGLScene(inCtx)	{
+ISFScene::ISFScene(const GLContextRef & inCtx)
+: GLScene(inCtx)	{
 	_setUpRenderCallback();
 }
 
@@ -28,7 +28,7 @@ ISFScene::ISFScene(const VVGLContextRef & inCtx)
 void ISFScene::prepareToBeDeleted()	{
 	//geoXYVBO = nullptr;
 	//	now call the super, which deletes the context
-	VVGLScene::prepareToBeDeleted();
+	GLScene::prepareToBeDeleted();
 }
 ISFScene::~ISFScene()	{
 	if (!deleted)
@@ -155,7 +155,7 @@ vector<string> ISFScene::getFileCategories()	{
 }
 
 
-void ISFScene::setBufferForInputNamed(const VVGLBufferRef & inBuffer, const string & inName)	{
+void ISFScene::setBufferForInputNamed(const GLBufferRef & inBuffer, const string & inName)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return;
@@ -163,17 +163,17 @@ void ISFScene::setBufferForInputNamed(const VVGLBufferRef & inBuffer, const stri
 	if (tmpAttr != nullptr)
 		tmpAttr->setCurrentImageBuffer(inBuffer);
 }
-void ISFScene::setFilterInputBuffer(const VVGLBufferRef & inBuffer)	{
+void ISFScene::setFilterInputBuffer(const GLBufferRef & inBuffer)	{
 	//cout << __PRETTY_FUNCTION__ << ", buffer is " << inBuffer << endl;
 	ISFAttrRef	filterInput = getInputNamed(string("inputImage"));
 	if (filterInput == nullptr)
 		return;
 	filterInput->setCurrentImageBuffer(inBuffer);
-	VVGLBufferRef		checkBuffer = filterInput->getCurrentImageBuffer();
+	GLBufferRef		checkBuffer = filterInput->getCurrentImageBuffer();
 	//cout << "\tcheck buffer is " << checkBuffer;
 	//if (checkBuffer==nullptr) cout << "/null" << endl; else cout << "/" << *checkBuffer << endl;
 }
-void ISFScene::setBufferForInputImageKey(const VVGLBufferRef & inBuffer, const string & inString)	{
+void ISFScene::setBufferForInputImageKey(const GLBufferRef & inBuffer, const string & inString)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return;
@@ -184,7 +184,7 @@ void ISFScene::setBufferForInputImageKey(const VVGLBufferRef & inBuffer, const s
 		}
 	}
 }
-void ISFScene::setBufferForAudioInputKey(const VVGLBufferRef & inBuffer, const string & inString)	{
+void ISFScene::setBufferForAudioInputKey(const GLBufferRef & inBuffer, const string & inString)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return;
@@ -195,7 +195,7 @@ void ISFScene::setBufferForAudioInputKey(const VVGLBufferRef & inBuffer, const s
 		}
 	}
 }
-VVGLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
+GLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -206,7 +206,7 @@ VVGLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
 	}
 	return nullptr;
 }
-VVGLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
+GLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -217,7 +217,7 @@ VVGLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
 	}
 	return nullptr;
 }
-VVGLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
+GLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -228,7 +228,7 @@ VVGLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
 	}
 	return nullptr;
 }
-VVGLBufferRef ISFScene::getTempBufferNamed(const string & inKey)	{
+GLBufferRef ISFScene::getTempBufferNamed(const string & inKey)	{
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
@@ -342,24 +342,24 @@ vector<ISFAttrRef> ISFScene::getImageImports()	{
 
 
 /*
-VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const VVGLBufferPoolRef & inPoolRef)	{
+GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const GLBufferPoolRef & inPoolRef)	{
 	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), nullptr, inPoolRef);
 }
 */
-VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, map<int32_t,VVGLBufferRef> * outPassDict, const VVGLBufferPoolRef & inPoolRef)	{
+GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, map<int32_t,GLBufferRef> * outPassDict, const GLBufferPoolRef & inPoolRef)	{
 	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), outPassDict, inPoolRef);
 }
 /*
-VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGLBufferPoolRef & inPoolRef)	{
+GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const GLBufferPoolRef & inPoolRef)	{
 	return createAndRenderABuffer(inSize, inRenderTime, nullptr, inPoolRef);
 }
 */
-VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict, const VVGLBufferPoolRef & inPoolRef)	{
+GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,GLBufferRef> * outPassDict, const GLBufferPoolRef & inPoolRef)	{
 	ISFDocRef		tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return nullptr;
 	//cout << "\ttmpDoc is " << *tmpDoc << endl;
-	VVGLBufferRef			returnMe = nullptr;
+	GLBufferRef			returnMe = nullptr;
 	vector<string>			passNames = tmpDoc->getRenderPasses();
 	ISFPassTargetRef		lastPass = nullptr;
 	if (passNames.size()>0)	{
@@ -369,7 +369,7 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 			lastPass = tmpDoc->getTempTargetForKey(lastPassName);
 	}
 	
-	VVGLBufferPoolRef		bp = inPoolRef;
+	GLBufferPoolRef		bp = inPoolRef;
 	if (bp == nullptr && privatePool!=nullptr)
 		bp = privatePool;
 	if (bp == nullptr)
@@ -399,24 +399,24 @@ VVGLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const 
 	
 	return returnMe;
 	/*
-	VVGLBufferRef		returnMe = CreateRGBATex(inSize, bp);
+	GLBufferRef		returnMe = CreateRGBATex(inSize, bp);
 	renderToBuffer(returnMe);
 	return returnMe;
 	*/
 }
-void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,VVGLBufferRef> * outPassDict)	{
+void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,GLBufferRef> * outPassDict)	{
 	_render(inTargetBuffer, inRenderSize, inRenderTime, outPassDict);
 }
-void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime)	{
+void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime)	{
 	_render(inTargetBuffer, inRenderSize, inRenderTime, nullptr);
 }
-void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,VVGLBufferRef> * outPassDict)	{
+void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,GLBufferRef> * outPassDict)	{
 	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), outPassDict);
 }
-void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize)	{
+void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize)	{
 	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), nullptr);
 }
-void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer)	{
+void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer)	{
 	if (inTargetBuffer != nullptr)
 		_render(inTargetBuffer, inTargetBuffer->srcRect.size, timestamper.nowTime().getTimeInSeconds(), nullptr);
 	else
@@ -427,7 +427,7 @@ void ISFScene::renderToBuffer(const VVGLBufferRef & inTargetBuffer)	{
 void ISFScene::setSize(const VVGL::Size & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", self is " << this << endl;
 	//renderSize = n;	//	do NOT set the renderSize here (if we do then it will be changed every time a pass is rendered)
-	VVGLScene::setOrthoSize(n);
+	GLScene::setOrthoSize(n);
 	//cout << "\tnew size is " << orthoSize << endl;
 }
 
@@ -438,13 +438,13 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 void ISFScene::_setUpRenderCallback()	{
 #if defined(ISF_TARGETENV_GLES)
-	setRenderCallback([&](const VVGLScene & s)	{
+	setRenderCallback([&](const GLScene & s)	{
 		//	make a quad that describes the area we have to draw
 		Quad<VertXY>		targetQuad;
 		targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
 		
 		//	get the VBO
-		VVGLBufferRef		myVBO = getVBO();
+		GLBufferRef		myVBO = getVBO();
 		
 		//	if there's no VBO, or the target quad doesn't match the VBO's contents
 		if (myVBO==nullptr || targetQuad!=vboContents)	{
@@ -486,7 +486,7 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 	});
 #else
-	setRenderCallback([&](const VVGLScene & s)	{
+	setRenderCallback([&](const GLScene & s)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		//CGLContextObj		orig_ctx = CGLGetCurrentContext();
 		//cout << "\tin render callback, my context is " << *context << ", current context is " << orig_ctx << endl;
@@ -497,7 +497,7 @@ void ISFScene::_setUpRenderCallback()	{
 			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
 			//	get the VBO
-			VVGLBufferRef		myVBO = getVBO();
+			GLBufferRef		myVBO = getVBO();
 		
 			//	if there's no VBO, or the target quad doesn't match the VBO's contents
 			if (myVBO==nullptr || targetQuad!=vboContents)	{
@@ -542,7 +542,7 @@ void ISFScene::_setUpRenderCallback()	{
 			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		
 			//	bind the VAO
-			VVGLBufferRef		myVAO = getVAO();
+			GLBufferRef		myVAO = getVAO();
 			if (myVAO == nullptr)
 				return;
 			glBindVertexArray(myVAO->name);
@@ -595,7 +595,7 @@ void ISFScene::_setUpRenderCallback()	{
 	
 	
 	/*
-	setRenderCallback([&](const VVGLScene & s)	{
+	setRenderCallback([&](const GLScene & s)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		VVGL::Rect				tmpRect(0,0,0,0);
 		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
@@ -673,7 +673,7 @@ void ISFScene::_renderPrep()	{
 	bool		fShaderUpdatedFlag = fsStringUpdated;
 	
 	//	tell the super to do its _renderPrep, which will compile the shader and get it all set up if necessary
-	VVGLScene::_renderPrep();
+	GLScene::_renderPrep();
 	
 	/*
 	//	if i don't have a VBO containing geometry for a quad, make one now
@@ -710,7 +710,7 @@ void ISFScene::_renderPrep()	{
 	//	set up some vars and some blocks that we're going to use to cache the locations of uniforms in the attributes of the ISFDoc instance, and eventually push those vals to GL
 	GLint				samplerLoc = 0;
 	GLint				textureCount = 0;
-	VVGLBufferRef		tmpBuffer = nullptr;
+	GLBufferRef		tmpBuffer = nullptr;
 	VVGL::Rect				tmpRect;
 	char				tmpCString[64];
 	memset(tmpCString, 0, 64);
@@ -1042,7 +1042,7 @@ void ISFScene::_renderPrep()	{
 		case ISFValType_Audio:
 		case ISFValType_AudioFFT:
 			{
-			//VVGLBufferRef		tmpBuffer = attribRef->getCurrentImageBuffer();
+			//GLBufferRef		tmpBuffer = attribRef->getCurrentImageBuffer();
 			//cout << "\tprocessing image-type input named " << attribRef->getName();
 			//cout << ", buffer is " << tmpBuffer;
 			//if (tmpBuffer==nullptr) cout << "/null" << endl; else cout << "/" << *tmpBuffer << endl;
@@ -1133,7 +1133,7 @@ void ISFScene::_initialize()	{
 	if (deleted)
 		return;
 	
-	VVGLScene::_initialize();
+	GLScene::_initialize();
 	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
@@ -1144,14 +1144,14 @@ void ISFScene::_renderCleanup()	{
 	if (deleted)
 		return;
 	
-	VVGLScene::_renderCleanup();
+	GLScene::_renderCleanup();
 	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 	//	return;
 	//}
 }
-void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,VVGLBufferRef> * outPassDict)	{
+void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,GLBufferRef> * outPassDict)	{
 	//cout << __FUNCTION__ << ", self is " << getFileName() << ", time is " << inTime << endl;
 	//cout << "\tinSize is " << inSize << ", inTargetBuffer is " << *inTargetBuffer << endl;
 	//if (inTargetBuffer != nullptr)
@@ -1185,7 +1185,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			outPassDict->clear();
 		
 		//	get the buffer pool we're going to use to generate the buffers
-		VVGLBufferPoolRef		bp = privatePool;
+		GLBufferPoolRef		bp = privatePool;
 		if (bp==nullptr && inTargetBuffer!=nullptr)
 			bp = inTargetBuffer->parentBufferPool;
 		if (bp==nullptr)
@@ -1196,7 +1196,8 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 		}
 		
 		bool					shouldBeFloat = alwaysRenderToFloat;
-		bool					shouldBeIOSurface = persistentToIOSurface;
+		bool					shouldBeIOSurface;
+		shouldBeIOSurface = persistentToIOSurface;
 		
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->getRenderPasses();
@@ -1301,7 +1302,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			//	add the buffers for the various image inputs at keys going from 100-199
 			int			i=0;
 			for (const auto & attrIt : tmpDoc->getImageInputs())	{
-				VVGLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
+				GLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",100+i)] = tmpBuffer;
 					(*outPassDict)[100+i] = tmpBuffer;
@@ -1313,7 +1314,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 			//	add the buffers for the various audio inputs at keys going from 200-299
 			i=0;
 			for (const auto & attrIt : tmpDoc->getAudioInputs())	{
-				VVGLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
+				GLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",200+i)] = tmpBuffer;
 					(*outPassDict)[200+i] = tmpBuffer;
@@ -1349,7 +1350,7 @@ void ISFScene::_render(const VVGLBufferRef & inTargetBuffer, const VVGL::Size & 
 void ISFScene::setVertexShaderString(const string & n)	{
 	//cout << "*******************************\n";
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
-	VVGLScene::setVertexShaderString(n);
+	GLScene::setVertexShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc != nullptr)	{
@@ -1364,7 +1365,7 @@ void ISFScene::setVertexShaderString(const string & n)	{
 void ISFScene::setFragmentShaderString(const string & n)	{
 	//cout << "*******************************\n";
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
-	VVGLScene::setFragmentShaderString(n);
+	GLScene::setFragmentShaderString(n);
 	
 	ISFDocRef			tmpDoc = getDoc();
 	if (tmpDoc != nullptr)	{

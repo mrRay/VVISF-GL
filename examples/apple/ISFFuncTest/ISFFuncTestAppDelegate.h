@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/OpenGL.h>
 #import <CoreVideo/CoreVideo.h>
-#include "ISFKit.h"
+#include "VVISF.h"
 #import "VVGLBufferGLView.h"
 
 
@@ -14,7 +14,7 @@ using namespace VVISF;
 
 @interface ISFFuncTestAppDelegate : NSObject <NSApplicationDelegate>	{
 	CVDisplayLinkRef			displayLink;
-	VVGLContextRef				sharedContext;
+	GLContextRef				sharedContext;
 	IBOutlet VVGLBufferGLView	*bufferView;
 	
 	ISFSceneRef					scene;

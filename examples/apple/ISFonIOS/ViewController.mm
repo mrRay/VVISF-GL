@@ -10,9 +10,9 @@
 	NSLog(@"%s",__func__);
 	self = [super initWithCoder:c];
 	if (self != nil)	{
-		//	make the base VVGLContextRef (we could also just call make_shared<VVGLcontext>();)
+		//	make the base GLContextRef (we could also just call make_shared<GLcontext>();)
 		EAGLContext		*tmpCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
-		baseCtx = make_shared<VVGLContext>((void*)tmpCtx);
+		baseCtx = make_shared<GLContext>((void*)tmpCtx);
 		[tmpCtx release];
 		
 		//	make the global buffer pool, have it share the base context
@@ -37,12 +37,12 @@
 }
 - (void) displayLinkCallback:(CADisplayLink *)dl	{
 	//NSLog(@"%s",__func__);
-	VVGLBufferRef		newBuffer = isfScene->createAndRenderABuffer();
+	GLBufferRef		newBuffer = isfScene->createAndRenderABuffer();
 	if (newBuffer != nullptr)	{
 		[bufferView drawBuffer:newBuffer];
 	}
 	
-	VVGLBufferPoolRef		bp = GetGlobalBufferPool();
+	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)
 		bp->housekeeping();
 }

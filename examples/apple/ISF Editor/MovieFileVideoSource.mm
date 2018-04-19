@@ -1,6 +1,6 @@
 #import "MovieFileVideoSource.h"
 #import <mach/mach_time.h>
-#include "ISFKit.h"
+#include "VVISF.h"
 
 
 
@@ -144,8 +144,8 @@
 	
 	[super stop];
 }
-- (VVGLBufferRef) allocBuffer	{
-	VVGLBufferRef		returnMe = nullptr;
+- (GLBufferRef) allocBuffer	{
+	GLBufferRef		returnMe = nullptr;
 	OSSpinLockLock(&propLock);
 	
 	

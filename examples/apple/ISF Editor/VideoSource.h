@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISFKit/VVISFKit.h>
-#include "ISFKit.h"
+//#import <VVISF/VVISF.h>
+#include "VVISF.h"
 
 
 
@@ -24,7 +24,7 @@
 }
 
 - (void) prepareToBeDeleted;
-- (VVGLBufferRef) allocBuffer;
+- (GLBufferRef) allocBuffer;
 - (NSArray *) arrayOfSourceMenuItems;
 
 - (void) start;

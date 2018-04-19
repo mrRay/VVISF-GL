@@ -1,6 +1,6 @@
 #include <QGuiApplication>
 #include <VVGL.hpp>
-#include <ISFKit.h>
+#include <VVISF.h>
 #include <QDebug>
 #include <QImage>
 #include "VVBufferGLWindow.h"
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-	VVGLContextRef		sharedContext = make_shared<VVGLContext>(nullptr, nullptr, true, sfcFmt);
+	GLContextRef		sharedContext = make_shared<GLContext>(nullptr, nullptr, true, sfcFmt);
 	
 	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
 	CreateGlobalBufferPool(sharedContext);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 		//	size the target texture so it's the same size as the window
 		double				ltbbm = window.devicePixelRatio();
 		VVGL::Size			windowSize = VVGL::Size(window.width()*ltbbm, window.height()*ltbbm);
-		VVGLBufferRef		newBuffer = CreateRGBATex(windowSize,true);
+		GLBufferRef			newBuffer = CreateRGBATex(windowSize,true);
 		//	tell the scene to render to the target texture
 		renderScene->renderToBuffer(newBuffer);
 		//	tell the window to draw the texture we just rendered!
