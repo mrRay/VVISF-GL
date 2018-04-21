@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0730"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1AE177621E2581B500E978E5"
-               BuildableName = "VVISF.framework"
-               BlueprintName = "VVISF_iOS"
+               BlueprintIdentifier = "1A4EEA4E1F17B75B00B6C3F4"
+               BuildableName = "ISFonIOS.app"
+               BlueprintName = "ISFonIOS"
                ReferencedContainer = "container:ISFSandbox.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -30,6 +30,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "1A4EEA4E1F17B75B00B6C3F4"
+            BuildableName = "ISFonIOS.app"
+            BlueprintName = "ISFonIOS"
+            ReferencedContainer = "container:ISFSandbox.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -44,15 +53,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1AE177621E2581B500E978E5"
-            BuildableName = "VVISF.framework"
-            BlueprintName = "VVISF_iOS"
+            BlueprintIdentifier = "1A4EEA4E1F17B75B00B6C3F4"
+            BuildableName = "ISFonIOS.app"
+            BlueprintName = "ISFonIOS"
             ReferencedContainer = "container:ISFSandbox.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -62,15 +72,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1AE177621E2581B500E978E5"
-            BuildableName = "VVISF.framework"
-            BlueprintName = "VVISF_iOS"
+            BlueprintIdentifier = "1A4EEA4E1F17B75B00B6C3F4"
+            BuildableName = "ISFonIOS.app"
+            BlueprintName = "ISFonIOS"
             ReferencedContainer = "container:ISFSandbox.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

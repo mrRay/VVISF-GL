@@ -1035,16 +1035,29 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		//	run through the IMG_THIS_PIXEL sampler names, populating the varying vec2 variables i declared
 		for (const auto & it : imgThisPixelSamplerNames)	{
 			const char *	samplerName = it.c_str();
-			newVertShaderSrc.append(FmtString("\t_%s_texCoord = (_%s_flip) ? vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-(isf_fragCoord.y/(_%s_imgSize.y-1.0)*_%s_imgRect.w)+_%s_imgRect.y)) : vec2(((isf_fragCoord.x/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (isf_fragCoord.y/(_%s_imgSize.y-1.0)*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			//newVertShaderSrc.append(FmtString("\t_%s_texCoord = (_%s_flip) ? vec2(((isf_fragCoord.x/(_%s_imgSize.x)*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-(isf_fragCoord.y/(_%s_imgSize.y)*_%s_imgRect.w)+_%s_imgRect.y)) : vec2(((isf_fragCoord.x/(_%s_imgSize.x)*_%s_imgRect.z)+_%s_imgRect.x), (isf_fragCoord.y/(_%s_imgSize.y)*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			//	the floor(XXX + 0.5) trick used here is meant to be equivalent to round(XXX), which doesn't exist in GLSL
+			newVertShaderSrc.append(FmtString("\t_%s_texCoord = (_%s_flip) \
+				? vec2(floor((isf_fragCoord.x/(_%s_imgSize.x)*_%s_imgRect.z)+_%s_imgRect.x+0.5), floor(_%s_imgRect.w-(isf_fragCoord.y/(_%s_imgSize.y)*_%s_imgRect.w)+_%s_imgRect.y+0.5)) \
+				: vec2(floor((isf_fragCoord.x/(_%s_imgSize.x)*_%s_imgRect.z)+_%s_imgRect.x+0.5), floor((isf_fragCoord.y/(_%s_imgSize.y)*_%s_imgRect.w)+_%s_imgRect.y+0.5));\n",
+				samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
 		}
 		//	run through the IMG_THIS_NORM_PIXEL sampler names, populating the varying vec2 variables i declared
 		for (const auto & it : imgThisNormPixelSamplerNames)	{
 			const char *	samplerName = it.c_str();
 			imgBuffer = getBufferForKey(it);
-			if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)
-				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) ? vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) : vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
-			else
-				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) ? vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) : vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			if (imgBuffer==nullptr || imgBuffer->desc.target==GLBuffer::Target_2D)	{
+				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) \
+					? vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) \
+					: vec2((((isf_FragNormCoord.x*_%s_imgSize.x)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgSize.y)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",
+					samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			}
+			else	{
+				newVertShaderSrc.append(FmtString("\t_%s_normTexCoord = (_%s_flip) \
+					? vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), (_%s_imgRect.w-((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y)) \
+					: vec2((((isf_FragNormCoord.x*_%s_imgRect.z)/_%s_imgSize.x*_%s_imgRect.z)+_%s_imgRect.x), ((isf_FragNormCoord.y*_%s_imgRect.w)/_%s_imgSize.y*_%s_imgRect.w)+_%s_imgRect.y);\n",
+					samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName,samplerName));
+			}
 		}
 		//	...this finishes adding the isf_vertShaderInit() method!
 		newVertShaderSrc.append(string("}\n"));
@@ -1192,38 +1205,73 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					ISFPassTargetRef		newTargetBuffer = ISFPassTarget::Create(bufferName, this);
 					json				tmpObj = bufferDescription.value("WIDTH",json());
 					if (tmpObj != nullptr)	{
-						if (tmpObj.type() == json::value_t::string)	{
-							//newTargetBuffer->setTargetWidthString(tmpObj.get<string>());
-							
-							//string			tmpString = tmpObj.get<string>();
-							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
-							//newTargetBuffer->setTargetWidthString(tmpString);
-							
+						switch (tmpObj.type())	{
+						case json::value_t::null:
+						case json::value_t::object:
+						case json::value_t::array:
+						case json::value_t::boolean:
+						case json::value_t::discarded:
+						case json::value_t::string:
+							{
 							string			tmpString = tmpObj.get<string>();
 							FindAndReplaceInPlace("$", "", tmpString);
 							newTargetBuffer->setTargetWidthString(tmpString);
-						}
-						else if (tmpObj.is_number())	{
+							}
+							break;
+						case json::value_t::number_integer:
+							{
+							int				tmpVal = tmpObj.get<int>();
+							newTargetBuffer->setTargetWidthString(FmtString("%d",tmpVal));
+							}
+							break;
+						case json::value_t::number_unsigned:
+							{
+							unsigned long	tmpVal = tmpObj.get<unsigned long>();
+							newTargetBuffer->setTargetWidthString(FmtString("%ld",tmpVal));
+							}
+							break;
+						case json::value_t::number_float:
+							{
 							double			tmpVal = tmpObj.get<float>();
-							newTargetBuffer->setTargetWidthString(FmtString("%f", tmpVal));
+							newTargetBuffer->setTargetWidthString(FmtString("%f",tmpVal));
+							}
+							break;
 						}
+						
 					}
 					tmpObj = bufferDescription.value("HEIGHT",json());
 					if (tmpObj != nullptr)	{
-						if (tmpObj.type() == json::value_t::string)	{
-							//newTargetBuffer->setTargetHeightString(tmpObj.get<string>());
-							
-							//string			tmpString = tmpObj.get<string>();
-							//replace(tmpString.begin(), tmpString.end(), '$', ' ');
-							//newTargetBuffer->setTargetHeightString(tmpString);
-							
+						switch (tmpObj.type())	{
+						case json::value_t::null:
+						case json::value_t::object:
+						case json::value_t::array:
+						case json::value_t::boolean:
+						case json::value_t::discarded:
+						case json::value_t::string:
+							{
 							string			tmpString = tmpObj.get<string>();
 							FindAndReplaceInPlace("$", "", tmpString);
 							newTargetBuffer->setTargetHeightString(tmpString);
-						}
-						else if (tmpObj.is_number())	{
+							}
+							break;
+						case json::value_t::number_integer:
+							{
+							int				tmpVal = tmpObj.get<int>();
+							newTargetBuffer->setTargetHeightString(FmtString("%d",tmpVal));
+							}
+							break;
+						case json::value_t::number_unsigned:
+							{
+							unsigned long	tmpVal = tmpObj.get<unsigned long>();
+							newTargetBuffer->setTargetHeightString(FmtString("%ld",tmpVal));
+							}
+							break;
+						case json::value_t::number_float:
+							{
 							double			tmpVal = tmpObj.get<float>();
-							newTargetBuffer->setTargetHeightString(FmtString("%f", tmpVal));
+							newTargetBuffer->setTargetHeightString(FmtString("%f",tmpVal));
+							}
+							break;
 						}
 					}
 					tmpObj = bufferDescription.value("FLOAT",json());
@@ -1365,34 +1413,80 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					else
 						tempBuffers.push_back(targetBuffer);
 				}
+				
 				//	update the width/height stuff for the target buffer
-				json		tmpString;
-				tmpString = rawPassDict.value("WIDTH",json());
-				if (tmpString.is_string())	{
-					//targetBuffer->setTargetWidthString(tmpString);
-					//bufferRequiresEval = true;
-					
-					//string		tmpString2 = tmpString;
-					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
-					//targetBuffer->setTargetWidthString(tmpString2);
-					
-					string			tmpString2 = tmpString;
-					FindAndReplaceInPlace("$", "", tmpString2);
-					targetBuffer->setTargetWidthString(tmpString2);
+				json		tmpObj;
+				tmpObj = rawPassDict.value("WIDTH",json());
+				if (tmpObj != nullptr)	{
+					switch (tmpObj.type())	{
+					case json::value_t::null:
+					case json::value_t::object:
+					case json::value_t::array:
+					case json::value_t::boolean:
+					case json::value_t::discarded:
+					case json::value_t::string:
+						{
+						string			tmpString = tmpObj.get<string>();
+						FindAndReplaceInPlace("$", "", tmpString);
+						targetBuffer->setTargetWidthString(tmpString);
+						}
+						break;
+					case json::value_t::number_integer:
+						{
+						int				tmpVal = tmpObj.get<int>();
+						targetBuffer->setTargetWidthString(FmtString("%d",tmpVal));
+						}
+						break;
+					case json::value_t::number_unsigned:
+						{
+						unsigned long	tmpVal = tmpObj.get<unsigned long>();
+						targetBuffer->setTargetWidthString(FmtString("%ld",tmpVal));
+						}
+						break;
+					case json::value_t::number_float:
+						{
+						double			tmpVal = tmpObj.get<float>();
+						targetBuffer->setTargetWidthString(FmtString("%f",tmpVal));
+						}
+						break;
+					}
 				}
-				tmpString = rawPassDict.value("HEIGHT",json());
-				if (tmpString.is_string())	{
-					//targetBuffer->setTargetHeightString(tmpString);
-					//bufferRequiresEval = true;
-					
-					//string		tmpString2 = tmpString;
-					//replace(tmpString2.begin(), tmpString2.end(), '$', ' ');
-					//targetBuffer->setTargetHeightString(tmpString2);
-					
-					string			tmpString2 = tmpString;
-					FindAndReplaceInPlace("$", "", tmpString2);
-					targetBuffer->setTargetHeightString(tmpString2);
+				tmpObj = rawPassDict.value("HEIGHT",json());
+				if (tmpObj != nullptr)	{
+					switch (tmpObj.type())	{
+					case json::value_t::null:
+					case json::value_t::object:
+					case json::value_t::array:
+					case json::value_t::boolean:
+					case json::value_t::discarded:
+					case json::value_t::string:
+						{
+						string			tmpString = tmpObj.get<string>();
+						FindAndReplaceInPlace("$", "", tmpString);
+						targetBuffer->setTargetHeightString(tmpString);
+						}
+						break;
+					case json::value_t::number_integer:
+						{
+						int				tmpVal = tmpObj.get<int>();
+						targetBuffer->setTargetHeightString(FmtString("%d",tmpVal));
+						}
+						break;
+					case json::value_t::number_unsigned:
+						{
+						unsigned long	tmpVal = tmpObj.get<unsigned long>();
+						targetBuffer->setTargetHeightString(FmtString("%ld",tmpVal));
+						}
+						break;
+					case json::value_t::number_float:
+						{
+						double			tmpVal = tmpObj.get<float>();
+						targetBuffer->setTargetHeightString(FmtString("%f",tmpVal));
+						}
+						break;
+					}
 				}
+				
 				//	update the float flag for the target buffer
 				json		tmpFloatFlag = rawPassDict.value("FLOAT",json());
 				ISFVal		tmpFloatVal = ISFNullVal();

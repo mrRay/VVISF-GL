@@ -72,6 +72,7 @@
 }
 - (void) awakeFromNib	{
 	initialized = NO;
+	[super awakeFromNib];
 }
 - (void) dealloc	{
 	pthread_mutex_destroy(&renderLock);
@@ -212,7 +213,7 @@ else if (isRectTex==1)\r\
 			isRectTex->cacheTheLoc(myProgram);
 			
 			//	make a quad struct that describes XYST geometry.  we don't have to populate it now (we'll update it during the render pass)
-			GLBufferQuadXYST	targetQuad;
+			Quad<VertXYST>		targetQuad;
 			
 			//	create a new VAO, store it in the VVBufferGLKView as an ivar.  don't bother populating it now.
 			GLBufferRef		tmpVAO = CreateVAO(true);
@@ -231,8 +232,10 @@ else if (isRectTex==1)\r\
 		CGRect				rawBounds = CGRectMake(0,0,[(VVBufferGLKView *)selfPtr drawableWidth],[(VVBufferGLKView *)selfPtr drawableHeight]);
 		VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., rawBounds.size.width, rawBounds.size.height);
 		VVGL::Rect			geometryRect = ResizeRect((bufferToDraw==nullptr) ? viewBoundsRect : bufferToDraw->srcRect, viewBoundsRect, SizingMode_Fit);
-		GLBufferQuadXYST	targetQuad;
-		GLBufferQuadPopulate(&targetQuad, geometryRect, (bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
+		VVGL::Quad<VertXYST>	targetQuad;
+		//GLBufferQuadPopulate(&targetQuad, geometryRect, (bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
+		targetQuad.populateGeo(geometryRect);
+		targetQuad.populateTex((bufferToDraw==nullptr) ? geometryRect : bufferToDraw->glReadySrcRect(), (bufferToDraw==nullptr) ? false : bufferToDraw->flipped);
 		
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);

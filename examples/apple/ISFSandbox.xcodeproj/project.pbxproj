@@ -1910,7 +1910,7 @@
 				1AFC50531E01F73600728B39 /* IOSurface.framework */,
 				1A0223F21E390C4100C110B8 /* src */,
 				1AB049241DFDFE2500A59A85 /* ISFSandbox */,
-				1AE177641E2581B500E978E5 /* VVISFKit-iOS */,
+				1AE177641E2581B500E978E5 /* VVISF-iOS */,
 				1AE177711E2581BB00E978E5 /* VVGL-iOS */,
 				1A23114E1E2D63C700B0EF84 /* GLFWGears */,
 				1A4EEA501F17B75B00B6C3F4 /* ISFonIOS */,
@@ -2004,12 +2004,12 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		1AE177641E2581B500E978E5 /* VVISFKit-iOS */ = {
+		1AE177641E2581B500E978E5 /* VVISF-iOS */ = {
 			isa = PBXGroup;
 			children = (
 				1AE177671E2581B500E978E5 /* Info.plist */,
 			);
-			path = "VVISFKit-iOS";
+			path = "VVISF-iOS";
 			sourceTree = "<group>";
 		};
 		1AE177711E2581BB00E978E5 /* VVGL-iOS */ = {
@@ -3402,6 +3402,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -3418,6 +3419,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -3748,7 +3750,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CFLAGS = "-DISF_SDK_IOS";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISF-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3772,7 +3774,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CFLAGS = "-DISF_SDK_IOS";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVISF-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3797,7 +3799,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CFLAGS = "-DISF_SDK_IOS";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3821,7 +3823,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_CFLAGS = "-DISF_SDK_IOS";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.VVGL-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

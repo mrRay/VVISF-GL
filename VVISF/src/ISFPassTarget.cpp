@@ -283,13 +283,17 @@ void ISFPassTarget::evalTargetSize(const VVGL::Size & inSize, map<string, double
 		//	evaluate the width/height expressions, outputting to a new size struct
 		if (targetWidthString == nullptr)
 			newSize.width = *(inSymbols[string("WIDTH")]);
-		else
+		else	{
+			//cout << "\tevaluating width string " << *targetWidthString << endl;
 			ExpressionUpdater(&targetWidthString, &targetWidthExpression, inSymbols, &(newSize.width));
+		}
 	
 		if (targetHeightString == nullptr)
 			newSize.height = *(inSymbols[string("HEIGHT")]);
-		else
+		else	{
+			//cout << "\tevaluating height string " << *targetHeightString << endl;
 			ExpressionUpdater(&targetHeightString, &targetHeightExpression, inSymbols, &(newSize.height));
+		}
 	}
 	if (std::isnan(newSize.width))
 		newSize.width = 1.;

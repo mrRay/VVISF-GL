@@ -67,8 +67,7 @@ using namespace std;
 			ISFPassTarget(ISFPassTarget && n) = default;
 			ISFPassTarget & operator=(ISFPassTarget & n) = delete;
 			ISFPassTarget & operator=(ISFPassTarget && n) = delete;
-	
-			void setTargetSize(const VVGL::Size & inSize, const bool & inResize=true, const bool & inCreateNewBuffer=true);
+		
 			void setTargetWidthString(const string & n);
 			const string getTargetWidthString();
 			void setTargetHeightString(const string & n);
@@ -86,9 +85,13 @@ using namespace std;
 	
 			VVGL::Size targetSize() { return { targetWidth, targetHeight }; }
 	
-			void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { uniformLocation[inIndex]=inNewVal; }
-			int32_t getUniformLocation(const int & inIndex) const { return uniformLocation[inIndex]; }
+			void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0||inIndex>3) return; uniformLocation[inIndex]=inNewVal; }
+			int32_t getUniformLocation(const int & inIndex) const { return (inIndex<0||inIndex>3) ? -1 : uniformLocation[inIndex]; }
 			void clearUniformLocations() { for (int i=0; i<4; ++i) uniformLocation[i]=-1; }
+		
+		private:
+			void setTargetSize(const VVGL::Size & inSize, const bool & inResize=true, const bool & inCreateNewBuffer=true);
+		
 	};
 }
 

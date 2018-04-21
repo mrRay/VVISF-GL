@@ -29,6 +29,11 @@
 #include "GLBufferCopier.hpp"
 
 
+#if defined(ISF_SDK_MAC) && defined(__OBJC__)
+#include "GLBufferPool_CocoaAdditions.h"
+#endif
+
+
 
 
 #endif /* VVGL_h */

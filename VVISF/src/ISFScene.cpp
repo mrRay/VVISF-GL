@@ -1135,6 +1135,8 @@ void ISFScene::_initialize()	{
 	
 	GLScene::_initialize();
 	
+	glDisable(GL_BLEND);
+	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 	//	return;
@@ -1211,10 +1213,10 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			bool					isTempBuffer = false;
 			//RenderTarget			tmpRenderTarget = RenderTarget(CreateFBO(), nullptr, nullptr);
 			RenderTarget			tmpRenderTarget;
-			if (inTargetBuffer != nullptr)	{
+			//if (inTargetBuffer != nullptr)	{
 				tmpRenderTarget.fbo = CreateFBO(true, bp);
 				context->makeCurrentIfNotCurrent();
-			}
+			//}
 			
 			//	if there's a target buffer name, i need to find the target buffer
 			if (pass.size()>0)	{

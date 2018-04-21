@@ -246,6 +246,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 #endif
 		
 //#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_TARGETENV_GLES) && !defined(ISF_TARGETENV_GLES3)
 		//	setup basic tex defaults
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, GL_FALSE);
 		GLERRLOG
@@ -253,6 +254,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		GLERRLOG
 		glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 		GLERRLOG
+#endif
 //#endif
 		
 		glTexParameteri(newBufferDesc.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -269,6 +271,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
 //#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_TARGETENV_GLES) && !defined(ISF_TARGETENV_GLES3)
 		if (context!=nullptr && context->version == GLVersion_2)	{
 			if (newBufferDesc.pixelFormat == GLBuffer::PF_Depth)	{
 				glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
@@ -284,6 +287,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 			glTexParameteri(newBufferDesc.target, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_SHARED_APPLE);
 			GLERRLOG
 		}
+#endif
 //#endif
 		
 #if ISF_SDK_MAC

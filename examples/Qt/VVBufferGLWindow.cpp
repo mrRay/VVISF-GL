@@ -167,10 +167,10 @@ void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
 		
 		if (ctx->version == GLVersion_2)	{
 			
-			scene->setRenderPrepCallback([](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged){
+			scene->setRenderPrepCallback([](const GLScene & /*n*/, const bool & /*inReshaped*/, const bool & /*inPgmChanged*/){
 			});
 			scene->setRenderCallback([&](const GLScene & n){
-				double		ltbbm = devicePixelRatio();
+				//double		ltbbm = devicePixelRatio();
 				//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);

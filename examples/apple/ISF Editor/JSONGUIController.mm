@@ -444,8 +444,16 @@ id			_globalJSONGUIController = nil;
 	if (scene == nullptr)
 		return;
 	//NSString		*exportString = [NSString stringWithFormat:@"/*\n%@\n*/%@",[newDict prettyJSONString],[scene fragShaderSource]];
-	string			fsString = scene->getFragmentShaderString();
-	NSString		*exportString = [NSString stringWithFormat:@"/*\n%@\n*/%s",[newDict prettyJSONString],fsString.c_str()];
+	//string			fsString = scene->getFragmentShaderString();
+	//NSString		*exportString = [NSString stringWithFormat:@"/*\n%@\n*/%s",[newDict prettyJSONString],fsString.c_str()];
+	
+	ISFDocRef		tmpDoc = scene->getDoc();
+	string			*fsString = (tmpDoc==nullptr) ? nullptr : tmpDoc->getFragShaderSource();
+	NSString		*exportString = nil;
+	if (fsString == nullptr)
+		exportString = [NSString stringWithFormat:@"/*\n%@\n*/",[newDict prettyJSONString]];
+	else
+		exportString = [NSString stringWithFormat:@"/*\n%@\n*/%s",[newDict prettyJSONString],fsString->c_str()];
 	//NSLog(@"\t\texportString is %@",exportString);
 	//NSString		*exportPath = [scene filePath];
 	string			cppExportPath = scene->getFilePath();
