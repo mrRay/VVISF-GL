@@ -12,6 +12,10 @@
 #define MUTARRAY [NSMutableArray arrayWithCapacity:0]
 
 
+using namespace VVGL;
+using namespace VVISF;
+
+
 
 
 @implementation AVCaptureVideoSource
@@ -65,6 +69,10 @@
 			if (err != kCVReturnSuccess)	{
 				NSLog(@"\t\terr %d at CVOpenGLTextureCacheCreate, %s",err,__func__);
 			}
+			
+			swizzleScene = CreateISFScene(poolCtx->newContextSharingMe());
+			NSString		*pathToSwizzleShader = [[NSBundle mainBundle] pathForResource:@"SwizzleISF-CbY0CrY1toRGB" ofType:@"fs"];
+			swizzleScene->useFile(string([pathToSwizzleShader UTF8String]));
 		}
 		return self;
 	}
@@ -218,11 +226,25 @@
 	*/
 	
 	OSSpinLockLock(&propLock);
-	if (propGLCtx != nullptr)
+	if (propGLCtx != nullptr)	{
 		propGLCtx->makeCurrentIfNotCurrent();
-	GLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
-	if (newBuffer != nullptr)	{
-		propLastBuffer = newBuffer;
+		//	this buffer is either YCbCr/4:2:2, or an RGB texture with half the width of the output image (which contains YCbCr data, and needs to be converted to an RGB image via a shader)
+		GLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
+		//cout << "\tnewBuffer from isight is " << *newBuffer << endl;
+		if (newBuffer != nullptr)	{
+			if (propGLCtx->version == GLVersion_2)	{
+				propLastBuffer = newBuffer;
+			}
+			else if (propGLCtx->version == GLVersion_4)	{
+				VVGL::Size		outputImageSize = VVGL::Size(newBuffer->srcRect.size.width*2., newBuffer->srcRect.size.height);
+				//cout << "\toutputImageSize is " << outputImageSize << endl;
+				swizzleScene->setFilterInputBuffer(newBuffer);
+				//swizzleScene->setBufferForInputNamed(newBuffer, string("inputImage"));
+				GLBufferRef		swizzledBuffer = swizzleScene->createAndRenderABuffer(outputImageSize);
+				//cout << "\tswizzledBuffer is " << *swizzledBuffer << endl;
+				propLastBuffer = swizzledBuffer;
+			}
+		}
 	}
 	
 	/*

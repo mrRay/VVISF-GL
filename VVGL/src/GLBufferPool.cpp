@@ -2,7 +2,7 @@
 #include "GLBuffer.hpp"
 #include "GLBufferCopier.hpp"
 
-#include "Base.hpp"
+#include "VVGL_Base.hpp"
 
 #include <set>
 #include <algorithm>
@@ -41,7 +41,7 @@ GLBufferPool::GLBufferPool(const GLContextRef & inShareCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tpassed ctx was " << inShareCtx << endl;
 	//context = (inShareCtx==nullptr) ? new GLContext() : new GLContext(inShareCtx);
-	context = (inShareCtx==nullptr) ? make_shared<GLContext>() : inShareCtx->newContextSharingMe();
+	context = (inShareCtx==nullptr) ? CreateNewGLContext() : inShareCtx->newContextSharingMe();
 	//cout << "\tcontext is " << *context << endl;
 	//cout << "\tmy ctx is " << context << endl;
 	freeBuffers.reserve(50);
@@ -164,7 +164,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		//	bind the renderbuffer, set it up
 		glBindRenderbuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
-#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3) || ISF_SDK_MAC
+#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3) || defined(ISF_SDK_MAC)
 		if (returnMe->desc.msAmount > 0)	{
 			glRenderbufferStorageMultisample(returnMe->desc.target,
 				returnMe->desc.msAmount,
@@ -647,13 +647,6 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 
 
 /*	========================================	*/
-#pragma mark --------------------- friends
-
-
-
-
-
-/*	========================================	*/
 #pragma mark *************** non-member functions ***************
 
 
@@ -1116,6 +1109,10 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContextRef & inContextRef)	{
 	if (inBufferRef == nullptr)
 		return;
+	if (inContextRef == nullptr)	{
+		cout << "\tERR: context nil in " << __PRETTY_FUNCTION__ << endl;
+		return;
+	}
 	GLBuffer::Descriptor		&desc = inBufferRef->desc;
 	if (desc.type != GLBuffer::Type_Tex)
 		return;
@@ -1130,13 +1127,14 @@ void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContex
 	void			*pixels = inBufferRef->cpuBackingPtr;
 	bool			doCompressedUpload = false;
 	
-	if (inContextRef != nullptr)
-		inContextRef->makeCurrentIfNotCurrent();
+	inContextRef->makeCurrentIfNotCurrent();
 	
+//#if defined(ISF_TARGETENV_GL2)
 	glActiveTexture(GL_TEXTURE0);
-#if defined(ISF_TARGETENV_GL2)
-	glEnable(desc.target);
-#endif
+	if (inContextRef->version == GLVersion_2)	{
+		glEnable(desc.target);
+	}
+//#endif
 	glBindTexture(desc.target, inBufferRef->name);
 	
 	if (desc.texClientStorageFlag)
@@ -1209,7 +1207,9 @@ void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContex
 		glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
 	
 	glBindTexture(desc.target, 0);
-	//glDisable(desc->target);
+	if (inContextRef->version == GLVersion_2)	{
+		glDisable(desc.target);
+	}
 	glFlush();
 	
 	//	timestamp the buffer, so we know a new frame has been pushed to it!
@@ -1488,7 +1488,7 @@ GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & 
 	return returnMe;
 }
 GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool & inTexRange, const bool & inIOSurface, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	if (inPoolRef==nullptr || inCVPB==NULL)
+	if (inPoolRef==nullptr || inCVPB==NULL || inPoolRef->getContext()==nullptr)
 		return nullptr;
 	
 	GLBuffer::Descriptor	desc;
@@ -1520,10 +1520,23 @@ GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool &
 		//case FOURCC_PACK('2','v','u','y'):
 		case '2vuy':
 			//cout << "\t\t2vuy\n";
+			/*
 			bitsPerPixel = 16;
 			desc.internalFormat = GLBuffer::IF_RGB;
 			desc.pixelFormat = GLBuffer::PF_YCbCr_422;
 			desc.pixelType = GLBuffer::PT_UShort88;
+			*/
+			
+			if (inPoolRef->getContext()->version == GLVersion_4)	{
+				//	GL4 doesn't have YCbCr textures on os x, so we create it as a half-width RGBA image
+				bitsPerPixel = 32;
+			}
+			else	{
+				bitsPerPixel = 16;
+				desc.internalFormat = GLBuffer::IF_RGB;
+				desc.pixelFormat = GLBuffer::PF_YCbCr_422;
+				desc.pixelType = GLBuffer::PT_UShort88;
+			}
 			break;
 		//case FOURCC_PACK('D','X','t','1'):
 		case 'DXt1':
@@ -1574,7 +1587,14 @@ GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool &
 		}
 	};
 	returnMe->preferDeletion = true;
-	returnMe->srcRect = VVGL::Rect(cvpb_srcRect.origin.x, cvpb_srcRect.origin.y, cvpb_srcRect.size.width, cvpb_srcRect.size.height);
+	
+	if (inPoolRef->getContext()->version == GLVersion_4)	{
+		returnMe->srcRect = VVGL::Rect(cvpb_srcRect.origin.x, cvpb_srcRect.origin.y, cvpb_srcRect.size.width/2., cvpb_srcRect.size.height);
+	}
+	else	{
+		returnMe->srcRect = VVGL::Rect(cvpb_srcRect.origin.x, cvpb_srcRect.origin.y, cvpb_srcRect.size.width, cvpb_srcRect.size.height);
+	}
+	
 	returnMe->flipped = (CVImageBufferIsFlipped(inCVPB)) ? true : false;
 	
 	return returnMe;

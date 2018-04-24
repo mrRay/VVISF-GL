@@ -165,38 +165,6 @@ GLContext::~GLContext()	{
 }
 
 /*	========================================	*/
-#pragma mark --------------------- copy constructor
-
-//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
-GLContext::GLContext(const GLContext * n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	sharedCtx = (n->sharedCtx==nullptr) ? nullptr : CGLRetainContext(n->sharedCtx);
-	pxlFmt = (n->pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n->pxlFmt);
-	ctx = (n->ctx==nullptr) ? nullptr : CGLRetainContext(n->ctx);
-	
-	generalInit();
-}
-GLContext::GLContext(const GLContext & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	sharedCtx = (n.sharedCtx==nullptr) ? nullptr : CGLRetainContext(n.sharedCtx);
-	pxlFmt = (n.pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n.pxlFmt);
-	ctx = (n.ctx==nullptr) ? nullptr : CGLRetainContext(n.ctx);
-	
-	generalInit();
-}
-GLContext::GLContext(const GLContextRef & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	sharedCtx = (n->sharedCtx==nullptr) ? nullptr : CGLRetainContext(n->sharedCtx);
-	pxlFmt = (n->pxlFmt==nullptr) ? nullptr : CGLRetainPixelFormat(n->pxlFmt);
-	ctx = (n->ctx==nullptr) ? nullptr : CGLRetainContext(n->ctx);
-	
-	generalInit();
-}
-
-/*	========================================	*/
 #pragma mark --------------------- factory method
 
 /*
@@ -334,26 +302,6 @@ GLContext::~GLContext()	{
 }
 
 /*	========================================	*/
-#pragma mark --------------------- copy constructor
-
-//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
-GLContext::GLContext(const GLContext * n)	{
-	qDebug() << __PRETTY_FUNCTION__;
-	win = n->win;
-	generalInit();
-}
-GLContext::GLContext(const GLContext & n)	{
-	qDebug() << __PRETTY_FUNCTION__;
-	win = n.win;
-	generalInit();
-}
-GLContext::GLContext(const GLContextRef & n)	{
-	qDebug() << __PRETTY_FUNCTION__;
-	win = n->win;
-	generalInit();
-}
-
-/*	========================================	*/
 #pragma mark --------------------- factory method
 
 /*
@@ -483,29 +431,6 @@ GLContext::~GLContext()	{
 	display = EGL_NO_DISPLAY;
 	winSurface = EGL_NO_SURFACE;
 	ctx = EGL_NO_CONTEXT;
-}
-
-/*	========================================	*/
-#pragma mark --------------------- copy constructor
-
-//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
-GLContext::GLContext(const GLContext * n)	{
-	display = n->display;
-	winSurface = n->winSurface;
-	ctx = n->ctx;
-	generalInit();
-}
-GLContext::GLContext(const GLContext & n)	{
-	display = n.display;
-	winSurface = n.winSurface;
-	ctx = n.ctx;
-	generalInit();
-}
-GLContext::GLContext(const GLContextRef & n)	{
-	display = n->display;
-	winSurface = n->winSurface;
-	ctx = n->ctx;
-	generalInit();
 }
 
 /*	========================================	*/
@@ -642,42 +567,6 @@ GLContext::~GLContext()	{
 		ctx = nullptr;
 		initializedFuncs = false;
 	}
-}
-
-
-/*	========================================	*/
-#pragma mark --------------------- copy constructor
-
-//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
-GLContext::GLContext(const GLContext * n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	if (ctx != nullptr)
-		delete ctx;
-	if (n == nullptr)
-		ctx = new GLQtCtxWrapper();
-	else
-		ctx = new GLQtCtxWrapper(n->ctx);
-	initializedFuncs = false;
-	generalInit();
-}
-GLContext::GLContext(const GLContext & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	if (ctx != nullptr)
-		delete ctx;
-	ctx = new GLQtCtxWrapper(n.ctx);
-	initializedFuncs = false;
-	generalInit();
-}
-GLContext::GLContext(const GLContextRef & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	if (ctx != nullptr)
-		delete ctx;
-	if (n == nullptr)
-		ctx = new GLQtCtxWrapper();
-	else
-		ctx = new GLQtCtxWrapper(n->ctx);
-	initializedFuncs = false;
-	generalInit();
 }
 
 
@@ -867,7 +756,6 @@ void GLContext::calculateVersion()	{
 		break;
 	}
 }
-
 
 
 

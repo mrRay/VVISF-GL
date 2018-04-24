@@ -1,4 +1,4 @@
-#include "StringUtils.hpp"
+#include "VVGL_StringUtils.hpp"
 #include <algorithm>
 #include <cstring>
 #include <cstdarg>

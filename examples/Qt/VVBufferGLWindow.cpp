@@ -161,7 +161,7 @@ void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
 	
 	if (ctx != nullptr)	{
 		ctx->setSurface(this);
-		scene = make_shared<GLScene>(ctx);
+		scene = CreateGLScene(ctx);
 		scene->setPerformClear(true);
 		scene->setClearColor(0., 0., 0., 0.);
 		
@@ -248,7 +248,7 @@ void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
 			
 		}
 		else	{
-#if ISF_TARGET_GL3PLUS
+#if defined(ISF_TARGETENV_GL3PLUS)
 			//	load the frag/vert shaders
 			string			vsString("\r\
 #version 330 core\r\
@@ -283,13 +283,13 @@ else\r\
 			//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
 			//	the same underlying vars, which will be retained until these callback blocks are 
 			//	destroyed and shared between the callback lambdas...
-			VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-			VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
-			VVGLCachedUniRef		inputImageUni = make_shared<VVGLCachedUni>("inputImage");
-			VVGLCachedUniRef		inputImageRectUni = make_shared<VVGLCachedUni>("inputImageRect");
-			VVGLCachedUniRef		isRectTexUni = make_shared<VVGLCachedUni>("isRectTex");
+			GLCachedAttribRef		xyzAttr = make_shared<GLCachedAttrib>("inXYZ");
+			GLCachedAttribRef		stAttr = make_shared<GLCachedAttrib>("inST");
+			GLCachedUniRef		inputImageUni = make_shared<GLCachedUni>("inputImage");
+			GLCachedUniRef		inputImageRectUni = make_shared<GLCachedUni>("inputImageRect");
+			GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
 			//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
-			scene->setRenderPrepCallback([=](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+			scene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 				//cout << __PRETTY_FUNCTION__ << endl;
 				if (inPgmChanged)	{
 					//	cache all the locations for the vertex attributes & uniform locations
@@ -302,20 +302,20 @@ else\r\
 				}
 			});
 			//	the render callback passes all the data to the GL program
-			scene->setRenderCallback([=](const VVGLScene & n)	{
+			scene->setRenderCallback([=](const GLScene & n)	{
 				//cout << __PRETTY_FUNCTION__ << endl;
 				//	clear
 				glClearColor(0., 0., 0., 1.);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 				//	get the buffer we want to draw
-				VVGLBufferRef		bufferToDraw = _getBuffer();
+				GLBufferRef		bufferToDraw = _getBuffer();
 				if (bufferToDraw == nullptr)
 					return;
 				//cout << "\tbufferToDraw is " << bufferToDraw->getDescriptionString() << endl;
 				//	try to get the VAO.  if the VAO's null, create it and store it in the VVGLBufferGLView as an ivar. 
 				if (vao == nullptr)	{
-					VVGLBufferPoolRef		bp = (bufferToDraw==nullptr) ? nullptr : bufferToDraw->parentBufferPool;
+					GLBufferPoolRef		bp = (bufferToDraw==nullptr) ? nullptr : bufferToDraw->parentBufferPool;
 					if (bp != nullptr)	{
 						vao = CreateVAO(true, bp);
 					}
@@ -340,9 +340,9 @@ else\r\
 				//	pass the 2D texture to the program (if there's a 2D texture)
 				glActiveTexture(GL_TEXTURE0);
 				GLERRLOG
-				glBindTexture(VVGLBuffer::Target_2D, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_2D) ? bufferToDraw->name : 0);
+				glBindTexture(GLBuffer::Target_2D, (bufferToDraw!=nullptr && bufferToDraw->desc.target==GLBuffer::Target_2D) ? bufferToDraw->name : 0);
 				GLERRLOG
-				glBindTexture(VVGLBuffer::Target_Rect, 0);
+				glBindTexture(GLBuffer::Target_Rect, 0);
 				GLERRLOG
 				if (inputImageUni->loc >= 0)	{
 					glUniform1i(inputImageUni->loc, 0);
@@ -351,9 +351,9 @@ else\r\
 				//	pass the RECT texture to the program (if there's a RECT texture)
 				glActiveTexture(GL_TEXTURE1);
 				GLERRLOG
-				glBindTexture(VVGLBuffer::Target_2D, 0);
+				glBindTexture(GLBuffer::Target_2D, 0);
 				GLERRLOG
-				glBindTexture(VVGLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==VVGLBuffer::Target_Rect) ? bufferToDraw->name : 0);
+				glBindTexture(GLBuffer::Target_Rect, (bufferToDraw!=nullptr && bufferToDraw->desc.target==GLBuffer::Target_Rect) ? bufferToDraw->name : 0);
 				GLERRLOG
 				if (inputImageRectUni->loc >= 0)	{
 					glUniform1i(inputImageRectUni->loc, 1);
@@ -365,10 +365,10 @@ else\r\
 						glUniform1i(isRectTexUni->loc, 0);
 					else	{
 						switch (bufferToDraw->desc.target)	{
-						case VVGLBuffer::Target_2D:
+						case GLBuffer::Target_2D:
 							glUniform1i(isRectTexUni->loc, 1);
 							break;
-						case VVGLBuffer::Target_Rect:
+						case GLBuffer::Target_Rect:
 							glUniform1i(isRectTexUni->loc, 2);
 							break;
 						default:
@@ -421,7 +421,7 @@ else\r\
 				}
 			
 			});
-#endif//	ISF_TARGET_GL3PLUS
+#endif	//	ISF_TARGETENV_GL3PLUS
 		}
 
 	}

@@ -86,7 +86,19 @@
 		
 		[QCGLScene prepCommonQCBackendToRenderOnContext:sharedContext pixelFormat:[GLScene defaultPixelFormat]];
 		*/
-		sharedContext = make_shared<GLContext>();
+		
+		NSUserDefaults		*def = [NSUserDefaults standardUserDefaults];
+		NSNumber			*tmpNum = [def objectForKey:@"GL4"];
+		if (tmpNum!=nil && [tmpNum boolValue])	{
+			sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
+		}
+		else	{
+			sharedContext = CreateNewGLContext(NULL, CreateDefaultPixelFormat());
+		}
+		NSString		*glVersString = [NSString stringWithUTF8String:GLVersionToString(sharedContext->version).c_str()];
+		NSLog(@"\t\tbasic gl version is %@",glVersString);
+		
+		
 		CreateGlobalBufferPool(sharedContext);
 		
 		/*

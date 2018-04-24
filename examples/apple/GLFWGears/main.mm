@@ -93,16 +93,15 @@ int main(int argc, char *argv[])	{
 	//	...at this point, GLFW has been set up and is ready to go.
 	
 	//	wrap the window's GL context with a GLContext, which we're going to use to screate a couple other resources
-	GLContext		ctx(window);
-	GLContextRef	ctxRef = make_shared<GLContext>(ctx);
+	GLContextRef	ctxRef = CreateRefUsing(window);
 	//	first make the buffer pool
-	CreateGlobalBufferPool(make_shared<GLContext>(ctx));
+	CreateGlobalBufferPool(ctxRef);
 	
 	
 	
 	
 	//	now create the display scene (this is what we're going to use to draw into the GLFWwindow)
-	displayScene = new GLScene(make_shared<GLContext>(ctx));
+	displayScene = new GLScene(ctxRef);
 	displayScene->setAlwaysNeedsReshape(true);
 	displayScene->setClearColor(1., 0., 0., 1.);
 	//	set the display scene's render callback, which will draw 'targetTex' in the scene
@@ -148,7 +147,7 @@ int main(int argc, char *argv[])	{
 	
 	
 	//	create the ISF scene, which is going to render-to-texture
-	isfScene = new ISFScene(make_shared<GLContext>(ctx));
+	isfScene = new ISFScene(ctxRef);
 	isfScene->useFile(string("/Users/testAdmin/Documents/ISFSandbox/examples/apple/GLFWGears/CellMod.fs"));
 	cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
 	

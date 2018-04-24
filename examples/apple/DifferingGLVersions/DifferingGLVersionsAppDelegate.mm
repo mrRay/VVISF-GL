@@ -1,5 +1,5 @@
 #import "DifferingGLVersionsAppDelegate.h"
-#import "VVGLBufferPool_CocoaAdditions.h"
+//#import "GLBufferPool_CocoaAdditions.h"
 
 
 
@@ -23,13 +23,13 @@
 - (id) init	{
 	self = [super init];
 	if (self != nil)	{
-		legacyGLCtx = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+		legacyGLCtx = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
 		legacyBufferPool = make_shared<GLBufferPool>(legacyGLCtx);
-		legacyGLScene = make_shared<GLScene>(legacyGLCtx->newContextSharingMe());
+		legacyGLScene = CreateGLScene(legacyGLCtx->newContextSharingMe());
 		
-		modernGLCtx = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
+		modernGLCtx = CreateNewGLContext(NULL, CreateGL4PixelFormat());
 		modernBufferPool = make_shared<GLBufferPool>(modernGLCtx);
-		modernGLScene = make_shared<GLScene>(modernGLCtx->newContextSharingMe());
+		modernGLScene = CreateGLScene(modernGLCtx->newContextSharingMe());
 		
 		[self setDate:[NSDate date]];
 		

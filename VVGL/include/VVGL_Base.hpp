@@ -6,9 +6,9 @@
 #include <vector>
 #include <memory>
 
-#include "Time.hpp"
-#include "Range.hpp"
-#include "StringUtils.hpp"
+#include "VVGL_Time.hpp"
+#include "VVGL_Range.hpp"
+#include "VVGL_StringUtils.hpp"
 
 
 namespace VVGL
@@ -30,7 +30,6 @@ struct GLCachedUni;
 
 //	VERY COMMON.  GLBufferRef is a shared pointer to an GLBuffer.  this is how you should store and refer to GLBuffers- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resources aren't duplicated.  working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use.  if you need to create another instance of a given GLBufferRef (copying the accompanying GL resource), you should use GLBufferCopy().
 using GLBufferRef = shared_ptr<GLBuffer>;
-//	GLBufferPoolRef is a shared pointer to an GLBufferPool, and is the preferred way to ensure that you don't create/destroy buffer pools unnecessarily.
 using GLBufferPoolRef = shared_ptr<GLBufferPool>;
 using GLBufferCopierRef = shared_ptr<GLBufferCopier>;
 using GLContextRef = shared_ptr<GLContext>;
@@ -49,6 +48,7 @@ enum GLVersion	{
 	GLVersion_33,
 	GLVersion_4
 };
+inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return string("Unknown"); case GLVersion_2: return string("2"); case GLVersion_ES: return string("ES"); case GLVersion_ES2: return string("ES2"); case GLVersion_ES3: return string("ES3"); case GLVersion_33: return string("3.3"); case GLVersion_4: return string("4"); default: return string("???"); } return string("err"); }
 
 
 //	this struct defines a GL color
@@ -113,7 +113,7 @@ static void perform_async(FTYPE && inFunc, QObject * inObj=qApp)
 
 
 //	load some basic geometry structs and functions
-#include "Geom.hpp"
+#include "VVGL_Geom.hpp"
 
 
 

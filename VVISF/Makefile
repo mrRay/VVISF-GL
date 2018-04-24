@@ -52,7 +52,7 @@ OBJCPPFLAGS += -DGL_DEBUG
 
 
 #	un-comment the following line when compiling on embedded hardware or wherever resources will be limited (compiling exprtk takes a comparatively huge amount of resources)
-.NOTPARALLEL : 
+#.NOTPARALLEL : 
 
 
 # link against and include the VVGL library

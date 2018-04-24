@@ -25,15 +25,15 @@
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
 		1A2311BB1E2D64D300B0EF84 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311BA1E2D64D300B0EF84 /* glad.c */; };
 		1A241FDA20895AA70074A16C /* VVISF.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A241FD920895AA70074A16C /* VVISF.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A241FDB20895AA70074A16C /* VVISF.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A241FD920895AA70074A16C /* VVISF.h */; };
+		1A241FDB20895AA70074A16C /* VVISF.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A241FD920895AA70074A16C /* VVISF.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A241FE820895AC00074A16C /* GLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDC20895ABF0074A16C /* GLBufferCopier.cpp */; };
 		1A241FE920895AC00074A16C /* GLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDC20895ABF0074A16C /* GLBufferCopier.cpp */; };
 		1A241FEA20895AC00074A16C /* GLCachedUni.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDD20895ABF0074A16C /* GLCachedUni.cpp */; };
 		1A241FEB20895AC00074A16C /* GLCachedUni.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDD20895ABF0074A16C /* GLCachedUni.cpp */; };
 		1A241FEC20895AC00074A16C /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDE20895ABF0074A16C /* GLBuffer.cpp */; };
 		1A241FED20895AC00074A16C /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDE20895ABF0074A16C /* GLBuffer.cpp */; };
-		1A241FEE20895AC00074A16C /* Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDF20895ABF0074A16C /* Geom.cpp */; };
-		1A241FEF20895AC00074A16C /* Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDF20895ABF0074A16C /* Geom.cpp */; };
+		1A241FEE20895AC00074A16C /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDF20895ABF0074A16C /* VVGL_Geom.cpp */; };
+		1A241FEF20895AC00074A16C /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FDF20895ABF0074A16C /* VVGL_Geom.cpp */; };
 		1A241FF020895AC00074A16C /* GLCachedAttrib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE020895ABF0074A16C /* GLCachedAttrib.cpp */; };
 		1A241FF120895AC00074A16C /* GLCachedAttrib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE020895ABF0074A16C /* GLCachedAttrib.cpp */; };
 		1A241FF220895AC00074A16C /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE120895ABF0074A16C /* GLContext.mm */; };
@@ -44,14 +44,14 @@
 		1A241FF720895AC00074A16C /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE320895ABF0074A16C /* GLScene.cpp */; };
 		1A241FF820895AC00074A16C /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE420895ABF0074A16C /* GLBufferPool.cpp */; };
 		1A241FF920895AC00074A16C /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE420895ABF0074A16C /* GLBufferPool.cpp */; };
-		1A241FFA20895AC00074A16C /* StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE520895ABF0074A16C /* StringUtils.cpp */; };
-		1A241FFB20895AC00074A16C /* StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE520895ABF0074A16C /* StringUtils.cpp */; };
+		1A241FFA20895AC00074A16C /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE520895ABF0074A16C /* VVGL_StringUtils.cpp */; };
+		1A241FFB20895AC00074A16C /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE520895ABF0074A16C /* VVGL_StringUtils.cpp */; };
 		1A241FFC20895AC00074A16C /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE620895ABF0074A16C /* GLBufferPool_CocoaAdditions.mm */; };
 		1A241FFD20895AC00074A16C /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE620895ABF0074A16C /* GLBufferPool_CocoaAdditions.mm */; };
 		1A241FFE20895AC00074A16C /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE720895ABF0074A16C /* GLContext.cpp */; };
 		1A241FFF20895AC00074A16C /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A241FE720895ABF0074A16C /* GLContext.cpp */; };
-		1A24201620895ACB0074A16C /* Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200020895AC90074A16C /* Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24201720895ACB0074A16C /* Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200020895AC90074A16C /* Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24201620895ACB0074A16C /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200020895AC90074A16C /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24201720895ACB0074A16C /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200020895AC90074A16C /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24201820895ACB0074A16C /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200120895ACA0074A16C /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24201920895ACB0074A16C /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200120895ACA0074A16C /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24201A20895ACB0074A16C /* GLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200220895ACA0074A16C /* GLBufferCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -62,14 +62,14 @@
 		1A24201F20895ACB0074A16C /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200420895ACA0074A16C /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202020895ACB0074A16C /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200520895ACA0074A16C /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202120895ACB0074A16C /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200520895ACA0074A16C /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202220895ACB0074A16C /* Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200620895ACA0074A16C /* Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202320895ACB0074A16C /* Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200620895ACA0074A16C /* Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202220895ACB0074A16C /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200620895ACA0074A16C /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202320895ACB0074A16C /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200620895ACA0074A16C /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202420895ACB0074A16C /* GLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200720895ACA0074A16C /* GLBuffer_RPI_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202520895ACB0074A16C /* GLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200720895ACA0074A16C /* GLBuffer_RPI_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202620895ACB0074A16C /* Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200820895ACA0074A16C /* Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202720895ACB0074A16C /* Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200820895ACA0074A16C /* Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202820895ACB0074A16C /* StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200920895ACA0074A16C /* StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24202920895ACB0074A16C /* StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200920895ACA0074A16C /* StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202620895ACB0074A16C /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200820895ACA0074A16C /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202720895ACB0074A16C /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200820895ACA0074A16C /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202820895ACB0074A16C /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200920895ACA0074A16C /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24202920895ACB0074A16C /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200920895ACA0074A16C /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202A20895ACB0074A16C /* GLCachedUni.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200A20895ACA0074A16C /* GLCachedUni.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202B20895ACB0074A16C /* GLCachedUni.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200A20895ACA0074A16C /* GLCachedUni.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24202C20895ACB0074A16C /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24200B20895ACA0074A16C /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -92,8 +92,8 @@
 		1A24203D20895ACB0074A16C /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201320895ACB0074A16C /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24203E20895ACB0074A16C /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201420895ACB0074A16C /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A24203F20895ACB0074A16C /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201420895ACB0074A16C /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24204020895ACB0074A16C /* Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201520895ACB0074A16C /* Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A24204120895ACB0074A16C /* Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201520895ACB0074A16C /* Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24204020895ACB0074A16C /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201520895ACB0074A16C /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A24204120895ACB0074A16C /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A24201520895ACB0074A16C /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1A350E301E1BF0E3004E0569 /* libVVISF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AB1479A1E1BDAA80041528E /* libVVISF.a */; };
 		1A37BCFF1F17CE35006B2475 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177B01E259E1600E978E5 /* GLKit.framework */; };
@@ -348,6 +348,7 @@
 		1AD86D361F4EFB9000DEED3E /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF2BE91E09652B00620148 /* VVGLBufferGLView.mm */; };
 		1AD89DF01F4A341E0003D1FD /* libVVGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A44D2721E1BF7ED00F48E60 /* libVVGL.a */; };
 		1AD97B171F4F6202007252E0 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD97B161F4F6202007252E0 /* CoreVideo.framework */; };
+		1ADB7B11208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1ADB7AF2208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs */; };
 		1AE177A71E2581EF00E978E5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; };
 		1AE177A91E2581F400E978E5 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177A81E2581F400E978E5 /* OpenGLES.framework */; };
 		1AE177AB1E2581FA00E978E5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177AA1E2581FA00E978E5 /* CoreGraphics.framework */; };
@@ -729,25 +730,25 @@
 		1A241FDC20895ABF0074A16C /* GLBufferCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBufferCopier.cpp; path = ../../../VVGL/src/GLBufferCopier.cpp; sourceTree = "<group>"; };
 		1A241FDD20895ABF0074A16C /* GLCachedUni.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCachedUni.cpp; path = ../../../VVGL/src/GLCachedUni.cpp; sourceTree = "<group>"; };
 		1A241FDE20895ABF0074A16C /* GLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBuffer.cpp; path = ../../../VVGL/src/GLBuffer.cpp; sourceTree = "<group>"; };
-		1A241FDF20895ABF0074A16C /* Geom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Geom.cpp; path = ../../../VVGL/src/Geom.cpp; sourceTree = "<group>"; };
+		1A241FDF20895ABF0074A16C /* VVGL_Geom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_Geom.cpp; path = ../../../VVGL/src/VVGL_Geom.cpp; sourceTree = "<group>"; };
 		1A241FE020895ABF0074A16C /* GLCachedAttrib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCachedAttrib.cpp; path = ../../../VVGL/src/GLCachedAttrib.cpp; sourceTree = "<group>"; };
 		1A241FE120895ABF0074A16C /* GLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLContext.mm; path = ../../../VVGL/src/GLContext.mm; sourceTree = "<group>"; };
 		1A241FE220895ABF0074A16C /* GLQtCtxWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLQtCtxWrapper.cpp; path = ../../../VVGL/src/GLQtCtxWrapper.cpp; sourceTree = "<group>"; };
 		1A241FE320895ABF0074A16C /* GLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLScene.cpp; path = ../../../VVGL/src/GLScene.cpp; sourceTree = "<group>"; };
 		1A241FE420895ABF0074A16C /* GLBufferPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBufferPool.cpp; path = ../../../VVGL/src/GLBufferPool.cpp; sourceTree = "<group>"; };
-		1A241FE520895ABF0074A16C /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringUtils.cpp; path = ../../../VVGL/src/StringUtils.cpp; sourceTree = "<group>"; };
+		1A241FE520895ABF0074A16C /* VVGL_StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_StringUtils.cpp; path = ../../../VVGL/src/VVGL_StringUtils.cpp; sourceTree = "<group>"; };
 		1A241FE620895ABF0074A16C /* GLBufferPool_CocoaAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLBufferPool_CocoaAdditions.mm; path = ../../../VVGL/src/GLBufferPool_CocoaAdditions.mm; sourceTree = "<group>"; };
 		1A241FE720895ABF0074A16C /* GLContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLContext.cpp; path = ../../../VVGL/src/GLContext.cpp; sourceTree = "<group>"; };
-		1A24200020895AC90074A16C /* Time.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Time.hpp; path = ../../../VVGL/include/Time.hpp; sourceTree = "<group>"; };
+		1A24200020895AC90074A16C /* VVGL_Time.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Time.hpp; path = ../../../VVGL/include/VVGL_Time.hpp; sourceTree = "<group>"; };
 		1A24200120895ACA0074A16C /* GLBuffer_Qt_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Qt_Enums.h; path = ../../../VVGL/include/GLBuffer_Qt_Enums.h; sourceTree = "<group>"; };
 		1A24200220895ACA0074A16C /* GLBufferCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferCopier.hpp; path = ../../../VVGL/include/GLBufferCopier.hpp; sourceTree = "<group>"; };
 		1A24200320895ACA0074A16C /* GLBuffer_Mac_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Mac_Enums.h; path = ../../../VVGL/include/GLBuffer_Mac_Enums.h; sourceTree = "<group>"; };
 		1A24200420895ACA0074A16C /* GLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferPool.hpp; path = ../../../VVGL/include/GLBufferPool.hpp; sourceTree = "<group>"; };
 		1A24200520895ACA0074A16C /* GLQtCtxWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLQtCtxWrapper.hpp; path = ../../../VVGL/include/GLQtCtxWrapper.hpp; sourceTree = "<group>"; };
-		1A24200620895ACA0074A16C /* Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Base.hpp; path = ../../../VVGL/include/Base.hpp; sourceTree = "<group>"; };
+		1A24200620895ACA0074A16C /* VVGL_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Base.hpp; path = ../../../VVGL/include/VVGL_Base.hpp; sourceTree = "<group>"; };
 		1A24200720895ACA0074A16C /* GLBuffer_RPI_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_RPI_Enums.h; path = ../../../VVGL/include/GLBuffer_RPI_Enums.h; sourceTree = "<group>"; };
-		1A24200820895ACA0074A16C /* Geom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Geom.hpp; path = ../../../VVGL/include/Geom.hpp; sourceTree = "<group>"; };
-		1A24200920895ACA0074A16C /* StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StringUtils.hpp; path = ../../../VVGL/include/StringUtils.hpp; sourceTree = "<group>"; };
+		1A24200820895ACA0074A16C /* VVGL_Geom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Geom.hpp; path = ../../../VVGL/include/VVGL_Geom.hpp; sourceTree = "<group>"; };
+		1A24200920895ACA0074A16C /* VVGL_StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_StringUtils.hpp; path = ../../../VVGL/include/VVGL_StringUtils.hpp; sourceTree = "<group>"; };
 		1A24200A20895ACA0074A16C /* GLCachedUni.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCachedUni.hpp; path = ../../../VVGL/include/GLCachedUni.hpp; sourceTree = "<group>"; };
 		1A24200B20895ACA0074A16C /* GLBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBuffer.hpp; path = ../../../VVGL/include/GLBuffer.hpp; sourceTree = "<group>"; };
 		1A24200C20895ACA0074A16C /* GLCachedAttrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCachedAttrib.hpp; path = ../../../VVGL/include/GLCachedAttrib.hpp; sourceTree = "<group>"; };
@@ -759,7 +760,7 @@
 		1A24201220895ACB0074A16C /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
 		1A24201320895ACB0074A16C /* GLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLScene.hpp; path = ../../../VVGL/include/GLScene.hpp; sourceTree = "<group>"; };
 		1A24201420895ACB0074A16C /* GLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLContext.hpp; path = ../../../VVGL/include/GLContext.hpp; sourceTree = "<group>"; };
-		1A24201520895ACB0074A16C /* Range.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Range.hpp; path = ../../../VVGL/include/Range.hpp; sourceTree = "<group>"; };
+		1A24201520895ACB0074A16C /* VVGL_Range.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Range.hpp; path = ../../../VVGL/include/VVGL_Range.hpp; sourceTree = "<group>"; };
 		1A37BD1E1F17D410006B2475 /* blueelectricspiral.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = blueelectricspiral.fs; sourceTree = "<group>"; };
 		1A416D561E202CF9009E61EE /* CellMod.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CellMod.fs; sourceTree = "<group>"; };
 		1A44D2721E1BF7ED00F48E60 /* libVVGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVVGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1051,6 +1052,7 @@
 		1AD86D0D1F4EFB4300DEED3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1AD86D0F1F4EFB4300DEED3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AD97B161F4F6202007252E0 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		1ADB7AF2208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = "SwizzleISF-CbY0CrY1toRGB.fs"; sourceTree = "<group>"; };
 		1AE177631E2581B500E978E5 /* VVISF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVISF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE177671E2581B500E978E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AE177701E2581BB00E978E5 /* VVGL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVGL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1561,6 +1563,7 @@
 				1A608A521F27C04C00034D0C /* VideoSource.mm */,
 				1A608A531F27C04C00034D0C /* AVCaptureVideoSource.h */,
 				1A608A541F27C04C00034D0C /* AVCaptureVideoSource.mm */,
+				1ADB7AF2208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs */,
 				1A608A551F27C04C00034D0C /* MovieFileVideoSource.h */,
 				1A608A561F27C04C00034D0C /* MovieFileVideoSource.mm */,
 				1A608A591F27C04C00034D0C /* IMGVideoSource.h */,
@@ -1773,8 +1776,8 @@
 		1A7757A91F2A164000039E3D /* include */ = {
 			isa = PBXGroup;
 			children = (
-				1A24200620895ACA0074A16C /* Base.hpp */,
-				1A24200820895ACA0074A16C /* Geom.hpp */,
+				1A24200620895ACA0074A16C /* VVGL_Base.hpp */,
+				1A24200820895ACA0074A16C /* VVGL_Geom.hpp */,
 				1A24200D20895ACA0074A16C /* GLBuffer_GLFW_Enums.h */,
 				1A24200E20895ACA0074A16C /* GLBuffer_IOS_Enums.h */,
 				1A24200320895ACA0074A16C /* GLBuffer_Mac_Enums.h */,
@@ -1789,9 +1792,9 @@
 				1A24201420895ACB0074A16C /* GLContext.hpp */,
 				1A24200520895ACA0074A16C /* GLQtCtxWrapper.hpp */,
 				1A24201320895ACB0074A16C /* GLScene.hpp */,
-				1A24201520895ACB0074A16C /* Range.hpp */,
-				1A24200920895ACA0074A16C /* StringUtils.hpp */,
-				1A24200020895AC90074A16C /* Time.hpp */,
+				1A24201520895ACB0074A16C /* VVGL_Range.hpp */,
+				1A24200920895ACA0074A16C /* VVGL_StringUtils.hpp */,
+				1A24200020895AC90074A16C /* VVGL_Time.hpp */,
 				1A24200F20895ACA0074A16C /* VVGL_Defines.hpp */,
 				1A24201120895ACB0074A16C /* VVGL_Qt_global.h */,
 				1A24201220895ACB0074A16C /* VVGL.hpp */,
@@ -1802,7 +1805,7 @@
 		1A7757AA1F2A164900039E3D /* src */ = {
 			isa = PBXGroup;
 			children = (
-				1A241FDF20895ABF0074A16C /* Geom.cpp */,
+				1A241FDF20895ABF0074A16C /* VVGL_Geom.cpp */,
 				1A241FDE20895ABF0074A16C /* GLBuffer.cpp */,
 				1A241FDC20895ABF0074A16C /* GLBufferCopier.cpp */,
 				1A241FE620895ABF0074A16C /* GLBufferPool_CocoaAdditions.mm */,
@@ -1813,7 +1816,7 @@
 				1A241FE120895ABF0074A16C /* GLContext.mm */,
 				1A241FE220895ABF0074A16C /* GLQtCtxWrapper.cpp */,
 				1A241FE320895ABF0074A16C /* GLScene.cpp */,
-				1A241FE520895ABF0074A16C /* StringUtils.cpp */,
+				1A241FE520895ABF0074A16C /* VVGL_StringUtils.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -2054,14 +2057,14 @@
 			files = (
 				1A24202420895ACB0074A16C /* GLBuffer_RPI_Enums.h in Headers */,
 				1A24203820895ACB0074A16C /* VVGL_Qt_global.h in Headers */,
-				1A24201620895ACB0074A16C /* Time.hpp in Headers */,
+				1A24201620895ACB0074A16C /* VVGL_Time.hpp in Headers */,
 				1A24203420895ACB0074A16C /* VVGL_Defines.hpp in Headers */,
-				1A24202220895ACB0074A16C /* Base.hpp in Headers */,
+				1A24202220895ACB0074A16C /* VVGL_Base.hpp in Headers */,
 				1A24201820895ACB0074A16C /* GLBuffer_Qt_Enums.h in Headers */,
-				1A24202620895ACB0074A16C /* Geom.hpp in Headers */,
+				1A24202620895ACB0074A16C /* VVGL_Geom.hpp in Headers */,
 				1A24203620895ACB0074A16C /* GLBufferPool_CocoaAdditions.h in Headers */,
 				1A24203E20895ACB0074A16C /* GLContext.hpp in Headers */,
-				1A24202820895ACB0074A16C /* StringUtils.hpp in Headers */,
+				1A24202820895ACB0074A16C /* VVGL_StringUtils.hpp in Headers */,
 				1A24201C20895ACB0074A16C /* GLBuffer_Mac_Enums.h in Headers */,
 				1A24202A20895ACB0074A16C /* GLCachedUni.hpp in Headers */,
 				1A24203020895ACB0074A16C /* GLBuffer_GLFW_Enums.h in Headers */,
@@ -2070,7 +2073,7 @@
 				1A24203A20895ACB0074A16C /* VVGL.hpp in Headers */,
 				1A24201A20895ACB0074A16C /* GLBufferCopier.hpp in Headers */,
 				1A24202C20895ACB0074A16C /* GLBuffer.hpp in Headers */,
-				1A24204020895ACB0074A16C /* Range.hpp in Headers */,
+				1A24204020895ACB0074A16C /* VVGL_Range.hpp in Headers */,
 				1A24202E20895ACB0074A16C /* GLCachedAttrib.hpp in Headers */,
 				1A24203C20895ACB0074A16C /* GLScene.hpp in Headers */,
 				1A24203220895ACB0074A16C /* GLBuffer_IOS_Enums.h in Headers */,
@@ -2103,7 +2106,6 @@
 				1AAA12DA1F16CD05000C3996 /* ISFScene.hpp in Headers */,
 				1AAA12DB1F16CD05000C3996 /* ISFStringUtils.hpp in Headers */,
 				1AAA12D51F16CD05000C3996 /* ISFConstants.hpp in Headers */,
-				1A241FDB20895AA70074A16C /* VVISF.h in Headers */,
 				1AAA12D31F16CD05000C3996 /* ISFAttr.hpp in Headers */,
 				1AAA12D61F16CD05000C3996 /* ISFDoc.hpp in Headers */,
 				1AAA12D71F16CD05000C3996 /* ISFErr.hpp in Headers */,
@@ -2111,6 +2113,7 @@
 				1AAA12D41F16CD05000C3996 /* ISFBase.hpp in Headers */,
 				1AAA12DC1F16CD05000C3996 /* ISFVal.hpp in Headers */,
 				1AAA12D91F16CD05000C3996 /* ISFPassTarget.hpp in Headers */,
+				1A241FDB20895AA70074A16C /* VVISF.h in Headers */,
 				1A0224681E390C9E00C110B8 /* exprtk.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2121,14 +2124,14 @@
 			files = (
 				1A24202520895ACB0074A16C /* GLBuffer_RPI_Enums.h in Headers */,
 				1A24203920895ACB0074A16C /* VVGL_Qt_global.h in Headers */,
-				1A24201720895ACB0074A16C /* Time.hpp in Headers */,
+				1A24201720895ACB0074A16C /* VVGL_Time.hpp in Headers */,
 				1A24203520895ACB0074A16C /* VVGL_Defines.hpp in Headers */,
-				1A24202320895ACB0074A16C /* Base.hpp in Headers */,
+				1A24202320895ACB0074A16C /* VVGL_Base.hpp in Headers */,
 				1A24201920895ACB0074A16C /* GLBuffer_Qt_Enums.h in Headers */,
-				1A24202720895ACB0074A16C /* Geom.hpp in Headers */,
+				1A24202720895ACB0074A16C /* VVGL_Geom.hpp in Headers */,
 				1A24203720895ACB0074A16C /* GLBufferPool_CocoaAdditions.h in Headers */,
 				1A24203F20895ACB0074A16C /* GLContext.hpp in Headers */,
-				1A24202920895ACB0074A16C /* StringUtils.hpp in Headers */,
+				1A24202920895ACB0074A16C /* VVGL_StringUtils.hpp in Headers */,
 				1A24201D20895ACB0074A16C /* GLBuffer_Mac_Enums.h in Headers */,
 				1A24202B20895ACB0074A16C /* GLCachedUni.hpp in Headers */,
 				1A24203120895ACB0074A16C /* GLBuffer_GLFW_Enums.h in Headers */,
@@ -2137,7 +2140,7 @@
 				1A24203B20895ACB0074A16C /* VVGL.hpp in Headers */,
 				1A24201B20895ACB0074A16C /* GLBufferCopier.hpp in Headers */,
 				1A24202D20895ACB0074A16C /* GLBuffer.hpp in Headers */,
-				1A24204120895ACB0074A16C /* Range.hpp in Headers */,
+				1A24204120895ACB0074A16C /* VVGL_Range.hpp in Headers */,
 				1A24202F20895ACB0074A16C /* GLCachedAttrib.hpp in Headers */,
 				1A24203D20895ACB0074A16C /* GLScene.hpp in Headers */,
 				1A24203320895ACB0074A16C /* GLBuffer_IOS_Enums.h in Headers */,
@@ -2424,6 +2427,7 @@
 					};
 					1A4EEA4E1F17B75B00B6C3F4 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = KH97KZU7A7;
 					};
 					1A569885200F821500437867 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -2750,6 +2754,7 @@
 				1A608A421F27C03400034D0C /* fb918796edc3d2221218db0811e240e72e340350008338b0c07a52bd353666a6.jpg in Resources */,
 				1A608A1B1F27C03400034D0C /* 550a8cce1bf403869fde66dddf6028dd171f1852f4a704a465e1b80d23955663_2.png in Resources */,
 				1A608A1E1F27C03400034D0C /* 550a8cce1bf403869fde66dddf6028dd171f1852f4a704a465e1b80d23955663_5.png in Resources */,
+				1ADB7B11208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2978,14 +2983,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A241FFA20895AC00074A16C /* StringUtils.cpp in Sources */,
+				1A241FFA20895AC00074A16C /* VVGL_StringUtils.cpp in Sources */,
 				1A241FF220895AC00074A16C /* GLContext.mm in Sources */,
 				1A241FFE20895AC00074A16C /* GLContext.cpp in Sources */,
 				1A241FF020895AC00074A16C /* GLCachedAttrib.cpp in Sources */,
 				1A241FE820895AC00074A16C /* GLBufferCopier.cpp in Sources */,
 				1A241FF420895AC00074A16C /* GLQtCtxWrapper.cpp in Sources */,
 				1A241FFC20895AC00074A16C /* GLBufferPool_CocoaAdditions.mm in Sources */,
-				1A241FEE20895AC00074A16C /* Geom.cpp in Sources */,
+				1A241FEE20895AC00074A16C /* VVGL_Geom.cpp in Sources */,
 				1A241FF820895AC00074A16C /* GLBufferPool.cpp in Sources */,
 				1A241FF620895AC00074A16C /* GLScene.cpp in Sources */,
 				1A241FEC20895AC00074A16C /* GLBuffer.cpp in Sources */,
@@ -3108,14 +3113,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A241FFB20895AC00074A16C /* StringUtils.cpp in Sources */,
+				1A241FFB20895AC00074A16C /* VVGL_StringUtils.cpp in Sources */,
 				1A241FF320895AC00074A16C /* GLContext.mm in Sources */,
 				1A241FFF20895AC00074A16C /* GLContext.cpp in Sources */,
 				1A241FF120895AC00074A16C /* GLCachedAttrib.cpp in Sources */,
 				1A241FE920895AC00074A16C /* GLBufferCopier.cpp in Sources */,
 				1A241FF520895AC00074A16C /* GLQtCtxWrapper.cpp in Sources */,
 				1A241FFD20895AC00074A16C /* GLBufferPool_CocoaAdditions.mm in Sources */,
-				1A241FEF20895AC00074A16C /* Geom.cpp in Sources */,
+				1A241FEF20895AC00074A16C /* VVGL_Geom.cpp in Sources */,
 				1A241FF920895AC00074A16C /* GLBufferPool.cpp in Sources */,
 				1A241FF720895AC00074A16C /* GLScene.cpp in Sources */,
 				1A241FED20895AC00074A16C /* GLBuffer.cpp in Sources */,
@@ -3304,7 +3309,7 @@
 					"-lcurl",
 					"-licucore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.companyname.ISF-Editor";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.ISF-Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -3326,7 +3331,7 @@
 					"-lcurl",
 					"-licucore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.companyname.ISF-Editor";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vidvox.ISF-Editor";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -3402,7 +3407,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KH97KZU7A7;
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -3419,7 +3424,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KH97KZU7A7;
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

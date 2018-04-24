@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "StringUtils.hpp"
+#include "VVGL_StringUtils.hpp"
 
 
 

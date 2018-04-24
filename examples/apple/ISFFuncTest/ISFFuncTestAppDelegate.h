@@ -1,12 +1,14 @@
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/OpenGL.h>
 #import <CoreVideo/CoreVideo.h>
+#include "VVGL.hpp"
 #include "VVISF.h"
 #import "VVGLBufferGLView.h"
 
 
 
 
+using namespace VVGL;
 using namespace VVISF;
 
 
@@ -15,6 +17,8 @@ using namespace VVISF;
 @interface ISFFuncTestAppDelegate : NSObject <NSApplicationDelegate>	{
 	CVDisplayLinkRef			displayLink;
 	GLContextRef				sharedContext;
+	GLBufferRef					srcBuffer;
+	
 	IBOutlet VVGLBufferGLView	*bufferView;
 	
 	ISFSceneRef					scene;
@@ -25,6 +29,7 @@ using namespace VVISF;
 - (void) loadBackendFromDefaults;
 
 - (IBAction) glVersPUBUsed:(id)sender;
+- (IBAction) sliderUsed:(id)sender;
 
 - (void) renderCallback;
 

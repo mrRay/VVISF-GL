@@ -35,7 +35,7 @@
 	class QOpenGLContext;
 #endif
 
-#include "Base.hpp"
+#include "VVGL_Base.hpp"
 
 
 
@@ -61,13 +61,6 @@ QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
 QSurfaceFormat CreateGL3SurfaceFormat();
 QSurfaceFormat CreateGL4SurfaceFormat();
 #endif
-
-
-
-
-//	use a shared_ptr to pass around refs to a GLContext w/o copying any GL resources
-//class GLContext;
-//using GLContextRef = shared_ptr<GLContext>;
 
 
 
@@ -105,6 +98,7 @@ class GLContext	{
 		
 		
 	public:
+		//	most uses of GLContext are through shared_ptrs, so you should avoid using these constructors wherever possible- there are creation functions defined in this header outside of this class.
 #if ISF_SDK_MAC
 		//	this function doesn't create anything- it just retains the passed ctx/share ctx/pxl fmt, leaving them null if that's how they were passed in
 		GLContext(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFm=CreateDefaultPixelFormat());
@@ -160,11 +154,6 @@ class GLContext	{
 		
 		~GLContext();
 		
-		//	copy constructors- these do NOT create new GL contexts, they merely copy/retain the GL contexts from the passed var
-		GLContext(const GLContext * n);
-		GLContext(const GLContext & n);
-		GLContext(const GLContextRef & n);
-		
 		void makeCurrent();
 		void makeCurrentIfNotCurrent();
 		void makeCurrentIfNull();
@@ -180,6 +169,32 @@ class GLContext	{
 };
 
 
+
+//	these creation functions are the preferred way of making GLContext instances.  they're just more human-readable than make_shared<GLContext>(constructor args).
+#if defined(ISF_SDK_MAC)
+	//	doesn't create any GL resources, just retains the passed GL resources
+	inline GLContextRef CreateRefUsing(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inCtx, inShareCtx, inPxlFmt); }
+	//	creates a GL context using the passed pixel format and share context
+	inline GLContextRef CreateNewGLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inShareCtx, inPxlFmt); }
+#elif defined(ISF_SDK_IOS)
+	//	doesn't create any GL resources, just retains the passed GL context.
+	inline GLContextRef CreateRefUsing(const void * inEAGLContext) { return make_shared<GLContext>(inEAGLContext); }
+#elif defined(ISF_SDK_GLFW)
+	//	doesn't create any GL resources, just 
+	inline GLContextRef CreateRefUsing(GLFWwindow * inWindow) { return make_shared<GLContext>(inWindow); }
+#elif defined(ISF_SDK_RPI)
+	inline GLContextRef CreateRefUsing(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx, inCtx); }
+	inline GLContextRef CreateNewGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx); }
+#elif defined(ISF_SDK_QT)
+	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
+	//	no GL context is created, instead a weak ref is created to 'inCtx', which must not be null.  the surface format is read from the passed context.
+	inline GLContextRef CreateRefUsing(QSurface * inTargetSurface, QOpenGLContext * inCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inCtx, false, inSfcFmt); }
+	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
+	//	creates a new GL context.  'inShareCtx' can be nil.
+	inline GLContextRef CreateNewGLContext(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
+#endif
+	//	creates a generic GL context
+	inline GLContextRef CreateNewGLContext() { return make_shared<GLContext>(); }
 
 
 }

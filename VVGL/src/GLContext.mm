@@ -60,34 +60,6 @@ GLContext::~GLContext()	{
 
 
 /*	========================================	*/
-#pragma mark --------------------- copy constructor
-
-
-//	copy constructors DO NOT CREATE NEW GL CONTEXTS.  they only retain the contexts they were passed.
-GLContext::GLContext(const GLContext * n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	ctx = (n->ctx==nil) ? nil : (void *)[(EAGLContext *)n->ctx retain];
-	
-	generalInit();
-}
-GLContext::GLContext(const GLContext & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	ctx = (n.ctx==nil) ? nil : (void *)[(EAGLContext *)n.ctx retain];
-	
-	generalInit();
-}
-GLContext::GLContext(const GLContextRef & n)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	ctx = (n->ctx==nil) ? nil : (void *)[(EAGLContext *)n->ctx retain];
-	
-	generalInit();
-}
-
-
-/*	========================================	*/
 #pragma mark --------------------- factory method
 
 

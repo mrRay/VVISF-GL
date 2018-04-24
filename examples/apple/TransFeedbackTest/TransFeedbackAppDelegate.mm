@@ -18,14 +18,14 @@
 	if (self != nil)	{
 		
 		//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-		//sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
-		sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
+		//sharedContext = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
+		sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
 		
 		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.
 		CreateGlobalBufferPool(sharedContext);
 		
-		feedbackScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
-		rasterScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
+		feedbackScene = CreateGLScene(sharedContext->newContextSharingMe());
+		rasterScene = CreateGLScene(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
 		if (rasterScene->getGLVersion() == GLVersion_2)
 			[self initForGL2];

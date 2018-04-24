@@ -71,7 +71,6 @@ class ISFScene : public GLScene	{
 	public:
 		ISFScene();
 		ISFScene(const GLContextRef & inCtx);
-		//ISFScene(const GLContext * inSharedCtx=nullptr, const VVGL::Size & inSize={640.,480.});
 		virtual ~ISFScene();
 
 		virtual void prepareToBeDeleted();
@@ -155,6 +154,12 @@ class ISFScene : public GLScene	{
 		virtual void _render(const GLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,GLBufferRef> * outPassDict);
 
 };
+
+
+
+
+inline ISFSceneRef CreateISFScene() { return make_shared<ISFScene>(); }
+inline ISFSceneRef CreateISFScene(const GLContextRef & inCtx) { return make_shared<ISFScene>(inCtx); }
 
 
 

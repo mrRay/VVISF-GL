@@ -12,14 +12,14 @@
 	if (self != nil)	{
 		//	make the base GLContextRef (we could also just call make_shared<GLcontext>();)
 		EAGLContext		*tmpCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
-		baseCtx = make_shared<GLContext>((void*)tmpCtx);
+		baseCtx = CreateRefUsing(tmpCtx);
 		[tmpCtx release];
 		
 		//	make the global buffer pool, have it share the base context
 		CreateGlobalBufferPool(baseCtx);
 		
 		//	make the ISFScene
-		isfScene = make_shared<ISFScene>(baseCtx->newContextSharingMe());
+		isfScene = CreateISFScene(baseCtx->newContextSharingMe());
 		//	tell the ISFScene to load the included file
 		NSString		*tmpString = [[NSBundle mainBundle] pathForResource:@"blueelectricspiral" ofType:@"fs"];
 		if (tmpString != nil)	{

@@ -7,7 +7,7 @@
 
 
 //	base types- basic time structs, range structs, string utils, geometry types, things like that
-#include "Base.hpp"
+#include "VVGL_Base.hpp"
 
 
 #include "GLContext.hpp"

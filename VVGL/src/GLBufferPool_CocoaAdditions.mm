@@ -1,7 +1,7 @@
 #include <string>
 #include "GLBufferPool_CocoaAdditions.h"
 //#include "GLBuffer.hpp"
-#include "Base.hpp"
+#include "VVGL_Base.hpp"
 
 #import <Foundation/Foundation.h>
 //#import <CoreGraphics/CoreGraphics.h>

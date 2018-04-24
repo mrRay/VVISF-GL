@@ -4,7 +4,7 @@
 #include "VVGL_Defines.hpp"
 
 #include <iostream>
-#include "Base.hpp"
+#include "VVGL_Base.hpp"
 
 #define BUFFER_OFFSET(i) ((uint8_t*)NULL + (i))
 

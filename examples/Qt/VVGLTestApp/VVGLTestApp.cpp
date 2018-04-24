@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-	GLContextRef		sharedContext = make_shared<GLContext>(nullptr, nullptr, true, sfcFmt);
+	GLContextRef		sharedContext = CreateNewGLContext(nullptr, nullptr, sfcFmt);
 	
 	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
 	CreateGlobalBufferPool(sharedContext);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 		QTime				myTimer;
 		myTimer.start();
 		//	make a new scene.  we're going to use this scene to render-to-texture, and we're going to display the texture.
-		renderScene = make_shared<GLScene>(sharedContext->newContextSharingMe());
+		renderScene = CreateGLScene(sharedContext->newContextSharingMe());
 		//	move the render scene to the window's render thread!
 		renderScene->getContext()->moveToThread(window.getRenderThread());
 		//	set up the render scene's draw callback, depending on the version of GL in use
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		}
 		//	else if the shared context is using something newer than GL2
 		else if (sharedContext->version >= GLVersion_ES2)	{
-#if ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
 			string			vsString("\r\
 #version 330 core\r\
 in vec3		inXYZ;\r\
@@ -128,15 +128,15 @@ FragColor *= (1.-fadeVal);\r\
 			//	ptrs, so when they're copied by value in the callback blocks the copies will refer to 
 			//	the same underlying vars, which will be retained until these callback blocks are 
 			//	destroyed and shared between the callback lambdas...
-			VVGLCachedAttribRef		xyzAttr = make_shared<VVGLCachedAttrib>("inXYZ");
-			VVGLCachedAttribRef		stAttr = make_shared<VVGLCachedAttrib>("inST");
-			VVGLCachedUniRef		inputImageUni = make_shared<VVGLCachedUni>("inputImage");
-			VVGLCachedUniRef		inputImageRectUni = make_shared<VVGLCachedUni>("inputImageRect");
-			VVGLCachedUniRef		isRectTexUni = make_shared<VVGLCachedUni>("isRectTex");
-			VVGLCachedUniRef		fadeValUni = make_shared<VVGLCachedUni>("fadeVal");
+			GLCachedAttribRef		xyzAttr = make_shared<GLCachedAttrib>("inXYZ");
+			GLCachedAttribRef		stAttr = make_shared<GLCachedAttrib>("inST");
+			GLCachedUniRef		inputImageUni = make_shared<GLCachedUni>("inputImage");
+			GLCachedUniRef		inputImageRectUni = make_shared<GLCachedUni>("inputImageRect");
+			GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
+			GLCachedUniRef		fadeValUni = make_shared<GLCachedUni>("fadeVal");
 		
 			//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-			renderScene->setRenderPrepCallback([=,&vao](const VVGLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+			renderScene->setRenderPrepCallback([=,&vao](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 				//cout << __PRETTY_FUNCTION__ << endl;
 				if (inPgmChanged)	{
 					//	cache all the locations for the vertex attributes & uniform locations
@@ -157,7 +157,7 @@ FragColor *= (1.-fadeVal);\r\
 			});
 	
 			//	the render callback passes all the data to the GL program
-			renderScene->setRenderCallback([=,&vao,&lastVBOCoords](const VVGLScene & n)	{
+			renderScene->setRenderCallback([=,&vao,&lastVBOCoords](const GLScene & n)	{
 				//cout << __PRETTY_FUNCTION__ << endl;
 				if (imgBuffer == nullptr)
 					return;
@@ -175,15 +175,15 @@ FragColor *= (1.-fadeVal);\r\
 
 				//	pass the 2D texture to the program (if there's a 2D texture)
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(VVGLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==VVGLBuffer::Target_2D) ? imgBuffer->name : 0);
-				glBindTexture(VVGLBuffer::Target_Rect, 0);
+				glBindTexture(GLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==GLBuffer::Target_2D) ? imgBuffer->name : 0);
+				glBindTexture(GLBuffer::Target_Rect, 0);
 				if (inputImageUni->loc >= 0)	{
 					glUniform1i(inputImageUni->loc, 0);
 				}
 				//	pass the RECT texture to the program (if there's a RECT texture)
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(VVGLBuffer::Target_2D, 0);
-				glBindTexture(VVGLBuffer::Target_Rect, (imgBuffer!=nullptr && imgBuffer->desc.target==VVGLBuffer::Target_Rect) ? imgBuffer->name : 0);
+				glBindTexture(GLBuffer::Target_2D, 0);
+				glBindTexture(GLBuffer::Target_Rect, (imgBuffer!=nullptr && imgBuffer->desc.target==GLBuffer::Target_Rect) ? imgBuffer->name : 0);
 				if (inputImageRectUni->loc >= 0)	{
 					glUniform1i(inputImageRectUni->loc, 1);
 				}
@@ -193,10 +193,10 @@ FragColor *= (1.-fadeVal);\r\
 						glUniform1i(isRectTexUni->loc, 0);
 					else	{
 						switch (imgBuffer->desc.target)	{
-						case VVGLBuffer::Target_2D:
+						case GLBuffer::Target_2D:
 							glUniform1i(isRectTexUni->loc, 1);
 							break;
-						case VVGLBuffer::Target_Rect:
+						case GLBuffer::Target_Rect:
 							glUniform1i(isRectTexUni->loc, 2);
 							break;
 						default:
@@ -248,7 +248,7 @@ FragColor *= (1.-fadeVal);\r\
 				}
 		
 			});
-#endif	//	ISF_TARGET_GL3PLUS || ISF_TARGET_GLES3
+#endif	//	ISF_TARGETENV_GL3PLUS || ISF_TARGETENV_GLES3
 		}
 	}
 	

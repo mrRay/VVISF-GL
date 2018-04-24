@@ -156,6 +156,12 @@ class GLScene	{
 
 
 
+inline GLSceneRef CreateGLScene() { return make_shared<GLScene>(); }
+inline GLSceneRef CreateGLScene(const GLContextRef & inCtx) { return make_shared<GLScene>(inCtx); }
+
+
+
+
 }
 
 

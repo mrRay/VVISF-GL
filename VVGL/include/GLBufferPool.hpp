@@ -107,7 +107,8 @@ GLBufferRef CreateBGRATex(const Size & size, const bool & createInCurrentContext
 GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #if !ISF_SDK_RPI
 GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContextRef & inContextRef=nullptr);
+//	'inContextRef' must not be NULL- this function will have not work if it is null!
+void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContextRef & inContextRef);
 #endif	//	!ISF_SDK_RPI
 #endif	//	!ISF_SDK_IOS
 

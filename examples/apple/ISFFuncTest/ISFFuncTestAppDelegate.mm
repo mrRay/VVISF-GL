@@ -57,22 +57,29 @@ using namespace VVGL;
 	
 		switch ([tmpNum intValue])	{
 		case GLVersion_2:
-			sharedContext = make_shared<GLContext>(nullptr, CreateCompatibilityGLPixelFormat());
+			sharedContext = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
 			[glVersPUB selectItemWithTag:2];
 			break;
 		default:
-			sharedContext = make_shared<GLContext>(nullptr, CreateGL4PixelFormat());
+			sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
 			[glVersPUB selectItemWithTag:4];
 			break;
 		}
 	
 		CreateGlobalBufferPool(sharedContext);
+		
+		//	make an NSImage from the PNG included with the app, create a GLBufferRef from it
+		NSImage			*tmpImg = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SampleImg" ofType:@"png"]];
+		srcBuffer = CreateBufferForNSImage(tmpImg);
+		[tmpImg release];
+		tmpImg = nil;
 	
-		scene = make_shared<ISFScene>();
+		scene = CreateISFScene();
 	
 		[bufferView setSharedGLContext:sharedContext];
 	
 		NSString		*tmpStr = [[NSBundle mainBundle] pathForResource:@"CellMod" ofType:@"fs"];
+		//NSString		*tmpStr = [@"~/Desktop/HorizVertHold_debug.fs" stringByExpandingTildeInPath];
 		if (tmpStr != nil)	{
 			//string			path([tmpStr UTF8String]);
 			scene->useFile(string([tmpStr UTF8String]));
@@ -104,6 +111,13 @@ using namespace VVGL;
 	
 	[self loadBackendFromDefaults];
 }
+- (IBAction) sliderUsed:(id)sender	{
+	/*
+	double		tmpVal = [sender doubleValue];
+	const ISFVal	tmpISFVal = ISFFloatVal(tmpVal);
+	scene->setValueForInputNamed(tmpISFVal, "hHold");
+	*/
+}
 
 //	this method is called from the displaylink callback
 - (void) renderCallback	{
@@ -112,7 +126,9 @@ using namespace VVGL;
 		if (scene == nullptr)
 			return;
 		NSRect				viewFrame = [bufferView frame];
+		scene->setValueForInputNamed(ISFImageVal(srcBuffer), "inputImage");
 		GLBufferRef		tmpBuffer = scene->createAndRenderABuffer(VVGL::Size(viewFrame.size.width, viewFrame.size.height));
+		//GLBufferRef		tmpBuffer = scene->createAndRenderABuffer(srcBuffer->srcRect.size);
 		[bufferView drawBuffer:tmpBuffer];
 		//	tell the buffer pool to do its housekeeping (releases any "old" resources in the pool that have been sticking around for a while)
 		GetGlobalBufferPool()->housekeeping();

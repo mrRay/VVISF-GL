@@ -16,6 +16,8 @@
 	
 	//OSSpinLock					lastBufferLock;
 	//VVBuffer					*lastBuffer;
+	
+	VVISF::ISFSceneRef					swizzleScene;
 }
 
 - (void) loadDeviceWithUniqueID:(NSString *)n;

@@ -53,7 +53,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 
 # actual source
 SOURCES += \
-	../../../VVGL/src/Geom.cpp \
+	../../../VVGL/src/VVGL_Geom.cpp \
 	../../../VVGL/src/GLBuffer.cpp \
 	../../../VVGL/src/GLBufferCopier.cpp \
 	../../../VVGL/src/GLBufferPool.cpp \
@@ -62,31 +62,31 @@ SOURCES += \
 	../../../VVGL/src/GLContext.cpp \
 	../../../VVGL/src/GLQtCtxWrapper.cpp \
 	../../../VVGL/src/GLScene.cpp \
-	../../../VVGL/src/StringUtils.cpp
+	../../../VVGL/src/VVGL_StringUtils.cpp
 
 HEADERS += \
-	../../../VVGL/include/Base.hpp \
-	../../../VVGL/include/Geom.hpp \
-	../../../VVGL/include/VVGL.hpp \
-	../../../VVGL/include/VVGL_Defines.hpp \
-    ../../../VVGL/include/vvgl_qt_global.h \
-	../../../VVGL/include/GLBuffer.hpp \
 	../../../VVGL/include/GLBuffer_GLFW_Enums.h \
 	../../../VVGL/include/GLBuffer_IOS_Enums.h \
 	../../../VVGL/include/GLBuffer_Mac_Enums.h \
 	../../../VVGL/include/GLBuffer_Qt_Enums.h \
 	../../../VVGL/include/GLBuffer_RPI_Enums.h \
+	../../../VVGL/include/GLBufferPool_CocoaAdditions.h \
+	../../../VVGL/include/vvgl_qt_global.h \
+	../../../VVGL/include/GLBuffer.hpp \
 	../../../VVGL/include/GLBufferCopier.hpp \
 	../../../VVGL/include/GLBufferPool.hpp \
-	../../../VVGL/include/GLBufferPool_CocoaAdditions.h \
 	../../../VVGL/include/GLCachedAttrib.hpp \
 	../../../VVGL/include/GLCachedUni.hpp \
 	../../../VVGL/include/GLContext.hpp \
 	../../../VVGL/include/GLQtCtxWrapper.hpp \
 	../../../VVGL/include/GLScene.hpp \
-	../../../VVGL/include/Range.hpp \
-	../../../VVGL/include/StringUtils.hpp \
-	../../../VVGL/include/Time.hpp
+	../../../VVGL/include/VVGL_Base.hpp \
+	../../../VVGL/include/VVGL_Defines.hpp \
+	../../../VVGL/include/VVGL_Geom.hpp \
+	../../../VVGL/include/VVGL_Range.hpp \
+	../../../VVGL/include/VVGL_StringUtils.hpp \
+	../../../VVGL/include/VVGL_Time.hpp \
+	../../../VVGL/include/VVGL.hpp
 
 
 #unix {
