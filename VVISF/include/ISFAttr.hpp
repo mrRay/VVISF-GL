@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include "vvisf_qt_global.h"
 #endif
 

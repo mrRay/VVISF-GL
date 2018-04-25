@@ -152,7 +152,7 @@
 	
 	void			*selfPtr = (void*)self;
 	//	make a new scene- this also makes a new GL context that shares the passed context
-	scene = CreateGLScene(n->newContextSharingMe());
+	scene = CreateGLSceneRefUsing(n->newContextSharingMe());
 	
 	if (scene->getGLVersion() == GLVersion_2)	{
 		//NSLog(@"\t\tGL 2");

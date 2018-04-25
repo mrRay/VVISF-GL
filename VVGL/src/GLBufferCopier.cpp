@@ -268,7 +268,7 @@ GLBufferRef GLBufferCopier::copyToNewBuffer(const GLBufferRef & n)	{
 		setOrthoSize(n->srcRect.size);
 	
 	//	make the buffers i'll be rendering into
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	GLBufferRef		color = (copyToIOSurface) ? CreateRGBATexIOSurface(orthoSize) : CreateRGBATex(orthoSize);
 #else
 	GLBufferRef		color = CreateRGBATex(orthoSize);
@@ -535,7 +535,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 			glUniform1i(inputImageLoc.loc, 0);
 			GLERRLOG
 		}
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	pass the RECT texture to the program (if there is a RECT texture)
 		glActiveTexture(GL_TEXTURE1);
 		GLERRLOG
@@ -560,7 +560,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 					glUniform1i(isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 				case GLBuffer::Target_Rect:
 					glUniform1i(isRectTexLoc.loc, 2);
 					GLERRLOG

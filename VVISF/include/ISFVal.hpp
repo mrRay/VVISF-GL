@@ -5,7 +5,7 @@
 //#include "GLBuffer.hpp"
 #include "ISFStringUtils.hpp"
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include "vvisf_qt_global.h"
 #endif
 

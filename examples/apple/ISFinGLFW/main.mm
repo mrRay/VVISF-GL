@@ -7,17 +7,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#import <Foundation/Foundation.h>
 
 #include "VVGL.hpp"
 #include "VVISF.h"
 
+//#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 
 
-VVGL::GLScene			*displayScene = nullptr;
-VVISF::ISFScene		*isfScene = nullptr;
+
+
+
+//	this GLScene is going to be a shim over the GL context created by GLFW (VVGL won't create a new context, it'll just create a GLContext and populate it with the context from GLFW)
+VVGL::GLSceneRef		displayScene = nullptr;
+VVISF::ISFSceneRef		isfScene = nullptr;
 //	create the texture variable we're eventually going to render into
 VVGL::GLBufferRef		targetTex = nullptr;
 
@@ -31,7 +36,7 @@ void key( GLFWwindow* window, int k, int s, int action, int mods )	{
 		break;
 	case GLFW_KEY_1:
 		cout << "\tabout to render ISF to texture...\n";
-		targetTex = isfScene->createAndRenderABuffer(displayScene->getSize());
+		targetTex = isfScene->createAndRenderABuffer(displayScene->getOrthoSize());
 		cout << "\trendered ISF to texture " << *targetTex << endl;
 		break;
 	case GLFW_KEY_2:
@@ -52,11 +57,11 @@ void key( GLFWwindow* window, int k, int s, int action, int mods )	{
 }
 void reshape( GLFWwindow* window, int width, int height )	{
 	using namespace std;
-	cout << __FUNCTION__ << ", " << width << " x " << height << endl;
+	cout << __PRETTY_FUNCTION__ << ", " << width << " x " << height << endl;
 	if (displayScene==nullptr || isfScene==nullptr)
 		return;
 	VVGL::Size			tmpSize(width,height);
-	displayScene->setSize(tmpSize);
+	displayScene->setOrthoSize(tmpSize);
 	//isfScene->setRenderSize(tmpSize);
 }
 
@@ -85,23 +90,22 @@ int main(int argc, char *argv[])	{
 	// Set callback functions
 	glfwSetFramebufferSizeCallback(window, reshape);
 	glfwSetKeyCallback(window, key);
-	//	load the various GL extensions
+	//	make the context current...
 	glfwMakeContextCurrent(window);
-	gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 	glfwSwapInterval( 1 );
+	//	load the various GL extensions
+	//gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+	glewInit();
 	
 	//	...at this point, GLFW has been set up and is ready to go.
 	
-	//	wrap the window's GL context with a GLContext, which we're going to use to screate a couple other resources
-	GLContextRef	ctxRef = CreateRefUsing(window);
-	//	first make the buffer pool
+	//	wrap the window's GL context with a GLContext, which we're going to use to create a couple other resources
+	GLContextRef	ctxRef = CreateGLContextRefUsing(window);
+	//	first make the buffer pool.  this is a separate GL context.
 	CreateGlobalBufferPool(ctxRef);
 	
-	
-	
-	
 	//	now create the display scene (this is what we're going to use to draw into the GLFWwindow)
-	displayScene = new GLScene(ctxRef);
+	displayScene = CreateGLSceneRefUsing(ctxRef);
 	displayScene->setAlwaysNeedsReshape(true);
 	displayScene->setClearColor(1., 0., 0., 1.);
 	//	set the display scene's render callback, which will draw 'targetTex' in the scene
@@ -117,7 +121,7 @@ int main(int argc, char *argv[])	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 		VVGL::Rect			tmpRect(0.,0.,0.,0.);
-		tmpRect.size = s.getSize();
+		tmpRect.size = s.getOrthoSize();
 		//cout << "\tverts rect is " << tmpRect << endl;
 		float			verts[] = {
 			(float)MinX(tmpRect), (float)MinY(tmpRect), 0.0,
@@ -147,9 +151,10 @@ int main(int argc, char *argv[])	{
 	
 	
 	//	create the ISF scene, which is going to render-to-texture
-	isfScene = new ISFScene(ctxRef);
-	isfScene->useFile(string("/Users/testAdmin/Documents/ISFSandbox/examples/apple/GLFWGears/CellMod.fs"));
-	cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
+	isfScene = CreateISFSceneRefUsing(ctxRef);
+	NSString		*includedISFPath = [[NSBundle mainBundle] pathForResource:@"CellMod" ofType:@"fs"];
+	isfScene->useFile(string([includedISFPath UTF8String]));
+	//cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
 	
 	
 	//	set the size of everything
@@ -160,7 +165,7 @@ int main(int argc, char *argv[])	{
 	
 	// Main loop
 	while(!glfwWindowShouldClose(window))	{
-		targetTex = isfScene->createAndRenderABuffer(displayScene->getSize());
+		targetTex = isfScene->createAndRenderABuffer(displayScene->getOrthoSize());
 		displayScene->render();
 		// Swap buffers
 		glfwSwapBuffers(window);

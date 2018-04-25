@@ -161,7 +161,7 @@
 	
 	void			*selfPtr = (void*)self;
 	//	make a new scene- this also makes a new GL context that shares the passed context
-	scene = CreateISFScene(n->newContextSharingMe());
+	scene = CreateISFSceneRefUsing(n->newContextSharingMe());
 	if (sceneFilePath != nil)
 		scene->useFile(string([sceneFilePath UTF8String]));
 	//	make an NSOpenGLContext wrapping the CGLContext inside the GLContextRef, make it draw into the view

@@ -2,11 +2,11 @@
 #define ISFScene_hpp
 
 #include "ISFDoc.hpp"
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include "vvisf_qt_global.h"
 #endif
 
@@ -158,8 +158,8 @@ class ISFScene : public GLScene	{
 
 
 
-inline ISFSceneRef CreateISFScene() { return make_shared<ISFScene>(); }
-inline ISFSceneRef CreateISFScene(const GLContextRef & inCtx) { return make_shared<ISFScene>(inCtx); }
+inline ISFSceneRef CreateISFSceneRef() { return make_shared<ISFScene>(); }
+inline ISFSceneRef CreateISFSceneRefUsing(const GLContextRef & inCtx) { return make_shared<ISFScene>(inCtx); }
 
 
 

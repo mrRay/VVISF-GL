@@ -37,12 +37,14 @@ DEFINES += ISF_SDK_QT
 
 
 # additions for GLEW
-unix: LIBS += -L/usr/local/lib/ -lGLEW
-INCLUDEPATH += /usr/local/include
-DEPENDPATH += /usr/local/include
-unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
-
-
+#unix: LIBS += -L/usr/local/lib/ -lGLEW
+#INCLUDEPATH += /usr/local/include
+#DEPENDPATH += /usr/local/include
+#unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
+unix: LIBS += -L$$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/ -lGLEW
+INCLUDEPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
+DEPENDPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
+unix: PRE_TARGETDEPS += $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW.dylib
 
 
 # additions for the VVGL header files

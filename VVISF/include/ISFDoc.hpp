@@ -6,7 +6,7 @@
 #include "ISFAttr.hpp"
 #include "ISFPassTarget.hpp"
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include "vvisf_qt_global.h"
 #endif
 
@@ -110,7 +110,7 @@ class ISFDoc	{
 		//	returns a string describing the type of the expected texture samplers ("2" for 2D, "R" for Rect, "C" for Cube).  save this, if it changes in a later pass the shader source must be generated again.
 		string generateTextureTypeString();
 		//	returns a true if successful.  populates the provided strings with strings that are usable for frag/vert shaders
-		bool generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers);
+		bool generateShaderSource(string * outFragSrc, string * outVertSrc, VVGL::GLVersion & inGLVers);
 		
 		friend ostream & operator<<(ostream & os, const ISFDoc & n);
 		
@@ -118,7 +118,7 @@ class ISFDoc	{
 		//	used so we can have two constructors without duplicating code
 		void _initWithRawFragShaderString(const string & inRawFile);
 		//	returns a true if successful.  populates a string with variable declarations for a frag shader
-		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers);
+		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, VVGL::GLVersion & inGLVers);
 		//	returns a true if successful.  populates a map with string/value pairs that will be used to evaluate variable names in strings
 		bool _assembleSubstitutionMap(map<string,double*> * outMap);
 };

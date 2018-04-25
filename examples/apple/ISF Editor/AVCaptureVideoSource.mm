@@ -70,7 +70,7 @@ using namespace VVISF;
 				NSLog(@"\t\terr %d at CVOpenGLTextureCacheCreate, %s",err,__func__);
 			}
 			
-			swizzleScene = CreateISFScene(poolCtx->newContextSharingMe());
+			swizzleScene = CreateISFSceneRefUsing(poolCtx->newContextSharingMe());
 			NSString		*pathToSwizzleShader = [[NSBundle mainBundle] pathForResource:@"SwizzleISF-CbY0CrY1toRGB" ofType:@"fs"];
 			swizzleScene->useFile(string([pathToSwizzleShader UTF8String]));
 		}

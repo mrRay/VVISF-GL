@@ -36,15 +36,15 @@ class GLBuffer	{
 		};
 		
 		//	enums describing the various GL object (usually texture) properties- split up b/c availability depends on platform
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		#include "GLBuffer_Mac_Enums.h"
-#elif ISF_SDK_RPI
+#elif defined(ISF_SDK_RPI)
 		#include "GLBuffer_RPI_Enums.h"
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 		#include "GLBuffer_IOS_Enums.h"
-#elif ISF_SDK_GLFW
+#elif defined(ISF_SDK_GLFW)
 		#include "GLBuffer_GLFW_Enums.h"
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 		#include "GLBuffer_Qt_Enums.h"
 #endif
 		
@@ -72,7 +72,7 @@ class GLBuffer	{
 		struct Descriptor	{
 			Type					type = Type_Tex;
 			Target		target = Target_2D;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 			InternalFormat			internalFormat = IF_RGBA8;
 #else
 			InternalFormat			internalFormat = IF_RGBA;
@@ -108,7 +108,7 @@ class GLBuffer	{
 		void					*cpuBackingPtr = nullptr;
 	
 	private:
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//id						userInfo = nullptr;	//	RETAINED, nil by default.  not used by this class- stick whatever you want here and it will be retained for the lifetime of this buffer.  retained if you copy the buffer!
 		IOSurfaceRef			localSurfaceRef = nullptr;	//	RETAINED, nil by default.  the "local" surface ref was created by this process.
 		IOSurfaceRef			remoteSurfaceRef = nullptr;	//	RETAINED, nil by default.  the "remote" surface ref was created by another process (so this should probably be released immediately).
@@ -136,7 +136,7 @@ class GLBuffer	{
 		//	use this to create a shallow copy (memberwise copy)
 		GLBuffer * allocShallowCopy();
 		
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	getter/setters
 		//id getUserInfo() const;
 		//void setUserInfo(id n);
@@ -156,7 +156,7 @@ class GLBuffer	{
 		bool isFullFrame() const;
 		bool isNPOT2DTex() const;
 		bool isPOT2DTex() const;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		bool safeToPublishToSyphon() const;
 #endif
 		bool isContentMatch(GLBuffer & n) const;

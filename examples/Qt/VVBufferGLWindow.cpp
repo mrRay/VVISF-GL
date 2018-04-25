@@ -161,7 +161,7 @@ void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
 	
 	if (ctx != nullptr)	{
 		ctx->setSurface(this);
-		scene = CreateGLScene(ctx);
+		scene = CreateGLSceneRefUsing(ctx);
 		scene->setPerformClear(true);
 		scene->setClearColor(0., 0., 0., 0.);
 		

@@ -100,7 +100,7 @@ GLBufferRef GLScene::createAndRenderABuffer(const Size & inSize, const GLBufferP
 	//	set the orthogonal size
 	setOrthoSize(inSize);
 	//	make the buffers i'll be rendering into
-#if ISF_SDK_RPI
+#if defined(ISF_SDK_RPI)
 	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), nullptr);
 #else
 	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), CreateDepthBuffer(orthoSize, false, inPool));
@@ -116,7 +116,7 @@ void GLScene::renderToBuffer(const GLBufferRef & inBuffer)	{
 	if (inBuffer != nullptr)
 		setOrthoSize(inBuffer->srcRect.size);
 	//	make the buffers i'll be rendering into
-#if ISF_SDK_RPI
+#if defined(ISF_SDK_RPI)
 	RenderTarget		tmpTarget(CreateFBO(), inBuffer, nullptr);
 #else
 	RenderTarget		tmpTarget(CreateFBO(), inBuffer, CreateDepthBuffer(orthoSize));
@@ -176,7 +176,7 @@ void GLScene::renderBlackFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(0., 0., 0., 0.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -207,7 +207,7 @@ void GLScene::renderOpaqueBlackFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(0., 0., 0., 1.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -238,7 +238,7 @@ void GLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 	glClearColor(1., 0., 0., 1.);
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 	glClear(mask);
@@ -650,7 +650,7 @@ void GLScene::_renderPrep()	{
 	}
 	if (performClear)	{
 		uint32_t		mask = GL_COLOR_BUFFER_BIT;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 		mask |= GL_DEPTH_BUFFER_BIT;
 #endif
 		glClear(mask);

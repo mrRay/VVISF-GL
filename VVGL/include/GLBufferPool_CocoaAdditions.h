@@ -6,11 +6,11 @@
 #include "GLBuffer.hpp"
 #include "GLBufferPool.hpp"
 
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 #import <CoreGraphics/CoreGraphics.h>
 #endif
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 #import <AppKit/AppKit.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace VVGL
 {
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 
 GLBufferRef CreateBufferForNSImage(NSImage * inImg, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateBufferForBitmapRep(NSBitmapImageRep * inRep, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -39,7 +39,7 @@ GLBufferRef CreateBufferForBitmapRep(NSBitmapImageRep * inRep, const bool & crea
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 @interface NSBitmapImageRep (VVGLNSBitmapImageRepAdditions)
 - (void) unpremultiply;
 @end

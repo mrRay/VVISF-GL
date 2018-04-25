@@ -7,7 +7,7 @@
 #include <set>
 #include <algorithm>
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include <QImage>
 #endif
 
@@ -41,12 +41,12 @@ GLBufferPool::GLBufferPool(const GLContextRef & inShareCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tpassed ctx was " << inShareCtx << endl;
 	//context = (inShareCtx==nullptr) ? new GLContext() : new GLContext(inShareCtx);
-	context = (inShareCtx==nullptr) ? CreateNewGLContext() : inShareCtx->newContextSharingMe();
+	context = (inShareCtx==nullptr) ? CreateNewGLContextRef() : inShareCtx->newContextSharingMe();
 	//cout << "\tcontext is " << *context << endl;
 	//cout << "\tmy ctx is " << context << endl;
 	freeBuffers.reserve(50);
 	
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 	colorSpace = CGColorSpaceCreateDeviceRGB();
 #endif
 }
@@ -58,7 +58,7 @@ GLBufferPool::~GLBufferPool()	{
 		//delete context;
 		context = nullptr;
 	}
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 	CGColorSpaceRelease(colorSpace);
 #endif
 }
@@ -95,7 +95,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	//	grab a context lock so we can do stuff with the GL context
 	lock_guard<recursive_mutex>		lock(contextLock);
 	
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	CGLError			err = kCGLNoError;
 #endif
 	if (!inCreateInCurrentContext)	{
@@ -107,7 +107,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	}
 	
 	//	cout << "\terr: " << err << " in " << __PRETTY_FUNCTION__ << endl;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	IOSurfaceRef		newSurfaceRef = nullptr;
 	uint32_t			cpuBackingSize = returnMe->backingLengthForSize(bs);
 	uint32_t			bytesPerRow = cpuBackingSize/bs.height;
@@ -115,7 +115,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	uint32_t			pixelFormat = 0x00;
 	bool				compressedTex = false;
 	
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	switch (d.internalFormat)	{
 	case GLBuffer::IF_RGB_DXT1:
 	case GLBuffer::IF_RGBA_DXT5:
@@ -132,14 +132,14 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	case GLBuffer::PF_None:
 	case GLBuffer::PF_Depth:
 		break;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	case GLBuffer::PF_R:
 #endif
 	case GLBuffer::PF_RGBA:
 		//pixelFormat = kCVPixelFormatType_32RGBA;
 		pixelFormat = 'RGBA';
 		break;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	case GLBuffer::PF_BGRA:
 		//pixelFormat = kCVPixelFormatType_32BGRA;
 		pixelFormat = 'BGRA';
@@ -192,7 +192,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		}
 		break;
 	case GLBuffer::Type_Tex:
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	if necessary, create an iosurface ref
 		if (newBufferDesc.localSurfaceID != 0)	{
 			void				*keys[] = { (void *)kIOSurfaceIsGlobal, (void *)kIOSurfaceWidth, (void *)kIOSurfaceHeight, (void *)kIOSurfaceBytesPerElement, (void *)kIOSurfacePixelFormat };
@@ -227,7 +227,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		glBindTexture(newBufferDesc.target, returnMe->name);
 		GLERRLOG
 		
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	if i want a texture range, there are a couple cases where i can apply it
 		if (newBufferDesc.texRangeFlag)	{
 			if (b != nullptr)	{
@@ -245,7 +245,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		}
 #endif
 		
-//#if !ISF_SDK_IOS && !ISF_SDK_RPI
+//#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 #if !defined(ISF_TARGETENV_GLES) && !defined(ISF_TARGETENV_GLES3)
 		//	setup basic tex defaults
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, GL_FALSE);
@@ -270,7 +270,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
-//#if !ISF_SDK_IOS && !ISF_SDK_RPI
+//#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 #if !defined(ISF_TARGETENV_GLES) && !defined(ISF_TARGETENV_GLES3)
 		if (context!=nullptr && context->version == GLVersion_2)	{
 			if (newBufferDesc.pixelFormat == GLBuffer::PF_Depth)	{
@@ -290,7 +290,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 #endif
 //#endif
 		
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	if there's a surface ref, set it up as the texture!
 		if (newSurfaceRef != nil)	{
 			CGLContextObj		cgl_ctx = CGLGetCurrentContext();
@@ -320,7 +320,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		
 		
 		//	if there's no surface ref, or there is, but there was a problem associating it with the texture, set it up as a straight-up texture!
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		if (newSurfaceRef==nullptr || err!=kCGLNoError)	{
 #endif
 			if (compressedTex)	{
@@ -352,12 +352,12 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 					b);
 				GLERRLOG
 			}
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		}
 #endif
 		
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		if (newBufferDesc.texClientStorageFlag)	{
 			glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
 			GLERRLOG
@@ -417,7 +417,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	//	timestamp the buffer!
 	timestampThisBuffer(returnMe);
 	
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	if (newSurfaceRef != nullptr)	{
 		returnMe->setLocalSurfaceRef(newSurfaceRef);
 		CFRelease(newSurfaceRef);
@@ -467,7 +467,7 @@ GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & d
 			
 			//	if the size of this buffer is compatible with what's requested...
 			if (sizeIsOK)	{
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 				//	check to make sure that the IOSurface-related aspects of this buffer are compatible
 				IOSurfaceRef		srf = bufferPtr->getLocalSurfaceRef();
 				if ((desc.localSurfaceID!=0 && srf!=nullptr)	||
@@ -481,7 +481,7 @@ GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & d
 					(*returnMe).idleCount = 0;
 					//	break out of the for loop
 					break;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 				}
 #endif
 			}
@@ -585,7 +585,7 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 		return;
 	
 	//	Qt has thread-specific contexts: you cannot make them current on any other threads or they crash
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 	//	if we can't make the context current on this thread
 	QThread			*currentThread = QThread::currentThread();
 	QObject			*qCtxAsObj = (QObject*)context->getContext();
@@ -850,7 +850,7 @@ GLBufferRef CreateRGBATex(const Size & size, const bool & inCreateInCurrentConte
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 #else
 	desc.internalFormat = GLBuffer::IF_RGBA;
@@ -878,7 +878,7 @@ GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & inCreateInCurrent
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 	desc.internalFormat = GLBuffer::IF_RGBA32F;
 	desc.pixelFormat = GLBuffer::PF_RGBA;
 	desc.pixelType = GLBuffer::PT_Float;
@@ -912,7 +912,7 @@ GLBufferRef CreateRB(const Size & size, const bool & inCreateInCurrentContext, c
 	
 	desc.type = GLBuffer::Type_RB;
 	desc.target = GLBuffer::Target_2D;
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 	desc.internalFormat = GLBuffer::IF_Depth24;
 #else
 	desc.internalFormat = GLBuffer::IF_Depth16;
@@ -966,7 +966,7 @@ GLBufferRef CreateDepthBuffer(const Size & size, const bool & inCreateInCurrentC
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 	desc.internalFormat = GLBuffer::IF_Depth24;
 #else
 	desc.internalFormat = GLBuffer::IF_Depth16;
@@ -1010,7 +1010,7 @@ GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t
 }
 
 
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 GLBufferRef CreateBGRATex(const Size & size, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
@@ -1020,7 +1020,7 @@ GLBufferRef CreateBGRATex(const Size & size, const bool & inCreateInCurrentConte
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 #else
 	desc.internalFormat = GLBuffer::IF_RGBA;
@@ -1048,7 +1048,7 @@ GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & inCreateInCurrent
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 	desc.internalFormat = GLBuffer::IF_RGBA32F;
 	desc.pixelFormat = GLBuffer::PF_BGRA;
 	desc.pixelType = GLBuffer::PT_Float;
@@ -1072,7 +1072,7 @@ GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & inCreateInCurrent
 	
 	return returnMe;
 }
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -1106,6 +1106,92 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 	return returnMe;
 
 }
+#endif	//	!ISF_SDK_RPI
+#endif	//	!ISF_SDK_IOS
+
+
+
+
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
+//	these functions are defined in the VVGLBufferPool_CocoaAdditions source file
+#else
+GLBufferRef CreateTexFromImage(const string & /*inPath*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
+	return nullptr;
+}
+GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
+	return nullptr;
+}
+#endif	//	#if !ISF_SDK_MAC && !ISF_SDK_IOS
+
+
+
+
+/*	========================================	*/
+#pragma mark --------------------- Qt funcs
+
+
+
+
+#if defined(ISF_SDK_QT)
+GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inImg==nullptr || inPoolRef==nullptr)
+		return nullptr;
+	void			*pixelData = inImg->bits();
+	QSize			imgSize = inImg->size();
+	VVGL::Size		repSize(imgSize.width(), imgSize.height());
+	VVGL::Size		gpuSize = repSize;
+	
+	GLBuffer::Descriptor		desc;
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	//VVBuffer			*returnMe = [self allocBufferForDescriptor:&desc sized:gpuSize backingPtr:pixelData backingSize:repSize];
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	//[returnMe setSrcRect:VVMAKERECT(0,0,repSize.width,repSize.height)];
+	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
+	//	the backing release callback should release a bitmap rep- set it, and the context (which is the rep)
+	//[returnMe setBackingID:VVBufferBackID_NSBitImgRep];
+	returnMe->backingID = GLBuffer::BackingID_None;
+	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseBitmapRep];
+	//[inRep retain];	//	we want to explicitly retain the rep we were passed- when the underlying GLBuffer is freed, its backing release callback will release the rep
+	//returnMe->backingReleaseCallback = [](GLBuffer & inBuffer, void * inReleaseContext)	{
+	//	if (inReleaseContext != nil)	{
+	//		NSBitmapImageRep	*tmpRep = (NSBitmapImageRep *)inReleaseContext;
+	//		[tmpRep release];
+	//	}
+	//};
+	//[returnMe setBackingReleaseCallbackContextObject:inRep];
+	//returnMe->backingContext = (void*)inRep;
+	//[returnMe setBackingSize:repSize];
+	returnMe->backingSize = repSize;
+	returnMe->flipped = true;
+	
+	returnMe->preferDeletion = true;
+	
+	return returnMe;
+}
+#endif
+
+
+
+
+/*	========================================	*/
+#pragma mark --------------------- mac-only funcs
+
+
+
+
+#if defined(ISF_SDK_MAC)
 void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContextRef & inContextRef)	{
 	if (inBufferRef == nullptr)
 		return;
@@ -1218,92 +1304,6 @@ void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContex
 	if (bp != nullptr)
 		bp->timestampThisBuffer(inBufferRef);
 }
-#endif	//	!ISF_SDK_RPI
-#endif	//	!ISF_SDK_IOS
-
-
-
-
-#if ISF_SDK_MAC || ISF_SDK_IOS
-//	these functions are defined in the VVGLBufferPool_CocoaAdditions source file
-#else
-GLBufferRef CreateTexFromImage(const string & /*inPath*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
-	return nullptr;
-}
-GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
-	return nullptr;
-}
-#endif	//	#if !ISF_SDK_MAC && !ISF_SDK_IOS
-
-
-
-
-/*	========================================	*/
-#pragma mark --------------------- Qt funcs
-
-
-
-
-#if ISF_SDK_QT
-GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	if (inImg==nullptr || inPoolRef==nullptr)
-		return nullptr;
-	void			*pixelData = inImg->bits();
-	QSize			imgSize = inImg->size();
-	VVGL::Size		repSize(imgSize.width(), imgSize.height());
-	VVGL::Size		gpuSize = repSize;
-	
-	GLBuffer::Descriptor		desc;
-	desc.type = GLBuffer::Type_Tex;
-	desc.target = GLBuffer::Target_2D;
-	desc.internalFormat = GLBuffer::IF_RGBA8;
-	desc.pixelFormat = GLBuffer::PF_BGRA;
-	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-	desc.cpuBackingType = GLBuffer::Backing_External;
-	desc.gpuBackingType = GLBuffer::Backing_Internal;
-	desc.texRangeFlag = false;
-	desc.texClientStorageFlag = true;
-	desc.msAmount = 0;
-	desc.localSurfaceID = 0;
-	
-	//VVBuffer			*returnMe = [self allocBufferForDescriptor:&desc sized:gpuSize backingPtr:pixelData backingSize:repSize];
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
-	returnMe->parentBufferPool = inPoolRef;
-	//[returnMe setSrcRect:VVMAKERECT(0,0,repSize.width,repSize.height)];
-	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
-	//	the backing release callback should release a bitmap rep- set it, and the context (which is the rep)
-	//[returnMe setBackingID:VVBufferBackID_NSBitImgRep];
-	returnMe->backingID = GLBuffer::BackingID_None;
-	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseBitmapRep];
-	//[inRep retain];	//	we want to explicitly retain the rep we were passed- when the underlying GLBuffer is freed, its backing release callback will release the rep
-	//returnMe->backingReleaseCallback = [](GLBuffer & inBuffer, void * inReleaseContext)	{
-	//	if (inReleaseContext != nil)	{
-	//		NSBitmapImageRep	*tmpRep = (NSBitmapImageRep *)inReleaseContext;
-	//		[tmpRep release];
-	//	}
-	//};
-	//[returnMe setBackingReleaseCallbackContextObject:inRep];
-	//returnMe->backingContext = (void*)inRep;
-	//[returnMe setBackingSize:repSize];
-	returnMe->backingSize = repSize;
-	returnMe->flipped = true;
-	
-	returnMe->preferDeletion = true;
-	
-	return returnMe;
-}
-#endif
-
-
-
-
-/*	========================================	*/
-#pragma mark --------------------- mac-only funcs
-
-
-
-
-#if ISF_SDK_MAC
 GLBufferRef CreateRGBATexIOSurface(const Size & inSize, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
@@ -1649,7 +1649,7 @@ GLBufferRef CreateRGBARectTex(const Size & size, const bool & inCreateInCurrentC
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_Rect;
-//#if ISF_SDK_MAC
+//#if defined(ISF_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 //#else
 //	desc.internalFormat = GLBuffer::IF_RGBA;
@@ -1679,7 +1679,7 @@ GLBufferRef CreateRGBARectTex(const Size & size, const bool & inCreateInCurrentC
 
 
 
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -1733,13 +1733,13 @@ GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateI
 			GLBuffer::Descriptor	desc;
 			desc.type = GLBuffer::Type_Tex;
 			desc.target = GLBuffer::Target_2D;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 			desc.internalFormat = GLBuffer::IF_RGBA8;
 #else
 			desc.internalFormat = GLBuffer::IF_RGBA;
 #endif
 			desc.pixelFormat = GLBuffer::PF_RGBA;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 			desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
 #else
 			desc.pixelType = GLBuffer::PT_UByte;
@@ -1794,7 +1794,7 @@ GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateI
 		GLBuffer::Descriptor	desc;
 		desc.type = GLBuffer::Type_Tex;
 		desc.target = GLBuffer::Target_2D;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		desc.internalFormat = GLBuffer::IF_RGBA8;
 #else
 		desc.internalFormat = GLBuffer::IF_RGBA;
@@ -1853,14 +1853,14 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 			return nullptr;
 	}
 	
-//#if ISF_SDK_RPI
+//#if defined(ISF_SDK_RPI)
 //	return nullptr;
 //#else
 	//	assemble a descriptor for the resource we want to create
 	GLBuffer::Descriptor	desc;
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_Cube;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 	desc.pixelFormat = GLBuffer::PF_RGBA;
 	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
@@ -1914,7 +1914,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 	GLERRLOG
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, GL_FALSE);
 	GLERRLOG
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	GLERRLOG
 #endif
@@ -1976,7 +1976,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 	
 	glBindTexture(desc.target, 0);
 	GLERRLOG
-//#if !ISF_SDK_IOS && !ISF_SDK_RPI
+//#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	if (inPoolRef->getContext()->version <= GLVersion_2)	{
 		glDisable(desc.target);
 		GLERRLOG
@@ -2019,12 +2019,12 @@ void CGBitmapContextUnpremultiply(CGContextRef ctx)	{
 #endif	//	ISF_SDK_MAC || ISF_SDK_IOS
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 GLBufferRef CreateBufferForCVGLTex(CVOpenGLTextureRef & inTexRef, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)
 #endif
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 {
 	//cout << __PRETTY_FUNCTION__ << " ... " << CVOpenGLTextureGetName(inTexRef) << endl;
 	if (inTexRef == NULL)	{
@@ -2032,7 +2032,7 @@ GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool &
 		cout << "\terr: passed nil tex in " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	GLuint			texName = CVOpenGLTextureGetName(inTexRef);
 #else	//	NOT !ISF_SDK_IOS
 	GLuint			texName = CVOpenGLESTextureGetName(inTexRef);
@@ -2042,7 +2042,7 @@ GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool &
 		cout << "\terr: passed invalid tex num " << __PRETTY_FUNCTION__ << endl;
 		return nil;
 	}
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	if (CFGetTypeID(inTexRef) != CVOpenGLTextureGetTypeID())
 #else	//	NOT !ISF_SDK_IOS
 	if (CFGetTypeID(inTexRef) != CVOpenGLESTextureGetTypeID())
@@ -2065,7 +2065,7 @@ GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool &
 	GLBuffer::Descriptor	&desc = returnMe->desc;
 	//desc->type = VVBufferType_Tex;
 	desc.type = GLBuffer::Type_Tex;
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	//desc->target = CVOpenGLTextureGetTarget(inTexRef);
 	desc.target = (VVGL::GLBuffer::Target)CVOpenGLTextureGetTarget(inTexRef);
 	//desc->internalFormat = VVBufferIF_RGBA8;
@@ -2112,7 +2112,7 @@ GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool &
 	returnMe->size = VVGL::Size(texSize.width, texSize.height);
 	//[returnMe setSrcRect:VVMAKERECT(0,0,texSize.width,texSize.height)];
 	returnMe->srcRect = VVGL::Rect(0,0,texSize.width,texSize.height);
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	//[returnMe setFlipped:CVOpenGLTextureIsFlipped(inTexRef)];
 	returnMe->flipped = (CVOpenGLTextureIsFlipped(inTexRef)) ? true : false;
 #else	//	NOT !ISF_SDK_IOS
@@ -2124,14 +2124,14 @@ GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool &
 	
 	//[returnMe setBackingID:VVBufferBackID_CVTex];
 	returnMe->backingID = GLBuffer::BackingID_CVTex;
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	CVOpenGLTextureRetain(inTexRef);
 #else	//	NOT !ISF_SDK_IOS
 	//CVOpenGLESTextureRetain(inTexRef);
 	CVBufferRetain(inTexRef);
 #endif	//	!ISF_SDK_IOS
 	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseCVGLT];
-#if !ISF_SDK_IOS
+#if !defined(ISF_SDK_IOS)
 	returnMe->backingReleaseCallback = [](GLBuffer& inBuffer, void* inReleaseContext)	{
 		CVOpenGLTextureRef	tmpRef = (CVOpenGLTextureRef)inReleaseContext;
 		if (tmpRef != NULL)

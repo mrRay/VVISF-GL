@@ -388,7 +388,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	//	: CreateRGBATex(inSize, bp);
 	
 	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	if (persistentToIOSurface)
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
 	else
@@ -600,7 +600,7 @@ void ISFScene::_setUpRenderCallback()	{
 		VVGL::Rect				tmpRect(0,0,0,0);
 		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
 		//cout << "\tverts based on rect " << tmpRect << endl;
-#if ISF_SDK_MAC || ISF_SDK_GLFW
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_GLFW)
 		glColor4f(1., 1., 1., 1.);
 		GLERRLOG
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -619,7 +619,7 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 		glDrawArrays(GL_QUADS, 0, 4);
 		GLERRLOG
-#elif ISF_SDK_IOS || ISF_SDK_RPI
+#elif defined(ISF_SDK_IOS) || defined(ISF_SDK_RPI)
 		GLfloat			geoCoords[] = {
 			(GLfloat)MinX(tmpRect), (GLfloat)MinY(tmpRect),
 			(GLfloat)MaxX(tmpRect), (GLfloat)MinY(tmpRect),
@@ -940,7 +940,7 @@ void ISFScene::_renderPrep()	{
 	
 	//	run through the inputs, applying the current values to the program
 	vector<ISFAttrRef> &	inputs = doc->getInputs();
-	for (const auto attribRef : inputs)	{
+	for (const auto & attribRef : inputs)	{
 		ISFValType			attribType = attribRef->getType();
 		ISFVal &			currentVal = attribRef->getCurrentVal();
 		
@@ -1056,7 +1056,7 @@ void ISFScene::_renderPrep()	{
 	
 	//	run through the imported images, applying the current values to the program
 	vector<ISFAttrRef> &	imageImports = doc->getImageImports();
-	for (const auto attribRef : imageImports)	{
+	for (const auto & attribRef : imageImports)	{
 		if (attribRef->getType() == ISFValType_Cube)	{
 			if (findNewUniforms)
 				setAttrUniformsCubeBlock(attribRef);
@@ -1071,7 +1071,7 @@ void ISFScene::_renderPrep()	{
 	
 	//	run through the persistent buffers, applying the current values to the program
 	const vector<ISFPassTargetRef>	persistentBuffers = doc->getPersistentBuffers();
-	for (const auto targetRef : persistentBuffers)	{
+	for (const auto & targetRef : persistentBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
 		pushTargetUniformsImageBlock(targetRef);
@@ -1079,7 +1079,7 @@ void ISFScene::_renderPrep()	{
 	
 	//	run through the temp buffers, applying the current values to the program
 	const vector<ISFPassTargetRef>	tempBuffers = doc->getTempBuffers();
-	for (const auto targetRef : tempBuffers)	{
+	for (const auto & targetRef : tempBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
 		pushTargetUniformsImageBlock(targetRef);
@@ -1166,7 +1166,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 	if (tmpDoc == nullptr)
 		return;
 	
-#if ISF_SDK_IOS
+#if defined(ISF_SDK_IOS)
 	glPushGroupMarkerEXT(0, "All ISF-specific rendering");
 	GLERRLOG
 #endif
@@ -1242,7 +1242,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
 				
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 				if (shouldBeIOSurface)
 					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
@@ -1277,7 +1277,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		
 		//	now we have to run through the inputs, and set the value of any 'event'-type inputs that were YES to NO
 		vector<ISFAttrRef> &	inputs = tmpDoc->getInputs();
-		for (const auto attribRef : inputs)	{
+		for (const auto & attribRef : inputs)	{
 			ISFValType		attribType = attribRef->getType();
 			ISFVal &		currentVal = attribRef->getCurrentVal();
 			
@@ -1343,7 +1343,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		}
 	}
 	
-#if ISF_SDK_IOS
+#if defined(ISF_SDK_IOS)
 	glPopGroupMarkerEXT();
 	GLERRLOG
 #endif

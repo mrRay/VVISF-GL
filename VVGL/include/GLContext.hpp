@@ -4,19 +4,19 @@
 #include "VVGL_Defines.hpp"
 
 #include <iostream>
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	#import <OpenGL/OpenGL.h>
 	#import <OpenGL/gl.h>
 	#import <OpenGL/glext.h>
 	#import <OpenGL/gl3.h>
 	#import <OpenGL/gl3ext.h>
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 	//#ifndef __cplusplus
 		//#import <OpenGLES/EAGL.h>
 		#import <OpenGLES/ES3/glext.h>
 		//#import <GLKit/GLKit.h>
 	//#endif
-#elif ISF_SDK_RPI
+#elif defined(ISF_SDK_RPI)
 	#include "bcm_host.h"
 	//#include <GLES/gl.h>
 	//#include <GLES/glext.h>
@@ -24,10 +24,12 @@
 	#include <GLES2/gl2ext.h>
 	#include <EGL/egl.h>
 	#include <EGL/eglext.h>
-#elif ISF_SDK_GLFW
-	#include <glad/glad.h>
+#elif defined(ISF_SDK_GLFW)
+	//#include <glad/glad.h>
+	//#define GLEW_STATIC 1
+	#include <GL/glew.h>
 	#include <GLFW/glfw3.h>
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 	//#define GLEW_STATIC 1
 	#include <GL/glew.h>
 	#include <QPointer>
@@ -49,13 +51,13 @@ using namespace std;
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 uint32_t GLDisplayMaskForAllScreens();
 CGLPixelFormatObj CreateDefaultPixelFormat();
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
 CGLPixelFormatObj CreateGL3PixelFormat();
 CGLPixelFormatObj CreateGL4PixelFormat();
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 QSurfaceFormat CreateDefaultSurfaceFormat();
 QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
 QSurfaceFormat CreateGL3SurfaceFormat();
@@ -75,22 +77,23 @@ you should be able to following along pretty well here using the other platforms
 class GLContext	{
 	public:
 		
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		CGLContextObj		ctx = nullptr;
 		CGLContextObj		sharedCtx = nullptr;
 		CGLPixelFormatObj	pxlFmt = nullptr;
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 		void				*ctx = nullptr;	//	really an EAGLContext under iOS
-#elif ISF_SDK_GLFW
+#elif defined(ISF_SDK_GLFW)
 		GLFWwindow			*win = nullptr;
-#elif ISF_SDK_RPI
+		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
+#elif defined(ISF_SDK_RPI)
 		EGLDisplay			display = EGL_NO_DISPLAY;	//	weak ref, potentially unsafe
 		EGLSurface			winSurface = EGL_NO_SURFACE;	//	weak ref, potentially unsafe
 		EGLContext			sharedCtx = EGL_NO_CONTEXT;	//	weak ref, potentially unsafe
 		bool				ownsTheCtx = false;	//	set to true when i "own" ctx and must destroy it on my release
 		EGLContext			ctx = EGL_NO_CONTEXT;	//	owned by this object
-#elif ISF_SDK_QT
-		GLQtCtxWrapper	*ctx = nullptr;	//	we have to wrap all the QOpenGL* stuff because if its headers and GLEW's headers are in the same #include paths it breaks compilation
+#elif defined(ISF_SDK_QT)
+		GLQtCtxWrapper		*ctx = nullptr;	//	we have to wrap all the QOpenGL* stuff because if its headers and GLEW's headers are in the same #include paths it breaks compilation
 		QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
 		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
 #endif
@@ -99,26 +102,26 @@ class GLContext	{
 		
 	public:
 		//	most uses of GLContext are through shared_ptrs, so you should avoid using these constructors wherever possible- there are creation functions defined in this header outside of this class.
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	this function doesn't create anything- it just retains the passed ctx/share ctx/pxl fmt, leaving them null if that's how they were passed in
 		GLContext(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFm=CreateDefaultPixelFormat());
 		//	this function creates a context using the passed pixel format and share context
 		GLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat());
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 		//	"inCtx" is an EAGLContext! this function doesn't create anything- it just retains the passed ctx
 		GLContext(const void * inEAGLContext);
 		//	this function doesn't create a new GL context- it "wraps" (and retains) the passed context
 		//GLContext(const EAGLContext * inCtx);
 		//	this function actually creates a new GL context using the passed sharegroup and rendering API
 		//GLContext(const EAGLSharegroup * inSharegroup, const EAGLRenderingAPI & inRenderAPI);
-#elif ISF_SDK_GLFW
+#elif defined(ISF_SDK_GLFW)
 		GLContext(GLFWwindow * inWindow);
-#elif ISF_SDK_RPI
+#elif defined(ISF_SDK_RPI)
 		//	this function doesn't create anything- it just obtains a weak ref to the passed EGL vars
 		GLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx);
 		//	this function creates a new GL context using the passed shared context
 		GLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx);
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 		//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
 		//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 		//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
@@ -159,7 +162,7 @@ class GLContext	{
 		void makeCurrentIfNull();
 		
 		bool sameShareGroupAs(const GLContextRef & inCtx);
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		bool sameShareGroupAs(const CGLContextObj & inCtx);
 #endif
 		
@@ -173,28 +176,28 @@ class GLContext	{
 //	these creation functions are the preferred way of making GLContext instances.  they're just more human-readable than make_shared<GLContext>(constructor args).
 #if defined(ISF_SDK_MAC)
 	//	doesn't create any GL resources, just retains the passed GL resources
-	inline GLContextRef CreateRefUsing(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inCtx, inShareCtx, inPxlFmt); }
+	inline GLContextRef CreateGLContextRefUsing(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inCtx, inShareCtx, inPxlFmt); }
 	//	creates a GL context using the passed pixel format and share context
-	inline GLContextRef CreateNewGLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inShareCtx, inPxlFmt); }
+	inline GLContextRef CreateNewGLContextRef(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inShareCtx, inPxlFmt); }
 #elif defined(ISF_SDK_IOS)
 	//	doesn't create any GL resources, just retains the passed GL context.
-	inline GLContextRef CreateRefUsing(const void * inEAGLContext) { return make_shared<GLContext>(inEAGLContext); }
+	inline GLContextRef CreateGLContextRefUsing(const void * inEAGLContext) { return make_shared<GLContext>(inEAGLContext); }
 #elif defined(ISF_SDK_GLFW)
 	//	doesn't create any GL resources, just 
-	inline GLContextRef CreateRefUsing(GLFWwindow * inWindow) { return make_shared<GLContext>(inWindow); }
+	inline GLContextRef CreateGLContextRefUsing(GLFWwindow * inWindow) { return make_shared<GLContext>(inWindow); }
 #elif defined(ISF_SDK_RPI)
-	inline GLContextRef CreateRefUsing(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx, inCtx); }
-	inline GLContextRef CreateNewGLContext(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx); }
+	inline GLContextRef CreateGLContextRefUsing(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx, inCtx); }
+	inline GLContextRef CreateNewGLContextRef(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx); }
 #elif defined(ISF_SDK_QT)
 	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
 	//	no GL context is created, instead a weak ref is created to 'inCtx', which must not be null.  the surface format is read from the passed context.
-	inline GLContextRef CreateRefUsing(QSurface * inTargetSurface, QOpenGLContext * inCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inCtx, false, inSfcFmt); }
+	inline GLContextRef CreateGLContextRefUsing(QSurface * inTargetSurface, QOpenGLContext * inCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inCtx, false, inSfcFmt); }
 	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
 	//	creates a new GL context.  'inShareCtx' can be nil.
-	inline GLContextRef CreateNewGLContext(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
+	inline GLContextRef CreateNewGLContextRef(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
 #endif
 	//	creates a generic GL context
-	inline GLContextRef CreateNewGLContext() { return make_shared<GLContext>(); }
+	inline GLContextRef CreateNewGLContextRef() { return make_shared<GLContext>(); }
 
 
 }

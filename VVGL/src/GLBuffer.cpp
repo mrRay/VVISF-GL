@@ -21,7 +21,7 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	switch (this->pixelType)	{
 	case PT_Float:
 		switch (this->internalFormat)	{
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 		case IF_R:
 			bytesPerRow = 32 * 1 * s.width / 8;
 			break;
@@ -31,7 +31,7 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 			break;
 		}
 		break;
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 	case PT_HalfFloat:
 		switch (this->internalFormat)	{
 		case IF_R:
@@ -57,7 +57,7 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 #endif
 	case PT_UByte:
 		switch (this->internalFormat)	{
-#if !ISF_SDK_RPI
+#if !defined(ISF_SDK_RPI)
 		case IF_R:
 			bytesPerRow = 8 * 1 * s.width / 8;
 			break;
@@ -67,7 +67,7 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 			break;
 		}
 		break;
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	case PT_UInt_8888_Rev:
 		bytesPerRow = 8 * 4 * s.width / 8;
 		break;
@@ -78,7 +78,7 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	}
 	
 	switch (this->internalFormat)	{
-#if !ISF_SDK_IOS && !ISF_SDK_RPI
+#if !defined(ISF_SDK_IOS) && !defined(ISF_SDK_RPI)
 	case IF_RGB_DXT1:
 	case IF_A_RGTC:
 		bytesPerRow = 4 * s.width / 8;
@@ -122,7 +122,7 @@ GLBuffer::GLBuffer(const GLBuffer & n)	{
 	
 	backingID = n.backingID;
 	cpuBackingPtr = n.cpuBackingPtr;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	//setUserInfo(n.getUserInfo());
 	setLocalSurfaceRef(n.getLocalSurfaceRef());
 	setRemoteSurfaceRef(n.getRemoteSurfaceRef());
@@ -180,7 +180,7 @@ GLBuffer::~GLBuffer()	{
 		}
 	}
 	
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	//setUserInfo(nullptr);
 	setLocalSurfaceRef(nullptr);
 	setRemoteSurfaceRef(nullptr);
@@ -211,7 +211,7 @@ GLBuffer * GLBuffer::allocShallowCopy()	{
 	returnMe->backingContext = backingContext;
 	returnMe->backingID = backingID;
 	returnMe->cpuBackingPtr = cpuBackingPtr;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	returnMe->localSurfaceRef = (localSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(localSurfaceRef);
 	returnMe->remoteSurfaceRef = (remoteSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(remoteSurfaceRef);
 #endif	//	ISF_SDK_MAC
@@ -226,7 +226,7 @@ GLBuffer * GLBuffer::allocShallowCopy()	{
 #pragma mark --------------------- getter/setter- mac stuff
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 /*
 id GLBuffer::getUserInfo() const	{
 	return userInfo;
@@ -312,7 +312,7 @@ uint32_t GLBuffer::backingLengthForSize(Size s) const	{
 }
 
 Rect GLBuffer::glReadySrcRect() const	{
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	if (this->desc.target == Target_Rect)
 		return srcRect;
 #endif
@@ -381,7 +381,7 @@ bool GLBuffer::isPOT2DTex() const	{
 	return returnMe;
 }
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 bool GLBuffer::safeToPublishToSyphon() const	{
 	if (localSurfaceRef == nil)
 		return false;
@@ -400,7 +400,7 @@ bool GLBuffer::isContentMatch(GLBuffer & n) const	{
 void GLBuffer::draw(const Rect & dst) const	{
 	if (desc.type != Type_Tex)
 		return;
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	//inCtx.makeCurrentIfNotCurrent();
 	float			verts[] = {
 		(float)MinX(dst), (float)MinY(dst), 0.0,
@@ -473,7 +473,7 @@ GLBufferRef GLBufferCopy(const GLBufferRef & n)	{
 	newBuffer->backingSize = srcBuffer->backingSize;
 	newBuffer->contentTimestamp = srcBuffer->contentTimestamp;
 	
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	newBuffer->setLocalSurfaceRef(srcBuffer->getLocalSurfaceRef());
 	newBuffer->setRemoteSurfaceRef(srcBuffer->getRemoteSurfaceRef());
 #endif

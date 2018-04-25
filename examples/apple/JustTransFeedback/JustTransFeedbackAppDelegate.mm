@@ -6,8 +6,8 @@
 - (id) init	{
 	self = [super init];
 	if (self != nil)	{
-		//sharedContext = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
-		sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
+		//sharedContext = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
+		sharedContext = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 		
 		CreateGlobalBufferPool(sharedContext);
 		
@@ -16,7 +16,7 @@
 		dstGeoVBO = CreateVBO(nullptr, sizeof(Quad<VVGL::VertXYZ>), GL_STREAM_DRAW);
 		dstColorVBO = CreateVBO(nullptr, sizeof(Quad<VVGL::VertRGBA>), GL_STREAM_DRAW);
 		
-		scene = CreateGLScene(sharedContext->newContextSharingMe());
+		scene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		
 		//	init the scene differently depending on the version of GL running the backend
 		if (scene->getGLVersion() == GLVersion_2)

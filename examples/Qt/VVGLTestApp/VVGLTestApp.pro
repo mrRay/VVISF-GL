@@ -57,10 +57,14 @@ QMAKE_RPATHDIR += @loader_path/../Frameworks
 
 
 # additions for GLEW
-unix: LIBS += -L/usr/local/lib/ -lGLEW
-INCLUDEPATH += /usr/local/include
-DEPENDPATH += /usr/local/include
+#unix: LIBS += -L/usr/local/lib/ -lGLEW
+#INCLUDEPATH += /usr/local/include
+#DEPENDPATH += /usr/local/include
 #unix: PRE_TARGETDEPS += /usr/local/lib/libGLEW.a
+unix: LIBS += -L$$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/ -lGLEW
+INCLUDEPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
+DEPENDPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
+unix: PRE_TARGETDEPS += $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW.dylib
 
 
 
@@ -81,7 +85,7 @@ mac	{
 		framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
 		QMAKE_POST_LINK += echo "****************************";
 		QMAKE_POST_LINK += mkdir -pv $$framework_dir;
-		QMAKE_POST_LINK += cp -vaRf /usr/local/lib/libGLEW.dylib $$framework_dir;
+		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../VVGL/libVVGL*.dylib $$framework_dir;
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}

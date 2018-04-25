@@ -158,7 +158,7 @@
 	
 	void			*selfPtr = (void*)self;
 	//	make a new scene- this also makes a new GL context that shares the passed context
-	scene = CreateGLScene(n->newContextSharingMe());
+	scene = CreateGLSceneRefUsing(n->newContextSharingMe());
 	//	load the frag/vert shaders
 	string			vsString("\r\
 #version 300 es\r\

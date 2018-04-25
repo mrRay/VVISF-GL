@@ -57,11 +57,11 @@ using namespace VVGL;
 	
 		switch ([tmpNum intValue])	{
 		case GLVersion_2:
-			sharedContext = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
+			sharedContext = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 			[glVersPUB selectItemWithTag:2];
 			break;
 		default:
-			sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
+			sharedContext = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 			[glVersPUB selectItemWithTag:4];
 			break;
 		}
@@ -74,7 +74,7 @@ using namespace VVGL;
 		[tmpImg release];
 		tmpImg = nil;
 	
-		scene = CreateISFScene();
+		scene = CreateISFSceneRef();
 	
 		[bufferView setSharedGLContext:sharedContext];
 	

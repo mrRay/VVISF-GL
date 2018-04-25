@@ -63,7 +63,7 @@
 		//VVRELEASE(scene);
 		scene = nullptr;
 		//scene = [[ISFGLScene alloc] initWithSharedContext:n pixelFormat:[GLScene defaultPixelFormat] sized:NSMakeSize(320,240)];
-		scene = CreateISFScene(n->newContextSharingMe());
+		scene = CreateISFSceneRefUsing(n->newContextSharingMe());
 		scene->setOrthoSize(VVGL::Size(320.,240.));
 		//[scene setThrowExceptions:YES];
 		scene->setThrowExceptions(true);

@@ -1,6 +1,6 @@
 #include "GLQtCtxWrapper.hpp"
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 
 #include <QOpenGLContext>
 #include <QSurface>

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-	GLContextRef		sharedContext = CreateNewGLContext(nullptr, nullptr, sfcFmt);
+	GLContextRef		sharedContext = CreateNewGLContextRef(nullptr, nullptr, sfcFmt);
 	
 	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
 	CreateGlobalBufferPool(sharedContext);
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	GetGlobalBufferPool()->getContext()->moveToThread(window.getRenderThread());
 	
 	//	make an ISF scene
-	ISFSceneRef		renderScene = CreateISFScene();
+	ISFSceneRef		renderScene = CreateISFSceneRef();
 	renderScene->getContext()->moveToThread(window.getRenderThread());
 	
 	//	tell the ISF scene to load the included ISF shader

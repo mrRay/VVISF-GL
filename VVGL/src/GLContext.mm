@@ -1,6 +1,6 @@
 #include "GLContext.hpp"
 
-#if ISF_SDK_IOS
+#if defined(ISF_SDK_IOS)
 	#import <OpenGLES/EAGL.h>
 	#import <OpenGLES/ES3/glext.h>
 	#import <GLKit/GLKit.h>
@@ -20,7 +20,7 @@ namespace VVGL
 
 
 
-#if ISF_SDK_IOS
+#if defined(ISF_SDK_IOS)
 
 
 /*	========================================	*/

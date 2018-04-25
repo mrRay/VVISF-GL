@@ -23,13 +23,13 @@
 - (id) init	{
 	self = [super init];
 	if (self != nil)	{
-		legacyGLCtx = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
+		legacyGLCtx = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 		legacyBufferPool = make_shared<GLBufferPool>(legacyGLCtx);
-		legacyGLScene = CreateGLScene(legacyGLCtx->newContextSharingMe());
+		legacyGLScene = CreateGLSceneRefUsing(legacyGLCtx->newContextSharingMe());
 		
-		modernGLCtx = CreateNewGLContext(NULL, CreateGL4PixelFormat());
+		modernGLCtx = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 		modernBufferPool = make_shared<GLBufferPool>(modernGLCtx);
-		modernGLScene = CreateGLScene(modernGLCtx->newContextSharingMe());
+		modernGLScene = CreateGLSceneRefUsing(modernGLCtx->newContextSharingMe());
 		
 		[self setDate:[NSDate date]];
 		

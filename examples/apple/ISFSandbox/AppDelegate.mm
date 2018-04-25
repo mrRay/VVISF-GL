@@ -59,16 +59,16 @@ VVGL::GLBufferRef		newTex = nullptr;
 	
 		//switch ([tmpNum intValue])	{
 		//case GLVersion_2:
-			sharedContext = CreateNewGLContext(NULL, CreateCompatibilityGLPixelFormat());
+			sharedContext = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 		//	break;
 		//default:
-		//	sharedContext = CreateNewGLContext(NULL, CreateGL4PixelFormat());
+		//	sharedContext = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 		//	break;
 		//}
 		
 		CreateGlobalBufferPool(sharedContext);
 		
-		scene = CreateGLScene();
+		scene = CreateGLSceneRef();
 		
 		[glView setSharedGLContext:sharedContext];
 		[glView setRetainDraw:YES];

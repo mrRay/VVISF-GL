@@ -1,10 +1,10 @@
 #include "GLContext.hpp"
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	#import <CoreGraphics/CoreGraphics.h>
 #endif
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 	#include <QDebug>
 #endif
 
@@ -24,7 +24,7 @@ using namespace std;
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 #pragma mark ******************************************** ISF_SDK_MAC
 
 
@@ -282,7 +282,7 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 #pragma mark ******************************************** ISF_SDK_GLFW
-#elif ISF_SDK_GLFW
+#elif defined(ISF_SDK_GLFW)
 
 
 
@@ -292,13 +292,16 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 GLContext::GLContext(GLFWwindow * inWindow)	{
 	win = inWindow;
+	initializedFuncs = false;
 	generalInit();
 }
 GLContext::GLContext()	{
+	initializedFuncs = false;
 	generalInit();
 }
 GLContext::~GLContext()	{
 	win = nullptr;
+	initializedFuncs = false;
 }
 
 /*	========================================	*/
@@ -332,20 +335,35 @@ void GLContext::generalInit()	{
 
 void GLContext::makeCurrent()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
-	if (win != nullptr)
+	if (win != nullptr)	{
 		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
 }
 void GLContext::makeCurrentIfNotCurrent()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
 	GLFWwindow		*currentCtx = glfwGetCurrentContext();
-	if (currentCtx != win)
+	if (currentCtx != win)	{
 		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
 }
 void GLContext::makeCurrentIfNull()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
 	GLFWwindow		*currentCtx = glfwGetCurrentContext();
-	if (currentCtx == nullptr)
+	if (currentCtx == nullptr)	{
 		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
 }
 bool GLContext::sameShareGroupAs(const GLContextRef & inCtx)	{
 	cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
@@ -369,7 +387,7 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 #pragma mark ******************************************** ISF_SDK_RPI
-#elif ISF_SDK_RPI
+#elif defined(ISF_SDK_RPI)
 
 
 
@@ -504,7 +522,7 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 #pragma mark ******************************************** ISF_SDK_QT
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 
 
 
@@ -708,8 +726,13 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 void GLContext::calculateVersion()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS) || defined(ISF_SDK_RPI) || defined(ISF_SDK_QT)
 	if (ctx == nullptr)
 		return;
+#elif defined(ISF_SDK_GLFW)
+	if (win == nullptr)
+		return;
+#endif
 	makeCurrentIfNotCurrent();
 	const unsigned char			*versString = glGetString(GL_VERSION);
 	//cout << "\tversion string is " << versString << endl;

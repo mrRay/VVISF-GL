@@ -5,7 +5,7 @@
 
 #include "GLScene.hpp"
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 

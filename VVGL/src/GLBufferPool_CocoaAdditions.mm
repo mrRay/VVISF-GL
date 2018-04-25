@@ -7,7 +7,7 @@
 //#import <CoreGraphics/CoreGraphics.h>
 #import <CoreVideo/CoreVideo.h>
 
-#if ISF_SDK_IOS
+#if defined(ISF_SDK_IOS)
 	#import <UIKit/UIKit.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace VVGL
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 GLBufferRef CreateBufferForNSImage(NSImage * inImg, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inImg==nil || inPoolRef==nullptr)
 		return nullptr;
@@ -164,16 +164,16 @@ GLBufferRef CreateBufferForBitmapRep(NSBitmapImageRep * inRep, const bool & crea
 
 
 
-#if ISF_SDK_MAC || ISF_SDK_IOS
+#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
 GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	NSString			*pathString = [NSString stringWithUTF8String:inPath.c_str()];
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	NSData				*imgData = [NSData dataWithContentsOfFile:pathString];
 	//	make an img source from the CFData blob
 	CGImageSourceRef	imgSource = CGImageSourceCreateWithData((CFDataRef)imgData, NULL);
 	//	get an image from the image source
 	CGImageRef			img = CGImageSourceCreateImageAtIndex(imgSource, 0, nil);
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 	UIImage				*tmpImg = [UIImage imageNamed:pathString];
 	CGImageRef			img = [tmpImg CGImage];
 #endif
@@ -185,7 +185,7 @@ GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCur
 		CFRelease(img);
 		img = NULL;
 	}
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	if (imgSource != NULL)	{
 		CFRelease(imgSource);
 		imgSource = NULL;
@@ -204,11 +204,11 @@ GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bo
 	for (const auto & pathIt : inPaths)	{
 		//cout << "\tpath: " << pathIt << endl;
 		NSString		*pathString = [NSString stringWithUTF8String:pathIt.c_str()];
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		NSData			*imgData = (pathString==nil) ? nil : [NSData dataWithContentsOfFile:pathString];
 		CGImageSourceRef	imgSource = (imgData==nil) ? NULL : CGImageSourceCreateWithData((CFDataRef)imgData, NULL);
 		CGImageRef		img = (imgSource==NULL) ? NULL : CGImageSourceCreateImageAtIndex(imgSource, 0, nil);
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 		UIImage			*tmpImg = [UIImage imageNamed:pathString];
 		CGImageRef		img = [tmpImg CGImage];
 #endif
@@ -216,7 +216,7 @@ GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bo
 		//	add the image to the array of image refs
 		if (img != NULL)
 			images.push_back(img);
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 		//	free the source now- we'll free the image when we're done uploading it
 		if (imgSource != NULL)
 			CFRelease(imgSource);
@@ -244,7 +244,7 @@ GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bo
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 @implementation NSBitmapImageRep (VVGLNSBitmapImageRepAdditions)
 - (void) unpremultiply	{
 	NSSize				actualSize = NSMakeSize([self pixelsWide], [self pixelsHigh]);

@@ -30,17 +30,17 @@ to block of function calls that won't compile/link against a given SDK's headers
 
 
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 	#define ISF_TARGETENV_GL2
 	#define ISF_TARGETENV_GL3PLUS
-#elif ISF_SDK_IOS
+#elif defined(ISF_SDK_IOS)
 	#define ISF_TARGETENV_GLES3
-#elif ISF_SDK_RPI
+#elif defined(ISF_SDK_RPI)
 	#define ISF_TARGETENV_GLES
-#elif ISF_SDK_GLFW
-	//	not sure, need to test this
+#elif defined(ISF_SDK_GLFW)
+	#define ISF_TARGETENV_GL2
 	#define ISF_TARGETENV_GL3PLUS
-#elif ISF_SDK_QT
+#elif defined(ISF_SDK_QT)
 	#define ISF_TARGETENV_GL2
 	#define ISF_TARGETENV_GL3PLUS
 #endif
@@ -48,7 +48,7 @@ to block of function calls that won't compile/link against a given SDK's headers
 
 
 
-#if ISF_SDK_QT
+#if defined(ISF_SDK_QT)
 #include "VVGL_Qt_global.h"
 #endif
 

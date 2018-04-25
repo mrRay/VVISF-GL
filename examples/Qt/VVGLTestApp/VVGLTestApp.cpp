@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
-	GLContextRef		sharedContext = CreateNewGLContext(nullptr, nullptr, sfcFmt);
+	GLContextRef		sharedContext = CreateNewGLContextRef(nullptr, nullptr, sfcFmt);
 	
 	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
 	CreateGlobalBufferPool(sharedContext);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 		QTime				myTimer;
 		myTimer.start();
 		//	make a new scene.  we're going to use this scene to render-to-texture, and we're going to display the texture.
-		renderScene = CreateGLScene(sharedContext->newContextSharingMe());
+		renderScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		//	move the render scene to the window's render thread!
 		renderScene->getContext()->moveToThread(window.getRenderThread());
 		//	set up the render scene's draw callback, depending on the version of GL in use

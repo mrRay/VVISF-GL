@@ -19,7 +19,7 @@
 #include "GLBuffer.hpp"
 //	a pool for recycling GL objects.  should be in the same sharegroup as all your other GL contexts.  has its own GL context, so it can create/delete GL resources (and can thus act as a sort of autorelease pool for GLBufferRefs)
 #include "GLBufferPool.hpp"
-//#if ISF_SDK_MAC
+//#if defined(ISF_SDK_MAC)
 //#import "VVGLBufferPool_CocoaAdditions.h"
 //#endif
 

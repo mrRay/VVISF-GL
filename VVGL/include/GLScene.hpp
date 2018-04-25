@@ -10,7 +10,7 @@
 #include "GLCachedUni.hpp"
 #include "GLCachedAttrib.hpp"
 
-#if ISF_SDK_MAC
+#if defined(ISF_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 
@@ -156,8 +156,8 @@ class GLScene	{
 
 
 
-inline GLSceneRef CreateGLScene() { return make_shared<GLScene>(); }
-inline GLSceneRef CreateGLScene(const GLContextRef & inCtx) { return make_shared<GLScene>(inCtx); }
+inline GLSceneRef CreateGLSceneRef() { return make_shared<GLScene>(); }
+inline GLSceneRef CreateGLSceneRefUsing(const GLContextRef & inCtx) { return make_shared<GLScene>(inCtx); }
 
 
 
