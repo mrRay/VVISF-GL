@@ -3,7 +3,7 @@
 #include <VVISF.h>
 #include <QDebug>
 #include <QImage>
-#include "VVBufferGLWindow.h"
+#include "GLBufferQWindow.h"
 #include <QCoreApplication>
 #include <QTime>
 #include <QFile>
@@ -23,17 +23,17 @@ int main(int argc, char *argv[])
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
 	GLContextRef		sharedContext = CreateNewGLContextRef(nullptr, nullptr, sfcFmt);
 	
-	//	make the global buffer pool.  if there's a global buffer pool, GL resources can be recycled and runtime performance is much better.
+	//	make the global buffer pool, tell it to share the shared context.  you need a pool to release, allocate, and recycle GL resources.
 	CreateGlobalBufferPool(sharedContext);
 	
 	//	make the window, open it
-	VVBufferGLWindow			window(sharedContext);
+	GLBufferQWindow			window(sharedContext);
 	window.setFormat(sfcFmt);
 	window.resize(QSize(800,600));
 	window.show();
 	window.startRendering();
 	
-	//	move the buffer pool's context to the window's render thread
+	//	move the buffer pool's context to the window's render thread.  this means that the buffer pool should only be used from the render thread.
 	GetGlobalBufferPool()->getContext()->moveToThread(window.getRenderThread());
 	
 	//	make an ISF scene
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	
 	
 	//	the window has its own thread on which it drives rendering- it emits a signal after each frame, which we're going to use to drive rendering with this lambda.
-	QObject::connect(&window, &VVBufferGLWindow::renderedAFrame, [&window,renderScene](){
+	QObject::connect(&window, &GLBufferQWindow::renderedAFrame, [&window,renderScene](){
 		//	size the target texture so it's the same size as the window
 		double				ltbbm = window.devicePixelRatio();
 		VVGL::Size			windowSize = VVGL::Size(window.width()*ltbbm, window.height()*ltbbm);

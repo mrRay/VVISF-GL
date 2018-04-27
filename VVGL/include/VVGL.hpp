@@ -11,8 +11,7 @@
 
 
 #include "GLContext.hpp"
-#include "GLCachedAttrib.hpp"
-#include "GLCachedUni.hpp"
+#include "GLCachedProperty.hpp"
 
 
 //	wraps a GL object of some sort- usually a texture, but can also be of other types (VBOs, etc).  if a texture, may also contain other texture-related resources (CPU-side backing data, for example).

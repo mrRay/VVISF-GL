@@ -702,6 +702,31 @@ const GLBufferPoolRef & GetGlobalBufferPool()	{
 #pragma mark --------------------- buffer creation methods
 
 
+GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_FBO;
+	//desc.target = GLBuffer::Target_2D;
+	//desc.internalFormat = GLBuffer::IF_Depth24;
+	//desc.pixelFormat = GLBuffer::PF_Depth;
+	//desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	//desc.texRangeFlag = false;
+	//desc.texClientStorageFlag = false;
+	//desc.msAmount = 0;
+	//desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
 GLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -927,31 +952,6 @@ GLBufferRef CreateRB(const Size & size, const bool & inCreateInCurrentContext, c
 	desc.localSurfaceID = 0;
 	
 	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
-	returnMe->parentBufferPool = inPoolRef;
-	
-	return returnMe;
-}
-GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	if (inPoolRef == nullptr)
-		return nullptr;
-	
-	GLBuffer::Descriptor	desc;
-	
-	desc.type = GLBuffer::Type_FBO;
-	//desc.target = GLBuffer::Target_2D;
-	//desc.internalFormat = GLBuffer::IF_Depth24;
-	//desc.pixelFormat = GLBuffer::PF_Depth;
-	//desc.pixelType = GLBuffer::PT_UByte;
-	desc.cpuBackingType = GLBuffer::Backing_None;
-	desc.gpuBackingType = GLBuffer::Backing_Internal;
-	//desc.texRangeFlag = false;
-	//desc.texClientStorageFlag = false;
-	//desc.msAmount = 0;
-	//desc.localSurfaceID = 0;
-	
-	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;

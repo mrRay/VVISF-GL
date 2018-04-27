@@ -15,12 +15,12 @@ using namespace std;
 using namespace VVGL;
 
 
-class VVBufferGLWindow : public QWindow	{
+class GLBufferQWindow : public QWindow	{
 	Q_OBJECT
 
 public:
-	explicit VVBufferGLWindow(GLContextRef & inSharedContext, QWindow * inParent=nullptr);
-	~VVBufferGLWindow();
+	explicit GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent=nullptr);
+	~GLBufferQWindow();
 	
 	void startRendering();
 	void stopRendering();

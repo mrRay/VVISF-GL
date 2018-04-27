@@ -29,10 +29,10 @@ DEFINES += ISF_SDK_QT
 
 SOURCES += \
     VVGLTestApp.cpp \
-	../VVBufferGLWindow.cpp
+	../GLBufferQWindow.cpp
 
 HEADERS += \
-	../VVBufferGLWindow.h
+	../GLBufferQWindow.h
 
 
 

@@ -28,7 +28,7 @@ using namespace std;
 
 
 
-//	this class defines a buffer pool.  the pool maintains its own GL context and creates/destroys the GL resources as needed
+//	this class defines a buffer pool.  the pool creates + maintains its own GL context so it can create/destroy the GL resources (the default behavior, but note that a pool can also create buffers whose GL contents were created in another context)
 class GLBufferPool	{
 	
 	//	vars
@@ -82,13 +82,12 @@ class GLBufferPool	{
 
 
 
-//	this is how you create a global buffer pool- pass in a context and it'll be used as a shared context, or pass in nothing and all the contexts will be created externally
-//GLBufferPoolRef CreateGlobalBufferPool(const GLContext * inShareCtx=nullptr);
+//	this is how you create the global buffer pool- pass in a context and it'll be used as a shared context, or pass in nothing and all the contexts will be created externally
 GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inShareCtx=nullptr);
-//GLBufferPoolRef GetGlobalBufferPool();
 const GLBufferPoolRef & GetGlobalBufferPool();
 
 //	these methods create GLBuffers that aren't actually images at all
+GLBufferRef CreateFBO(const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int32_t & inUsage, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateVAO(const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -97,7 +96,6 @@ GLBufferRef CreateVAO(const bool & createInCurrentContext=false, const GLBufferP
 GLBufferRef CreateRGBATex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateRB(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-GLBufferRef CreateFBO(const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateDepthBuffer(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());

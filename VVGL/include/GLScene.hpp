@@ -7,8 +7,7 @@
 #include <mutex>
 #include <map>
 #include "GLBufferPool.hpp"
-#include "GLCachedUni.hpp"
-#include "GLCachedAttrib.hpp"
+#include "GLCachedProperty.hpp"
 
 #if defined(ISF_SDK_MAC)
 #import <TargetConditionals.h>

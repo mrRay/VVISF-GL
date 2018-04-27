@@ -1,4 +1,4 @@
-#include "GLCachedAttrib.hpp"
+#include "GLCachedProperty.hpp"
 #include "GLContext.hpp"
 
 
@@ -13,17 +13,20 @@ using namespace std;
 
 
 
+GLCachedProperty::GLCachedProperty(string & inName)	{
+	name = inName;
+}
+GLCachedProperty::GLCachedProperty(const string & inName)	{
+	name = inName;
+}
 /*
-GLCachedAttrib::GLCachedAttrib()	{
-	name = string("");
+void GLCachedProperty::cacheTheLoc(const int32_t & inPgmToCheck)	{
+	//	subclasses of this should override this member function and cache the location and program here as appropriate
 }
 */
-GLCachedAttrib::GLCachedAttrib(string & inName)	{
-	name = inName;
-}
-GLCachedAttrib::GLCachedAttrib(const string & inName)	{
-	name = inName;
-}
+
+
+
 void GLCachedAttrib::cacheTheLoc(const int32_t & inPgmToCheck)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPgmToCheck < 0)	{
@@ -40,12 +43,6 @@ void GLCachedAttrib::cacheTheLoc(const int32_t & inPgmToCheck)	{
 		prog = -1;
 	}
 }
-/*
-void GLCachedAttrib::purgeCache()	{
-	loc = -1;
-	prog = -1;
-}
-*/
 void GLCachedAttrib::enable()	{
 	if (loc >= 0)	{
 		glEnableVertexAttribArray(loc);
@@ -61,6 +58,25 @@ void GLCachedAttrib::disable()	{
 	}
 	else
 		cout << "\terr: can't disable, loc is " << loc << " in " << __PRETTY_FUNCTION__ << endl;
+}
+
+
+
+
+void GLCachedUni::cacheTheLoc(const int32_t & inPgmToCheck)	{
+	if (inPgmToCheck < 0)	{
+		//cout << "\terr: cannot cache, no program!\n";
+		prog = -1;
+		loc = -1;
+		return;
+	}
+	prog = inPgmToCheck;
+	loc = glGetUniformLocation(prog, name.c_str());
+	GLERRLOG
+	if (loc < 0)	{
+		//cout << "\terr: checked, uni for \"" << name << "\" not present.\n";
+		prog = -1;
+	}
 }
 
 

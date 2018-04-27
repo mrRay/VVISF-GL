@@ -2,7 +2,7 @@
 #include <VVGL.hpp>
 #include <QDebug>
 #include <QImage>
-#include "VVBufferGLWindow.h"
+#include "GLBufferQWindow.h"
 #include <QCoreApplication>
 #include <QTime>
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	GLBufferRef		imgBuffer = CreateBufferForQImage(&tmpImg);
 	
 	//	make the window, open it, give it an initial buffer to draw
-	VVBufferGLWindow			window(sharedContext);
+	GLBufferQWindow			window(sharedContext);
 	window.setFormat(sfcFmt);
 	window.resize(QSize(800,600));
 	window.show();
@@ -255,7 +255,7 @@ FragColor *= (1.-fadeVal);\r\
 	
 	
 	//	the window has its own thread on which it drives rendering- it emits a signal after each frame, which we're going to use to drive rendering with this lambda.
-	QObject::connect(&window, &VVBufferGLWindow::renderedAFrame, [&window,renderScene](){
+	QObject::connect(&window, &GLBufferQWindow::renderedAFrame, [&window,renderScene](){
 		//	size the target texture so it's the same size as the window
 		double				ltbbm = window.devicePixelRatio();
 		VVGL::Size			windowSize = VVGL::Size(window.width()*ltbbm, window.height()*ltbbm);

@@ -1,4 +1,4 @@
-#include "VVBufferGLWindow.h"
+#include "GLBufferQWindow.h"
 #include <QDebug>
 //#include <QString>
 //#include "VVGL.hpp"
@@ -9,7 +9,7 @@
 #pragma mark --------------------- constructors/destructors
 
 
-VVBufferGLWindow::VVBufferGLWindow(GLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)
+GLBufferQWindow::GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)
 {
 	setSurfaceType(QWindow::OpenGLSurface);
 	//lock_guard<mutex>		lock(ctxLock);
@@ -19,7 +19,7 @@ VVBufferGLWindow::VVBufferGLWindow(GLContextRef & inSharedContext, QWindow * inP
 	
 	//connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 }
-VVBufferGLWindow::~VVBufferGLWindow()
+GLBufferQWindow::~GLBufferQWindow()
 {
 	//qDebug()<<__PRETTY_FUNCTION__;
 	stopRenderingImmediately();
@@ -37,7 +37,7 @@ VVBufferGLWindow::~VVBufferGLWindow()
 #pragma mark --------------------- private methods
 
 
-void VVBufferGLWindow::renderNow()
+void GLBufferQWindow::renderNow()
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -93,7 +93,7 @@ void VVBufferGLWindow::renderNow()
 #pragma mark --------------------- public methods
 
 
-void VVBufferGLWindow::startRendering()
+void GLBufferQWindow::startRendering()
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -118,7 +118,7 @@ void VVBufferGLWindow::startRendering()
 		QMetaObject::invokeMethod(this, "startRenderingSlot");
 	
 }
-void VVBufferGLWindow::stopRendering()
+void GLBufferQWindow::stopRendering()
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -143,7 +143,7 @@ void VVBufferGLWindow::stopRendering()
 		QMetaObject::invokeMethod(this, "stopRenderingSlot");
 	
 }
-void VVBufferGLWindow::stopRenderingImmediately()	{
+void GLBufferQWindow::stopRenderingImmediately()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	{
 		lock_guard<mutex>		lock(ctxLock);
@@ -153,7 +153,7 @@ void VVBufferGLWindow::stopRenderingImmediately()	{
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-void VVBufferGLWindow::setContext(const GLContextRef & inCtx)
+void GLBufferQWindow::setContext(const GLContextRef & inCtx)
 {
 	lock_guard<mutex>		lock(ctxLock);
 	ctx = inCtx;
@@ -427,18 +427,18 @@ else\r\
 	}
 }
 
-QThread * VVBufferGLWindow::getRenderThread()
+QThread * GLBufferQWindow::getRenderThread()
 {
 	lock_guard<mutex>		lock(ctxLock);
 	return ctxThread;
 }
 /*
-void VVBufferGLWindow::drawBuffer(VVGLBufferRef & inBuffer)
+void GLBufferQWindow::drawBuffer(VVGLBufferRef & inBuffer)
 {
 	lock_guard<mutex>		lock(ctxLock);
 	buffer = inBuffer;
 }
-VVGLBufferRef VVBufferGLWindow::getBuffer()
+VVGLBufferRef GLBufferQWindow::getBuffer()
 {
 	lock_guard<mutex>		lock(ctxLock);
 	return buffer;
@@ -449,7 +449,7 @@ VVGLBufferRef VVBufferGLWindow::getBuffer()
 #pragma mark --------------------- public slots
 
 
-void VVBufferGLWindow::startRenderingSlot()
+void GLBufferQWindow::startRenderingSlot()
 {
 	lock_guard<mutex>		lock(ctxLock);
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -464,10 +464,10 @@ void VVBufferGLWindow::startRenderingSlot()
 	if (ctx != nullptr)
 		ctx->moveToThread(ctxThread);
 	//connect(ctxThread, SIGNAL(started()), this, SLOT(requestUpdate()));
-	connect(ctxThread, &QThread::started, this, &VVBufferGLWindow::requestUpdate);
+	connect(ctxThread, &QThread::started, this, &GLBufferQWindow::requestUpdate);
 	ctxThread->start();
 }
-void VVBufferGLWindow::stopRenderingSlot()
+void GLBufferQWindow::stopRenderingSlot()
 {
 	lock_guard<mutex>		lock(ctxLock);
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -494,7 +494,7 @@ void VVBufferGLWindow::stopRenderingSlot()
 	//qDebug()<<"\tctxThread is now "<<ctxThread;
 }
 /*
-void VVBufferGLWindow::aboutToQuit()	{
+void GLBufferQWindow::aboutToQuit()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	stopRendering();
 }
@@ -505,7 +505,7 @@ void VVBufferGLWindow::aboutToQuit()	{
 #pragma mark --------------------- superclass overrides
 
 
-bool VVBufferGLWindow::event(QEvent * inEvent)
+bool GLBufferQWindow::event(QEvent * inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	switch (inEvent->type()) {
@@ -517,7 +517,7 @@ bool VVBufferGLWindow::event(QEvent * inEvent)
 	}
 }
 /*
-void VVBufferGLWindow::exposeEvent(QExposeEvent * inEvent)
+void GLBufferQWindow::exposeEvent(QExposeEvent * inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	Q_UNUSED(inEvent);

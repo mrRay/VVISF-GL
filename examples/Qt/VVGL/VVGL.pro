@@ -59,8 +59,7 @@ SOURCES += \
 	../../../VVGL/src/GLBuffer.cpp \
 	../../../VVGL/src/GLBufferCopier.cpp \
 	../../../VVGL/src/GLBufferPool.cpp \
-	../../../VVGL/src/GLCachedAttrib.cpp \
-	../../../VVGL/src/GLCachedUni.cpp \
+	../../../VVGL/src/GLCachedProperty.cpp \
 	../../../VVGL/src/GLContext.cpp \
 	../../../VVGL/src/GLQtCtxWrapper.cpp \
 	../../../VVGL/src/GLScene.cpp \
@@ -77,8 +76,7 @@ HEADERS += \
 	../../../VVGL/include/GLBuffer.hpp \
 	../../../VVGL/include/GLBufferCopier.hpp \
 	../../../VVGL/include/GLBufferPool.hpp \
-	../../../VVGL/include/GLCachedAttrib.hpp \
-	../../../VVGL/include/GLCachedUni.hpp \
+	../../../VVGL/include/GLCachedProperty.hpp \
 	../../../VVGL/include/GLContext.hpp \
 	../../../VVGL/include/GLQtCtxWrapper.hpp \
 	../../../VVGL/include/GLScene.hpp \

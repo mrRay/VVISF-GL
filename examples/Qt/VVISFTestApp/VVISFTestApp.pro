@@ -28,11 +28,11 @@ DEFINES += ISF_SDK_QT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-	../VVBufferGLWindow.cpp \
+	../GLBufferQWindow.cpp \
     VVISFTestApp.cpp
 
 HEADERS += \
-	../VVBufferGLWindow.h
+	../GLBufferQWindow.h
 
 
 
