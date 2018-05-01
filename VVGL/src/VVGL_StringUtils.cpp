@@ -81,12 +81,13 @@ string FmtString(const char * fmt, ...)	{
 		return string("");
 	
 	va_start(args, fmt);
-	char			buf[tmpLen];
+	char			*buf = (char*)malloc(tmpLen*sizeof(char));
 	memset(buf, 0, tmpLen);
 	vsnprintf(buf, tmpLen, fmt, args);
 	va_end(args);
-	
-	return string(buf);
+	string			returnMe = string(buf);
+	free(buf);
+	return returnMe;
 }
 
 

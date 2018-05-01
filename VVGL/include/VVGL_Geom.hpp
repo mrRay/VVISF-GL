@@ -81,7 +81,7 @@ enum SizingMode	{
 	SizingMode_Copy	//!<	the content is copied directly to the desired area- it is not made any larger or smaller
 };
 //	this method resizes one rect to fit in another using the provided sizing mode.  useful for calculating sizes while preserving aspect ratios.
-Rect ResizeRect(const Rect & fitThisRect, const Rect & inThisRect, const SizingMode & sizingMode);
+VVGL_EXPORT Rect ResizeRect(const Rect & fitThisRect, const Rect & inThisRect, const SizingMode & sizingMode);
 
 
 

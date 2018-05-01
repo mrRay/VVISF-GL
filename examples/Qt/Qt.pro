@@ -4,7 +4,7 @@ CONFIG = ordered
 
 SUBDIRS += \
     VVGL \
-	VVGLTestApp \
+    VVGLTestApp \
 	VVISF \
 	VVISFTestApp
 

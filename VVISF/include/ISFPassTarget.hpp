@@ -37,7 +37,7 @@ using namespace std;
 	in the compiled GL program (so you don't have to look up the uniform location every frame).			*/
 	
 	
-	class ISFPassTarget	{
+	class VVISF_EXPORT ISFPassTarget	{
 		private:
 			string			name;
 			GLBufferRef		buffer = nullptr;

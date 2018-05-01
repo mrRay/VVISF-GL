@@ -5,7 +5,7 @@ endif
 
 #override platform selection on RPi:
 ifneq ("$(wildcard /opt/vc/include/bcm_host.h)","")
-    PLATFORM = Raspbian GNU/Linux
+	PLATFORM = Raspbian GNU/Linux
 endif
 
 

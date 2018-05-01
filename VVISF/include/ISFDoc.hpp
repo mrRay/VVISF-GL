@@ -32,7 +32,7 @@ resources will be loaded during construction).  for the most part, this class is
 notable exception is that the ISFAttr instances in the various input arrays can be used to store 
 values for the document.  even then, the contents of the arrays aren't changed- just the contents 
 of the objects in the array.	*/
-class ISFDoc	{
+class VVISF_EXPORT ISFDoc	{
 	private:
 		recursive_mutex		propLock;
 		
@@ -112,7 +112,7 @@ class ISFDoc	{
 		//	returns a true if successful.  populates the provided strings with strings that are usable for frag/vert shaders
 		bool generateShaderSource(string * outFragSrc, string * outVertSrc, VVGL::GLVersion & inGLVers);
 		
-		friend ostream & operator<<(ostream & os, const ISFDoc & n);
+		VVISF_EXPORT friend ostream & operator<<(ostream & os, const ISFDoc & n);
 		
 	protected:
 		//	used so we can have two constructors without duplicating code

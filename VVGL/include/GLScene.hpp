@@ -27,7 +27,7 @@ class GLScene;
 
 
 
-class GLScene	{
+class VVGL_EXPORT GLScene	{
 	//	objects/structs/data types
 	public:
 		//	this defines the interface for declaring a lambda as a member variable for encapsulating drawing code

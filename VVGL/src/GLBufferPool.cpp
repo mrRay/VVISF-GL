@@ -1137,6 +1137,8 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	if (inImg==nullptr || inPoolRef==nullptr)
 		return nullptr;
 	void			*pixelData = inImg->bits();
+	if (pixelData == nullptr)
+		return nullptr;
 	QSize			imgSize = inImg->size();
 	VVGL::Size		repSize(imgSize.width(), imgSize.height());
 	VVGL::Size		gpuSize = repSize;
@@ -1154,25 +1156,10 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	//VVBuffer			*returnMe = [self allocBufferForDescriptor:&desc sized:gpuSize backingPtr:pixelData backingSize:repSize];
 	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
-	//[returnMe setSrcRect:VVMAKERECT(0,0,repSize.width,repSize.height)];
 	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
-	//	the backing release callback should release a bitmap rep- set it, and the context (which is the rep)
-	//[returnMe setBackingID:VVBufferBackID_NSBitImgRep];
 	returnMe->backingID = GLBuffer::BackingID_None;
-	//[returnMe setBackingReleaseCallback:VVBuffer_ReleaseBitmapRep];
-	//[inRep retain];	//	we want to explicitly retain the rep we were passed- when the underlying GLBuffer is freed, its backing release callback will release the rep
-	//returnMe->backingReleaseCallback = [](GLBuffer & inBuffer, void * inReleaseContext)	{
-	//	if (inReleaseContext != nil)	{
-	//		NSBitmapImageRep	*tmpRep = (NSBitmapImageRep *)inReleaseContext;
-	//		[tmpRep release];
-	//	}
-	//};
-	//[returnMe setBackingReleaseCallbackContextObject:inRep];
-	//returnMe->backingContext = (void*)inRep;
-	//[returnMe setBackingSize:repSize];
 	returnMe->backingSize = repSize;
 	returnMe->flipped = true;
 	

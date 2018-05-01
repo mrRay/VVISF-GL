@@ -28,7 +28,7 @@ namespace VVGL	{
 struct GLQtCtxHidden;
 
 
-class GLQtCtxWrapper	{
+class VVGL_EXPORT GLQtCtxWrapper	{
 private:
 	//	this struct will contain the actual implementation of this class
 	GLQtCtxHidden		*hidden = nullptr;

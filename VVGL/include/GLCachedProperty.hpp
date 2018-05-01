@@ -26,7 +26,7 @@ class for an object that will cache the location of any arbitrary GL object in a
 with a string that can be used to identify it.  the goal of the cache is to eliminate the need to 
 repeatedly query the GL context for the location of attributes/uniforms/other things like that.				*/
 
-struct GLCachedProperty	{
+struct VVGL_EXPORT GLCachedProperty	{
 	//	these vars are public and that's technically not safe, but practically speaking this works out because everything GL-related has to be serialized such that access is one-context-per-thread anyway...
 	public:
 		int32_t			loc = -1;	//	the location of the attribute/uniform/etc, derived by quering a GL program (the id of which is also cached).  read-only outside this object!
@@ -53,7 +53,7 @@ struct GLCachedProperty	{
 
 /*	this caches the location of an attribute of a given GL program.		*/
 
-struct GLCachedAttrib : GLCachedProperty	{
+struct VVGL_EXPORT GLCachedAttrib : GLCachedProperty	{
 	public:
 		GLCachedAttrib(string & inName) : GLCachedProperty(inName) {}
 		GLCachedAttrib(const string & inName) : GLCachedProperty(inName) {}
@@ -73,7 +73,7 @@ struct GLCachedAttrib : GLCachedProperty	{
 
 /*	this caches the location of a uniform variable of a given GL program		*/
 
-struct GLCachedUni : GLCachedProperty	{
+struct VVGL_EXPORT GLCachedUni : GLCachedProperty	{
 	public:
 		GLCachedUni(string & inName) : GLCachedProperty(inName) {}
 		GLCachedUni(const string & inName) : GLCachedProperty(inName) {}

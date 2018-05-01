@@ -18,7 +18,7 @@ namespace VVGL
 
 
 
-class GLBufferCopier : public GLScene	{
+class VVGL_EXPORT GLBufferCopier : public GLScene	{
 	private:
 		bool			copyToIOSurface = false;
 		bool			copyAndResize = false;
@@ -83,10 +83,9 @@ class GLBufferCopier : public GLScene	{
 
 
 
-GLBufferCopierRef CreateGlobalBufferCopier();
-GLBufferCopierRef CreateGlobalBufferCopier(const GLContextRef & inCtx);
-//inline GLBufferCopierRef GetGlobalBufferCopier() { return *_globalBufferCopier; }
-GLBufferCopierRef GetGlobalBufferCopier();
+VVGL_EXPORT GLBufferCopierRef CreateGlobalBufferCopier();
+VVGL_EXPORT GLBufferCopierRef CreateGlobalBufferCopier(const GLContextRef & inCtx);
+VVGL_EXPORT GLBufferCopierRef GetGlobalBufferCopier();
 
 
 

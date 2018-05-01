@@ -4,9 +4,9 @@
 #include <QtCore/qglobal.h>
 
 #if defined(VVISF_LIBRARY)
-#  define VVISFSHARED_EXPORT Q_DECL_EXPORT
+#  define VVISF_EXPORT Q_DECL_EXPORT
 #else
-#  define VVISFSHARED_EXPORT Q_DECL_IMPORT
+#  define VVISF_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // VVISF_GLOBAL_H

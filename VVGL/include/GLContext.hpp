@@ -58,10 +58,10 @@ CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
 CGLPixelFormatObj CreateGL3PixelFormat();
 CGLPixelFormatObj CreateGL4PixelFormat();
 #elif defined(ISF_SDK_QT)
-QSurfaceFormat CreateDefaultSurfaceFormat();
-QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
-QSurfaceFormat CreateGL3SurfaceFormat();
-QSurfaceFormat CreateGL4SurfaceFormat();
+VVGL_EXPORT QSurfaceFormat CreateDefaultSurfaceFormat();
+VVGL_EXPORT QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
+VVGL_EXPORT QSurfaceFormat CreateGL3SurfaceFormat();
+VVGL_EXPORT QSurfaceFormat CreateGL4SurfaceFormat();
 #endif
 
 
@@ -74,7 +74,7 @@ making another context in the same sharegroup), but you don't want to have to wr
 if you're porting VVGL to another platform, one of the first things you need to do is to make a 
 new ISF_TARGETENV_XXXX macro, and use that macro to add your platform's GL implementation to this class.  
 you should be able to following along pretty well here using the other platforms as an example.			*/
-class GLContext	{
+class VVGL_EXPORT GLContext	{
 	public:
 		
 #if defined(ISF_SDK_MAC)

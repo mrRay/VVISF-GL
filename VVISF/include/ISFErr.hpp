@@ -24,7 +24,7 @@ enum ISFErrType	{
 	ISFErrType_ErrorCompilingGLSL
 };
 //	base exception class
-class ISFErr	{
+class VVISF_EXPORT ISFErr	{
 	public:
 		ISFErrType		type;
 		string		general;

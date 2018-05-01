@@ -49,7 +49,7 @@ union ISFValUnion {
 struct ISFVal	{
 	private:
 		ISFValType		type = ISFValType_None;
-		ISFValUnion		val = { .boolVal = false };
+		ISFValUnion		val = { false };
 		GLBufferRef	imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
 	
 	public:
@@ -97,15 +97,15 @@ struct ISFVal	{
 
 
 //	these functions make it simpler to create ISFVal instances
-ISFVal ISFNullVal();
-ISFVal ISFEventVal(const bool & n=false);
-ISFVal ISFBoolVal(const bool & n);
-ISFVal ISFLongVal(const int32_t & n);
-ISFVal ISFFloatVal(const double & n);
-ISFVal ISFPoint2DVal(const double & inX, const double & inY);
-ISFVal ISFColorVal(const double & inR, const double & inG, const double & inB, const double & inA);
-ISFVal ISFImageVal(const GLBufferRef & n);
-ISFVal ISFAudioVal();
+VVISF_EXPORT ISFVal ISFNullVal();
+VVISF_EXPORT ISFVal ISFEventVal(const bool & n=false);
+VVISF_EXPORT ISFVal ISFBoolVal(const bool & n);
+VVISF_EXPORT ISFVal ISFLongVal(const int32_t & n);
+VVISF_EXPORT ISFVal ISFFloatVal(const double & n);
+VVISF_EXPORT ISFVal ISFPoint2DVal(const double & inX, const double & inY);
+VVISF_EXPORT ISFVal ISFColorVal(const double & inR, const double & inG, const double & inB, const double & inA);
+VVISF_EXPORT ISFVal ISFImageVal(const GLBufferRef & n);
+VVISF_EXPORT ISFVal ISFAudioVal();
 
 
 

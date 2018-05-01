@@ -9,24 +9,19 @@
 #pragma mark --------------------- constructors/destructors
 
 
-GLBufferQWindow::GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)
-{
+GLBufferQWindow::GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent) : QWindow(inParent)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	setSurfaceType(QWindow::OpenGLSurface);
-	//lock_guard<mutex>		lock(ctxLock);
-	//ctx = (inSharedContext==nullptr) ? nullptr : inSharedContext->newContextSharingMe();
-	//ctx->setSurface(this);
 	setContext((inSharedContext==nullptr) ? nullptr : inSharedContext->newContextSharingMe());
-	
-	//connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 }
-GLBufferQWindow::~GLBufferQWindow()
-{
-	//qDebug()<<__PRETTY_FUNCTION__;
+GLBufferQWindow::~GLBufferQWindow()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	stopRenderingImmediately();
 	//makeCurrent();
 	//teardownGL();
 	
-	lock_guard<mutex>		lock(ctxLock);
+	lock_guard<recursive_mutex>		lock(ctxLock);
 	ctx = nullptr;
 	vao = nullptr;
 	buffer = nullptr;
@@ -37,52 +32,39 @@ GLBufferQWindow::~GLBufferQWindow()
 #pragma mark --------------------- private methods
 
 
-void GLBufferQWindow::renderNow()
-{
-	//qDebug() << __PRETTY_FUNCTION__;
+void GLBufferQWindow::renderNow()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	bool		renderedSomething = false;
 	{
-		lock_guard<mutex>		lock(ctxLock);
-		//qDebug()<<"\tctxThread is "<<ctxThread<<", current thread is "<<QThread::currentThread()<<", main thread is "<< QCoreApplication::instance()->thread();
-		if (ctxThread!=nullptr && ctxThread==QThread::currentThread())	{
+		lock_guard<recursive_mutex>		lock(ctxLock);
+		//cout<<"\tctxThread is "<<ctxThread<<", current thread is "<<QThread::currentThread()<<", main thread is "<< QCoreApplication::instance()->thread()<<endl;
+		if (ctxThread!=nullptr)	{
+			if (ctxThread != QThread::currentThread())	{
+				cout << "err: ctxThread isnt currentThread, bailing, " << __PRETTY_FUNCTION__ << endl;
+				return;
+			}
 			if (isExposed())	{
 				if (scene != nullptr)	{
 					double		ltbbm = devicePixelRatio();
 					Size		tmpSize(width()*ltbbm,height()*ltbbm);
 					scene->setOrthoSize(tmpSize);
 					scene->render();
-				
+
 					//	swap the context
 					if (ctx != nullptr)
 						ctx->swap();
-				
+
 				}
-				/*
-				if (ctx != nullptr)	{
-					ctx->makeCurrent();
-					//qDebug() << "current ctx is " << VVGLContext::GetCurrentContext();
-					if (lastFill)
-						glClearColor(0., 0., 0., 1.);
-					else
-						glClearColor(1., 1., 1., 1.);
-					lastFill = !lastFill;
-					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-					glFlush();
-					ctx->swap();
-				}
-				*/
-				
+
 				renderedSomething = true;
-				
+
 			}
 		}
 	}
-	//requestUpdate();
 	
 	requestUpdate();
 	if (renderedSomething)	{
-		//update();
 		emit renderedAFrame();
 	}
 	GetGlobalBufferPool()->housekeeping();
@@ -93,69 +75,75 @@ void GLBufferQWindow::renderNow()
 #pragma mark --------------------- public methods
 
 
-void GLBufferQWindow::startRendering()
-{
-	//qDebug() << __PRETTY_FUNCTION__;
+void GLBufferQWindow::startRendering()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	bool					callDirectly = false;
 	{
-		lock_guard<mutex>		lock(ctxLock);
+		lock_guard<recursive_mutex>		lock(ctxLock);
 		//	if there's already a context thread then i'm already rendering and i can return
-		if (ctxThread != nullptr)
+		if (ctxThread != nullptr)	{
+			cout << "\terr: already a ctx thread, bailing" << endl;
 			return;
+		}
 	
 		//	...if i'm here there's no context thread, i'm not rendering, and i need to start
 	
-		if (QThread::currentThread() == this->thread())
+		if (QThread::currentThread() == this->thread() || this->thread() == nullptr)
 			callDirectly = true;
 	}
 	
 	//	if the current thread is the thread i'm bound to, i can call the slot directly
-	if (callDirectly)
+	if (callDirectly)	{
+		//cout << "\tcalling directly..." << endl;
 		startRenderingSlot();
+	}
 	//	else i'm on the "wrong thread", i need to use the meta object to send a signal to the slot
-	else
+	else	{
+		//cout << "\tstarting rendering from wrong thread, using meta to invoke slot..." << endl;
 		QMetaObject::invokeMethod(this, "startRenderingSlot");
-	
+	}
+	//cout << "\tFINISHED- " << __PRETTY_FUNCTION__ << endl;
 }
-void GLBufferQWindow::stopRendering()
-{
-	//qDebug() << __PRETTY_FUNCTION__;
+void GLBufferQWindow::stopRendering()	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	bool					callDirectly = false;
 	{
-		lock_guard<mutex>		lock(ctxLock);
+		lock_guard<recursive_mutex>		lock(ctxLock);
 		//	if there isn't a context thread then i've already stopped rendering and should return
 		if (ctxThread == nullptr)
 			return;
 	
 		//	...if i'm here then there's a context thread, and i need to stop it
 		
-		if (QThread::currentThread() == this->thread())
+		if (QThread::currentThread() == this->thread() || this->thread() == nullptr)
 			callDirectly = true;
 	}
 	
 	//	if the current thread is the thread i'm bound to, i can call the slot directly
-	if (callDirectly)
+	if (callDirectly)	{
 		stopRenderingSlot();
+	}
 	//	else i'm on the "wrong thread", i need to use the meta object to send a signal to the slot
-	else
+	else	{
 		QMetaObject::invokeMethod(this, "stopRenderingSlot");
+	}
 	
 }
 void GLBufferQWindow::stopRenderingImmediately()	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	{
-		lock_guard<mutex>		lock(ctxLock);
+		lock_guard<recursive_mutex>		lock(ctxLock);
 		if (ctxThread == nullptr)
 			return;
 	}
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-void GLBufferQWindow::setContext(const GLContextRef & inCtx)
-{
-	lock_guard<mutex>		lock(ctxLock);
+void GLBufferQWindow::setContext(const GLContextRef & inCtx)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	lock_guard<recursive_mutex>		lock(ctxLock);
 	ctx = inCtx;
 	scene = nullptr;
 	
@@ -168,8 +156,10 @@ void GLBufferQWindow::setContext(const GLContextRef & inCtx)
 		if (ctx->version == GLVersion_2)	{
 			
 			scene->setRenderPrepCallback([](const GLScene & /*n*/, const bool & /*inReshaped*/, const bool & /*inPgmChanged*/){
+				//cout << __PRETTY_FUNCTION__ << " render callback" << endl;
 			});
 			scene->setRenderCallback([&](const GLScene & n){
+				//cout << __PRETTY_FUNCTION__ << " render callback" << endl;
 				//double		ltbbm = devicePixelRatio();
 				//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
 				glEnableClientState(GL_VERTEX_ARRAY);
@@ -290,7 +280,7 @@ else\r\
 			GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
 			//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
 			scene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
-				//cout << __PRETTY_FUNCTION__ << endl;
+				//cout << __PRETTY_FUNCTION__ << " render prep callback" << endl;
 				if (inPgmChanged)	{
 					//	cache all the locations for the vertex attributes & uniform locations
 					GLint				myProgram = n.getProgram();
@@ -303,7 +293,7 @@ else\r\
 			});
 			//	the render callback passes all the data to the GL program
 			scene->setRenderCallback([=](const GLScene & n)	{
-				//cout << __PRETTY_FUNCTION__ << endl;
+				//cout << __PRETTY_FUNCTION__ << " render callback" << endl;
 				//	clear
 				glClearColor(0., 0., 0., 1.);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -320,11 +310,11 @@ else\r\
 						vao = CreateVAO(true, bp);
 					}
 					else
-						cout << "\terr: bufferpool nil, bailing " << __PRETTY_FUNCTION__ << endl;
+                        cout << "\terr: bufferpool nil, bailing " << __PRETTY_FUNCTION__ << endl;
 				}
 				//	if there's still no VAO, something's wrong- bail
 				if (vao == nullptr)	{
-					cout << "\terr: null VAO, bailing " << __PRETTY_FUNCTION__ << endl;
+                    cout << "\terr: null VAO, bailing " << __PRETTY_FUNCTION__ << endl;
 					return;
 				}
 			
@@ -427,23 +417,11 @@ else\r\
 	}
 }
 
-QThread * GLBufferQWindow::getRenderThread()
-{
-	lock_guard<mutex>		lock(ctxLock);
+QThread * GLBufferQWindow::getRenderThread()	{
+	lock_guard<recursive_mutex>		lock(ctxLock);
 	return ctxThread;
 }
-/*
-void GLBufferQWindow::drawBuffer(VVGLBufferRef & inBuffer)
-{
-	lock_guard<mutex>		lock(ctxLock);
-	buffer = inBuffer;
-}
-VVGLBufferRef GLBufferQWindow::getBuffer()
-{
-	lock_guard<mutex>		lock(ctxLock);
-	return buffer;
-}
-*/
+
 
 /*	========================================	*/
 #pragma mark --------------------- public slots
@@ -451,27 +429,31 @@ VVGLBufferRef GLBufferQWindow::getBuffer()
 
 void GLBufferQWindow::startRenderingSlot()
 {
-	lock_guard<mutex>		lock(ctxLock);
-	//qDebug() << __PRETTY_FUNCTION__;
-	//qDebug()<<"\tcurrent thread is "<<QThread::currentThread()<<", main thread is "<<QCoreApplication::instance()->thread();
+	//cout << __PRETTY_FUNCTION__ << " startRenderingSlot" << endl;
+	//cout<<"\tcurrent thread is "<<QThread::currentThread()<<", main thread is "<<QCoreApplication::instance()->thread() << endl;
+	lock_guard<recursive_mutex>		lock(ctxLock);
 	
 	if (ctxThread != nullptr)
 		return;
 	
-	ctxThread = new QThread;
+	//ctxThread = new QThread;
+	//ctxThread->start();
+	ctxThread = QCoreApplication::instance()->thread();
 	//qDebug()<<"\tctxThread is now "<<ctxThread;
-	this->moveToThread(ctxThread);
-	if (ctx != nullptr)
-		ctx->moveToThread(ctxThread);
+	//this->moveToThread(ctxThread);
+	//if (ctx != nullptr)
+	//	ctx->moveToThread(ctxThread);
 	//connect(ctxThread, SIGNAL(started()), this, SLOT(requestUpdate()));
-	connect(ctxThread, &QThread::started, this, &GLBufferQWindow::requestUpdate);
-	ctxThread->start();
+	//connect(ctxThread, &QThread::started, this, &GLBufferQWindow::requestUpdate);
+	//ctxThread->start();
+	requestUpdate();
+	//cout << "\tFINISHED- " << __PRETTY_FUNCTION__ << endl;
 }
 void GLBufferQWindow::stopRenderingSlot()
 {
-	lock_guard<mutex>		lock(ctxLock);
-	//qDebug() << __PRETTY_FUNCTION__;
-	//qDebug()<<"\tcurrent thread is "<<QThread::currentThread()<<", main thread is "<<QCoreApplication::instance()->thread();
+	//cout << __PRETTY_FUNCTION__ << " stopRenderingSlot" << endl;
+	//cout<<"\tcurrent thread is "<<QThread::currentThread()<<", main thread is "<<QCoreApplication::instance()->thread()<<endl;
+	lock_guard<recursive_mutex>		lock(ctxLock);
 	
 	if (ctxThread == nullptr)
 		return;
@@ -481,24 +463,22 @@ void GLBufferQWindow::stopRenderingSlot()
 	buffer = nullptr;
 	scene = nullptr;
 	//	now move everything back to the main thread
-	QThread		*mainThread = QCoreApplication::instance()->thread();
-	if (mainThread != nullptr)	{
-		this->moveToThread(mainThread);
-		if (ctx != nullptr)
-			ctx->moveToThread(mainThread);
-	}
+	//QThread		*mainThread = QCoreApplication::instance()->thread();
+	//if (mainThread != nullptr)	{
+	//	this->moveToThread(mainThread);
+	//	if (ctx != nullptr)
+	//		ctx->moveToThread(mainThread);
+	//}
 	//	shut down the thread we were using to render
-	ctxThread->quit();
-	ctxThread->deleteLater();
+	//ctxThread->quit();
+	//ctxThread->deleteLater();
 	ctxThread = nullptr;
 	//qDebug()<<"\tctxThread is now "<<ctxThread;
 }
-/*
 void GLBufferQWindow::aboutToQuit()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	stopRendering();
 }
-*/
 
 
 /*	========================================	*/
@@ -507,19 +487,37 @@ void GLBufferQWindow::aboutToQuit()	{
 
 bool GLBufferQWindow::event(QEvent * inEvent)
 {
-	//qDebug() << __PRETTY_FUNCTION__;
+	//cout << __PRETTY_FUNCTION__ << ", event type is " << inEvent->type() << endl;
 	switch (inEvent->type()) {
 	case QEvent::UpdateRequest:
 		renderNow();
 		return true;
 	default:
-		return QWindow::event(inEvent);
+		//return QWindow::event(inEvent);
+		{
+			lock_guard<recursive_mutex>		lock(ctxLock);
+			if (ctxThread == nullptr)
+				return QWindow::event(inEvent);
+			else	{
+				if (ctxThread == QThread::currentThread())
+					return QWindow::event(inEvent);
+				else	{
+					perform_async([=](){
+						//cout << "actually processing event in appropriate thread..." << endl;
+						QWindow::event(inEvent);
+					},
+					this);
+					return true;
+				}
+			}
+
+		}
 	}
 }
 /*
 void GLBufferQWindow::exposeEvent(QExposeEvent * inEvent)
 {
-	//qDebug() << __PRETTY_FUNCTION__;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	Q_UNUSED(inEvent);
 	if (isExposed())
 		renderNow();

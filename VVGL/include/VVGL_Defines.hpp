@@ -55,4 +55,12 @@ to block of function calls that won't compile/link against a given SDK's headers
 
 
 
+#if defined (_WIN32)
+//#define __PRETTY_FUNCTION__ __func__
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif	//	_WIN32
+
+
+
+
 #endif /* VVGL_Defines_h */

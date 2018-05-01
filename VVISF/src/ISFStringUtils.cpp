@@ -49,7 +49,8 @@ ISFVal ISFValByEvaluatingString(const string & n, const map<string, double> & in
 	exprtk::parser<double>			parser;
 	
 	size_t			inSymbolsCount = inSymbols.size();
-	double			tmpVars[inSymbolsCount];
+	//double			tmpVars[inSymbolsCount];
+	double			*tmpVars = (double*)malloc(sizeof(double)*inSymbolsCount);
 	
 	if (inSymbolsCount > 0)	{
 		//vector<double>		tmpVars;
@@ -64,6 +65,8 @@ ISFVal ISFValByEvaluatingString(const string & n, const map<string, double> & in
 		}
 		expr.register_symbol_table(table);
 	}
+	free(tmpVars);
+	tmpVars = nullptr;
 	
 	parser.compile(n, expr);
 	
@@ -146,8 +149,13 @@ void FindAndReplaceInPlace(const char * inSearch, const char * inReplace, string
 
 
 string FullPath(const string & inRelativePath)	{
+#if _WIN32
+	char		*outPath = _fullpath(NULL, inRelativePath.c_str(), 0);
+	return std::string(outPath);
+#else
 	char		*outPath = realpath(inRelativePath.c_str(), NULL);
 	return std::string(outPath);
+#endif
 }
 
 

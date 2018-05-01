@@ -28,7 +28,7 @@ using ISFSceneRef = shared_ptr<ISFScene>;
 
 
 
-class ISFScene : public GLScene	{
+class VVISF_EXPORT ISFScene : public GLScene	{
 	private:
 		bool			throwExceptions = false;	//	NO by default
 

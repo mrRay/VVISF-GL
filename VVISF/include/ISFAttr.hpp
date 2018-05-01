@@ -24,7 +24,7 @@ using namespace std;
 
 
 //	this class describes a single ISF attribute
-class ISFAttr	{
+class VVISF_EXPORT ISFAttr	{
 	protected:
 		string			name;
 		string			description;
@@ -79,7 +79,7 @@ class ISFAttr	{
 		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return uniformLocation[inIndex]; }
 		//inline bool isNullVal() { return (type==ISFValType_None); }
 		
-		friend ostream & operator<<(ostream & os, const ISFAttr & n);
+		VVISF_EXPORT friend ostream & operator<<(ostream & os, const ISFAttr & n);
 		void lengthyDescription();
 		string getDescription();
 };

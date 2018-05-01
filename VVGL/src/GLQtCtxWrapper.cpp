@@ -282,7 +282,7 @@ void GLQtCtxHidden::makeCurrentIfNotCurrent()	{
 
 	if (ctxToUse!=nullptr && sfcToUse!=nullptr)	{
 		if (ctxToUse != current)	{
-			//qDebug() << "\tshould actually be making current, ctx is " << ctxToUse << ", surface is " << sfcToUse;
+			//cout << "\tshould be making current, ctx thread is " << ctxToUse->thread() << ", current thread is " << QThread::currentThread() << endl;
 			ctxToUse->makeCurrent(sfcToUse);
 			//qDebug() << "\tcurrent context is " << QOpenGLContext::currentContext();
 		}

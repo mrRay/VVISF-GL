@@ -6,16 +6,17 @@
 #include "GLBufferQWindow.h"
 #include <QCoreApplication>
 #include <QTime>
+#include <QTimer>
 #include <QFile>
+
 
 int main(int argc, char *argv[])
 {
 	QGuiApplication a(argc, argv);
-	qDebug()<<"on launch, current thread is "<<QThread::currentThread()<<", main thread is "<<QCoreApplication::instance()->thread();
 
 	using namespace VVGL;
 	using namespace VVISF;
-	
+
 	//	figure out what version GL we're going to use
 	QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
 	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
@@ -33,18 +34,14 @@ int main(int argc, char *argv[])
 	window.show();
 	window.startRendering();
 	
-	//	move the buffer pool's context to the window's render thread.  this means that the buffer pool should only be used from the render thread.
-	GetGlobalBufferPool()->getContext()->moveToThread(window.getRenderThread());
-	
 	//	make an ISF scene
 	ISFSceneRef		renderScene = CreateISFSceneRef();
-	renderScene->getContext()->moveToThread(window.getRenderThread());
 	
 	//	tell the ISF scene to load the included ISF shader
 	QString			tmpString(":/files/CellMod.fs");
 	QFile			tmpFile(tmpString);
 	if (!tmpFile.open(QFile::ReadOnly | QFile::Text))	{
-		qDebug() << "ERR: could not open CellMod file, " << __PRETTY_FUNCTION__;
+        qDebug() << "ERR: could not open CellMod file, " << __PRETTY_FUNCTION__;
 		return 0;
 	}
 	QTextStream		tmpStream(&tmpFile);
@@ -52,7 +49,7 @@ int main(int argc, char *argv[])
 	std::string		fileContents = fileContentsString.toStdString();
 	//cout << "fileContents are:\n" << fileContents << endl;
 	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
-	cout << "isf doc is " << *tmpDoc << endl;
+    //cout << "isf doc is " << *tmpDoc << endl;
 	renderScene->useDoc(tmpDoc);
 	
 	
@@ -69,6 +66,6 @@ int main(int argc, char *argv[])
 		//	tell the window to draw the texture we just rendered!
 		window.drawBuffer(newBuffer);
 	});
-	
+
 	return a.exec();
 }

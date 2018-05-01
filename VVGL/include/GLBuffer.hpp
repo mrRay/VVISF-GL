@@ -18,7 +18,7 @@ using namespace std;
 
 
 
-class GLBuffer	{
+class VVGL_EXPORT GLBuffer	{
 	
 	public:
 		//	this defines a callback that releases the backing
@@ -168,7 +168,7 @@ class GLBuffer	{
 
 
 //	GLBufferCopy returns an GLBufferRef of a new GLBufferRef instance that shares the same GL/graphic resources as the passed buffer.  one of its uses is for texture atlases- with this function you can create GLBuffers that refer to a region of a large GLBuffer/texture, which is explicitly retained.
-GLBufferRef GLBufferCopy(const GLBufferRef & n);
+VVGL_EXPORT GLBufferRef GLBufferCopy(const GLBufferRef & n);
 
 
 

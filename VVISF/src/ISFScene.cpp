@@ -16,7 +16,7 @@ namespace VVISF
 
 ISFScene::ISFScene()
 : GLScene()	{
-	cout << __PRETTY_FUNCTION__ << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
 	_setUpRenderCallback();
 }
 ISFScene::ISFScene(const GLContextRef & inCtx)
