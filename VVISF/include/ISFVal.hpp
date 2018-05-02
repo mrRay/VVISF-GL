@@ -1,8 +1,8 @@
 #ifndef ISFVal_h
 #define ISFVal_h
 
-#include "ISFBase.hpp"
-#include "ISFStringUtils.hpp"
+#include "VVISF_Base.hpp"
+#include "VVISF_StringUtils.hpp"
 
 
 

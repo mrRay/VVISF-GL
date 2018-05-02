@@ -38,7 +38,7 @@
 		floatPtr = (float*)&posQuad;
 		for (int point=0; point<4; ++point)	{
 			for (int comp=0; comp<3; ++comp)	{
-				char		tmpChar;
+				char		tmpChar = ' ';
 				switch (comp)	{
 				case 0:		tmpChar = 'X';		break;
 				case 1:		tmpChar = 'Y';		break;
@@ -56,7 +56,7 @@
 		floatPtr = (float*)&colorQuad;
 		for (int point=0; point<4; ++point)	{
 			for (int comp=0; comp<4; ++comp)	{
-				char		tmpChar;
+				char		tmpChar = ' ';
 				switch (comp)	{
 				case 0:		tmpChar = 'R';		break;
 				case 1:		tmpChar = 'G';		break;
@@ -86,7 +86,7 @@
 		floatPtr = (float*)&posQuad;
 		for (int point=0; point<4; ++point)	{
 			for (int comp=0; comp<3; ++comp)	{
-				char		tmpChar;
+				char		tmpChar = ' ';
 				switch (comp)	{
 				case 0:		tmpChar = 'X';		break;
 				case 1:		tmpChar = 'Y';		break;
@@ -104,7 +104,7 @@
 		floatPtr = (float*)&colorQuad;
 		for (int point=0; point<4; ++point)	{
 			for (int comp=0; comp<4; ++comp)	{
-				char		tmpChar;
+				char		tmpChar = ' ';
 				switch (comp)	{
 				case 0:		tmpChar = 'R';		break;
 				case 1:		tmpChar = 'G';		break;

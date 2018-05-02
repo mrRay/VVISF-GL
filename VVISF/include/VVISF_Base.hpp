@@ -4,7 +4,7 @@
 #include <vector>
 
 #if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
+#include "VVISF_Qt_global.hpp"
 #else
 #define VVISF_EXPORT 
 #endif
@@ -72,10 +72,10 @@ string ISFFileTypeString(const ISFFileType & n);
 
 
 
-#include "ISFConstants.hpp"
-#include "ISFErr.hpp"
+#include "VVISF_Constants.hpp"
+#include "VVISF_Err.hpp"
 #include "ISFVal.hpp"
-#include "ISFStringUtils.hpp"
+#include "VVISF_StringUtils.hpp"
 
 
 

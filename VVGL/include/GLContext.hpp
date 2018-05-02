@@ -5,11 +5,14 @@
 
 #include <iostream>
 #if defined(ISF_SDK_MAC)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-W#warnings"
 	#import <OpenGL/OpenGL.h>
 	#import <OpenGL/gl.h>
 	#import <OpenGL/glext.h>
 	#import <OpenGL/gl3.h>
 	#import <OpenGL/gl3ext.h>
+#pragma clang diagnostic pop
 #elif defined(ISF_SDK_IOS)
 	//#ifndef __cplusplus
 		//#import <OpenGLES/EAGL.h>

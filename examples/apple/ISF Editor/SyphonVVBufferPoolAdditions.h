@@ -9,8 +9,8 @@
 #import <Cocoa/Cocoa.h>
 //#import <VVGLKit/VVGLKit.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISF/VVISF.h>
-#include "VVISF.h"
+//#import <VVISF/VVISF.hpp>
+#include "VVISF.hpp"
 #import <Syphon/Syphon.h>
 
 

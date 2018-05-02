@@ -9,7 +9,7 @@ QT       += opengl
 TARGET = VVISF
 TEMPLATE = lib
 
-# this along with vvisf_qt_global.h are used to configured the publicly-exported symbols
+# this along with VVISF_Qt_global.hpp are used to configured the publicly-exported symbols
 DEFINES += VVISF_LIBRARY
 
 CONFIG += c++11
@@ -79,25 +79,25 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVISF/include
 
 SOURCES += \
     ../../../VVISF/src/ISFDoc.cpp \
-    ../../../VVISF/src/ISFStringUtils.cpp \
+    ../../../VVISF/src/VVISF_StringUtils.cpp \
     ../../../VVISF/src/ISFScene.cpp \
     ../../../VVISF/src/ISFPassTarget.cpp \
-    ../../../VVISF/src/ISFBase.cpp \
+    ../../../VVISF/src/VVISF_Base.cpp \
     ../../../VVISF/src/ISFAttr.cpp \
     ../../../VVISF/src/ISFVal.cpp
 
 HEADERS += \
-	../../../VVISF/include/vvisf_qt_global.h \
+	../../../VVISF/include/VVISF_Qt_global.hpp \
     ../../../VVISF/include/ISFVal.hpp \
-    ../../../VVISF/include/ISFStringUtils.hpp \
+    ../../../VVISF/include/VVISF_StringUtils.hpp \
     ../../../VVISF/include/ISFScene.hpp \
     ../../../VVISF/include/ISFDoc.hpp \
-    ../../../VVISF/include/ISFConstants.hpp \
-    ../../../VVISF/include/ISFBase.hpp \
+    ../../../VVISF/include/VVISF_Constants.hpp \
+    ../../../VVISF/include/VVISF_Base.hpp \
     ../../../VVISF/include/ISFAttr.hpp \
     ../../../VVISF/include/ISFPassTarget.hpp \
-	../../../VVISF/include/ISFErr.hpp \
-	../../../VVISF/include/VVISF.h
+	../../../VVISF/include/VVISF_Err.hpp \
+	../../../VVISF/include/VVISF.hpp
 
 #unix {
 	#target.path = /usr/local/lib

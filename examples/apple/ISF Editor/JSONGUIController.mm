@@ -4,7 +4,7 @@
 #import "JSONGUIArrayGroup.h"
 #import "JSONGUIInput.h"
 #import "JSONGUIPass.h"
-#include "VVISF.h"
+#include "VVISF.hpp"
 #import "ISFPropErrTableCellView.h"
 #import "ISFPropGroupTableCellView.h"
 #import "ISFPropInputTableCellView.h"

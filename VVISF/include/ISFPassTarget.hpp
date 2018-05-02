@@ -1,7 +1,7 @@
 #ifndef ISFPassTarget_hpp
 #define ISFPassTarget_hpp
 
-#include "ISFBase.hpp"
+#include "VVISF_Base.hpp"
 
 #include "exprtk/exprtk.hpp"
 

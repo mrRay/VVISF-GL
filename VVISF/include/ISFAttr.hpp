@@ -1,7 +1,7 @@
 #ifndef ISFAttr_hpp
 #define ISFAttr_hpp
 
-#include "ISFBase.hpp"
+#include "VVISF_Base.hpp"
 #include <stdint.h>
 #include <vector>
 #include <string>

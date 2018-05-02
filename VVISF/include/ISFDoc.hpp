@@ -2,7 +2,7 @@
 #define ISFDoc_hpp
 
 #include <vector>
-#include "ISFBase.hpp"
+#include "VVISF_Base.hpp"
 #include "ISFAttr.hpp"
 
 

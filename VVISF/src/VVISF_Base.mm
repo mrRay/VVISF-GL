@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#include "ISFBase.hpp"
+#include "VVISF_Base.hpp"
 #include "ISFDoc.hpp"
 
 

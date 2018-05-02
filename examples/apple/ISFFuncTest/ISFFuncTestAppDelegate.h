@@ -2,7 +2,7 @@
 #import <OpenGL/OpenGL.h>
 #import <CoreVideo/CoreVideo.h>
 #include "VVGL.hpp"
-#include "VVISF.h"
+#include "VVISF.hpp"
 #import "VVGLBufferGLView.h"
 
 

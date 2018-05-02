@@ -1,7 +1,7 @@
 #import "JSONGUIDictGroup.h"
 #import "JSONGUIPersistentBuffer.h"
 #import "JSONGUITop.h"
-//#import <VVISF/VVISF.h>
+//#import <VVISF/VVISF.hpp>
 //#import <DDMathParser/DDMathParser.h>
 #import "ISFStringAdditions.h"
 

@@ -1,0 +1,6 @@
+framework module VVGL {
+    umbrella header "VVGL.hpp"
+
+    export *
+    module * { export * }
+}

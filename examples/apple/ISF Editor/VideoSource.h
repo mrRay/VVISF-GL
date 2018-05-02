@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISF/VVISF.h>
-#include "VVISF.h"
+//#import <VVISF/VVISF.hpp>
+#include "VVISF.hpp"
 
 
 

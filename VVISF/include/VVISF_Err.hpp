@@ -1,7 +1,7 @@
 #ifndef ISFErr_h
 #define ISFErr_h
 
-#include "ISFBase.hpp"
+#include "VVISF_Base.hpp"
 
 
 

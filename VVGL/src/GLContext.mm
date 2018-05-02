@@ -48,7 +48,8 @@ GLContext::GLContext(const void * inSharegroup)	{
 }
 */
 GLContext::GLContext()	{
-	ctx = (void *)[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:nil];
+	//ctx = (void *)[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:nil];
+	ctx = (void *)[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
 	generalInit();
 }
 GLContext::~GLContext()	{

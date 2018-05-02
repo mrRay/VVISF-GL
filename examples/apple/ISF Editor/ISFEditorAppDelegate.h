@@ -7,10 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#include "VVISF.h"
+#include "VVISF.hpp"
 //#import <VVBasics/VVBasics.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISF/VVISF.h>
+//#import <VVISF/VVISF.hpp>
 //#import <DDMathParser/DDMathParser.h>
 #import "ISFController.h"
 #import "VVKQueueCenter.h"

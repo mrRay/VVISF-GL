@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
-#include "VVISF.h"
+#include "VVISF.hpp"
 #import "VVGLBufferGLView.h"
 #import "ISFVVGLBufferView.h"
 

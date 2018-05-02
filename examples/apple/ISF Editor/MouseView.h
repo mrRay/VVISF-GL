@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 //#import <VVBufferPool/VVBufferPool.h>
-//#import <VVISF/VVISF.h>
-#include "VVISF.h"
+//#import <VVISF/VVISF.hpp>
+#include "VVISF.hpp"
 //#import <VVUIToolbox/VVUIToolbox.h>
 #import "ISFVVGLBufferView.h"
 

@@ -1,6 +1,6 @@
 #include <QGuiApplication>
 #include <VVGL.hpp>
-#include <VVISF.h>
+#include <VVISF.hpp>
 #include <QDebug>
 #include <QImage>
 #include "GLBufferQWindow.h"

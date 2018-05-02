@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #include "VVGL.hpp"
-#include "VVISF.h"
+#include "VVISF.hpp"
 
 //#include <glad/glad.h>
 #include <GLFW/glfw3.h>

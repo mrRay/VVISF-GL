@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <VVGL/VVGL.hpp>
-#import <VVISF/VVISF.h>
+#import <VVISF/VVISF.hpp>
 #import "VVBufferGLKView.h"
 
 
