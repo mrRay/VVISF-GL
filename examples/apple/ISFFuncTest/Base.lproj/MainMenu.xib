@@ -708,7 +708,7 @@
                         <rect key="frame" x="20" y="43" width="320" height="240"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </openGLView>
-                    <slider verticalHuggingPriority="750" misplaced="YES" id="cfH-Ez-IPd">
+                    <slider hidden="YES" verticalHuggingPriority="750" misplaced="YES" id="cfH-Ez-IPd">
                         <rect key="frame" x="18" y="18" width="324" height="19"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                         <sliderCell key="cell" continuous="YES" state="on" alignment="left" minValue="-0.45000000000000001" maxValue="0.45000000000000001" doubleValue="0.45000000000000001" tickMarkPosition="above" sliderType="linear" id="I2t-Qk-lcU"/>

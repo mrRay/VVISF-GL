@@ -133,7 +133,7 @@ FragColor *= (1.-fadeVal);\r\
 			GLCachedUniRef		fadeValUni = make_shared<GLCachedUni>("fadeVal");
 		
 			//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-			renderScene->setRenderPrepCallback([=,&vao](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+			renderScene->setRenderPrepCallback([=,&vao](const GLScene & n, const bool & /*inReshaped*/, const bool & inPgmChanged)	{
 				//cout << __PRETTY_FUNCTION__ << endl;
 				if (inPgmChanged)	{
 					//	cache all the locations for the vertex attributes & uniform locations

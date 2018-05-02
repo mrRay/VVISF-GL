@@ -7,9 +7,7 @@
 #include "ISFBase.hpp"
 
 #include "ISFAttr.hpp"
-#include "ISFPassTarget.hpp"
 #include "ISFDoc.hpp"
-
 #include "ISFScene.hpp"
 
 

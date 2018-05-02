@@ -50,6 +50,8 @@ to block of function calls that won't compile/link against a given SDK's headers
 
 #if defined(ISF_SDK_QT)
 #include "VVGL_Qt_global.h"
+#else
+#define VVGL_EXPORT 
 #endif
 
 
@@ -58,6 +60,7 @@ to block of function calls that won't compile/link against a given SDK's headers
 #if defined (_WIN32)
 //#define __PRETTY_FUNCTION__ __func__
 #define __PRETTY_FUNCTION__ __FUNCSIG__
+#pragma warning (disable : 4068)	/*	disables unknown pragma warnings	*/
 #endif	//	_WIN32
 
 

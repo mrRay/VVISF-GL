@@ -279,7 +279,7 @@ else\r\
 			GLCachedUniRef		inputImageRectUni = make_shared<GLCachedUni>("inputImageRect");
 			GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
 			//	the render prep callback needs to create & populate a VAO, and cache the location of the vertex attributes and uniforms
-			scene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+			scene->setRenderPrepCallback([=](const GLScene & n, const bool & /*inReshaped*/, const bool & inPgmChanged)	{
 				//cout << __PRETTY_FUNCTION__ << " render prep callback" << endl;
 				if (inPgmChanged)	{
 					//	cache all the locations for the vertex attributes & uniform locations

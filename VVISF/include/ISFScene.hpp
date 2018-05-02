@@ -1,13 +1,9 @@
 #ifndef ISFScene_hpp
 #define ISFScene_hpp
 
-#include "ISFDoc.hpp"
+#include "ISFBase.hpp"
 #if defined(ISF_SDK_MAC)
 #import <TargetConditionals.h>
-#endif
-
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
 #endif
 
 

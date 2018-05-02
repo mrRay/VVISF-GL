@@ -4,11 +4,6 @@
 #include <vector>
 #include "ISFBase.hpp"
 #include "ISFAttr.hpp"
-#include "ISFPassTarget.hpp"
-
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
-#endif
 
 
 
@@ -27,11 +22,11 @@ class ISFScene;
 
 
 /*	this class describes an ISF document.  constructing an instance of this class requires a valid 
-path, and during construction the ISF file is parsed and this class gets "filled in" completely (GL 
-resources will be loaded during construction).  for the most part, this class is immutable- the only 
-notable exception is that the ISFAttr instances in the various input arrays can be used to store 
-values for the document.  even then, the contents of the arrays aren't changed- just the contents 
-of the objects in the array.	*/
+path, and during construction the ISF file is parsed and this class gets "filled in" completely.  
+this class doesn't do any GL work during construction- it's entirely CPU-based until a scene starts 
+using a doc to render.  for the most part, this class is immutable- the only notable exception is 
+that the ISFAttr instances in the various input arrays can be used to store values for the document.  
+even then, the contents of the arrays aren't changed- just the contents of the objects in the array.	*/
 class VVISF_EXPORT ISFDoc	{
 	private:
 		recursive_mutex		propLock;

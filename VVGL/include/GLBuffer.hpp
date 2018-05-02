@@ -130,7 +130,7 @@ class VVGL_EXPORT GLBuffer	{
 		
 		//	copy assignment operators are disabled to prevent accidents
 		GLBuffer& operator=(const GLBuffer&) = delete;
-		GLBuffer& operator=(GLBuffer&) = delete;
+		//GLBuffer& operator=(GLBuffer&) = delete;
 		//GLBuffer (GLBuffer&&) = default;
 		
 		//	use this to create a shallow copy (memberwise copy)

@@ -1,5 +1,6 @@
 #include "ISFPassTarget.hpp"
 #include "ISFScene.hpp"
+#include "ISFDoc.hpp"
 
 
 

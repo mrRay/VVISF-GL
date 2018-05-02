@@ -96,8 +96,8 @@ HEADERS += \
     ../../../VVISF/include/ISFBase.hpp \
     ../../../VVISF/include/ISFAttr.hpp \
     ../../../VVISF/include/ISFPassTarget.hpp \
-    ../../../VVISF/include/ISFErr.hpp \
-    ../../../VVISF/include/ISFKit.h
+	../../../VVISF/include/ISFErr.hpp \
+	../../../VVISF/include/VVISF.h
 
 #unix {
 	#target.path = /usr/local/lib

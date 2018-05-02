@@ -4,12 +4,9 @@
 #include <string>
 #include <vector>
 #include <map>
-//#include "VVGL_Range.hpp"
-#include "VVGL.hpp"
+#include "ISFBase.hpp"
 
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
-#endif
+
 
 
 namespace VVISF

@@ -5,6 +5,8 @@
 
 #if defined(ISF_SDK_QT)
 #include "vvisf_qt_global.h"
+#else
+#define VVISF_EXPORT 
 #endif
 
 #include "VVGL.hpp"

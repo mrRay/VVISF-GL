@@ -1152,10 +1152,10 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	catch (std::invalid_argument&)	{
 		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
 	}
-	catch (const std::exception& ex) {
+	catch (const std::exception& /*ex*/) {
 		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
 	}
-	catch (const std::string& ex) {
+	catch (const std::string& /*ex*/) {
 		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *path);
 	}
 	catch (...) {

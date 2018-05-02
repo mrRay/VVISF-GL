@@ -1,9 +1,9 @@
 #ifndef ISFErr_h
 #define ISFErr_h
 
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
-#endif
+#include "ISFBase.hpp"
+
+
 
 
 namespace VVISF

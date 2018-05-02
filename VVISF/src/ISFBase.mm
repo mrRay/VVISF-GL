@@ -1,5 +1,5 @@
+#import <Foundation/Foundation.h>
 #include "ISFBase.hpp"
-//#import <Foundation/Foundation.h>
 #include "ISFDoc.hpp"
 
 

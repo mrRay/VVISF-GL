@@ -1,13 +1,9 @@
-#ifndef ISFTargetBuffer_hpp
-#define ISFTargetBuffer_hpp
+#ifndef ISFPassTarget_hpp
+#define ISFPassTarget_hpp
 
 #include "ISFBase.hpp"
 
 #include "exprtk/exprtk.hpp"
-
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
-#endif
 
 
 
@@ -95,4 +91,4 @@ using namespace std;
 	};
 }
 
-#endif /* ISFTargetBuffer_hpp */
+#endif /* ISFPassTarget_hpp */

@@ -2,12 +2,8 @@
 #define ISFVal_h
 
 #include "ISFBase.hpp"
-//#include "GLBuffer.hpp"
 #include "ISFStringUtils.hpp"
 
-#if defined(ISF_SDK_QT)
-#include "vvisf_qt_global.h"
-#endif
 
 
 
