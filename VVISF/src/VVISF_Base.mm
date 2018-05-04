@@ -15,7 +15,7 @@ class ISFDoc;
 
 
 
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 
 shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath, const ISFFileType & inType, const bool & inRecursive)	{
 	//cout << __PRETTY_FUNCTION__ << "..." << inFolderPath << endl;

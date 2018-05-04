@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 #include "VVISF_Qt_global.hpp"
 #else
 #define VVISF_EXPORT 

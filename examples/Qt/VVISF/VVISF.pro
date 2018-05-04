@@ -25,7 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 # these libs require an ISF_SDK define
-DEFINES += ISF_SDK_QT
+DEFINES += VVGL_SDK_QT
 
 
 

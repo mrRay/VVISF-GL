@@ -92,16 +92,16 @@ GLBufferCopier::~GLBufferCopier()	{
 	if (!deleted)
 		prepareToBeDeleted();
 	
-#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
+#if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 	vao = nullptr;
-#elif defined(ISF_TARGETENV_GLES)
+#elif defined(VVGL_TARGETENV_GLES)
 	vbo = nullptr;
 #endif
 }
 void GLBufferCopier::generalInit()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//	set up simple frag & vert shaders that draw a tex
-#if defined(ISF_TARGETENV_GL3PLUS)
+#if defined(VVGL_TARGETENV_GL3PLUS)
 	string			vsString("\r\
 #version 330 core\r\
 in vec3		inXYZ;\r\
@@ -129,7 +129,7 @@ void main()	{\r\
 		FragColor = texture(inputImageRect,programST);\r\
 }\r\
 ");
-#elif defined(ISF_TARGETENV_GLES)
+#elif defined(VVGL_TARGETENV_GLES)
 	string			vsString("\n\
 attribute vec3		inXYZ;\n\
 attribute vec2		inST;\n\
@@ -156,7 +156,7 @@ void main()	{\n\
 		//gl_FragColor = texture2DRect(inputImageRect,programST);\n\
 }\n\
 ");
-#elif defined(ISF_TARGETENV_GLES3)
+#elif defined(VVGL_TARGETENV_GLES3)
 	string			vsString("\r\
 #version 300 es\r\
 in vec3		inXYZ;\r\
@@ -185,7 +185,7 @@ void main()	{\r\
 		FragColor = texture(inputImageRect,programST);\r\
 }\r\
 ");
-#elif defined(ISF_TARGETENV_GL2)
+#elif defined(VVGL_TARGETENV_GL2)
 //	intentionally blank, no shaders used
 #endif
 	
@@ -268,7 +268,7 @@ GLBufferRef GLBufferCopier::copyToNewBuffer(const GLBufferRef & n)	{
 		setOrthoSize(n->srcRect.size);
 	
 	//	make the buffers i'll be rendering into
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 	GLBufferRef		color = (copyToIOSurface) ? CreateRGBATexIOSurface(orthoSize) : CreateRGBATex(orthoSize);
 #else
 	GLBufferRef		color = CreateRGBATex(orthoSize);
@@ -475,7 +475,7 @@ void GLBufferCopier::copyRedFrameTo(const GLBufferRef & n)	{
 void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
 	GLVersion		myVers = getGLVersion();
 	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
-#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
+#if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 		//	make the VAO if we don't already have one
 		if (vao == nullptr)
 			vao = CreateVAO(true);
@@ -535,7 +535,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 			glUniform1i(inputImageLoc.loc, 0);
 			GLERRLOG
 		}
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 		//	pass the RECT texture to the program (if there is a RECT texture)
 		glActiveTexture(GL_TEXTURE1);
 		GLERRLOG
@@ -547,7 +547,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 			glUniform1i(inputImageRectLoc.loc, 1);
 			GLERRLOG
 		}
-#endif	//	ISF_SDK_MAC
+#endif	//	VVGL_SDK_MAC
 		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
 		if (isRectTexLoc.loc >= 0)	{
 			if (inBufferRef == nullptr)	{
@@ -560,12 +560,12 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 					glUniform1i(isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 				case GLBuffer::Target_Rect:
 					glUniform1i(isRectTexLoc.loc, 2);
 					GLERRLOG
 					break;
-#endif	//	ISF_SDK_MAC
+#endif	//	VVGL_SDK_MAC
 				default:
 					glUniform1i(isRectTexLoc.loc, 0);
 					GLERRLOG
@@ -581,10 +581,10 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 		//	unbind the VAO
 		glBindVertexArray(0);
 		GLERRLOG
-#endif	//	ISF_TARGETENV_GL3PLUS || ISF_TARGETENV_GLES3
+#endif	//	VVGL_TARGETENV_GL3PLUS || VVGL_TARGETENV_GLES3
 	}
 	else if (myVers==GLVersion_ES)	{
-#if defined(ISF_TARGETENV_GLES)
+#if defined(VVGL_TARGETENV_GLES)
 		//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...
 		//if (vbo==nullptr || inVertexStruct!=vboContents)	{
 			//	create a new VBO with the passed vertex data
@@ -667,7 +667,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 #endif
 	}
 	else if (myVers==GLVersion_2)	{
-#if defined(ISF_TARGETENV_GL2)
+#if defined(VVGL_TARGETENV_GL2)
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
 		glEnable(inBufferRef->desc.target);

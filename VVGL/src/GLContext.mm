@@ -1,6 +1,6 @@
 #include "GLContext.hpp"
 
-#if defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_IOS)
 	#import <OpenGLES/EAGL.h>
 	#import <OpenGLES/ES3/glext.h>
 	#import <GLKit/GLKit.h>
@@ -20,7 +20,7 @@ namespace VVGL
 
 
 
-#if defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_IOS)
 
 
 /*	========================================	*/
@@ -159,7 +159,7 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 }
 
 
-#endif	//	ISF_SDK_IOS
+#endif	//	VVGL_SDK_IOS
 
 
 

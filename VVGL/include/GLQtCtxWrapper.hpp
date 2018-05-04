@@ -3,7 +3,7 @@
 
 #include "VVGL_Defines.hpp"
 
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 
 #include <QSurfaceFormat>
 #include <QThread>
@@ -73,6 +73,6 @@ public:
 
 }
 
-#endif	//	ISF_SDK_QT
+#endif	//	VVGL_SDK_QT
 
 #endif // VVGL_GLQTCTXWRAPPER_H

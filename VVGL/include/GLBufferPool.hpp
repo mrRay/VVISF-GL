@@ -7,12 +7,12 @@
 
 #include "GLBuffer.hpp"
 
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 #import <CoreGraphics/CoreGraphics.h>
 #import <TargetConditionals.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
-#elif defined(ISF_SDK_IOS)
+#elif defined(VVGL_SDK_IOS)
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreVideo/CoreVideo.h>
 #endif
@@ -42,7 +42,7 @@ class VVGL_EXPORT GLBufferPool	{
 		
 		Timestamper			timestamper;
 		
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 		CGColorSpaceRef		colorSpace = nullptr;
 #endif
 		
@@ -65,7 +65,7 @@ class VVGL_EXPORT GLBufferPool	{
 		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
 		inline GLContextRef & getContext() { return context; }
 		inline recursive_mutex & getContextLock() { return contextLock; }
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 		inline CGColorSpaceRef getColorSpace() const { return colorSpace; }
 #endif
 		
@@ -100,13 +100,13 @@ VVGL_EXPORT GLBufferRef CreateDepthBuffer(const Size & size, const bool & create
 
 VVGL_EXPORT GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
-#if !defined(ISF_SDK_IOS)
+#if !defined(VVGL_SDK_IOS)
 VVGL_EXPORT GLBufferRef CreateBGRATex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 VVGL_EXPORT GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#if !(ISF_SDK_RPI)
+#if !(VVGL_SDK_RPI)
 VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#endif	//	!ISF_SDK_RPI
-#endif	//	!ISF_SDK_IOS
+#endif	//	!VVGL_SDK_RPI
+#endif	//	!VVGL_SDK_IOS
 
 
 VVGL_EXPORT GLBufferRef CreateTexFromImage(const string & inPath, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -114,13 +114,13 @@ VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPat
 
 
 //	Qt-only func
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 VVGL_EXPORT GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 
 
 //	mac-only funcs
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 //	'inContextRef' must not be NULL- this function will have not work if it is null!
 void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContextRef & inContextRef);
 GLBufferRef CreateRGBATexIOSurface(const Size & inSize, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
@@ -133,15 +133,15 @@ GLBufferRef CreateRGBARectTex(const Size & size, const bool & createInCurrentCon
 
 
 //	mac & ios funcs
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 void CGBitmapContextUnpremultiply(CGContextRef ctx);
 #endif
 
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 GLBufferRef CreateBufferForCVGLTex(CVOpenGLTextureRef & inTexRef, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
-#elif defined(ISF_SDK_IOS)
+#elif defined(VVGL_SDK_IOS)
 GLBufferRef CreateBufferForCVGLTex(CVOpenGLESTextureRef & inTexRef, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 #endif
 

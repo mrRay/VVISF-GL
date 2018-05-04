@@ -83,7 +83,7 @@ inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if 
 
 
 
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 #include <QThread>
 #include <QCoreApplication>
 // 		this template establishes a function for asynchronously performing a lambda on the passed 

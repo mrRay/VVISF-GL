@@ -238,7 +238,7 @@ void GLBufferQWindow::setContext(const GLContextRef & inCtx)	{
 			
 		}
 		else	{
-#if defined(ISF_TARGETENV_GL3PLUS)
+#if defined(VVGL_TARGETENV_GL3PLUS)
 			//	load the frag/vert shaders
 			string			vsString("\r\
 #version 330 core\r\
@@ -411,7 +411,7 @@ else\r\
 				}
 			
 			});
-#endif	//	ISF_TARGETENV_GL3PLUS
+#endif	//	VVGL_TARGETENV_GL3PLUS
 		}
 
 	}

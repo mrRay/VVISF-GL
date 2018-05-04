@@ -41,7 +41,7 @@ ISFScene::~ISFScene()	{
 	}
 	
 	//geoXYVBO = nullptr;
-#if !defined(ISF_TARGETENV_GLES)
+#if !defined(VVGL_TARGETENV_GLES)
 	vao = nullptr;
 #endif
 	vbo = nullptr;
@@ -389,7 +389,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	//	: CreateRGBATex(inSize, bp);
 	
 	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 	if (persistentToIOSurface)
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
 	else
@@ -438,7 +438,7 @@ void ISFScene::setSize(const VVGL::Size & n)	{
 
 
 void ISFScene::_setUpRenderCallback()	{
-#if defined(ISF_TARGETENV_GLES)
+#if defined(VVGL_TARGETENV_GLES)
 	setRenderCallback([&](const GLScene & s)	{
 		//	make a quad that describes the area we have to draw
 		Quad<VertXY>		targetQuad;
@@ -601,7 +601,7 @@ void ISFScene::_setUpRenderCallback()	{
 		VVGL::Rect				tmpRect(0,0,0,0);
 		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
 		//cout << "\tverts based on rect " << tmpRect << endl;
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_GLFW)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_GLFW)
 		glColor4f(1., 1., 1., 1.);
 		GLERRLOG
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -620,7 +620,7 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 		glDrawArrays(GL_QUADS, 0, 4);
 		GLERRLOG
-#elif defined(ISF_SDK_IOS) || defined(ISF_SDK_RPI)
+#elif defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI)
 		GLfloat			geoCoords[] = {
 			(GLfloat)MinX(tmpRect), (GLfloat)MinY(tmpRect),
 			(GLfloat)MaxX(tmpRect), (GLfloat)MinY(tmpRect),
@@ -690,7 +690,7 @@ void ISFScene::_renderPrep()	{
 	*/
 	
 	//	make sure there's a VAO
-#if !defined(ISF_TARGETENV_GLES)
+#if !defined(VVGL_TARGETENV_GLES)
 	if (getGLVersion() != GLVersion_2)	{
 		if (getVAO() == nullptr)
 			setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
@@ -1167,7 +1167,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 	if (tmpDoc == nullptr)
 		return;
 	
-#if defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_IOS)
 	glPushGroupMarkerEXT(0, "All ISF-specific rendering");
 	GLERRLOG
 #endif
@@ -1243,7 +1243,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
 				
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 				if (shouldBeIOSurface)
 					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
@@ -1344,7 +1344,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		}
 	}
 	
-#if defined(ISF_SDK_IOS)
+#if defined(VVGL_SDK_IOS)
 	glPopGroupMarkerEXT();
 	GLERRLOG
 #endif

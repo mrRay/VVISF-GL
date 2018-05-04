@@ -9,7 +9,7 @@
 #include "GLBufferPool.hpp"
 #include "GLCachedProperty.hpp"
 
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 
@@ -20,9 +20,6 @@ namespace VVGL	{
 
 
 using namespace std;
-
-
-class GLScene;
 
 
 

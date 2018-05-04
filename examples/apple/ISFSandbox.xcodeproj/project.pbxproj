@@ -6,6 +6,54 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		1A56120D209A81E90027F83B /* All-Mac */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1A56120E209A81E90027F83B /* Build configuration list for PBXAggregateTarget "All-Mac" */;
+			buildPhases = (
+			);
+			dependencies = (
+				1A561216209A82030027F83B /* PBXTargetDependency */,
+				1A561218209A82030027F83B /* PBXTargetDependency */,
+				1A56121A209A82030027F83B /* PBXTargetDependency */,
+				1A56121C209A82030027F83B /* PBXTargetDependency */,
+				1A56121E209A82030027F83B /* PBXTargetDependency */,
+				1A561220209A82030027F83B /* PBXTargetDependency */,
+				1A561222209A82030027F83B /* PBXTargetDependency */,
+				1A561224209A82030027F83B /* PBXTargetDependency */,
+				1A561226209A82030027F83B /* PBXTargetDependency */,
+			);
+			name = "All-Mac";
+			productName = "All-Mac";
+		};
+		1A561211209A81F00027F83B /* All-iOS */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1A561212209A81F00027F83B /* Build configuration list for PBXAggregateTarget "All-iOS" */;
+			buildPhases = (
+			);
+			dependencies = (
+				1A561228209A82090027F83B /* PBXTargetDependency */,
+				1A56122A209A82090027F83B /* PBXTargetDependency */,
+				1A56122C209A82090027F83B /* PBXTargetDependency */,
+			);
+			name = "All-iOS";
+			productName = "All-iOS";
+		};
+		1A56122D209A82110027F83B /* All-Mac-GLFW */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1A56122E209A82110027F83B /* Build configuration list for PBXAggregateTarget "All-Mac-GLFW" */;
+			buildPhases = (
+			);
+			dependencies = (
+				1A561232209A821C0027F83B /* PBXTargetDependency */,
+				1A561234209A821C0027F83B /* PBXTargetDependency */,
+				1A561236209A821C0027F83B /* PBXTargetDependency */,
+			);
+			name = "All-Mac-GLFW";
+			productName = "All-Mac-GLFW";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		1A0224681E390C9E00C110B8 /* exprtk.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224511E390C9E00C110B8 /* exprtk.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A0224691E390C9E00C110B8 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1A0224521E390C9E00C110B8 /* readme.txt */; };
@@ -731,6 +779,111 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1A365D0F2090B98000771520;
 			remoteInfo = VVISF_GLFW;
+		};
+		1A561215209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A10DDFA2090AD4A00771795;
+			remoteInfo = VVGL_Mac;
+		};
+		1A561217209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A901A041F4648C0009FEE74;
+			remoteInfo = BasicGLFunc;
+		};
+		1A561219209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A7CA9671F4742C70051F3D6;
+			remoteInfo = DifferingGLVersions;
+		};
+		1A56121B209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AD86D011F4EFB4300DEED3E;
+			remoteInfo = GeoShaderTest;
+		};
+		1A56121D209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A569885200F821500437867;
+			remoteInfo = TransFeedbackTest;
+		};
+		1A56121F209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A5698C6201012C100437867;
+			remoteInfo = JustTransFeedback;
+		};
+		1A561221209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A365CC02090B35C00771520;
+			remoteInfo = VVISF_Mac;
+		};
+		1A561223209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A6ED60F1F47A40A00227712;
+			remoteInfo = ISFFuncTest;
+		};
+		1A561225209A82030027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A023C8E1F2011AD004FFB3A;
+			remoteInfo = "ISF Editor";
+		};
+		1A561227209A82090027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AE1776F1E2581BB00E978E5;
+			remoteInfo = VVGL_iOS;
+		};
+		1A561229209A82090027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AE177621E2581B500E978E5;
+			remoteInfo = VVISF_iOS;
+		};
+		1A56122B209A82090027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A4EEA4E1F17B75B00B6C3F4;
+			remoteInfo = ISFonIOS;
+		};
+		1A561231209A821C0027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A365CFD2090B97800771520;
+			remoteInfo = VVGL_GLFW;
+		};
+		1A561233209A821C0027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A365D0F2090B98000771520;
+			remoteInfo = VVISF_GLFW;
+		};
+		1A561235209A821C0027F83B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A23114C1E2D63C700B0EF84;
+			remoteInfo = ISFinGLFW;
 		};
 		1AE177A51E2581EA00E978E5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2781,6 +2934,18 @@
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = KH97KZU7A7;
 					};
+					1A56120D209A81E90027F83B = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					1A561211209A81F00027F83B = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					1A56122D209A82110027F83B = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
 					1A569885200F821500437867 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
@@ -2845,6 +3010,9 @@
 				1A365CFD2090B97800771520 /* VVGL_GLFW */,
 				1A365D0F2090B98000771520 /* VVISF_GLFW */,
 				1A23114C1E2D63C700B0EF84 /* ISFinGLFW */,
+				1A56120D209A81E90027F83B /* All-Mac */,
+				1A561211209A81F00027F83B /* All-iOS */,
+				1A56122D209A82110027F83B /* All-Mac-GLFW */,
 			);
 		};
 /* End PBXProject section */
@@ -3629,6 +3797,81 @@
 			target = 1A365D0F2090B98000771520 /* VVISF_GLFW */;
 			targetProxy = 1A5247B62091065D00F50E12 /* PBXContainerItemProxy */;
 		};
+		1A561216209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A10DDFA2090AD4A00771795 /* VVGL_Mac */;
+			targetProxy = 1A561215209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561218209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A901A041F4648C0009FEE74 /* BasicGLFunc */;
+			targetProxy = 1A561217209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A56121A209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A7CA9671F4742C70051F3D6 /* DifferingGLVersions */;
+			targetProxy = 1A561219209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A56121C209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1AD86D011F4EFB4300DEED3E /* GeoShaderTest */;
+			targetProxy = 1A56121B209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A56121E209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A569885200F821500437867 /* TransFeedbackTest */;
+			targetProxy = 1A56121D209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561220209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A5698C6201012C100437867 /* JustTransFeedback */;
+			targetProxy = 1A56121F209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561222209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A365CC02090B35C00771520 /* VVISF_Mac */;
+			targetProxy = 1A561221209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561224209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A6ED60F1F47A40A00227712 /* ISFFuncTest */;
+			targetProxy = 1A561223209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561226209A82030027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A023C8E1F2011AD004FFB3A /* ISF Editor */;
+			targetProxy = 1A561225209A82030027F83B /* PBXContainerItemProxy */;
+		};
+		1A561228209A82090027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1AE1776F1E2581BB00E978E5 /* VVGL_iOS */;
+			targetProxy = 1A561227209A82090027F83B /* PBXContainerItemProxy */;
+		};
+		1A56122A209A82090027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1AE177621E2581B500E978E5 /* VVISF_iOS */;
+			targetProxy = 1A561229209A82090027F83B /* PBXContainerItemProxy */;
+		};
+		1A56122C209A82090027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A4EEA4E1F17B75B00B6C3F4 /* ISFonIOS */;
+			targetProxy = 1A56122B209A82090027F83B /* PBXContainerItemProxy */;
+		};
+		1A561232209A821C0027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A365CFD2090B97800771520 /* VVGL_GLFW */;
+			targetProxy = 1A561231209A821C0027F83B /* PBXContainerItemProxy */;
+		};
+		1A561234209A821C0027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A365D0F2090B98000771520 /* VVISF_GLFW */;
+			targetProxy = 1A561233209A821C0027F83B /* PBXContainerItemProxy */;
+		};
+		1A561236209A821C0027F83B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A23114C1E2D63C700B0EF84 /* ISFinGLFW */;
+			targetProxy = 1A561235209A821C0027F83B /* PBXContainerItemProxy */;
+		};
 		1AE177A61E2581EA00E978E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1AE1776F1E2581BB00E978E5 /* VVGL_iOS */;
@@ -3747,7 +3990,7 @@
 				);
 				INFOPLIST_FILE = "ISF Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				OTHER_LDFLAGS = (
 					"-lcurl",
 					"-licucore",
@@ -3769,7 +4012,7 @@
 				);
 				INFOPLIST_FILE = "ISF Editor/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				OTHER_LDFLAGS = (
 					"-lcurl",
 					"-licucore",
@@ -3808,7 +4051,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SKIP_INSTALL = YES;
@@ -3846,7 +4089,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SKIP_INSTALL = YES;
@@ -3872,7 +4115,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GLFWGears;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3895,7 +4138,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GLFWGears;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -3930,7 +4173,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SKIP_INSTALL = YES;
@@ -3968,7 +4211,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SKIP_INSTALL = YES;
@@ -4014,7 +4257,7 @@
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
@@ -4061,7 +4304,7 @@
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
@@ -4108,7 +4351,7 @@
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SKIP_INSTALL = YES;
@@ -4154,7 +4397,7 @@
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../external/GLEW/mac_x86_64";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_GLFW";
+				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SKIP_INSTALL = YES;
@@ -4172,7 +4415,7 @@
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.ISFonIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -4189,12 +4432,60 @@
 				INFOPLIST_FILE = ISFonIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.ISFonIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1A56120F209A81E90027F83B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A561210209A81E90027F83B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1A561213209A81F00027F83B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A561214209A81F00027F83B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1A56122F209A82110027F83B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A561230209A82110027F83B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -4206,7 +4497,7 @@
 				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4220,7 +4511,7 @@
 				INFOPLIST_FILE = TransFeedbackTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.TransFeedbackTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4234,7 +4525,7 @@
 				INFOPLIST_FILE = JustTransFeedback/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4248,7 +4539,7 @@
 				INFOPLIST_FILE = JustTransFeedback/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.JustTransFeedback;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4262,7 +4553,7 @@
 				INFOPLIST_FILE = ISFFuncTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFFuncTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4276,7 +4567,7 @@
 				INFOPLIST_FILE = ISFFuncTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFFuncTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4290,7 +4581,7 @@
 				INFOPLIST_FILE = DifferingGLVersions/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.DifferingGLVersions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4304,7 +4595,7 @@
 				INFOPLIST_FILE = DifferingGLVersions/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.DifferingGLVersions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4318,7 +4609,7 @@
 				INFOPLIST_FILE = BasicGLFunc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.BasicGLFunc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4332,7 +4623,7 @@
 				INFOPLIST_FILE = BasicGLFunc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.BasicGLFunc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4450,7 +4741,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ISFSandbox/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4464,7 +4755,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ISFSandbox/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4478,7 +4769,7 @@
 				INFOPLIST_FILE = GeoShaderTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4492,7 +4783,7 @@
 				INFOPLIST_FILE = GeoShaderTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CFLAGS = "-DISF_SDK_MAC";
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GeoShaderTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4512,7 +4803,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SDKROOT = iphoneos;
@@ -4537,7 +4828,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = VVISF_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
 				PRODUCT_NAME = VVISF;
 				SDKROOT = iphoneos;
@@ -4563,7 +4854,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
@@ -4588,7 +4879,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = VVGL_map.modulemap;
-				OTHER_CFLAGS = "-DISF_SDK_IOS";
+				OTHER_CFLAGS = "-DVVGL_SDK_IOS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
 				PRODUCT_NAME = VVGL;
 				SDKROOT = iphoneos;
@@ -4662,6 +4953,33 @@
 			buildConfigurations = (
 				1A4EEA631F17B75B00B6C3F4 /* Debug */,
 				1A4EEA641F17B75B00B6C3F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A56120E209A81E90027F83B /* Build configuration list for PBXAggregateTarget "All-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A56120F209A81E90027F83B /* Debug */,
+				1A561210209A81E90027F83B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A561212209A81F00027F83B /* Build configuration list for PBXAggregateTarget "All-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A561213209A81F00027F83B /* Debug */,
+				1A561214209A81F00027F83B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A56122E209A82110027F83B /* Build configuration list for PBXAggregateTarget "All-Mac-GLFW" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A56122F209A82110027F83B /* Debug */,
+				1A561230209A82110027F83B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

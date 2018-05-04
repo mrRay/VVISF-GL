@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 		//	else if the shared context is using something newer than GL2
 		else if (sharedContext->version >= GLVersion_ES2)	{
 
-#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
+#if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 			string			vsString("\r\
 #version 330 core\r\
 in vec3		inXYZ;\r\
@@ -245,7 +245,7 @@ FragColor *= (1.-fadeVal);\r\
 				}
 		
 			});
-#endif	//	ISF_TARGETENV_GL3PLUS || ISF_TARGETENV_GLES3
+#endif	//	VVGL_TARGETENV_GL3PLUS || VVGL_TARGETENV_GLES3
 
 		}
 	}

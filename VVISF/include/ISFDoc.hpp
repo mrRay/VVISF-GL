@@ -25,8 +25,9 @@ class ISFScene;
 path, and during construction the ISF file is parsed and this class gets "filled in" completely.  
 this class doesn't do any GL work during construction- it's entirely CPU-based until a scene starts 
 using a doc to render.  for the most part, this class is immutable- the only notable exception is 
-that the ISFAttr instances in the various input arrays can be used to store values for the document.  
-even then, the contents of the arrays aren't changed- just the contents of the objects in the array.	*/
+that the ISFAttr instances in the various input arrays can be used to store values for the document 
+when a scene is rendering it.  even then, the contents of the arrays aren't changed- just the contents 
+of the objects in the array.	*/
 class VVISF_EXPORT ISFDoc	{
 	private:
 		recursive_mutex		propLock;

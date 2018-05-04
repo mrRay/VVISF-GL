@@ -2,7 +2,7 @@
 #define ISFScene_hpp
 
 #include "VVISF_Base.hpp"
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 
@@ -52,7 +52,7 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 
 		//	access to these vars should be restricted by the 'renderLock' var inherited from GLScene
 		//GLBufferRef		geoXYVBO = nullptr;
-#if !defined(ISF_TARGETENV_GLES)
+#if !defined(VVGL_TARGETENV_GLES)
 		GLBufferRef		vao = nullptr;
 #endif
 		GLBufferRef		vbo = nullptr;
@@ -137,7 +137,7 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		virtual void setFragmentShaderString(const string & n);
 
 	protected:
-#if !defined(ISF_TARGETENV_GLES)
+#if !defined(VVGL_TARGETENV_GLES)
 		inline GLBufferRef getVAO() const { return vao; }
 		inline void setVAO(const GLBufferRef & n) { vao = n; }
 #endif

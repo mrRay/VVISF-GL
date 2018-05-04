@@ -1,6 +1,6 @@
 #include "GLQtCtxWrapper.hpp"
 
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 
 #include <QOpenGLContext>
 #include <QSurface>
@@ -499,4 +499,4 @@ void GLQtCtxWrapper::makeCurrentIfNull()	{
 
 }
 
-#endif	//	ISF_SDK_QT
+#endif	//	VVGL_SDK_QT

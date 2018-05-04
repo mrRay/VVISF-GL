@@ -1,10 +1,10 @@
 #include "GLContext.hpp"
 
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 	#import <CoreGraphics/CoreGraphics.h>
 #endif
 
-#if defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_QT)
 	#include <QDebug>
 #endif
 
@@ -24,8 +24,8 @@ using namespace std;
 
 
 
-#if defined(ISF_SDK_MAC)
-#pragma mark ******************************************** ISF_SDK_MAC
+#if defined(VVGL_SDK_MAC)
+#pragma mark ******************************************** VVGL_SDK_MAC
 
 
 
@@ -281,8 +281,8 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_SDK_GLFW
-#elif defined(ISF_SDK_GLFW)
+#pragma mark ******************************************** VVGL_SDK_GLFW
+#elif defined(VVGL_SDK_GLFW)
 
 
 
@@ -386,8 +386,8 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_SDK_RPI
-#elif defined(ISF_SDK_RPI)
+#pragma mark ******************************************** VVGL_SDK_RPI
+#elif defined(VVGL_SDK_RPI)
 
 
 
@@ -521,8 +521,8 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 
-#pragma mark ******************************************** ISF_SDK_QT
-#elif defined(ISF_SDK_QT)
+#pragma mark ******************************************** VVGL_SDK_QT
+#elif defined(VVGL_SDK_QT)
 
 
 
@@ -714,7 +714,7 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 
 
 
-#endif	//	ISF_SDK_QT
+#endif	//	VVGL_SDK_QT
 
 
 
@@ -726,10 +726,10 @@ ostream & operator<<(ostream & os, const GLContext * n)	{
 void GLContext::calculateVersion()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
-#if defined(ISF_SDK_MAC) || defined(ISF_SDK_IOS) || defined(ISF_SDK_RPI) || defined(ISF_SDK_QT)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI) || defined(VVGL_SDK_QT)
 	if (ctx == nullptr)
 		return;
-#elif defined(ISF_SDK_GLFW)
+#elif defined(VVGL_SDK_GLFW)
 	if (win == nullptr)
 		return;
 #endif

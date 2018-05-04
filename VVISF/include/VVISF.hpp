@@ -3,7 +3,7 @@
 
 
 
-
+//	base SDK defines.  
 #include "VVISF_Base.hpp"
 
 #include "ISFAttr.hpp"

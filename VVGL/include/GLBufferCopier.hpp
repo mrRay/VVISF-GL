@@ -5,7 +5,7 @@
 
 #include "GLScene.hpp"
 
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
 
@@ -28,9 +28,9 @@ class VVGL_EXPORT GLBufferCopier : public GLScene	{
 		//GLBufferRef	geoXYVBO = nullptr;
 		//GLBufferRef	geoSTVBO = nullptr;
 		
-#if defined(ISF_TARGETENV_GL3PLUS) || defined(ISF_TARGETENV_GLES3)
+#if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 		GLBufferRef	vao = nullptr;	//	"owns" its own VBO, used to draw stuff if we're in GL 3
-#elif defined(ISF_TARGETENV_GLES)
+#elif defined(VVGL_TARGETENV_GLES)
 		GLBufferRef	vbo = nullptr;	//	geometry + tex coords, used to draw stuff if we're in GL ES
 #endif
 		Quad<VertXYZST>		vboContents;	//	the VBO owned by 'vao' or the VBO 'vbo' is described by this var.  we check this, and if there's a delta the vao has to make a new vbo/'vbo' has to update its contents

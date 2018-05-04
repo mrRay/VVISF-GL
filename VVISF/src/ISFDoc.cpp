@@ -303,11 +303,11 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !defined(ISF_SDK_RPI)
+#if !defined(VVGL_SDK_RPI)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -318,11 +318,11 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !defined(ISF_SDK_RPI)
+#if !defined(VVGL_SDK_RPI)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -333,11 +333,11 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
-#if !defined(ISF_SDK_RPI)
+#if !defined(VVGL_SDK_RPI)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 				returnMe.append("C");
 #endif
@@ -347,11 +347,11 @@ string ISFDoc::generateTextureTypeString()	{
 		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
-#if !defined(ISF_SDK_RPI)
+#if !defined(VVGL_SDK_RPI)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
@@ -360,11 +360,11 @@ string ISFDoc::generateTextureTypeString()	{
 		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
-#if defined(ISF_SDK_MAC)
+#if defined(VVGL_SDK_MAC)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
-#if !defined(ISF_SDK_RPI)
+#if !defined(VVGL_SDK_RPI)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Cube)
 			returnMe.append("C");
 #endif
