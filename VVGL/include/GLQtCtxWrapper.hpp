@@ -24,8 +24,15 @@ and make this PIMPL idiom to contain and manipulate the underlying Qt GL context
 namespace VVGL	{
 
 
+using namespace std;
+
+
 //	forward declaration for a struct that will hold the Qt GL stuff so their #includes don't conflict with GLEW
 struct GLQtCtxHidden;
+
+
+class GLQtCtxWrapper;
+using GLQtCtxWrapperRef = shared_ptr<GLQtCtxWrapper>;
 
 
 class VVGL_EXPORT GLQtCtxWrapper	{
@@ -54,7 +61,7 @@ public:
 	//	copy constructors- these do NOT create new GL contexts, they merely copy/retain the GL contexts from the passed var
 	GLQtCtxWrapper(const GLQtCtxWrapper * n);
 	GLQtCtxWrapper(const GLQtCtxWrapper & n);
-	GLQtCtxWrapper(const std::shared_ptr<GLQtCtxWrapper> & n);
+	GLQtCtxWrapper(const GLQtCtxWrapperRef & n);
 
 public:
 	void setShareContext(QOpenGLContext * inCtx);

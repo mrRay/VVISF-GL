@@ -24,10 +24,17 @@ using namespace std;
 
 
 
+/*!
+\ingroup VVGL_BASIC
+\brief Manages drawing in a GLContext, provides a simple interface for orthographic rendering and render-to-texture operations.
+
+\detail A GLScene is a container for a GL context that lets you provide various callbacks which are executed when the scene is rendered.  The interface is geared towards making it easy to load frag/vert/geo shaders, perform orthographic projection, providing customized drawing code, subclassing, and rendering to textures/buffers/GLBuffers.  Used as a subclass of several other classes, also used in sample apps to perform GL rendering and output.
+*/
+
 class VVGL_EXPORT GLScene	{
 	//	objects/structs/data types
 	public:
-		//	this defines the interface for declaring a lambda as a member variable for encapsulating drawing code
+		//!	This defines the interface for declaring a lambda as a member variable for encapsulating drawing code
 		using RenderCallback = std::function<void(const GLScene &)>;
 		using RenderPrepCallback = std::function<void(const GLScene &, const bool & sceneReshaped, const bool & pgmChanged)>;
 		
@@ -58,17 +65,20 @@ class VVGL_EXPORT GLScene	{
 		bool				needsReshape = true;
 		bool				alwaysNeedsReshape = false;
 		
-		RenderPrepCallback		renderPrepCallback = nullptr;	//	every time the scene is doing its render prep, this lambda is executed.  drawing setup code goes here.
-		RenderCallback		renderPreLinkCallback = nullptr;	//	this callback gets hit immediately before the program is linked (after the shaders have been compiled & attached to the program, but before the program was linked).
-		RenderCallback		renderCallback = nullptr;	//	every time the scene renders, this lambda is executed.  drawing code goes here.
+		//	every time the scene is doing its render prep, this lambda is executed.  drawing setup code goes here.
+		RenderPrepCallback		renderPrepCallback = nullptr;
+		//	this callback gets hit immediately before the program is linked (after the shaders have been compiled & attached to the program, but before the program was linked).
+		RenderCallback		renderPreLinkCallback = nullptr;
+		//	every time the scene renders, this lambda is executed.  drawing code goes here.
+		RenderCallback		renderCallback = nullptr;
 		RenderCallback		renderCleanupCallback = nullptr;
-		RenderTarget		renderTarget;	//	the render target contains the GL framebuffer and relevant attachments (render to texture/buffer/depth buffer/etc)
+		//	the render target contains the GL framebuffer and relevant attachments (render to texture/buffer/depth buffer/etc)
+		RenderTarget		renderTarget;
 		
 		//	these vars pertain to optional default orthogonal sizing, which i use a lot for compositing/drawing 2D UIs with GL- if 'orthoUniId' is >= 0 then the vertex shader will create an orthogonal projection matrix of size 'orthoSize' and incorporating 'orthoFlipped'
 		Size				orthoSize = { 0., 0. };
 		bool				orthoFlipped = false;
-		GLCachedUni		orthoUni = GLCachedUni("vvglOrthoProj");
-		//int32_t				orthoUniLoc = -1;
+		GLCachedUni			orthoUni = GLCachedUni("vvglOrthoProj");
 		
 		//	these vars pertain to whether or not the scene clears the attached framebuffer before drawing (and what color is used to clear)
 		bool				performClear = true;
@@ -93,12 +103,11 @@ class VVGL_EXPORT GLScene	{
 	
 	//	functions
 	public:
-		//	creates a new GL context that shares the global buffer pool's context
+		//!	Creates a new OpenGL context that shares the global buffer pool's context
 		GLScene();
-		//	uses the passed context- doesn't create any new GL contexts (just retains what was passed to it)
+		//!	Creates a new GLScene instance, but not a new OpenGL context- instead it uses the passed GLContext.
 		GLScene(const GLContextRef & inCtx);
 		
-		//GLScene(const GLContext * inSharedCtx, const Size & inSize={640.,480.});
 		virtual ~GLScene();
 		
 		virtual void prepareToBeDeleted();

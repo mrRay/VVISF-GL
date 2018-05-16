@@ -315,7 +315,6 @@ bool GLBufferCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	{
 	
 	setOrthoSize(copyAndResize ? copySize : b->srcRect.size);
 	
-	bool				returnMe = true;
 	//	create a render target using the buffers i'm rendering into
 	renderTarget = RenderTarget(CreateFBO(), b, nullptr);
 	
@@ -346,7 +345,7 @@ bool GLBufferCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	{
 	//	clear out the render target
 	renderTarget = RenderTarget();
 	
-	return returnMe;
+	return true;
 	
 	
 }
@@ -674,16 +673,16 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 		GLERRLOG
 		/*
 		float			verts[] = {
-			(float)MinX(inDstRect), (float)MinY(inDstRect), 0.0,
-			(float)MaxX(inDstRect), (float)MinY(inDstRect), 0.0,
-			(float)MaxX(inDstRect), (float)MaxY(inDstRect), 0.0,
-			(float)MinX(inDstRect), (float)MaxY(inDstRect), 0.0
+			(float)inDstRect.minX(), (float)inDstRect.minY(), 0.0,
+			(float)inDstRect.maxX(), (float)inDstRect.minY(), 0.0,
+			(float)inDstRect.maxX(), (float)inDstRect.maxY(), 0.0,
+			(float)inDstRect.minX(), (float)inDstRect.maxY(), 0.0
 		};
 		float			texs[] = {
-			(float)MinX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
-			(float)MaxX(inGLSrcRect), (flipped) ? (float)MaxY(inGLSrcRect) : (float)MinY(inGLSrcRect),
-			(float)MaxX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect),
-			(float)MinX(inGLSrcRect), (flipped) ? (float)MinY(inGLSrcRect) : (float)MaxY(inGLSrcRect)
+			(float)inGLSrcRect.minX(), (flipped) ? (float)inGLSrcRect.maxY() : (float)inGLSrcRect.minY(),
+			(float)inGLSrcRect.maxX(), (flipped) ? (float)inGLSrcRect.maxY() : (float)inGLSrcRect.minY(),
+			(float)inGLSrcRect.maxX(), (flipped) ? (float)inGLSrcRect.minY() : (float)inGLSrcRect.maxY(),
+			(float)inGLSrcRect.minX(), (flipped) ? (float)inGLSrcRect.minY() : (float)inGLSrcRect.maxY()
 		};
 		*/
 		glEnableClientState(GL_VERTEX_ARRAY);

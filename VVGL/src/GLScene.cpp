@@ -746,10 +746,10 @@ void GLScene::_reshape()	{
 					//	calculate the orthographic projection transform for a viewport with the given size
 					Rect		tmpRect(0., 0., orthoSize.width, orthoSize.height);
 					//cout << "\treshaping with orthogonal rect " << tmpRect << endl;
-					float		right = MaxX(tmpRect);
-					float		left = MinX(tmpRect);
-					float		top = MaxY(tmpRect);
-					float		bottom = MinY(tmpRect);
+					float		right = tmpRect.maxX();
+					float		left = tmpRect.minX();
+					float		top = tmpRect.maxY();
+					float		bottom = tmpRect.minY();
 					float		near = -1.;
 					float		far = 1.;
 					GLfloat		projMatrix[] = {

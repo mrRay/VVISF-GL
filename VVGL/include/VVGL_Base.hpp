@@ -10,6 +10,12 @@
 #include "VVGL_Range.hpp"
 #include "VVGL_StringUtils.hpp"
 
+/*!
+\file 
+*/
+
+
+
 
 namespace VVGL
 {
@@ -27,18 +33,52 @@ class GLScene;
 struct GLCachedAttrib;
 struct GLCachedUni;
 
+/*!
+\brief	Very common- GLBufferRef is a shared pointer around a GLBuffer.
+\relates VVGL::GLBuffer
 
-//	VERY COMMON.  GLBufferRef is a shared pointer to an GLBuffer.  this is how you should store and refer to GLBuffers- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resources aren't duplicated.  working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use.  if you need to create another instance of a given GLBufferRef (copying the accompanying GL resource), you should use GLBufferCopy().
+\detail	This is the preferred means of working with GLBuffer- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resource will not be duplicated.  Working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use (and when the class instance is deleted, its corresponding GL resource will either be deleted or pooled).
+*/
 using GLBufferRef = shared_ptr<GLBuffer>;
+/*!
+\brief A GLBufferPoolRef is a shared pointer around a GLBufferPool.
+\relates VVGL::GLBufferPool
+*/
 using GLBufferPoolRef = shared_ptr<GLBufferPool>;
+/*!
+\brief A GLBufferCopierRef is a shared pointer around a GLBufferCopier.
+\relates VVGL::GLBufferCopier
+*/
 using GLBufferCopierRef = shared_ptr<GLBufferCopier>;
+
+/*!
+\brief A GLContextRef is a shared pointer around a GLContext.
+\relates VVGL::GLContext
+*/
 using GLContextRef = shared_ptr<GLContext>;
+/*!
+\brief	A GLSceneRef is a shared pointer around a GLScene.
+\relates VVGL::GLScene
+*/
 using GLSceneRef = shared_ptr<GLScene>;
+/*!
+\brief	A GLCachedAttribRef is a shared pointer around a GLCachedAttrib.
+\relates VVGL::GLCachedAttrib
+*/
 using GLCachedAttribRef = shared_ptr<GLCachedAttrib>;
+/*!
+\brief	A GLCachedUniRef is a shared pointer around a GLCachedUni.
+\relates VVGL::GLCachedUni
+*/
 using GLCachedUniRef = shared_ptr<GLCachedUni>;
 
 
-//	this enum is used to describe the GL environment of a GL context
+
+
+/*!
+\ingroup VVGL_BASIC
+\brief	This enum is used to describe the GL environment of a GL context, which is determined at runtime.
+*/
 enum GLVersion	{
 	GLVersion_Unknown,
 	GLVersion_2,
@@ -48,10 +88,19 @@ enum GLVersion	{
 	GLVersion_33,
 	GLVersion_4
 };
+/*!
+\ingroup VVGL_BASIC
+\brief Returns a std::string describing the passed GLVersion.
+*/
 inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return string("Unknown"); case GLVersion_2: return string("2"); case GLVersion_ES: return string("ES"); case GLVersion_ES2: return string("ES2"); case GLVersion_ES3: return string("ES3"); case GLVersion_33: return string("3.3"); case GLVersion_4: return string("4"); default: return string("???"); } return string("err"); }
 
 
-//	this struct defines a GL color
+
+
+/*!
+\ingroup VVGL_BASIC
+\brief This struct describes an RGBA color.
+*/
 struct GLColor	{
 	float		r = 0.0;
 	float		g = 0.0;

@@ -22,7 +22,7 @@ using namespace std;
 	class ISFDoc;
 	//	ISFPassTargetRef is a shared pointer to an ISFPassTarget- this is what you should use
 	class ISFPassTarget;
-	using ISFPassTargetRef = std::shared_ptr<ISFPassTarget>;
+	//using ISFPassTargetRef = std::shared_ptr<ISFPassTarget>;
 	
 	
 	

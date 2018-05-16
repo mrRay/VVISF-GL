@@ -54,6 +54,9 @@ enum ISFFileType	{
 };
 #define ISFFileType_All (ISFFileType_Source | ISFFileType_Filter | ISFFileType_Transition)
 
+//	creates a string describing the ISFFileType
+string ISFFileTypeString(const ISFFileType & n);
+
 //	YOU MUST DELETE THE OBJECTS RETURNED BY THESE FUNCTIONS.  these functions are used to verify and discover ISFs in your filesystem
 //vector<string> * CreateArrayOfISFsForPath(const string & inPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
 //vector<string> * CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
@@ -61,8 +64,6 @@ shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath,
 shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
 //	returns a true if the passed file is probably an ISF file
 bool FileIsProbablyAnISF(const string & pathToFile);
-//	creates a string describing the ISFFileType
-string ISFFileTypeString(const ISFFileType & n);
 
 
 

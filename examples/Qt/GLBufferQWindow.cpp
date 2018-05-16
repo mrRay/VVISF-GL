@@ -303,7 +303,7 @@ else\r\
 				if (bufferToDraw == nullptr)
 					return;
 				//cout << "\tbufferToDraw is " << bufferToDraw->getDescriptionString() << endl;
-				//	try to get the VAO.  if the VAO's null, create it and store it in the VVGLBufferGLView as an ivar. 
+				//	try to get the VAO.  if the VAO's null, create it and store it in the GLBufferQWindow as an ivar. 
 				if (vao == nullptr)	{
 					GLBufferPoolRef		bp = (bufferToDraw==nullptr) ? nullptr : bufferToDraw->parentBufferPool;
 					if (bp != nullptr)	{

@@ -611,10 +611,10 @@ void ISFScene::_setUpRenderCallback()	{
 		glDisableClientState(GL_COLOR_ARRAY);
 		GLERRLOG
 		float				verts[] = {
-			(float)MinX(tmpRect), (float)MinY(tmpRect), 0.0,
-			(float)MinX(tmpRect), (float)MaxY(tmpRect), 0.0,
-			(float)MaxX(tmpRect), (float)MaxY(tmpRect), 0.0,
-			(float)MaxX(tmpRect), (float)MinY(tmpRect), 0.0
+			(float)tmpRect.minX(), (float)tmpRect.minY(), 0.0,
+			(float)tmpRect.minX(), (float)tmpRect.maxY(), 0.0,
+			(float)tmpRect.maxX(), (float)tmpRect.maxY(), 0.0,
+			(float)tmpRect.maxX(), (float)tmpRect.minY(), 0.0
 		};
 		glVertexPointer(3, GL_FLOAT, 0, verts);
 		GLERRLOG
@@ -622,10 +622,10 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 #elif defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI)
 		GLfloat			geoCoords[] = {
-			(GLfloat)MinX(tmpRect), (GLfloat)MinY(tmpRect),
-			(GLfloat)MaxX(tmpRect), (GLfloat)MinY(tmpRect),
-			(GLfloat)MinX(tmpRect), (GLfloat)MaxY(tmpRect),
-			(GLfloat)MaxX(tmpRect), (GLfloat)MaxY(tmpRect)
+			(GLfloat)tmpRect.minX(), (GLfloat)tmpRect.minY(),
+			(GLfloat)tmpRect.maxX(), (GLfloat)tmpRect.minY(),
+			(GLfloat)tmpRect.minX(), (GLfloat)tmpRect.maxY(),
+			(GLfloat)tmpRect.maxX(), (GLfloat)tmpRect.maxY()
 		};
 		if (vertexAttrib.loc >= 0)	{
 			glEnableVertexAttribArray(vertexAttrib.loc);

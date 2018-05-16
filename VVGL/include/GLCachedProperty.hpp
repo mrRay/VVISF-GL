@@ -21,10 +21,13 @@ using namespace std;
 
 
 
-/*	a lot of GL "objects" are numbers that we have to keep track of, so this is an abstract base 
-class for an object that will cache the location of any arbitrary GL object in a given program along 
-with a string that can be used to identify it.  the goal of the cache is to eliminate the need to 
-repeatedly query the GL context for the location of attributes/uniforms/other things like that.				*/
+/*!
+\ingroup VVGL_MISC
+\brief Abstract base class that caches the location of an arbitrary GL "object" that we do not own.
+
+\detail A lot of GL "objects" are numbers that we have to keep track of (but not assume ownership of), so this is an abstract base class for an object that will cache the location of any arbitrary GL object in a given program along with a string that can be used to identify it.  the goal of the cache is to eliminate the need to repeatedly query the GL context for the location of attributes/uniforms/other things like that.
+
+Under most circumstances you'll probably want to use one of its concrete subclasses, GLCachedAttrib or GLCachedProperty.  Under most circumstances you'll also probably want to be using Refs (GLCachedAttribRef or GLCachedPropertyRef) because they're easier to maintain than multiple instances and can be copied by value in lambdas while stil referring to the same underlying instance.  				*/
 
 struct VVGL_EXPORT GLCachedProperty	{
 	//	these vars are public and that's technically not safe, but practically speaking this works out because everything GL-related has to be serialized such that access is one-context-per-thread anyway...
@@ -37,8 +40,7 @@ struct VVGL_EXPORT GLCachedProperty	{
 		GLCachedProperty(const string & inName);
 		GLCachedProperty(const GLCachedProperty & n) : loc(n.loc), name(n.name), prog(n.prog) {}
 	public:
-		//	a valid GL context must be current before you call this function.
-		//	pure virtual function, subclasses *must* implement this.  this is where the GL stuff specific to the subclass happens.
+		//	pure virtual function, subclasses *must* implement this.  this is where the GL stuff specific to the subclass happens.  a valid GL context *must* be current before you call this function.
 		virtual void cacheTheLoc(const int32_t & inPgmToCheck) = 0;
 		inline void purgeCache() { loc=-1; prog=-1; }
 	public:

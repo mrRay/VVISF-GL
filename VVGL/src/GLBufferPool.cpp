@@ -986,7 +986,7 @@ GLBufferRef CreateDepthBuffer(const Size & size, const bool & inCreateInCurrentC
 	return returnMe;
 }
 
-GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const int32_t & inTexTarget, const int32_t & inTexIntFmt, const int32_t & inTexPxlFmt, const int32_t & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const GLBuffer::Target & inTexTarget, const GLBuffer::InternalFormat & inTexIntFmt, const GLBuffer::PixelFormat & inTexPxlFmt, const GLBuffer::PixelType & inTexPxlType, const Size & inTexSize, const bool & inTexFlipped, const Rect & inImgRectInTex, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
 	GLBufferRef		returnMe = make_shared<GLBuffer>();
 	returnMe->desc.type = GLBuffer::Type_Tex;
 	returnMe->desc.target = static_cast<GLBuffer::Target>(inTexTarget);
@@ -1149,7 +1149,7 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 	desc.pixelFormat = GLBuffer::PF_BGRA;
 	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.cpuBackingType = GLBuffer::Backing_None;
 	desc.gpuBackingType = GLBuffer::Backing_Internal;
 	desc.texRangeFlag = false;
 	desc.texClientStorageFlag = true;

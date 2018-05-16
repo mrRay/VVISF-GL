@@ -31,22 +31,22 @@ enum ISFValType	{
 string ISFValTypeString(const ISFValType & n);
 inline bool ISFValTypeUsesImage(const ISFValType & n) { return (n==ISFValType_Cube || n==ISFValType_Image || n==ISFValType_Audio || n==ISFValType_AudioFFT); }
 
-//	this union stores the value of an ISFVal (the member of the union used depends on the ISFVal's 'type' member)
-union ISFValUnion {
-	bool		boolVal;
-	int32_t		longVal;
-	double		floatVal;
-	double		pointVal[2];
-	double		colorVal[4];
-};
 
 
 //	ISFVal is the base struct- it defines a type, a contains a union with the value for the type
 struct ISFVal	{
 	private:
+		//	this union stores the value of an ISFVal (the member of the union used depends on the ISFVal's 'type' member)
+		union ISFValUnion {
+			bool		boolVal;
+			int32_t		longVal;
+			double		floatVal;
+			double		pointVal[2];
+			double		colorVal[4];
+		};
 		ISFValType		type = ISFValType_None;
 		ISFValUnion		val = { false };
-		GLBufferRef	imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
+		GLBufferRef		imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
 	
 	public:
 		//	constructor methods

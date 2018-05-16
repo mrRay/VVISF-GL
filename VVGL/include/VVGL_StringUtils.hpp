@@ -16,8 +16,6 @@ namespace VVGL
 using namespace std;
 
 
-
-
 //	functions for doing some basic path manipulation
 VVGL_EXPORT vector<string> PathComponents(const string & n);
 VVGL_EXPORT string LastPathComponent(const string & n);

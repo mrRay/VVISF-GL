@@ -403,17 +403,17 @@ void GLBuffer::draw(const Rect & dst) const	{
 #if defined(VVGL_SDK_MAC)
 	//inCtx.makeCurrentIfNotCurrent();
 	float			verts[] = {
-		(float)MinX(dst), (float)MinY(dst), 0.0,
-		(float)MaxX(dst), (float)MinY(dst), 0.0,
-		(float)MaxX(dst), (float)MaxY(dst), 0.0,
-		(float)MinX(dst), (float)MaxY(dst), 0.0
+		(float)dst.minX(), (float)dst.minY(), 0.0,
+		(float)dst.maxX(), (float)dst.minY(), 0.0,
+		(float)dst.maxX(), (float)dst.maxY(), 0.0,
+		(float)dst.minX(), (float)dst.maxY(), 0.0
 	};
 	Rect			src = glReadySrcRect();
 	float			texs[] = {
-		(float)MinX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
-		(float)MaxX(src), (flipped) ? (float)MaxY(src) : (float)MinY(src),
-		(float)MaxX(src), (flipped) ? (float)MinY(src) : (float)MaxY(src),
-		(float)MinX(src), (flipped) ? (float)MinY(src) : (float)MaxY(src)
+		(float)src.minX(), (flipped) ? (float)src.maxY() : (float)src.minY(),
+		(float)src.maxX(), (flipped) ? (float)src.maxY() : (float)src.minY(),
+		(float)src.maxX(), (flipped) ? (float)src.minY() : (float)src.maxY(),
+		(float)src.minX(), (flipped) ? (float)src.minY() : (float)src.maxY()
 	};
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);

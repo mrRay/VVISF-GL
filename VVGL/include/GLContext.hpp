@@ -50,31 +50,71 @@ namespace VVGL
 using namespace std;
 
 
-
-
 #if defined(VVGL_SDK_MAC)
+/*!
+\relatesalso GLContext
+\brief Returns an OpenGL display mask that covers all visible screens
+*/
 uint32_t GLDisplayMaskForAllScreens();
+/*!
+\relatesalso GLContext
+\brief Creates a pixel format using the system's default OpenGL context settings (compatibility).
+*/
 CGLPixelFormatObj CreateDefaultPixelFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a pixel format using the system's OpenGL compatibility settings.
+*/
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a pixel format using the OpenGL 3, if possible.
+*/
 CGLPixelFormatObj CreateGL3PixelFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a pixel format using the OpenGL 4 profile, if possible.
+*/
 CGLPixelFormatObj CreateGL4PixelFormat();
 #elif defined(VVGL_SDK_QT)
+/*!
+\relatesalso GLContext
+\brief Creates a surface format describing the default OpenGL surface settings for this platform.
+*/
 VVGL_EXPORT QSurfaceFormat CreateDefaultSurfaceFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a surface format describing the compatibility profile of OpenGL for this platform.
+*/
 VVGL_EXPORT QSurfaceFormat CreateCompatibilityGLSurfaceFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a surface format describing the OpenGL 3 profile for this platform.
+*/
 VVGL_EXPORT QSurfaceFormat CreateGL3SurfaceFormat();
+/*!
+\relatesalso GLContext
+\brief Creates a surface format describing the OpenGL 4 profile for this platform.
+*/
 VVGL_EXPORT QSurfaceFormat CreateGL4SurfaceFormat();
 #endif
 
 
 
 
-/*		GLContext is an attempt to make a platform/SDK-agnostic representation of an OpenGL context.  
-this is useful if you want to perform common functions on a GL context (setting the current context, 
-making another context in the same sharegroup), but you don't want to have to write any platform-specific code.
+/*!
+\ingroup VVGL_BASIC
 
-if you're porting VVGL to another platform, one of the first things you need to do is to make a 
-new VVGL_TARGETENV_XXXX macro, and use that macro to add your platform's GL implementation to this class.  
-you should be able to following along pretty well here using the other platforms as an example.			*/
+\brief GLContext is an attempt to make a platform/SDK-agnostic representation of an OpenGL context.
+
+\detail GLContext is a OpenGL context- this class wraps up whatever the native object is for whatever platform/SDK you're compiling against, and presents a single standard interface across all platforms for the rest of VVGL and any libs that derive from it.  You can create a GLContext around an existing platform-specific OpenGL context, and you can also create new OpenGL contexts by making a new instance of GLContext.  Has explicit support for sharing of multiple contexts so resources (textures, models, etc) can be shared between contexts.
+
+Notes:
+- GLContext can be constructed around an existing OpenGL context, or it can create its own OpenGL context.
+- You should strive whenever possible to work with #GLContextRef instead of GLContext.
+- If you want to create a GLContext, you should try using one of the non-member creation functions listed on this page.  These functions return a #GLContextRef instead of just a GLContext, and their function names are slightly more verbose and descriptive than GLContext's constructors.
+- The specific constructor (or create functions) for creating a GLContext is going to depend on the SDK you're working with, because they generally require some sort of platform- or SDK-specific object or pointer to a native GL context.
+*/
 class VVGL_EXPORT GLContext	{
 	public:
 		
@@ -98,6 +138,7 @@ class VVGL_EXPORT GLContext	{
 		QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
 		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
 #endif
+		//!	The version of OpenGL this context is using.
 		GLVersion			version = GLVersion_Unknown;
 		
 		
@@ -154,14 +195,20 @@ class VVGL_EXPORT GLContext	{
 		//GLContext * allocNewContextSharingMe() const;
 		//	creates a new GL context, but returned variable doesn't have to be freed
 		//GLContext newContextSharingMe() const;
+		
+		//!	Creates a new OpenGL context in the same sharegroup as the receiver.
 		GLContextRef newContextSharingMe() const;
 		
 		~GLContext();
 		
+		//!	Makes this GL context current.
 		void makeCurrent();
+		//!	Makes this GL context current if it isn't already current.
 		void makeCurrentIfNotCurrent();
+		//!	Makes this GL context current if no context is current.
 		void makeCurrentIfNull();
 		
+		//!	Returns a true if the passed context is in the same sharegroup as the receiver.
 		bool sameShareGroupAs(const GLContextRef & inCtx);
 #if defined(VVGL_SDK_MAC)
 		bool sameShareGroupAs(const CGLContextObj & inCtx);
@@ -173,31 +220,63 @@ class VVGL_EXPORT GLContext	{
 };
 
 
-
 //	these creation functions are the preferred way of making GLContext instances.  they're just more human-readable than make_shared<GLContext>(constructor args).
 #if defined(VVGL_SDK_MAC)
-	//	doesn't create any GL resources, just retains the passed GL resources
+	/*!
+	\relatesalso GLContext
+	\brief Doesn't create any GL resources, just makes a new GLContext instnace that retains the passed objects.
+	*/
 	inline GLContextRef CreateGLContextRefUsing(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inCtx, inShareCtx, inPxlFmt); }
-	//	creates a GL context using the passed pixel format and share context
+	/*!
+	\relatesalso GLContext
+	\brief Creates a new GL context using the passed pixel format and share context.
+	*/
 	inline GLContextRef CreateNewGLContextRef(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat()) { return make_shared<GLContext>(inShareCtx, inPxlFmt); }
 #elif defined(VVGL_SDK_IOS)
-	//	doesn't create any GL resources, just retains the passed GL context.
+	/*!
+	\relatesalso GLContext
+	\brief Doesn't create any GL resources, just makew a new GLContext instance that retains the passed objects.
+	*/
 	inline GLContextRef CreateGLContextRefUsing(const void * inEAGLContext) { return make_shared<GLContext>(inEAGLContext); }
 #elif defined(VVGL_SDK_GLFW)
-	//	doesn't create any GL resources, just 
+	/*!
+	\relatesalso GLContext
+	\brief Doesn't create any GL resources, just makes a new GLContext instance around the OpenGL context in the passed window.
+	*/
 	inline GLContextRef CreateGLContextRefUsing(GLFWwindow * inWindow) { return make_shared<GLContext>(inWindow); }
 #elif defined(VVGL_SDK_RPI)
+	/*!
+	\relatesalso GLContext
+	\brief Doesn't create any GL resources, just makes a new GLContext instance around the passed EGLContext.
+	*/
 	inline GLContextRef CreateGLContextRefUsing(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx, EGLContext inCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx, inCtx); }
+	/*!
+	\relatesalso GLContext
+	\brief Makes a new OpenGL context and GLContext instance.
+	*/
 	inline GLContextRef CreateNewGLContextRef(EGLDisplay inDisplay, EGLSurface inWinSurface, EGLContext inSharedCtx) { return make_shared<GLContext>(inDisplay, inWinSurface, inSharedCtx); }
 #elif defined(VVGL_SDK_QT)
-	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
-	//	no GL context is created, instead a weak ref is created to 'inCtx', which must not be null.  the surface format is read from the passed context.
+	/*!
+	\relatesalso GLContext
+	\brief Doesn't create any GL resources, just makes a new GLContext instance using the passed resources
+	\param inTargetSurface If null, a QOffscreenSurface will be created.  If non-null (a widget or window or etc), we just store a weak ref to the passed surface.
+	\param inCtx Must be non-null.  A weak ref is made to this context- the GLContext instance that is created is basically just a wrapper around this context.
+	\param inSfcFmt The surface format describes what kind of OpenGL environment you want to work with.  The QSurfaceFormat can be created using one of the Create****SurfaceFormat() functions listed in this document.
+	*/
 	inline GLContextRef CreateGLContextRefUsing(QSurface * inTargetSurface, QOpenGLContext * inCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inCtx, false, inSfcFmt); }
-	//	if 'inTargetSurface' is null, a QOffscreenSurface will be created.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
-	//	creates a new GL context.  'inShareCtx' can be nil.
+	/*!
+	\relatesalso GLContext
+	\brief Creates a new OpenGL context and GLContext instance.
+	\param inTargetSurface If null, a QOffscreenSurface will be created.  If non-null (a widget or window or etc), we just store a weak ref to the passed surface.
+	\param inShareCtx The OpenGL context that gets created will be in the same sharegroup as this context.
+	\param inSfcFmt The surface format describes what kind of OpenGL environment you want to work with.  The QSurfaceFormat can be created using one of the Create****SurfaceFormat() functions listed in this document.
+	*/
 	inline GLContextRef CreateNewGLContextRef(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
 #endif
-	//	creates a generic GL context
+	/*!
+	\relatesalso GLContext
+	\brief Creates a generic OpenGL context and GLContext instance using whatever the default settings are for this platform and SDK.
+	*/
 	inline GLContextRef CreateNewGLContextRef() { return make_shared<GLContext>(); }
 
 

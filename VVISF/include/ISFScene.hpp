@@ -19,7 +19,7 @@ using namespace std;
 
 
 class ISFScene;
-using ISFSceneRef = shared_ptr<ISFScene>;
+//using ISFSceneRef = shared_ptr<ISFScene>;
 
 
 

@@ -68,9 +68,4 @@ Rect ResizeRect(const Rect & fitThisRect, const Rect & inThisRect, const SizingM
 
 
 
-
-
-
-
-
 }

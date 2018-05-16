@@ -436,7 +436,7 @@ GLQtCtxWrapper::GLQtCtxWrapper(const GLQtCtxWrapper & n)	{
 		delete hidden;
 	hidden = new GLQtCtxHidden(n.hidden);
 }
-GLQtCtxWrapper::GLQtCtxWrapper(const std::shared_ptr<GLQtCtxWrapper> & n)	{
+GLQtCtxWrapper::GLQtCtxWrapper(const GLQtCtxWrapperRef & n)	{
 	if (hidden != nullptr)
 		delete hidden;
 	if (n == nullptr)

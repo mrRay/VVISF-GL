@@ -124,18 +124,18 @@ int main(int argc, char *argv[])	{
 		tmpRect.size = s.getOrthoSize();
 		//cout << "\tverts rect is " << tmpRect << endl;
 		float			verts[] = {
-			(float)MinX(tmpRect), (float)MinY(tmpRect), 0.0,
-			(float)MinX(tmpRect), (float)MaxY(tmpRect), 0.0,
-			(float)MaxX(tmpRect), (float)MaxY(tmpRect), 0.0,
-			(float)MaxX(tmpRect), (float)MinY(tmpRect), 0.0
+			(float)tmpRect.minX(), (float)tmpRect.minY(), 0.0,
+			(float)tmpRect.minX(), (float)tmpRect.maxY(), 0.0,
+			(float)tmpRect.maxX(), (float)tmpRect.maxY(), 0.0,
+			(float)tmpRect.maxX(), (float)tmpRect.minY(), 0.0
 		};
 		tmpRect = targetTex->glReadySrcRect();
 		//cout << "\ttex coords are " << tmpRect << endl;
 		float			texs[] = {
-			(float)MinX(tmpRect), (float)MinY(tmpRect),
-			(float)MinX(tmpRect), (float)MaxY(tmpRect),
-			(float)MaxX(tmpRect), (float)MaxY(tmpRect),
-			(float)MaxX(tmpRect), (float)MinY(tmpRect),
+			(float)tmpRect.minX(), (float)tmpRect.minY(),
+			(float)tmpRect.minX(), (float)tmpRect.maxY(),
+			(float)tmpRect.maxX(), (float)tmpRect.maxY(),
+			(float)tmpRect.maxX(), (float)tmpRect.minY(),
 		};
 		glVertexPointer(3, GL_FLOAT, 0, verts);
 		glTexCoordPointer(2, GL_FLOAT, 0, texs);
