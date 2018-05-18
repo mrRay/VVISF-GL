@@ -27,6 +27,7 @@ void GLCachedProperty::cacheTheLoc(const int32_t & inPgmToCheck)	{
 
 
 
+
 void GLCachedAttrib::cacheTheLoc(const int32_t & inPgmToCheck)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPgmToCheck < 0)	{

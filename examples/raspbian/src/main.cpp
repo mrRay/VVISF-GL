@@ -44,6 +44,7 @@ int main(int argc, const char *argv[])	{
 	VVGLContextRef			baseCtx = make_shared<VVGLContext>(dm.eglDisplay, dm.eglWinSurface, EGL_NO_CONTEXT, dm.eglCtx);
 	//	make the global buffer pool
 	cout << "\tmaking global buffer pool...\n";
+	//	the global buffer pool will use the shared context to create any GL resources
 	CreateGlobalBufferPool(baseCtx);
 	
 	

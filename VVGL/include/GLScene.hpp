@@ -26,31 +26,49 @@ using namespace std;
 
 /*!
 \ingroup VVGL_BASIC
-\brief Manages drawing in a GLContext, provides a simple interface for orthographic rendering and render-to-texture operations.
+\brief Manages drawing in a GLContext, provides a simple interface for orthographic rendering, render-to-texture operations, and loading vert/geo/frag shaders.
 
-\detail A GLScene is a container for a GL context that lets you provide various callbacks which are executed when the scene is rendered.  The interface is geared towards making it easy to load frag/vert/geo shaders, perform orthographic projection, providing customized drawing code, subclassing, and rendering to textures/buffers/GLBuffers.  Used as a subclass of several other classes, also used in sample apps to perform GL rendering and output.
+\detail A GLScene is a container for a GL context that lets you provide various callbacks which are executed at specific times during rendering.  The interface is geared towards making it easy to load frag/vert/geo shaders, perform orthographic projection, providing customized drawing code, subclassing, and rendering to textures/buffers/GLBuffers.  Used as a subclass of several other classes, also used in sample apps to perform GL rendering and output.
 */
 
 class VVGL_EXPORT GLScene	{
 	//	objects/structs/data types
 	public:
-		//!	This defines the interface for declaring a lambda as a member variable for encapsulating drawing code
-		using RenderCallback = std::function<void(const GLScene &)>;
-		using RenderPrepCallback = std::function<void(const GLScene &, const bool & sceneReshaped, const bool & pgmChanged)>;
+		/*!
+		\brief	This defines the interface for a function/lambda that is used for encapsulating user-provided drawing code.  Both the render callback and the render cleanup callback use this type.
+		\param inScene The scene executing the callback.
+		*/
+		using RenderCallback = std::function<void(const GLScene & inScene)>;
+		/*!
+		\brief This defines the interface for the render prep callback, which is executed prior to the render callback.
+		\param inScene The scene executing the callback.
+		\param inSceneReshaped True if the scene has been reshaped (if orthographic projection has been enabled/disabled or if the orthographic size changed).
+		\param inPgmChanged True if the program has changed (if one of the shaders has been modified)
+		*/
+		using RenderPrepCallback = std::function<void(const GLScene & inScene, const bool & inSceneReshaped, const bool & inPgmChanged)>;
 		
-		//	RenderTarget has all the attachments for the GL framebuffer, which need to be tracked so we can bind/unbind appropriately
+		//!	RenderTarget member vars are used to provide attachments for the GL framebuffer.  These buffers need to be tracked so they can be bound/unbound appropriately, which is what this structure is for.
 		struct RenderTarget	{
+				//!	Must be Type_FBO
 				GLBufferRef	fbo = nullptr;
+				//!	Probably Type_Tex, but anything that will function as a color attachment will work
 				GLBufferRef	color = nullptr;
+				//!	Probably Type_Tex, but anything that will function as a depth attachment will work
 				GLBufferRef	depth = nullptr;
 			public:
 				RenderTarget(){};
+				//!	Preferred constructor, populates all three attachments at once
 				RenderTarget(const GLBufferRef &f, const GLBufferRef &c, const GLBufferRef &d) { fbo=f;color=c;depth=d; };
-		
+				
+				//!	Returns the name of the FBO (or 0 if there's no FBO)
 				inline uint32_t fboName() const { return (fbo==nullptr) ? 0 : fbo->name; };
+				//!	Returns the name of the buffer/texture to be used as the color attachment (returns 0 if there's no color attachment)
 				inline uint32_t colorName() const { return (color==nullptr) ? 0 : color->name; };
+				//!	Returns the texture target of the buffer/texture to be used as the color attachment.
 				inline uint32_t colorTarget() const { return (color==nullptr) ? GL_TEXTURE_2D : color->desc.target; };
+				//!	Returns the name of the buffer/texture to be used as the depth attachment (returns 0 if there's no depth attachment)
 				inline uint32_t depthName() const { return (depth==nullptr) ? 0 : depth->name; };
+				//!	Returns the texture target of the buffer/texture to be used as the depth attachment.
 				inline uint32_t depthTarget() const { return (depth==nullptr) ? GL_TEXTURE_2D : depth->desc.target; };
 		};
 	
@@ -112,56 +130,138 @@ class VVGL_EXPORT GLScene	{
 		
 		virtual void prepareToBeDeleted();
 		
+		/*!
+		\name Render functions
+		\brief These functions cause the scene to render.
+		*/
+		///@{
+		
+		//!	Creates an 8 bit per channel GL texture, uses it as a color attachment to the GL context and then renders into it.  Calls setOrthoSize() with the size of the image in the passed buffer.
 		virtual GLBufferRef createAndRenderABuffer(const Size & inSize=Size(640.,480.), const GLBufferPoolRef & inPool=GetGlobalBufferPool());
+		//!	Uses the passed buffer as a color attachment to the GL context and then renders into it.  Calls setOrthoSize() with the size of the image in the passed buffer.
 		virtual void renderToBuffer(const GLBufferRef & inBuffer);
+		//!	Renders the GL scene, uses whatever attachments are present in the passed RenderTarget.  Doesn't call setOrthoSize() before rendering!
 		virtual void render(const RenderTarget & inRenderTarget=RenderTarget());
+		//!	Makes the scene render transparent black into whatever attachments are present in the passed RenderTarget.
 		virtual void renderBlackFrame(const RenderTarget & inRenderTarget=RenderTarget());
+		//!	Makes the scene render opaque black into whatever attachments are present in the passed RenderTarget.
 		virtual void renderOpaqueBlackFrame(const RenderTarget & inRenderTarget=RenderTarget());
+		//!	Makes the scene render opaque red into whatever attachments are present in the passed RenderTarget.
 		virtual void renderRedFrame(const RenderTarget & inRenderTarget=RenderTarget());
 		
+		///@}
+		
+		
+		//!	Returns the context used by this scene.
 		inline GLContextRef getContext() const { return context; }
 		
-		//	getters/setters for the (optional) callbacks
-		void setRenderPrepCallback(const RenderPrepCallback & n);
+		
+		/*!
+		\name Callback setup functions
+		\brief These functions set the functions or lambdas to be executed at various stages during rendering.
+		*/
+		///@{
+		
+		//!	The render pre-link callback is executed if there's a shader after the shader/shaders have been successfully compiled, but before they've been linked.  Procedurally, this is the first callback to execute.  You probably don't want to perform any draw calls in this callback- this is a good time to configure your geometry shader.
 		void setRenderPreLinkCallback(const RenderCallback & n);
+		//!	The render prep callback is executed after any shaders have been compiled and linked, after the attachments have been made, and after the framebuffer has been cleared (assuming the scene is configured to perform a clear).  Procedurally, this is the second callback to execute, and the last to execute before draw calls are expected.  You probably don't want to perform any draw calls in this callback- this is a good time to do any ancillary setup outside of this scene that needs to occur before drawing begins.
+		void setRenderPrepCallback(const RenderPrepCallback & n);
+		//!	The render callback is expected to contain the drawing code that you want the scene to perform.  Procedurally, this is the third callback to execute.
 		void setRenderCallback(const RenderCallback & n);
+		//!	The render cleanup callback is executed immediately after the render callback.  Procedurally, this is the fourth and final callback to execute as a result of a render call.  You probably don't want to perform any draw calls in this callback- the context has already been flushed and there isn't a framebuffer any more.  This is a good time to do any ancillary teardown outside of this scene that needs to occur before you finish and return execution to whatever started rendering.
 		void setRenderCleanupCallback(const RenderCallback & n);
 		
-		//	getters/setters for orthogonal projection
-		void setAlwaysNeedsReshape(const bool & n);
-		virtual void setOrthoSize(const Size & n);
-		Size getOrthoSize() const;
-		void setOrthoFlipped(const bool & n);
-		bool getOrthoFlipped() const;
+		///@}
 		
-		//	setters for clear color
+		
+		/*!
+		\name Viewport/camera setup
+		\brief These functions configure orthogonal projection- GLScene was primarily written for 2d orthogonal rendering.
+		*/
+		///@{
+		
+		//!	Defaults to false.  If set to true, the viewport and orthogonal projection setup is applied every single frame (GL2 uses glOrtho, GL3+ uses a 4x4 matrix uniform in the shader to pass a projection transform to the program).  You can leave this false unless you plan on modifying the viewport or equivalent of projection matrices in your callbacks.
+		void setAlwaysNeedsReshape(const bool & n);
+		//!	Sets the orthogonal render size.  If the size is 0x0 then orthogonal rendering is skipped- any other positive values will cause the scene to configure itself for orthographic projection at the passed size during rendering.
+		virtual void setOrthoSize(const Size & n);
+		//!	Gets the orthogonal render size.  If the size is 0x0 then orthogonal rendering is disabled.
+		Size getOrthoSize() const;
+		//!	The orthoFlipped member variable defaults to false- if it's set to true, the orthographic projection or equivalent will be flipped vertically.
+		void setOrthoFlipped(const bool & n);
+		//!	Gets the value of the orthoFlipped member variable.  If this is true, the orthographic projection or equivalent will be flipped vertically.
+		bool getOrthoFlipped() const;
+		///@}
+		
+		
+		/*!
+		\name Clear color setup
+		\brief These functions configure whether or not the scene will clear prior to rendering, and what color it will use to clear.
+		*/
+		///@{
+		
+		//!	Sets the clear color to the passed color.
 		void setClearColor(const GLColor & n);
+		//!	Sets the color color using the passed float values.
 		void setClearColor(const float & r, const float & g, const float & b, const float & a);
+		//!	Sets the clear color using a pointer to enough memory to contain four float values.
 		void setClearColor(float * n);
+		//!	Sets the 'performClear' member variable.  If it's true (the default) the context will clear to its clear color prior to drawing.  The clear is performed before the render prep callback.
 		void setPerformClear(const bool & n);
 		
+		///@}
+		
+		
 		//	getters/setters for program stuff
+		/*!
+		\name Shader setup
+		\brief These functions get and set the various shaders this scene uses to render.
+		*/
+		///@{
+		
+		//!	Sets the vertex shader string.
 		virtual void setVertexShaderString(const string & n);
+		//!	Gets the vertex shader string.
 		virtual string getVertexShaderString();
+		//!	Sets the geometry shader string.
 		virtual void setGeometryShaderString(const string & n);
+		//!	Gets the geometry shader string.
 		virtual string getGeometryShaderString();
+		//!	Sets the fragment shader string.
 		virtual void setFragmentShaderString(const string & n);
+		//!	Gets the fragment shader string.
 		virtual string getFragmentShaderString();
+		//!	Gets the program ID.
 		inline uint32_t getProgram() const { return program; }
 		
+		///@}
+		
+		
+		//!	Returns the version of OpenGL currently being used by this scene's GL context.
 		inline GLVersion getGLVersion() const { if (context==nullptr) return GLVersion_Unknown; return context->version; }
 		
 	protected:
-		virtual void _renderPrep();	//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
-		virtual void _initialize();	//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
-		virtual void _reshape();	//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
-		virtual void _renderCleanup();	//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
+		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
+		virtual void _renderPrep();
+		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
+		virtual void _initialize();
+		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
+		virtual void _reshape();
+		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.
+		virtual void _renderCleanup();
 };
 
 
 
 
+/*!
+\relatedalso GLScene
+\brief Creates and returns a GLScene.  The scene makes a new GL context which shares the context of the global buffer pool.
+*/
 inline GLSceneRef CreateGLSceneRef() { return make_shared<GLScene>(); }
+/*!
+\relatedalso GLScene
+\brief Creates and returns a GLScene.  The scene uses the passed GL context to do its drawing.
+*/
 inline GLSceneRef CreateGLSceneRefUsing(const GLContextRef & inCtx) { return make_shared<GLScene>(inCtx); }
 
 

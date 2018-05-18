@@ -20,7 +20,7 @@ namespace VVGL
 
 /*!
 \ingroup VVGL_BASIC
-\brief Copies the contents of one GLBuffer to another.
+\brief Copies the contents of one GLBuffer to another, capable of basic resizing.
 
 \detail This object copies the image data in a GLBuffer by drawing it while another GLBuffer is bound as the render target.  This performs GL rendering- GLBufferCopier is a subclass of GLScene, so it has a GL context it can use.  If you require GLBufferCopier to use an existing GLContext to draw, use the constructor that accepts a GLContextRef (much like the GLScene constructor with the same signature)
 */

@@ -4,12 +4,96 @@
 
 
 
+/*!
+\defgroup VVGL_SAMPLE VVGL- Sample code
+
+A variety of sample projects that include libs and apps are included with the repos, but some sample code snippets for common or introductory actions in VVGL are listed here as a quick overview:
+
+<BR>
+Creating a new GLContext from an existing GLContext (all SDKs)
+\code{.cpp}
+GLContextRef		origCtx;	//	this is assumed to be non-nil in the real world...
+GLContextRef		newCtx = origCtx->newContextSharingMe();
+\endcode
+
+Creating a new GLContext- simplest approach, but least control over the kind of context that gets created
+\code{.cpp}
+GLContextRef		newCtx = CreateNewGLContextRef();
+\endcode
+
+Creating GLContext with the mac SDK:
+\code{.cpp}
+NSOpenGLContext		*origMacCtx;	//	this is assumed to be non-nil in the real world...
+CGLContextObj		tmpMacCtx = [origMacCtx CGLContextObj];
+CGLPixelFormatObj	tmpMacPxlFmt = [[origMacCtx pixelFormat] CGLPixelFormatObj];
+
+//	this makes a GLContext that wraps (and retains) an existing mac context (doesn't create a new OpenGL context)
+GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpMacCtx, tmpMacCtx, tmpMacPxlFmt);
+
+//	this makes a GLContext that creates a new OpenGL context.  this new context shares the passed context (they can share resources)
+GLContextRef		vvglCtx = CreateNewGLContextRef(tmpMacCtx, tmpMacPxlFmt);
+
+//	if you don't have an existing mac context- like if you're creating the first context...
+
+//	this makes a GLContext (and new OpenGL context) using the compatibility version of GL (GL 2.1 on os x)
+GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
+
+//	this makes a GLContext (and new OpenGL context) using GL4
+GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
+\endcode
+
+Creating GLContext with the iOS SDK:
+\code{.cpp}
+EAGLContext			*tmpCtx;	//	this is assumed to be non-nil in the real world...
+
+//	this makes a GLContext that wraps (and retains) an existing iOS context (doesn't create a new OpenGL context)
+GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpCtx);
+\endcode
+
+Creating GLContext with the GLFW SDK:
+\code{.cpp}
+GLFWwindow *	window;	//	this is assumed to be non-nil in the real world...
+
+//	this makes a GLContext that wraps the window's GL context (doesn't create a new OpenGL context)
+GLContextRef	ctxRef = CreateGLContextRefUsing(window);
+\endcode
+
+Creating GLContext with the Qt SDK:
+\code{.cpp}
+QSurface *			origSfc;	//	this is assumed to be non-nil in the real world...
+QOpenGLContext *	origCtx;	//	this is assumed to be non-nil in the real world...
+QSurfaceFormat		origSfcFmt;	//	this is assumed to be non-nil in the real world...
+
+//	this makes a GLContext that wraps and establishes a strong ref to the passed vars (doesn't create a new OpenGL context)
+GLContextRef		vvglCtx = CreateGLContextRefUsing(origSfc, origCtx, origSfcFmt);
+
+//	this makes a GLContext that creates a new OpenGL context.  this new context shares the passed context (they can share resources)
+GLContextRef		vvglCtx = CreateNewGLContextRef(origSfc, origCtx, origSfcFmt);
+\endcode
+
+
+<BR>
+Creating the global buffer pool
+\code{.cpp}
+//	first create a shared context using one of the above methods (this is just a quick example)
+GLContextRef		sharedContext = CreateNewGLContextRef();
+
+//	make the global buffer pool- this line creates the global buffer pool using the shared context (the buffer pool will use the shared context's OpenGL context to create or destroy any GL resources).
+CreateGlobalBufferPool(sharedContext);
+
+//	make the global buffer pool- this is the same function call, but it creates a new context (a new OpenGL context) for the buffer pool.
+CreateGlobalBufferPool(sharedContext->newContextSharingMe());
+\endcode
+
+
+
+*/
 
 
 
 
 /*!
-\defgroup VVGL_BASIC VVGL Basics
+\defgroup VVGL_BASIC VVGL- Basic Classes
 
 \brief These are the basic objects used by VVGL for GL rendering
 
@@ -20,30 +104,18 @@
 	- VVGL::GLBufferPool creates GLBuffers- it also pools many types of GLBuffers, which offers substantial performance improvements over creating/deleting textures repeatedly.  You'll probably create a single global buffer pool when setting up your app's GL environment, but there's no hard limit on the number of pools you can create (different pools for different GL environments in the same app, for example).
 	- VVGL::GLBufferCopier copies the contents of one GLBuffer into another GLBuffer.
 
-Sample Code for making a global buffer pool using a shared context:
-\code{.cpp}
-//	make a shared context- this example just makes a simple GL context, you can wrap a GLContext 
-//	around an existing platform-specific OpenGL context or use one of the various 
-//	platform-specific functions to create an OpenGL context that meets your requirements.
-GLContextRef		sharedContext = CreateNewGLContextRef();
 
-//	make the global buffer pool.  if there's a global buffer pool, calls to create 
-//	textures/etc will be shorter and the API will be easier to use.
-CreateGlobalBufferPool(sharedContext);
-
-//	at this point, the global buffer pool exists, and can be used to create 
-//	buffers/textures/etc.  This line creates a 320x240 RGBA texture:
-GLBufferRef			rgbaTexture = CreateRGBATex(VVGL::Size(320,240));
-\endcode
-
-Sample code for XXXXX
 */
 
 
 
 
+
+
+
+
 /*!
-\defgroup VVGL_BUFFERCREATE GLBuffer creation functions
+\defgroup VVGL_BUFFERCREATE VVGL- GLBuffer create functions
 \brief GLBuffer creation functions
 
 \detail These functions create GLBuffer instances.  Note that these functions all require a GLBufferPool- you need to create a buffer pool before you can create any buffers!
@@ -52,23 +124,12 @@ Sample code for XXXXX
 
 
 
-/*!
-\defgroup VVGL_MISC Other VVGL Objects
-
-\brief Some of the less frequently encountered classes in VVGL- this is the stuff you'll probably be less likely to run into or have to work with if you're here because you just want to get to the ISF goodies.
-
-\detail
-	- VVGL::Range
-	- VVGL::Timestamp and VVGL::Timestamper
-	- There are some basic geometric primitives defined in \ref VVGL_GEOM
-	- VVGL::GLCachedProperty, VVGL::GLCachedAttrib and VVGL::GLCachedUni
-*/
 
 
 
 
 /*!
-\defgroup VVGL_GEOM VVGL Geometry
+\defgroup VVGL_GEOM VVGL- Geometry
 
 \brief These are some basic structs used to describe geometry in VVGL and VVISF.
 
@@ -94,6 +155,25 @@ Additionally, VVGL has a couple structs that can be used to populate OpenGL buff
 		- VVGL::VertXYZRGBA
 		- VVGL::VertXYZSTRGBA
 	- The template class VVGL::Quad describes a rectangular quadrilateral.  The vertices of the rect are derived from VVGL::Vertex.
+*/
+
+
+
+
+
+
+
+
+/*!
+\defgroup VVGL_MISC VVGL- other classes
+
+\brief Some of the less frequently encountered classes in VVGL- this is the stuff you'll probably be less likely to run into or have to work with if you're here because you just want to get to the ISF goodies.
+
+\detail
+	- VVGL::Range
+	- VVGL::Timestamp and VVGL::Timestamper
+	- There are some basic geometric primitives defined in \ref VVGL_GEOM
+	- VVGL::GLCachedProperty, VVGL::GLCachedAttrib and VVGL::GLCachedUni
 */
 
 

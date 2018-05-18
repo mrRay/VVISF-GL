@@ -102,9 +102,13 @@ inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case G
 \brief This struct describes an RGBA color.
 */
 struct GLColor	{
+	//!	The red component.
 	float		r = 0.0;
+	//!	The green component.
 	float		g = 0.0;
+	//!	The blue component.
 	float		b = 0.0;
+	//!	The alpha component.
 	float		a = 0.0;
 	GLColor() {}
 	GLColor(const float & inR, const float & inG, const float & inB, const float & inA) { r=inR;g=inG;b=inB;a=inA; };

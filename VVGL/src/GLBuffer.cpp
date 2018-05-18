@@ -435,6 +435,7 @@ string GLBuffer::getDescriptionString() const	{
 	//	return string("nullptr");
 	char		typeChar = '?';
 	switch (this->desc.type)	{
+	case GLBuffer::Type_CPU:	typeChar='C'; break;
 	case GLBuffer::Type_RB:	typeChar='R'; break;
 	case GLBuffer::Type_FBO:	typeChar='F'; break;
 	case GLBuffer::Type_Tex:	typeChar='T'; break;

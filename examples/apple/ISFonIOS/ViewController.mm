@@ -15,7 +15,7 @@
 		baseCtx = CreateGLContextRefUsing(tmpCtx);
 		[tmpCtx release];
 		
-		//	make the global buffer pool, have it share the base context
+		//	make the global buffer pool, have it use the base context
 		CreateGlobalBufferPool(baseCtx);
 		
 		//	make the ISFScene

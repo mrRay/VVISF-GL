@@ -21,7 +21,7 @@
 		//sharedContext = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 		sharedContext = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 		
-		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.
+		//	make the global buffer pool.  if there's a global buffer pool, calls to create textures/etc will be shorter.  the global buffer pool will use the shared context to create any GL resources
 		CreateGlobalBufferPool(sharedContext);
 		
 		feedbackScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());

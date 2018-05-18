@@ -98,7 +98,7 @@
 		NSString		*glVersString = [NSString stringWithUTF8String:GLVersionToString(sharedContext->version).c_str()];
 		NSLog(@"\t\tbasic gl version is %@",glVersString);
 		
-		
+		//	the global buffer pool will use the shared context to create any GL resources
 		CreateGlobalBufferPool(sharedContext);
 		
 		/*

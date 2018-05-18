@@ -65,7 +65,8 @@ using namespace VVGL;
 			[glVersPUB selectItemWithTag:4];
 			break;
 		}
-	
+		
+		//	the global buffer pool will use the shared context to create any GL resources
 		CreateGlobalBufferPool(sharedContext);
 		
 		//	make an NSImage from the PNG included with the app, create a GLBufferRef from it

@@ -37,11 +37,12 @@ static GLBufferPoolRef _nullGlobalBufferPool = nullptr;
 #pragma mark --------------------- constructor/destructor
 
 
-GLBufferPool::GLBufferPool(const GLContextRef & inShareCtx)	{
+GLBufferPool::GLBufferPool(const GLContextRef & inCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	//cout << "\tpassed ctx was " << inShareCtx << endl;
+	//cout << "\tpassed ctx was " << inCtx << endl;
 	//context = (inShareCtx==nullptr) ? new GLContext() : new GLContext(inShareCtx);
-	context = (inShareCtx==nullptr) ? CreateNewGLContextRef() : inShareCtx->newContextSharingMe();
+	//context = (inShareCtx==nullptr) ? CreateNewGLContextRef() : inShareCtx->newContextSharingMe();
+	context = (inCtx==nullptr) ? CreateNewGLContextRef() : inCtx;
 	//cout << "\tcontext is " << *context << endl;
 	//cout << "\tmy ctx is " << context << endl;
 	freeBuffers.reserve(50);
@@ -157,6 +158,8 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	
 	//	create the GL resources, populating the buffer descriptor where appropriate
 	switch (d.type)	{
+	case GLBuffer::Type_CPU:
+		break;
 	case GLBuffer::Type_RB:
 		//	generate the renderbuffer
 		glGenRenderbuffers(1, &(returnMe->name));
@@ -453,6 +456,7 @@ GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & d
 			case GLBuffer::Type_FBO:
 				sizeIsOK = true;
 				break;
+			case GLBuffer::Type_CPU:
 			case GLBuffer::Type_RB:
 			case GLBuffer::Type_Tex:
 			case GLBuffer::Type_PBO:
@@ -610,6 +614,8 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 	context->makeCurrentIfNotCurrent();
 	
 	switch (inBuffer->desc.type)	{
+	case GLBuffer::Type_CPU:
+		break;
 	case GLBuffer::Type_RB:
 		glDeleteRenderbuffers(1, &inBuffer->name);
 		GLERRLOG
@@ -667,10 +673,10 @@ GLBufferPoolRef CreateGlobalBufferPool(const GLContext * inShareCtx)	{
 	return returnMe;
 }
 */
-GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inShareCtx)	{
+GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inShareCtx);
+	GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inPoolCtx);
 	if (_globalBufferPool != nullptr)	{
 		delete _globalBufferPool;
 		_globalBufferPool = nullptr;
@@ -699,7 +705,7 @@ const GLBufferPoolRef & GetGlobalBufferPool()	{
 
 
 /*	========================================	*/
-#pragma mark --------------------- buffer creation methods
+#pragma mark --------------------- non-image buffer creation methods
 
 
 GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
@@ -866,6 +872,184 @@ GLBufferRef CreateVAO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 #endif
 }
 
+
+/*	========================================	*/
+#pragma mark --------------------- renderbuffer creation methods
+
+
+GLBufferRef CreateRB(const Size & size, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_RB;
+	desc.target = GLBuffer::Target_2D;
+#if !defined(VVGL_SDK_RPI)
+	desc.internalFormat = GLBuffer::IF_Depth24;
+#else
+	desc.internalFormat = GLBuffer::IF_Depth16;
+#endif
+	desc.pixelFormat = GLBuffer::PF_Depth;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- CPU-only buffer creation methods
+
+
+GLBufferRef CreateRGBACPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	//desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+GLBufferRef CreateRGBAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA32F;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRACPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	//desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA32F;
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+
+
+/*	========================================	*/
+#pragma mark --------------------- texture buffer creation methods
+
+
 GLBufferRef CreateRGBATex(const Size & size, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
@@ -877,11 +1061,13 @@ GLBufferRef CreateRGBATex(const Size & size, const bool & inCreateInCurrentConte
 	desc.target = GLBuffer::Target_2D;
 #if defined(VVGL_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
 #else
 	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
 #endif
 	desc.pixelFormat = GLBuffer::PF_RGBA;
-	desc.pixelType = GLBuffer::PT_UByte;
+	//desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_None;
 	desc.gpuBackingType = GLBuffer::Backing_Internal;
 	desc.texRangeFlag = false;
@@ -915,35 +1101,6 @@ GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & inCreateInCurrent
 #endif
 	//desc.pixelFormat = GLBuffer::PF_RGBA;
 	//desc.pixelType = GLBuffer::PT_Float;
-	desc.cpuBackingType = GLBuffer::Backing_None;
-	desc.gpuBackingType = GLBuffer::Backing_Internal;
-	desc.texRangeFlag = false;
-	desc.texClientStorageFlag = false;
-	desc.msAmount = 0;
-	desc.localSurfaceID = 0;
-	
-	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
-	returnMe->parentBufferPool = inPoolRef;
-	
-	return returnMe;
-}
-GLBufferRef CreateRB(const Size & size, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	
-	if (inPoolRef == nullptr)
-		return nullptr;
-	
-	GLBuffer::Descriptor	desc;
-	
-	desc.type = GLBuffer::Type_RB;
-	desc.target = GLBuffer::Target_2D;
-#if !defined(VVGL_SDK_RPI)
-	desc.internalFormat = GLBuffer::IF_Depth24;
-#else
-	desc.internalFormat = GLBuffer::IF_Depth16;
-#endif
-	desc.pixelFormat = GLBuffer::PF_Depth;
-	desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_None;
 	desc.gpuBackingType = GLBuffer::Backing_Internal;
 	desc.texRangeFlag = false;
@@ -1072,7 +1229,121 @@ GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & inCreateInCurrent
 	
 	return returnMe;
 }
+
+
+/*	========================================	*/
+#pragma mark --------------------- CPU-backed texture buffer creation methods
+
+
 #if !defined(VVGL_SDK_RPI)
+GLBufferRef CreateRGBACPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor		desc;
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	//desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = true;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe != nullptr)
+		return returnMe;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, createInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+GLBufferRef CreateRGBAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor		desc;
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.internalFormat = GLBuffer::IF_RGBA32F;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = true;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe != nullptr)
+		return returnMe;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, createInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRACPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor		desc;
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	//desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_Internal;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = true;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe != nullptr)
+		return returnMe;
+	
+	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+	returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, createInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	returnMe->backingID = GLBuffer::BackingID_Pixels;
+	returnMe->backingContext = bufferMemory;
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		free(inReleaseContext);
+	};
+	
+	return returnMe;
+}
 GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -1108,6 +1379,12 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 }
 #endif	//	!VVGL_SDK_RPI
 #endif	//	!VVGL_SDK_IOS
+
+
+
+
+/*	========================================	*/
+#pragma mark --------------------- image file buffer creation methods
 
 
 

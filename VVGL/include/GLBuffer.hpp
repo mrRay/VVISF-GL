@@ -20,13 +20,13 @@ using namespace std;
 
 /*!
 \ingroup VVGL_BASIC
-\brief Representation of a GL resource of some sort- most commonly a texture, but can also be other kinds of buffers (render buffers, VBOs, EBOs, FBO, etc).
+\brief Representation of a GL resource of some sort- most commonly an OpenGL texture, but can also be other kinds of buffers (render buffers, VBOs, EBOs, FBO, etc).
 
-\detail Many GL objects- like buffers and textures- need to be explicitly created and deleted.  All these GL calls can get tedious and overwhelming as the scale and complexity of a GL project increases- particularly if these resources need to be safely shared between contexts.  GLBuffer is an attempt to simplify that by using the lifetime of an instance of GLBuffer to govern the lifetime of the underlying GL resource- when the GLBuffer is deallocated, its underlying GL resource is returned to the GLBufferPool which created it, where it is either deleted or recycled back in the pool.
+\detail Many GL objects- like buffers and textures- need to be explicitly created and deleted via gl* function calls.  All these GL calls can get tedious and overwhelming as the scale and complexity of a GL project increases- particularly if these resources need to be safely shared between contexts.  GLBuffer is an attempt to simplify that by using the lifetime of an instance of the GLBuffer class to govern the lifetime of the underlying GL resource- when the GLBuffer instance is deallocated, its underlying GL resource is returned to the GLBufferPool which created it, where it is either deleted or recycled for later use.
 
-Notes:
-- You should strive to work almost exclusively with #GLBufferRef, which is a std::shared_ptr around a GLBuffer.
-- You shouldn't try to create a GLBuffer/GLBufferRef directly- instead, you should use one of the \ref VVGL_BUFFERCREATE.
+Notes on use:
+- You should strive to work almost exclusively with #GLBufferRef, which is a std::shared_ptr around a GLBuffer.  This allows multiple objects to establish strong references to the same underlying GPU resource.
+- You can't just create a GLBuffer/GLBufferRef directly via its constructor- instead, you need to use one of the creation functions listed in (\ref VVGL_BUFFERCREATE).  For more information, check out the documentation for GLBufferPool.
 - Most vars are public for ease of access- instances of the GLBuffer class should be treated for the most part as read-only (member vars are populated when the underlying GL resource is created).  The only stuff you'd realistically want to change are the 'srcRect' and 'flipped' member vars.
 */
 class VVGL_EXPORT GLBuffer	{
@@ -38,6 +38,8 @@ class VVGL_EXPORT GLBuffer	{
 		
 		//!	Describes the several different kinds of GLBuffers
 		enum Type	{
+			//!	CPU-only buffer
+			Type_CPU,
 			//!	Renderbuffer
 			Type_RB,
 			//!	FBO
@@ -73,9 +75,9 @@ class VVGL_EXPORT GLBuffer	{
 		\brief Indicates the relationship this buffer has with its backing
 		*/
 		enum Backing	{
-			Backing_None,	//!<	there is no resource
-			Backing_Internal,	//!<	the resource was created by this framework (and should be deleted by this framework)
-			Backing_External	//!<	the resource was created outside of this framework, and this buffer should be freed immediately when done
+			Backing_None,	//!<	There is no resource
+			Backing_Internal,	//!<	The resource was created by this framework (and should be deleted by this framework)
+			Backing_External	//!<	The resource was created outside of this framework, and will also be freed outside of this framework.  this buffer will probably be freed immediately (not pooled).
 		};
 		
 		
@@ -186,6 +188,7 @@ class VVGL_EXPORT GLBuffer	{
 	
 	//	public methods
 	public:
+		GLBuffer(GLBuffer &&) = default;
 		GLBuffer() = default;
 		GLBuffer(GLBufferPoolRef inParentPool);
 		GLBuffer(const GLBuffer &);

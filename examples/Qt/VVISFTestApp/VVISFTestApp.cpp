@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
 	GLContextRef		sharedContext = CreateNewGLContextRef(nullptr, nullptr, sfcFmt);
 	
-	//	make the global buffer pool, tell it to share the shared context.  you need a pool to release, allocate, and recycle GL resources.
+	//	make the global buffer pool, tell it to share the shared context.  you need a pool to release, allocate, and recycle GL resources.  this global buffer pool will use the shared context to create any GL resources
 	CreateGlobalBufferPool(sharedContext);
 	
 	//	make the window, open it

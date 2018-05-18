@@ -22,7 +22,7 @@ using namespace std;
 \ingroup VVGL_MISC
 \brief Struct describing a timevalue as the quotient of two numbers, a value (64-bit unsigned int) and a scale factor (32-bit int).
 
-\detail GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame
+\detail GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
 */
 struct Timestamp	{
 	uint64_t	value=0;
@@ -44,6 +44,12 @@ struct Timestamp	{
 
 
 //	Timestamper class- vends timestamps for buffers
+/*!
+\ingroup VVGL_MISC
+\brief Class that vends Timestamp structs
+
+\detail GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
+*/
 class Timestamper	{
 	private:
 		chrono::time_point<chrono::high_resolution_clock>		stampStartTime;
@@ -51,8 +57,10 @@ class Timestamper	{
 	public:
 		Timestamper(const Timestamper & n) = default;
 		Timestamper() { reset(); }
+		//!	Sets the timescale of the timestamps vended by the receiver.
 		inline void setTimescale(const intmax_t & n) { timescale=n; }
-		inline Timestamp nowTime() const { using namespace chrono; return Timestamp((uint64_t)duration_cast<microseconds>(high_resolution_clock::now()-stampStartTime).count()/(1000000/600), 600); }
+		//!	Returns a Time
+		inline Timestamp nowTime() const { using namespace chrono; return Timestamp((uint64_t)duration_cast<microseconds>(high_resolution_clock::now()-stampStartTime).count()/(1000000/timescale), timescale); }
 		inline void reset() { stampStartTime = chrono::high_resolution_clock::now(); };
 };
 

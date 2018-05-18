@@ -101,7 +101,7 @@ int main(int argc, char *argv[])	{
 	
 	//	wrap the window's GL context with a GLContext, which we're going to use to create a couple other resources
 	GLContextRef	ctxRef = CreateGLContextRefUsing(window);
-	//	first make the buffer pool.  this is a separate GL context.
+	//	the global buffer pool will use the shared context to create any GL resources
 	CreateGlobalBufferPool(ctxRef);
 	
 	//	now create the display scene (this is what we're going to use to draw into the GLFWwindow)

@@ -9,6 +9,7 @@
 		//sharedContext = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 		sharedContext = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 		
+		//	the global buffer pool will use the shared context to create any GL resources
 		CreateGlobalBufferPool(sharedContext);
 		
 		srcGeoVBO = CreateVBO(nullptr, sizeof(Quad<VVGL::VertXYZ>), GL_STREAM_DRAW);
