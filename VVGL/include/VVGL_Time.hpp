@@ -53,12 +53,12 @@ struct Timestamp	{
 class Timestamper	{
 	private:
 		chrono::time_point<chrono::high_resolution_clock>		stampStartTime;
-		intmax_t		timescale = 600;
+		uint32_t		timescale = 600;
 	public:
 		Timestamper(const Timestamper & n) = default;
 		Timestamper() { reset(); }
 		//!	Sets the timescale of the timestamps vended by the receiver.
-		inline void setTimescale(const intmax_t & n) { timescale=n; }
+		inline void setTimescale(const uint32_t & n) { timescale=n; }
 		//!	Returns a Time
 		inline Timestamp nowTime() const { using namespace chrono; return Timestamp((uint64_t)duration_cast<microseconds>(high_resolution_clock::now()-stampStartTime).count()/(1000000/timescale), timescale); }
 		inline void reset() { stampStartTime = chrono::high_resolution_clock::now(); };

@@ -8,7 +8,7 @@ ISF stands for "Interactive Shader Format", and is a file format that describes 
 
 ### VVGL
 
-VVGL is a small library that performs rudimentary GL rendering, focusing mainly on texture generation/pooling and render-to-texture operations.  Its primary purpose is to provide a simple consistent interface for performing basic GL operations while obfuscating any platform-specific or environment-specific GL implementation details.  VVISF is built on top of VVGL, but you don't need to be intimately familiar with VVGL to use VVISF.
+VVGL is a small library that performs rudimentary GL rendering, focusing mainly on texture generation/pooling and render-to-texture operations.  Its primary purpose is to provide a simple consistent interface for performing these basic GL operations while obfuscating any platform-specific or environment-specific GL implementation details.  VVISF is built on top of VVGL, but you don't need to be intimately familiar with VVGL to use VVISF.
 
 ### Dependencies
 
@@ -21,36 +21,51 @@ All of these dependencies should be included for most use-cases:
 
 This is all BSD licensed, you can do whatever you want with it and feel good about yourself!  If you have any ideas for improvements (or you find any bugs or problems), please open an issue and let me know.
 
+# Documentation
+
+The source code is heavily documented, using both normal comments and doxygen.  The compiled doxygen docs are available at the following URLs.  Platform-specific functions are listed in the documentation for the given platform:
+
+<A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/Mac/html/modules.html">Mac Documentation</A><BR>
+<A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/iOS/html/modules.html">iOS Documentation</A><BR>
+<A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/GLFW/html/modules.html">GLFW Documentation</A><BR>
+<A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/Qt/html/modules.html">Qt Documentation</A><BR>
+<A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/RPi/html/modules.html">Raspbian Documentation</A><BR>
+
 # Building and Using VVGL & VVISF
 
 VVGL and VVISF are intended to be built and used as shared libraries.  Precompiled binaries are not distributed because the expectation is that the binaries you compile of VVGL and VVISF are going to be specific to your use-case (you'll likely be compiling them against a specific SDK/operating system, and even within the same OS/SDK binaries may not be compatible from compiler to compiler).
 
-### Building for Mac OS X/iOS
+Compiling VVGL is hopefully straightforward- detailed per-SDK sample projects and instructions follow, but all of these project files do one thing before compiling: they define which SDK they're compiling VVGL against.  This can be done in one of two ways: either with a compiler flag, or by modifying the file "VVGL_HardCodedDefines.hpp".  More detailed information can be found in "VVGL_Defines.hpp" if you're interested- if no SDK has been defined, the compiler will throw a human-readable error pointing this out.
 
-This repository includes an xcode project (examples/apple/ISFSandbox.xcodeproj) that has already been configured to compile VVGL and VVISF as frameworks that can be embedded in and deployed with your software.  The same xcode project also includes a number of sample applications for OS X and iOS demonstrating how to include and use the frameworks.  If you want to build your own library or include the source directly you'll need to define the compiler flag ISF_SDK_MAC during compilation.
+### VVGL/VVISF in Mac OS X/iOS
 
-### Building for Qt
+This repository includes an xcode project (examples/apple/ISFSandbox.xcodeproj) that has already been configured to compile VVGL and VVISF as frameworks that can be embedded in and deployed with your software.  The same xcode project also includes a number of sample applications for OS X and iOS demonstrating how to include and use the frameworks.
 
-This repository includes a Qt project (examples/Qt/Qt.pro) that compiles VVGL and VVISF as shared libraries- the same project also includes two sample apps demonstrating the basic use of these shared libraries and VVGL/VVISF in Qt.  If you want to build your own library or include the source directly you'll need to define the compiler flag ISF_SDK_QT during compilation.
+Adding VVGL.framework and VVISF.framework to an existing xcode project:
+- Add the project file XXXXX.xcodeproj to your workspace.
+- Add VVGL.framework and VVISF.framework as dependencies for your target (if you're compiling them for iOS, add VVGL_iOS and VVISF_iOS instead).
+- Navigate to the "Build Phases" UI in XCode for your target.  Locate the "Link Binary With Libraries" section, and add VVGL.framework and VVISF.framework to the list (click the "+" button and locate the frameworks in the list).
+- Add a new "Copy Files" build phase.  Set its destination to "Frameworks".  Add VVGL.framework and VVISF.framework to this list (click the "+" button and then navigate to the frameworks in the "Products" folder).
+- Navigate to the "Build Settings" UI in XCode for your target.  Locate the "Other C Flags" section, and define which VVGL SDK your target will be using by adding the flag "-DVVGL_SDK_MAC".  As an alternative to adding this build setting, you can define the SDK by modifying the file "VVGL_HardCodedDefines.hpp".
 
-### Building for GLFW
+### VVGL/VVISF in Qt
 
-### Building for the Raspberry Pi
+This repository includes a Qt project (examples/Qt/Qt.pro) that compiles VVGL and VVISF as shared libraries- the same project also includes two sample apps demonstrating the basic use of these shared libraries and VVGL/VVISF in Qt.
 
-# Getting Started with VVGL/VVISF
+After adding the shared libraries and their accompanying header files to your project file, you'll have to define which SDK the Qt project you're adding VVGL to is using.  This is done by defining the compiler flag VVGL_SDK_QT, either in the Qt project file (DEFINES += VVGL_SDK_QT), or by un-commenting the appropriate line in "VVGL_HardCodedDefines.hpp".
 
-### VVGL Basics
+### VVGL/VVISF in GLFW
 
-### VVISF Basics
+This repository contains an xcode project demonstrating compiling VVGL/VVISF against GLFW on OS X.  While GLFW supports other platforms/IDEs/SDKs, the process for adding VVGL/VVISF to a GLFW project is basically the same:
+- Make sure you define which SDK you're compiling VVGL and your app against by either adding a compiler flag that defines VVGL_SDK_GLFW or by un-commenting VVGL_SDK_GLFW in "VVGL_HardCodedDefines.hpp".  Compile VVGL/VVISF.
+- Compile your software, linking it against the compiled VVGL/VVISF libraries.  If you didn't modify VVGL_HardCodedDefines.hpp" then you'll have to add the VVGL_SDK_GLFW compiler flag to the target, too.
+- Make sure the compiled libraries are included with your target software.
+
+### VVGL/VVISF on the Raspberry Pi
+
+Because GL support on the Raspberry Pi isn't quite as robust as GL support on desktop or mobile platforms with more powerful dedicated hardware, the facilities for working with GL code on this platform are comparatively limited.  Your best best is to use the makefile to build the sample app in "./examples/raspbian".
 
 ### Learning More
 
 This documentation only covers the biggest, most commonly used objects in these libraries- the information that you'd need to know as a developer to quickly add and start using VVISF in your project.  The source code itself is heavily documented, and all of this stuff is simple and straightforward enough that you should feel comfortable digging around if you want to do something that isn't covered here.
-
-### Adding more platforms/SDKs to VVGL/VVISF
-
-* Create a new "VVGL_SDK_****" define for the platform/SDK you want to add.  Open VVGL_Defines.hpp, and add your new SDK define to the if/elif/endif statement, being sure to define which GL environments you want your SDK to be compiled against.  This just defines which GL environments (like GLES/GL4/etc) VVGL/VVISF will be compiled against- you should make sure that all GL environments that will be available at runtime are specified here (VVGL and VVISF support multiple versions of GL at runtime, but when you compile these libs you need to ensure that they include code for the relevant versions of OpenGL you'll be working with).
-* Locate GLContext.hpp and GLContext.cpp.  GLContext is a platform-agnostic representation of a GL context- you need to use the VVGL_SDK you created to populate the instance variables and methods of GLContext with the SDK-specific variables it needs to interact with OpenGL in your target SDK.  Typically, this means that GLContext needs a strong reference to your SDK-specific GL context object.  GLContext.hpp and GLContext.cpp are populated with source code for at least four different SDKs, all of which are very similar to one another and can be used as an exemplar.
-* The texture types available differ from platform to platform- for convenience, you'll want to create a header file that lists the enums for the OpenGL texture targets/internal formats/pixel formats/pixel types available in your SDK.  You should pattern this header file after one of the existing header files (GLBuffer_XXXX_Enums.h), and ensure that it's included in GLBuffer.hpp using the VVGL_SDK define you created.
-* GLBufferPool.hpp declares a variety of functions that create GL textures, returned as GLBufferRef instances.  These functions are defined in GLBufferPool.cpp, and you should check their implementations briefly to ensure that the resources they're creating are available on your platform (it's likely that you'll get a compiler error if they aren't, but it can't hurt to check).
 

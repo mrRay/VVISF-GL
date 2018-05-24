@@ -143,8 +143,10 @@ struct VVGL_EXPORT VT_XY : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return x; case 1: default: return y; } }
 	inline bool operator== (const VT_XY & n) const { return (this->x==n.x && this->y==n.y); }
 	inline bool operator!= (const VT_XY & n) const { return !(*this==n); }
+	friend ostream & operator<<(ostream & os, const VT_XY & n) { os<<"{"<<n.x<<","<<n.y<<"}";return os; }
 	
 	inline void zero() { x=0.; y=0; }
+	inline int numComponents() const { return 2; }
 };
 /*!
 \ingroup VVGL_GEOM
@@ -161,8 +163,10 @@ struct VVGL_EXPORT VT_XYZ : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return x; case 1: return y; case 2: default: return z; } }
 	inline bool operator== (const VT_XYZ & n) const { return (this->x==n.x && this->y==n.y && this->z==n.z); }
 	inline bool operator!= (const VT_XYZ & n) const { return !(*this==n); }
+	friend ostream & operator<<(ostream & os, const VT_XYZ & n) { os<<"{"<<n.x<<","<<n.y<<","<<n.z<<"}";return os; }
 	
 	inline void zero() { x=0.; y=0; z=0; }
+	inline int numComponents() const { return 3; }
 };
 /*!
 \ingroup VVGL_GEOM
@@ -178,8 +182,10 @@ struct VVGL_EXPORT VT_ST : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return s; case 1: default: return t; } }
 	inline bool operator== (const VT_ST & n) const { return (this->s==n.s && this->t==n.t); }
 	inline bool operator!= (const VT_ST & n) const { return !(*this==n); }
+	friend ostream & operator<<(ostream & os, const VT_ST & n) { os<<"{"<<n.s<<","<<n.t<<"}";return os; }
 	
 	inline void zero() { s=0.; t=0; }
+	inline int numComponents() const { return 2; }
 };
 /*!
 \ingroup VVGL_GEOM
@@ -195,10 +201,13 @@ struct VVGL_EXPORT VT_RGBA : public VT	{
 	VT_RGBA(const float & inR, const float & inG, const float & inB, const float & inA) : r(inR), g(inG), b(inB), a(inA) {}
 	
 	inline float & operator[] (const int index) { switch(index) { case 0: return r; case 1: return g; case 2: return b; case 3: default: return a; } }
+	inline void operator= (const GLColor & n) { r=n.r; g=n.g; b=n.b; a=n.a; };
 	inline bool operator== (const VT_RGBA & n) const { return (this->r==n.r && this->g==n.g && this->b==n.b && this->a==n.a); };
 	inline bool operator!= (const VT_RGBA & n) const { return !(*this==n); };
+	friend ostream & operator<<(ostream & os, const VT_RGBA & n) { os<<"{"<<n.r<<","<<n.g<<","<<n.b<<","<<n.a<<"}";return os; }
 	
 	inline void zero() { r=0.; g=0; b=0; a=0; }
+	inline int numComponents() const { return 4; }
 };
 
 

@@ -5,7 +5,7 @@
 
 
 @interface BasicGLFuncAppDelegate ()
-@property (assign,readwrite) VVGL::Quad<VertXYST> lastVBOCoords;
+@property (assign,readwrite) VVGL::Quad<VertXYZSTRGBA> lastVBOCoords;
 @end
 
 
@@ -84,39 +84,42 @@
 	
 	void			*selfPtr = (void*)self;
 	
+	glScene->setRenderPrepCallback([&](const GLScene & n, const bool inReshaped, const bool inPgmChanged)	{
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	});
 	glScene->setRenderCallback([selfPtr, imgBuffer](const GLScene & n)	{
-		//	populate a tex quad with the geometry & tex coords
-		Quad<VertXYST>			texQuad;
+		//	figure out how long we've been rendering, modulate it at one second
+		double					timeSinceStart = [[(id)selfPtr date] timeIntervalSinceNow] * -1.;
+		double					fillerColorVal = fmod(timeSinceStart, 1.);
+		//	populate a tex quad with the geometry, tex, and color vals
+		Quad<VertXYZSTRGBA>		texQuad;
 		VVGL::Size				sceneSize = n.getOrthoSize();
-		//VVGL::Rect				geoRect(0, 0, sceneSize.width, sceneSize.height);
 		VVGL::Rect				geoRect = ResizeRect(imgBuffer->srcRect, VVGL::Rect(0,0,sceneSize.width,sceneSize.height), SizingMode_Fit);
 		VVGL::Rect				texRect = imgBuffer->glReadySrcRect();
 		texQuad.populateGeo(geoRect);
 		texQuad.populateTex(texRect, imgBuffer->flipped);
+		texQuad.bl.color = GLColor(1., 1., 1., 1.);
+		texQuad.tl.color = GLColor(1., fillerColorVal, fillerColorVal, 1.);
+		texQuad.tr.color = GLColor(fillerColorVal, 1., fillerColorVal, 1.);
+		texQuad.br.color = GLColor(fillerColorVal, fillerColorVal, 1., 1.);
 		
 		//	draw the GLBufferRef we created from the PNG, using the tex quad
 		glEnable(imgBuffer->desc.target);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glVertexPointer(2, GL_FLOAT, texQuad.stride(), &texQuad);
-		glTexCoordPointer(2, GL_FLOAT, texQuad.stride(), &texQuad.bl.tex[0]);
-		glBindTexture(imgBuffer->desc.target, imgBuffer->name);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glBindTexture(imgBuffer->desc.target, 0);
+		glEnableClientState(GL_COLOR_ARRAY);
 		
-		//	we're going to draw a quad "over" the image, using the NSDate property of self to determine how long the app's been running
-		double					timeSinceStart = [[(id)selfPtr date] timeIntervalSinceNow] * -1.;
-		double					opacity = fmod(timeSinceStart, 1.);
-		Quad<VertXY>			colorQuad;
-		colorQuad.populateGeo(geoRect);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glVertexPointer(2, GL_FLOAT, texQuad.stride(), &texQuad);
-		glColor4f(0., 0., 0., opacity);
+		glVertexPointer(texQuad.bl.geo.numComponents(), GL_FLOAT, texQuad.stride(), &texQuad.bl.geo[0]);
+		glTexCoordPointer(texQuad.bl.tex.numComponents(), GL_FLOAT, texQuad.stride(), &texQuad.bl.tex[0]);
+		glColorPointer(texQuad.bl.color.numComponents(), GL_FLOAT, texQuad.stride(), &texQuad.bl.color[0]);
+		
+		glBindTexture(imgBuffer->desc.target, imgBuffer->name);
+		
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		
+		glBindTexture(imgBuffer->desc.target, 0);
 	});
 }
-
-
 - (void) initForModernGL	{
 	//	make an NSImage from the PNG included with the app, create a GLBufferRef from it
 	NSImage			*tmpImg = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SampleImg" ofType:@"png"]];
@@ -130,16 +133,20 @@
 #version 330 core\r\
 in vec3		inXYZ;\r\
 in vec2		inST;\r\
+in vec4		inRGBA;\r\
 uniform mat4	vvglOrthoProj;\r\
 out vec2		programST;\r\
+out vec4		programRGBA;\r\
 void main()	{\r\
 	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
 	programST = inST;\r\
+	programRGBA = inRGBA;\r\
 }\r\
 ");
 	string			fsString("\r\
 #version 330 core\r\
 in vec2		programST;\r\
+in vec4		programRGBA;\r\
 uniform sampler2D		inputImage;\r\
 uniform sampler2DRect	inputImageRect;\r\
 uniform int		isRectTex;\r\
@@ -152,7 +159,7 @@ else if (isRectTex==1)\r\
 	FragColor = texture(inputImage,programST);\r\
 else\r\
 	FragColor = texture(inputImageRect,programST);\r\
-FragColor *= (1.-fadeVal);\r\
+FragColor *= programRGBA;\r\
 }\r\
 ");
 	glScene->setVertexShaderString(vsString);
@@ -164,19 +171,21 @@ FragColor *= (1.-fadeVal);\r\
 	//	destroyed and shared between the callback lambdas...
 	GLCachedAttribRef		xyzAttr = make_shared<GLCachedAttrib>("inXYZ");
 	GLCachedAttribRef		stAttr = make_shared<GLCachedAttrib>("inST");
+	GLCachedAttribRef		rgbaAttr = make_shared<GLCachedAttrib>("inRGBA");
 	GLCachedUniRef		inputImageUni = make_shared<GLCachedUni>("inputImage");
 	GLCachedUniRef		inputImageRectUni = make_shared<GLCachedUni>("inputImageRect");
 	GLCachedUniRef		isRectTexUni = make_shared<GLCachedUni>("isRectTex");
 	GLCachedUniRef		fadeValUni = make_shared<GLCachedUni>("fadeVal");
 	
 	//	the render prep callback needs to cache the location of the vertex attributes and uniforms
-	glScene->setRenderPrepCallback([xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,self](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
+	glScene->setRenderPrepCallback([xyzAttr,stAttr,rgbaAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,self](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
 			GLint				myProgram = n.getProgram();
 			xyzAttr->cacheTheLoc(myProgram);
 			stAttr->cacheTheLoc(myProgram);
+			rgbaAttr->cacheTheLoc(myProgram);
 			inputImageUni->cacheTheLoc(myProgram);
 			inputImageRectUni->cacheTheLoc(myProgram);
 			isRectTexUni->cacheTheLoc(myProgram);
@@ -188,22 +197,30 @@ FragColor *= (1.-fadeVal);\r\
 	});
 	
 	//	the render callback passes all the data to the GL program
-	glScene->setRenderCallback([imgBuffer,xyzAttr,stAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,selfPtr](const GLScene & n)	{
+	glScene->setRenderCallback([imgBuffer,xyzAttr,stAttr,rgbaAttr,inputImageUni,inputImageRectUni,isRectTexUni,fadeValUni,selfPtr](const GLScene & n)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (imgBuffer == nullptr)
 			return;
 		
+		//	figure out how long we've been rendering, modulate it at one second
+		double					timeSinceStart = [[(id)selfPtr date] timeIntervalSinceNow] * -1.;
+		double					fillerColorVal = fmod(timeSinceStart, 1.);
+		
 		//	clear
 		glClearColor(0., 0., 0., 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		
 		VVGL::Size			orthoSize = n.getOrthoSize();
 		VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
-		Quad<VertXYST>		targetQuad;
+		Quad<VertXYZSTRGBA>		targetQuad;
 		targetQuad.populateGeo(geometryRect);
 		targetQuad.populateTex((imgBuffer==nullptr) ? geometryRect : imgBuffer->glReadySrcRect(), (imgBuffer==nullptr) ? false : imgBuffer->flipped);
-
+		targetQuad.bl.color = GLColor(1., 1., 1., 1.);
+		targetQuad.tl.color = GLColor(1., fillerColorVal, fillerColorVal, 1.);
+		targetQuad.tr.color = GLColor(fillerColorVal, 1., fillerColorVal, 1.);
+		targetQuad.br.color = GLColor(fillerColorVal, fillerColorVal, 1., 1.);
+		
 		//	pass the 2D texture to the program (if there's a 2D texture)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GLBuffer::Target_2D, (imgBuffer!=nullptr && imgBuffer->desc.target==GLBuffer::Target_2D) ? imgBuffer->name : 0);
@@ -255,12 +272,16 @@ FragColor *= (1.-fadeVal);\r\
 			glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
 			//	configure the attribute pointers to use the VBO
 			if (xyzAttr->loc >= 0)	{
-				glVertexAttribPointer(xyzAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
+				glVertexAttribPointer(xyzAttr->loc, targetQuad.bl.geo.numComponents(), GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.geoOffset()));
 				xyzAttr->enable();
 			}
 			if (stAttr->loc >= 0)	{
-				glVertexAttribPointer(stAttr->loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.texOffset()));
+				glVertexAttribPointer(stAttr->loc, targetQuad.bl.tex.numComponents(), GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.texOffset()));
 				stAttr->enable();
+			}
+			if (rgbaAttr->loc >= 0)	{
+				glVertexAttribPointer(rgbaAttr->loc, targetQuad.bl.color.numComponents(), GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(targetQuad.colorOffset()));
+				rgbaAttr->enable();
 			}
 		}
 		
