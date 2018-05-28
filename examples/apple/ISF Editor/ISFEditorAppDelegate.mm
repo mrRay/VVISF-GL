@@ -291,7 +291,10 @@
 	
 	//	if the scene's file is nil, but the controller's target file isn't, tell the scene to reload
 	ISFSceneRef		scene = [isfController scene];
-	if (scene->getFilePath().size()<1 && [isfController targetFile]!=nil)	{
+	ISFDocRef		tmpDoc = scene->getDoc();
+	if (tmpDoc == nullptr)
+		return;
+	if (tmpDoc->getPath().size()<1 && [isfController targetFile]!=nil)	{
 		[isfController reloadTargetFile];
 		//NSLog(@"\t\tfetchShaders is YES in %s",__func__);
 		fetchShaders = YES;

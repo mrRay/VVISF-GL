@@ -18,77 +18,89 @@ using namespace std;
 
 
 
-	
-	class ISFDoc;
-	//	ISFPassTargetRef is a shared pointer to an ISFPassTarget- this is what you should use
-	class ISFPassTarget;
-	//using ISFPassTargetRef = std::shared_ptr<ISFPassTarget>;
-	
-	
-	
-	/*		this class represents a target buffer for a render pass in an ISF shader- it stores the 
-	GLBuffer (the GL resource) as well as the expressions determining the width/height (the raw 
-	string, the evaluated expression- capable of being executed with substitutions for variables, 
-	and the evaluated value), and the cached uniform locations for this target buffer's attributes 
-	in the compiled GL program (so you don't have to look up the uniform location every frame).			*/
-	
-	
-	class VVISF_EXPORT ISFPassTarget	{
-		private:
-			string			name;
-			GLBufferRef		buffer = nullptr;
-			ISFDoc			*parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
-			
-			mutex			targetLock;
-			
-			double			targetWidth = 1.0;	//	the target width for this pass.  the expression evaluates to this value
-			string			*targetWidthString = nullptr;
-			exprtk::expression<double>		*targetWidthExpression = nullptr;
-			double			widthExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
-	
-			double			targetHeight = 1.0;	//	the target height for this pass.  the expression evaluates to this value
-			string			*targetHeightString = nullptr;
-			exprtk::expression<double>		*targetHeightExpression = nullptr;
-			double			heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
-	
-			bool			floatFlag = false;	//	NO by default, if YES makes float texutres
-			int32_t			uniformLocation[4] = { -1, -1, -1, -1 };	//	the location of this attribute in the compiled GLSL program. cached here because lookup times are costly when performed every frame.  there are 4 because images require four uniforms (one of the texture name, one for the size, one for the img rect, and one for the flippedness)
-		public:
-			//	"class method" that creates a buffer ref
-			static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
-			
-			ISFPassTarget(const string & inName, const ISFDoc * inParentDoc);
-			~ISFPassTarget();
-			ISFPassTarget(const ISFPassTarget & n) = default;
-			ISFPassTarget(ISFPassTarget && n) = default;
-			ISFPassTarget & operator=(ISFPassTarget & n) = delete;
-			ISFPassTarget & operator=(ISFPassTarget && n) = delete;
+
+class ISFDoc;
+
+
+
+
+/*!
+\ingroup VVISF_BASIC
+\brief Describes the target of a render pass for an ISF file, stores a number of properties and values specific to this render pass.
+
+\detail Stores the GLBuffer (the GL resource) which this pass will render into, as well as the expressions that determine the width/height (both the raw string as well as the evaluated expression, capable of being executed with substitutions for variables) and the evaluated value.  Also caches the uniform locations for this target buffer's attributes in the compiled GLSL program.
+*/
+class VVISF_EXPORT ISFPassTarget	{
+	private:
+		string			name;
+		GLBufferRef		buffer = nullptr;
+		ISFDoc			*parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
 		
-			void setTargetWidthString(const string & n);
-			const string getTargetWidthString();
-			void setTargetHeightString(const string & n);
-			const string getTargetHeightString();
-			void setFloatFlag(const bool & n);
-			bool getFloatFlag() const { return floatFlag; }
-			void clearBuffer();
-	
-			bool targetSizeNeedsEval() const { return (targetHeightString!=nullptr || targetHeightString!=nullptr); }
-			void evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer);
-	
-			string & getName() { return name; }
-			GLBufferRef & getBuffer() { return buffer; }
-			void setBuffer(const GLBufferRef & n) { buffer=n; }
-	
-			VVGL::Size targetSize() { return { targetWidth, targetHeight }; }
-	
-			void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0||inIndex>3) return; uniformLocation[inIndex]=inNewVal; }
-			int32_t getUniformLocation(const int & inIndex) const { return (inIndex<0||inIndex>3) ? -1 : uniformLocation[inIndex]; }
-			void clearUniformLocations() { for (int i=0; i<4; ++i) uniformLocation[i]=-1; }
+		mutex			targetLock;
 		
-		private:
-			void setTargetSize(const VVGL::Size & inSize, const bool & inResize=true, const bool & inCreateNewBuffer=true);
+		double			targetWidth = 1.0;	//	the target width for this pass.  the expression evaluates to this value
+		string			*targetWidthString = nullptr;
+		exprtk::expression<double>		*targetWidthExpression = nullptr;
+		double			widthExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
+
+		double			targetHeight = 1.0;	//	the target height for this pass.  the expression evaluates to this value
+		string			*targetHeightString = nullptr;
+		exprtk::expression<double>		*targetHeightExpression = nullptr;
+		double			heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
+
+		bool			floatFlag = false;	//	NO by default, if YES makes float texutres
+		GLCachedUniRef	cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
+	public:
+		//	"class method" that creates a buffer ref
+		static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
 		
-	};
+		ISFPassTarget(const string & inName, const ISFDoc * inParentDoc);
+		~ISFPassTarget();
+		ISFPassTarget(const ISFPassTarget & n) = default;
+		ISFPassTarget(ISFPassTarget && n) = default;
+		ISFPassTarget & operator=(ISFPassTarget & n) = delete;
+		ISFPassTarget & operator=(ISFPassTarget && n) = delete;
+		
+		//!	Sets the receiver's target width string to the passed value.  This string will be evaluated using the exprtk lib, and the resulting value will be used to determine the width at which this pass renders.
+		void setTargetWidthString(const string & n);
+		//!	Gets the receiver's target width string.
+		const string getTargetWidthString();
+		//!	Sets the receiver's target height string to the passed value.  This string will be evaluated using the exprtk lib, and the resulting value will be used to determine the height at which this pass renders.
+		void setTargetHeightString(const string & n);
+		//!	Gets the receiver's target height string.
+		const string getTargetHeightString();
+		//!	Sets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
+		void setFloatFlag(const bool & n);
+		//!	Gets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
+		bool getFloatFlag() const { return floatFlag; }
+		//!	Deletes any GL resources that might presently be cached by this pass.
+		void clearBuffer();
+		
+		bool targetSizeNeedsEval() const { return (targetHeightString!=nullptr || targetHeightString!=nullptr); }
+		void evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer);
+		
+		//!	Returns the receiver's name.
+		string & getName() { return name; }
+		//!	Returns the GLBuffer currently cached with this pass, or null.
+		GLBufferRef & getBuffer() { return buffer; }
+		//!	Sets the GLBuffer currently cached with this pass.
+		void setBuffer(const GLBufferRef & n) { buffer=n; }
+		
+		//!	Returns the last-calculated target size for this pass.
+		VVGL::Size targetSize() { return { targetWidth, targetHeight }; }
+		
+		void cacheUniformLocations(const int & inPgmToCheck) { for (int i=0; i<4; ++i) cachedUnis[i]->cacheTheLoc(inPgmToCheck); }
+		int32_t getUniformLocation(const int & inIndex) const { return (inIndex<0||inIndex>3) ? -1 : cachedUnis[inIndex]->loc; }
+		void clearUniformLocations() { for (int i=0; i<4; ++i) cachedUnis[i]->purgeCache(); }
+	
+	private:
+		void setTargetSize(const VVGL::Size & inSize, const bool & inResize=true, const bool & inCreateNewBuffer=true);
+	
+};
+
+
+
+
 }
 
 #endif /* ISFPassTarget_hpp */

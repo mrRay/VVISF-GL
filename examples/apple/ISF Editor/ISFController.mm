@@ -221,7 +221,10 @@
 		//NSLog(@"\t\terr: bailing, scene null, %s",__func__);
 		return n;
 	}
-	string		scenePath = scene->getFilePath();
+	ISFDocRef	tmpDoc = scene->getDoc();
+	if (tmpDoc == nullptr)
+		return nil;
+	string		scenePath = tmpDoc->getPath();
 	if (scenePath.length() < 1)	{
 		//NSLog(@"\t\terr: bailing, scene doesn't have a file, %s",__func__);
 		return n;
@@ -308,7 +311,10 @@
 		return;
 	//if ([scene filePath]==nil)
 	//	return;
-	string		scenePath = scene->getFilePath();
+	ISFDocRef	tmpDoc = scene->getDoc();
+	if (tmpDoc == nullptr)
+		return;
+	string		scenePath = tmpDoc->getPath();
 	if (scenePath.length() < 1)
 		return;
 	//	run through the inputs, getting their values and pushing them to the scene
@@ -343,7 +349,10 @@
 	
 	if (scene == nullptr)
 		return;
-	string		scenePath = scene->getFilePath();
+	ISFDocRef	tmpDoc = scene->getDoc();
+	if (tmpDoc == nullptr)
+		return;
+	string		scenePath = tmpDoc->getPath();
 	if (scenePath.length() < 1)	{
 		//NSLog(@"\t\tbailing, scene hasn't loaded a file, %s",__func__);
 		return;
@@ -447,7 +456,7 @@
 	//NSLog(@"%s ... (%0.2f, %0.2f)",__func__,p.x,p.y);
 	if (scene == nullptr)
 		return;
-	for (const auto & attrib : scene->getInputs(ISFValType_Point2D))	{
+	for (const auto & attrib : scene->getInputsOfType(ISFValType_Point2D))	{
 		string &		attribNameCPP = attrib->getName();
 		NSString		*attribName = [NSString stringWithUTF8String:attribNameCPP.c_str()];
 		

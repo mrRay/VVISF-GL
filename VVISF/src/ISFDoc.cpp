@@ -43,8 +43,8 @@ ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, ISFScen
 	vertShaderSource = new string(inVSContents);
 }
 ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
-	cout << __PRETTY_FUNCTION__ << endl;
-	cout << "\t" << inPath << endl;
+	//cout << __PRETTY_FUNCTION__ << endl;
+	//cout << "\t" << inPath << endl;
 	
 	parentScene = inParentScene;
 	
@@ -138,6 +138,28 @@ ISFDoc::~ISFDoc()	{
 #pragma mark --------------------- getters
 
 
+vector<ISFAttrRef> ISFDoc::getInputsOfType(const ISFValType & n)	{
+	auto		returnMe = vector<ISFAttrRef>(0);
+	lock_guard<recursive_mutex>		lock(propLock);
+	
+	for (auto it=inputs.begin(); it!=inputs.end(); ++it)	{
+		ISFAttrRef		&tmpAttrib = *it;
+		if ((tmpAttrib->getType() & n) == n)
+			returnMe.push_back(tmpAttrib);
+	}
+	
+	return returnMe;
+}
+ISFAttrRef ISFDoc::getInput(const string & inAttrName)	{
+	lock_guard<recursive_mutex>		lock(propLock);
+	
+	for (auto it=inputs.begin(); it!=inputs.end(); ++it)	{
+		ISFAttrRef		&tmpAttrib = *it;
+		if (tmpAttrib->getName() == inAttrName)
+			return tmpAttrib;
+	}
+	return nullptr;
+}
 const GLBufferRef ISFDoc::getBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -182,7 +204,13 @@ const GLBufferRef ISFDoc::getTempBufferForKey(const string & n)	{
 	}
 	return nullptr;
 }
-const ISFPassTargetRef ISFDoc::getPersistentTargetForKey(const string & n)	{
+const ISFPassTargetRef ISFDoc::getPassTargetForKey(const string & n)	{
+	ISFPassTargetRef		returnMe = getPersistentPassTargetForKey(n);
+	if (returnMe == nullptr)
+		returnMe = getTempPassTargetForKey(n);
+	return returnMe;
+}
+const ISFPassTargetRef ISFDoc::getPersistentPassTargetForKey(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", key is \"" << n << "\"" << endl;
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -195,7 +223,7 @@ const ISFPassTargetRef ISFDoc::getPersistentTargetForKey(const string & n)	{
 	}
 	return nullptr;
 }
-const ISFPassTargetRef ISFDoc::getTempTargetForKey(const string & n)	{
+const ISFPassTargetRef ISFDoc::getTempPassTargetForKey(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", key is \"" << n << "\"" << endl;
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -252,16 +280,8 @@ void ISFDoc::getFragShaderSource(string & outStr)	{
 }
 
 
-ISFAttrRef ISFDoc::getInput(const string & inAttrName)	{
-	lock_guard<recursive_mutex>		lock(propLock);
-	
-	for (auto it=inputs.begin(); it!=inputs.end(); ++it)	{
-		ISFAttrRef		&tmpAttrib = *it;
-		if (tmpAttrib->getName() == inAttrName)
-			return tmpAttrib;
-	}
-	return nullptr;
-}
+
+/*
 vector<ISFAttrRef> ISFDoc::getInputs(const ISFValType & n)	{
 	auto		returnMe = vector<ISFAttrRef>(0);
 	lock_guard<recursive_mutex>		lock(propLock);
@@ -274,26 +294,7 @@ vector<ISFAttrRef> ISFDoc::getInputs(const ISFValType & n)	{
 	
 	return returnMe;
 }
-ISFPassTargetRef ISFDoc::getPersistentTargetBuffer(const string & n)	{
-	lock_guard<recursive_mutex>		lock(propLock);
-	
-	for (auto it=persistentBuffers.begin(); it!=persistentBuffers.end(); ++it)	{
-		ISFPassTargetRef		&tmpBuffer = *it;
-		if (tmpBuffer->getName() == n)
-			return tmpBuffer;
-	}
-	return nullptr;
-}
-ISFPassTargetRef ISFDoc::getTempTargetBuffer(const string & n)	{
-	lock_guard<recursive_mutex>		lock(propLock);
-	
-	for (auto it=tempBuffers.begin(); it!=tempBuffers.end(); ++it)	{
-		ISFPassTargetRef		&tmpBuffer = *it;
-		if (tmpBuffer->getName() == n)
-			return tmpBuffer;
-	}
-	return nullptr;
-}
+*/
 string ISFDoc::generateTextureTypeString()	{
 	string		returnMe("");
 	lock_guard<recursive_mutex>		lock(propLock);
@@ -1389,7 +1390,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				//newPass.targetName = tmpBufferName;
 				//newPass.setTargetName(tmpBufferName);
 				//	find the target buffer for this pass- first check the persistent buffers
-				ISFPassTargetRef		targetBuffer = getPersistentTargetBuffer(tmpBufferName);
+				ISFPassTargetRef		targetBuffer = getPersistentPassTargetForKey(tmpBufferName);
 				//	if i couldn't find a persistent buffer...
 				if (targetBuffer == nullptr)	{
 					//	create a new target buffer, set its name

@@ -56,6 +56,8 @@ string ISFFileTypeString(const ISFFileType & n)	{
 		return string("Filter");
 	case ISFFileType_Transition:
 		return string("Transition");
+	case ISFFileType_All:
+		return string("All");
 	}
 	return string("?");
 }

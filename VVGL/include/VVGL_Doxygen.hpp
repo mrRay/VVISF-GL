@@ -27,15 +27,18 @@ NSOpenGLContext		*origMacCtx;	//	this is assumed to be non-nil in the real world
 CGLContextObj		tmpMacCtx = [origMacCtx CGLContextObj];
 CGLPixelFormatObj	tmpMacPxlFmt = [[origMacCtx pixelFormat] CGLPixelFormatObj];
 
-//	this makes a GLContext that wraps (and retains) an existing mac context (doesn't create a new OpenGL context)
+//	this makes a GLContext that wraps (and retains) an existing 
+//	mac context (doesn't create a new OpenGL context)
 GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpMacCtx, tmpMacCtx, tmpMacPxlFmt);
 
-//	this makes a GLContext that creates a new OpenGL context.  this new context shares the passed context (they can share resources)
+//	this makes a GLContext that creates a new OpenGL context.  this new 
+//	context shares the passed context (they can share resources)
 GLContextRef		vvglCtx = CreateNewGLContextRef(tmpMacCtx, tmpMacPxlFmt);
 
 //	if you don't have an existing mac context- if you're creating the first context, for example...
 
-//	this makes a GLContext (and new OpenGL context) using the compatibility version of GL (GL 2.1 on os x)
+//	this makes a GLContext (and new OpenGL context) using 
+//	the compatibility version of GL (GL 2.1 on os x)
 GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFormat());
 
 //	this makes a GLContext (and new OpenGL context) using GL4
@@ -46,7 +49,8 @@ GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 \code{.cpp}
 EAGLContext			*tmpCtx;	//	this is assumed to be non-nil in the real world...
 
-//	this makes a GLContext that wraps (and retains) an existing iOS context (doesn't create a new OpenGL context)
+//	this makes a GLContext that wraps (and retains) an existing 
+//	iOS context (doesn't create a new OpenGL context)
 GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpCtx);
 \endcode
 
@@ -54,7 +58,8 @@ GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpCtx);
 \code{.cpp}
 GLFWwindow *	window;	//	this is assumed to be non-nil in the real world...
 
-//	this makes a GLContext that wraps the window's GL context (doesn't create a new OpenGL context)
+//	this makes a GLContext that wraps the window's GL context 
+//	(doesn't create a new OpenGL context)
 GLContextRef	ctxRef = CreateGLContextRefUsing(window);
 \endcode
 
@@ -64,10 +69,12 @@ QSurface *			origSfc;	//	this is assumed to be non-nil in the real world...
 QOpenGLContext *	origCtx;	//	this is assumed to be non-nil in the real world...
 QSurfaceFormat		origSfcFmt;	//	this is assumed to be non-nil in the real world...
 
-//	this makes a GLContext that wraps and establishes a strong ref to the passed vars (doesn't create a new OpenGL context)
+//	this makes a GLContext that wraps and establishes a strong ref to 
+//	the passed vars (doesn't create a new OpenGL context)
 GLContextRef		vvglCtx = CreateGLContextRefUsing(origSfc, origCtx, origSfcFmt);
 
-//	this makes a GLContext that creates a new OpenGL context.  this new context shares the passed context (they can share resources)
+//	this makes a GLContext that creates a new OpenGL context.  this new 
+//	context shares the passed context (they can share resources)
 GLContextRef		vvglCtx = CreateNewGLContextRef(origSfc, origCtx, origSfcFmt);
 
 //	if you don't have an existing Qt context- if you're creating the first context, for example...
@@ -86,38 +93,26 @@ GLContextRef		vvglCtx = CreateNewGLContextRef(nullptr, nullptr, CreateGL4Surface
 //	first create a shared context using one of the above methods (this is just a quick example)
 GLContextRef		sharedContext = CreateNewGLContextRef();
 
-//	make the global buffer pool- this line creates the global buffer pool using the shared context (the buffer pool will use the shared context's OpenGL context to create or destroy any GL resources).
+//	make the global buffer pool- this line creates the global buffer pool 
+//	using the shared context (the buffer pool will use the shared context's 
+//	OpenGL context to create or destroy any GL resources).
 CreateGlobalBufferPool(sharedContext);
 
-//	make the global buffer pool- this is the same function call, but it creates a new context (a new OpenGL context) for the buffer pool.
+//	make the global buffer pool- this is the same function call, but it 
+//	creates a new context (a new OpenGL context) for the buffer pool.
 CreateGlobalBufferPool(sharedContext->newContextSharingMe());
 
-//	get the global buffer pool
-GLBufferPoolRef		bp = GetGlobalBufferPool();
-
-//	makes a 1920x1080 GL texture (32 bits per pixel).  the texture will be created by the global buffer pool's GL context
+//	makes a 1920x1080 GL texture (32 bits per pixel).  the texture 
+//	will be created by the global buffer pool's GL context
 GLBufferRef			tmpTex = CreateRGBATex(VVGL::Size(1920,1080));
 
-//	makes a 1920x1080 GL texture (32 bits per pixel).  the texture will be created by whatever GL context is current in the executing thread
+//	makes a 1920x1080 GL texture (32 bits per pixel).  the texture 
+//	will be created by whatever GL context is current in the executing thread
 GLBufferRef			tmpTex = CreateRGBATex(VVGL::Size(1920,1080), true);
 
 //	makes a 1920x1080 GL texture (128 bits per pixel).
 GLBufferRef			tmpTex = CreateRGBAFloatTex(VVGL::Size(1920,1080));
 \endcode
-*/
-
-
-
-
-/*!
-\defgroup VVISF_SAMPLE VVISF-Sample Code I
-
-This repository includes a variety of sample apps that demonstrate the use of VVISF on several different platforms, but some sample code snippets for common actions in VVISF are listed here as a quick overview:
-
-<BR>
-<b>Creating an ISFScene</b>
-Loading an ISF file
-
 */
 
 

@@ -12,6 +12,11 @@
 #include "VVGL.hpp"
 using namespace VVGL;
 
+/*!
+\file
+*/
+
+
 
 
 namespace VVISF
@@ -19,8 +24,6 @@ namespace VVISF
 
 
 using namespace std;
-
-
 
 
 //	some forward declarations used in this header
@@ -32,37 +35,65 @@ class ISFScene;
 
 
 
-
-//	ISFPassTargetRef is a shared pointer to an ISFPassTarget
+/*!
+\brief ISFPassTargetRef is a shared pointer around an ISFPassTarget instance.
+\relates VVISF::ISFPassTarget
+*/
 using ISFPassTargetRef = shared_ptr<ISFPassTarget>;
-//	ISFDocRef is a shared pointer to an ISFDoc
+/*!
+\brief ISFDocRef is a shared pointer around an ISFDoc instance.
+\relates VVISF::ISFDoc
+
+\detail ISFDocRef is the preferred means of working with ISFDoc instances, which can be extremely simple with no overhead or can potentially contain a variety of data values including GL resources (texture, buffers, etc).
+*/
 using ISFDocRef = shared_ptr<ISFDoc>;
-//	ISFAttrRef is a shared poitner to an ISFAttr
+/*!
+\brief ISFAttrRef is a shared pointer around an ISFAttr instance.
+\relates VVISF::ISFAttr
+*/
 using ISFAttrRef = std::shared_ptr<ISFAttr>;
-//	ISFSceneRef is a shared pointer to an ISFScene
+/*!
+\brief ISFSceneRef is a shared pointer around an ISFScene instance.
+\relates VVISF::ISFScene
+
+\detail ISFScene is a subclass of GLScene, and like its parent, you should strive to work exclusively with ISFSceneRef instead of ISFScene directly.
+*/
 using ISFSceneRef = std::shared_ptr<ISFScene>;
 
 
 
 
-//	this enum describes the different types of ISF filters- it's a bitmap mask, these vals can be combined
+/*!
+The basic functionality offered by the ISF file loaded by an ISFDoc instance can be described by one or more of these enums (it's a bitmask)
+*/
 enum ISFFileType	{
-	ISFFileType_None = 0,
-	ISFFileType_Source = 1,
-	ISFFileType_Filter = 2,
-	ISFFileType_Transition = 4
+	ISFFileType_None = 0,	//!<	No or unrecognized file type
+	ISFFileType_Source = 1,	//!<	The file is a "source"- it generates images
+	ISFFileType_Filter = 2,	//!<	The file is a "filter"- it defines an image-type input under the name "inputImage", which it modifies.
+	ISFFileType_Transition = 4,	//!<	The file is a "transition"- it defines two image-type inputs ("startImage" and "endImage") in addition to a normalized float-type input ("progress"), which is used to "mix" from the start image to the end image.
+	ISFFileType_All = 7	//!<	Convenience enumeration, should always evaluate to "all types simultaneously".
 };
-#define ISFFileType_All (ISFFileType_Source | ISFFileType_Filter | ISFFileType_Transition)
-
-//	creates a string describing the ISFFileType
+//!	Returns a string describing the passed ISFFileType
 string ISFFileTypeString(const ISFFileType & n);
 
-//	YOU MUST DELETE THE OBJECTS RETURNED BY THESE FUNCTIONS.  these functions are used to verify and discover ISFs in your filesystem
-//vector<string> * CreateArrayOfISFsForPath(const string & inPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
-//vector<string> * CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
+
+
+
+/*!
+\brief Scans the passed path for valid ISF files, returns an array of strings/paths to the detected files.
+\param inFolderPath The path of the directory to scan.
+\param inType The type of ISFs to scan for.  Set to 0 or ISFFileType_All to return all valid ISFs in the passed folder- anything else will only return ISFs that match the passed type.
+\param inRecursive Whether or not the scan should be recursive.
+*/
 shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
+/*!
+\brief Returns an array of strings/paths to the default ISF files.
+\param inType The type of ISFs to scan for.  Set to 0 or ISFFileType_All to return all valid ISFs in the passed folder- anything else will only return ISFs that match the passed type.
+*/
 shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
-//	returns a true if the passed file is probably an ISF file
+/*!
+Returns 'true' if there is a file at the passed path, and that file appears to contain a valid ISF file.
+*/
 bool FileIsProbablyAnISF(const string & pathToFile);
 
 

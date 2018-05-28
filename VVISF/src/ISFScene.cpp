@@ -130,30 +130,6 @@ void ISFScene::useDoc(ISFDocRef & inDoc)	{
 		compiledInputTypeString=nullptr;
 	}
 }
-string ISFScene::getFilePath()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? string("") : doc->getPath();
-}
-string ISFScene::getFileName()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? string("") : doc->getName();
-}
-string ISFScene::getFileDescription()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? string("") : doc->getDescription();
-}
-string ISFScene::getFileCredit()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? string("") : doc->getCredit();
-}
-ISFFileType ISFScene::getFileType()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? ISFFileType_None : doc->getType();
-}
-vector<string> ISFScene::getFileCategories()	{
-	lock_guard<mutex>		lock(propertyLock);
-	return (doc==nullptr) ? vector<string>() : doc->getCategories();
-}
 
 
 void ISFScene::setBufferForInputNamed(const GLBufferRef & inBuffer, const string & inName)	{
@@ -312,11 +288,11 @@ vector<ISFAttrRef> ISFScene::getInputs()	{
 		return vector<ISFAttrRef>();
 	return tmpDoc->getInputs();
 }
-vector<ISFAttrRef> ISFScene::getInputs(const ISFValType & inType)	{
+vector<ISFAttrRef> ISFScene::getInputsOfType(const ISFValType & inType)	{
 	ISFDocRef		tmpDoc = getDoc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getInputs(inType);
+	return tmpDoc->getInputsOfType(inType);
 }
 vector<ISFAttrRef> ISFScene::getImageInputs()	{
 	ISFDocRef		tmpDoc = getDoc();
@@ -365,9 +341,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	ISFPassTargetRef		lastPass = nullptr;
 	if (passNames.size()>0)	{
 		string					lastPassName = passNames.back();
-		lastPass = tmpDoc->getPersistentTargetForKey(lastPassName);
-		if (lastPass == nullptr)
-			lastPass = tmpDoc->getTempTargetForKey(lastPassName);
+		lastPass = tmpDoc->getPassTargetForKey(lastPassName);
 	}
 	
 	GLBufferPoolRef		bp = inPoolRef;
@@ -832,39 +806,44 @@ void ISFScene::_renderPrep()	{
 	};
 	/*
 	auto		setTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
-		const char *		tmpTargetName = inTarget->getName().c_str();
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
-		GLERRLOG
-		if (samplerLoc >= 0)
-			inTarget->setUniformLocation(0, samplerLoc);
+		//const char *		tmpTargetName = inTarget->getName().c_str();
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
+		//GLERRLOG
+		//if (samplerLoc >= 0)
+		//	inTarget->setUniformLocation(0, samplerLoc);
+		//
+		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//GLERRLOG
+		//if (samplerLoc >= 0)
+		//	inTarget->setUniformLocation(2, samplerLoc);
+		//
 		
-		sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
-		GLERRLOG
-		if (samplerLoc >= 0)
-			inTarget->setUniformLocation(2, samplerLoc);
+		inTarget->cacheUniformLocations(program);
 	};
 	*/
 	auto		setTargetUniformsImageBlock = [&](const ISFPassTargetRef & inTarget)	{
-		const char *		tmpTargetName = inTarget->getName().c_str();
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
-		GLERRLOG
-		inTarget->setUniformLocation(0, samplerLoc);
+		//const char *		tmpTargetName = inTarget->getName().c_str();
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
+		//GLERRLOG
+		//inTarget->setUniformLocation(0, samplerLoc);
+		//
+		//sprintf(tmpCString,"_%s_imgRect",tmpTargetName);
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//GLERRLOG
+		//inTarget->setUniformLocation(1, samplerLoc);
+		//
+		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//GLERRLOG
+		//inTarget->setUniformLocation(2, samplerLoc);
+		//
+		//sprintf(tmpCString,"_%s_flip",tmpTargetName);
+		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//GLERRLOG
+		//inTarget->setUniformLocation(3, samplerLoc);
 		
-		sprintf(tmpCString,"_%s_imgRect",tmpTargetName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
-		GLERRLOG
-		inTarget->setUniformLocation(1, samplerLoc);
-		
-		sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
-		GLERRLOG
-		inTarget->setUniformLocation(2, samplerLoc);
-		
-		sprintf(tmpCString,"_%s_flip",tmpTargetName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
-		GLERRLOG
-		inTarget->setUniformLocation(3, samplerLoc);
+		inTarget->cacheUniformLocations(program);
 	};
 	/*
 	auto		pushTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
@@ -1202,6 +1181,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		bool					shouldBeIOSurface;
 		shouldBeIOSurface = persistentToIOSurface;
 		
+		GLBufferRef				tmpFBO = CreateFBO(true, bp);
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->getRenderPasses();
 		passIndex = 1;
@@ -1215,20 +1195,20 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			//RenderTarget			tmpRenderTarget = RenderTarget(CreateFBO(), nullptr, nullptr);
 			RenderTarget			tmpRenderTarget;
 			//if (inTargetBuffer != nullptr)	{
-				tmpRenderTarget.fbo = CreateFBO(true, bp);
+				tmpRenderTarget.fbo = tmpFBO;
 				context->makeCurrentIfNotCurrent();
 			//}
 			
 			//	if there's a target buffer name, i need to find the target buffer
 			if (pass.size()>0)	{
 				//	try to find a persistent buffer matching the target name
-				targetBuffer = tmpDoc->getPersistentTargetForKey(pass);
+				targetBuffer = tmpDoc->getPersistentPassTargetForKey(pass);
 				if (targetBuffer != nullptr)
 					isPersistentBuffer = true;
 				//	else i couldn't find a persistent buffer matching the target name
 				else	{
 					//	try to find a temp buffer matching the target name
-					targetBuffer = tmpDoc->getTempTargetForKey(pass);
+					targetBuffer = tmpDoc->getTempPassTargetForKey(pass);
 					if (targetBuffer != nullptr)
 						isTempBuffer = true;
 					else	{

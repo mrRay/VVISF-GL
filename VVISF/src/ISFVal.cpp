@@ -54,23 +54,28 @@ ISFVal::ISFVal()	{
 }
 ISFVal::ISFVal(const ISFValType & inType, const bool & inBool) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	val.boolVal = inBool;
 }
 ISFVal::ISFVal(const ISFValType & inType, const int32_t & inLong) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	val.longVal = inLong;
 }
 ISFVal::ISFVal(const ISFValType & inType, const double & inFloat) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	val.floatVal = inFloat;
 }
 ISFVal::ISFVal(const ISFValType & inType, const double & inX, const double & inY) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	val.pointVal[0] = inX;
 	val.pointVal[1] = inY;
 }
 ISFVal::ISFVal(const ISFValType & inType, const double * inBuffer, const size_t inSizeToCopy) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	double		*rPtr = const_cast<double*>(inBuffer);
 	for (size_t i=0; i<inSizeToCopy; ++i)	{
 		val.pointVal[i] = *rPtr;
@@ -79,6 +84,7 @@ ISFVal::ISFVal(const ISFValType & inType, const double * inBuffer, const size_t 
 }
 ISFVal::ISFVal(const ISFValType & inType, const double & inR, const double & inG, const double & inB, const double & inA) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	val.colorVal[0] = inR;
 	val.colorVal[1] = inG;
 	val.colorVal[2] = inB;
@@ -86,6 +92,7 @@ ISFVal::ISFVal(const ISFValType & inType, const double & inR, const double & inG
 }
 ISFVal::ISFVal(const ISFValType & inType, const GLBufferRef & inImage) : type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
+	type = inType;
 	imageVal = inImage;
 }
 
@@ -198,7 +205,23 @@ GLBufferRef ISFVal::getImageBuffer() const	{
 }
 void ISFVal::setImageBuffer(const GLBufferRef & n)	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
-	imageVal=n;
+	switch (type)	{
+	case ISFValType_None:
+	case ISFValType_Event:
+	case ISFValType_Bool:
+	case ISFValType_Long:
+	case ISFValType_Float:
+	case ISFValType_Point2D:
+	case ISFValType_Color:
+		break;
+	case ISFValType_Cube:
+	case ISFValType_Image:
+	case ISFValType_Audio:
+	case ISFValType_AudioFFT:
+		//cout << "\timageVal was " << imageVal << endl;
+		imageVal=n;
+		break;
+	}
 	//cout << "\timageVal is now " << imageVal << endl;
 }
 
@@ -265,12 +288,6 @@ ISFVal ISFColorVal(const double & inR, const double & inG, const double & inB, c
 }
 ISFVal ISFImageVal(const GLBufferRef & n)	{
 	return ISFVal(ISFValType_Image, n);
-}
-ISFVal ISFAudioVal()	{
-	return ISFVal(ISFValType_Audio);
-}
-ISFVal ISFAudioFFTVal()	{
-	return ISFVal(ISFValType_AudioFFT);
 }
 
 

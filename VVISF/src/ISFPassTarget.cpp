@@ -38,6 +38,10 @@ ISFPassTarget::ISFPassTarget(const string & inName, const ISFDoc * inParentDoc)	
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
 	name = string(inName);
 	parentDoc = (ISFDoc *)inParentDoc;
+	cachedUnis[0] = make_shared<GLCachedUni>(name);
+	cachedUnis[1] = make_shared<GLCachedUni>(FmtString("_%s_imgRect",name.c_str()));
+	cachedUnis[2] = make_shared<GLCachedUni>(FmtString("_%s_imgSize",name.c_str()));
+	cachedUnis[3] = make_shared<GLCachedUni>(FmtString("_%s_flip",name.c_str()));
 }
 ISFPassTarget::~ISFPassTarget()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
