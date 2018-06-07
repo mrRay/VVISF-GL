@@ -3,6 +3,16 @@
 
 
 
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
+
+
+
+//	we're using this PATHTYPE define to crudely establish two different paths that have 
+//	approximately the same performance characteristics.  path 0 delete-initializes a PBO and then 
+//	reserve-initializes it with the passed data directly.  path 1 maps the PBO and then copies the 
+//	CPU data to it manually.  path 1 is slightly less efficient.
 #define PATHTYPE 0
 
 
@@ -56,7 +66,7 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		return;
 	
 	//	bind the PBO and texture
-	glBindBufferARB(inPBOBuffer->desc.target, inPBOBuffer->name);
+	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	
 	glEnable(inTexBuffer->desc.target);
 	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
@@ -83,7 +93,7 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	glBindTexture(inTexBuffer->desc.target, 0);
 	glDisable(inTexBuffer->desc.target);
 	
-	glBindBufferARB(inPBOBuffer->desc.target, 0);
+	glBindBuffer(inPBOBuffer->desc.target, 0);
 	
 	//	flush- this starts the DMA transfer.  the CPU won't wait for this transfer to complete, and will return execution immediately.
 	glFlush();
@@ -97,9 +107,9 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
 		return;
 	//	bind the PBO
-	glBindBufferARB(inPBOBuffer->desc.target, inPBOBuffer->name);
+	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	//	map the PBO- this should return immediately, provided that we discard-initialized the PBO just before this
-	inPBOBuffer->cpuBackingPtr = glMapBufferARB(inPBOBuffer->desc.target, GL_WRITE_ONLY_ARB);
+	inPBOBuffer->cpuBackingPtr = glMapBuffer(inPBOBuffer->desc.target, GL_WRITE_ONLY);
 	inPBOBuffer->pboMapped = (inPBOBuffer->cpuBackingPtr != NULL) ? true : false;
 	if (!inPBOBuffer->pboMapped)
 		cout << "\tERR: couldnt map PBO in " << __PRETTY_FUNCTION__ << endl;
@@ -124,12 +134,12 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 			memcpy(wPtr, rPtr, pboBPR * inPBOBuffer->size.height);
 		}
 		//	unmap the PBO
-		glUnmapBufferARB(inPBOBuffer->desc.target);
+		glUnmapBuffer(inPBOBuffer->desc.target);
 		inPBOBuffer->pboMapped = false;
 		inPBOBuffer->cpuBackingPtr = nullptr;
 	}
 	
-	glBindBufferARB(inPBOBuffer->desc.target, 0);
+	glBindBuffer(inPBOBuffer->desc.target, 0);
 #endif	//	PATHTYPE==1
 
 }
@@ -151,7 +161,7 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		return;
 	
 	//	bind the PBO and texture
-	glBindBufferARB(inPBOBuffer->desc.target, inPBOBuffer->name);
+	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	
 	glEnable(inTexBuffer->desc.target);
 	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
@@ -178,7 +188,7 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	glBindTexture(inTexBuffer->desc.target, 0);
 	glDisable(inTexBuffer->desc.target);
 	
-	glBindBufferARB(inPBOBuffer->desc.target, 0);
+	glBindBuffer(inPBOBuffer->desc.target, 0);
 	
 	//	timestamp the buffer...
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
@@ -186,9 +196,11 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		return;
 	bp->timestampThisBuffer(inTexBuffer);
 	
-	//	make sure the buffers inherit the source's flippedness
+	//	make sure the buffers inherit the source's flippedness and timestamp
 	inPBOBuffer->flipped = inCPUBuffer->flipped;
+	inPBOBuffer->contentTimestamp = inCPUBuffer->contentTimestamp;
 	inTexBuffer->flipped = inCPUBuffer->flipped;
+	inTexBuffer->contentTimestamp = inCPUBuffer->contentTimestamp;
 }
 
 
@@ -367,3 +379,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 
 
 }
+
+
+
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)

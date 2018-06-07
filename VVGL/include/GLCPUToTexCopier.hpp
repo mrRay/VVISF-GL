@@ -10,6 +10,12 @@
 
 
 
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
+
+
+
 namespace VVGL
 {
 
@@ -84,6 +90,11 @@ inline GLCPUToTexCopierRef CreateGLCPUToTexCopierRefUsing(const GLContextRef & i
 
 
 }
+
+
+
+
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 
 
 

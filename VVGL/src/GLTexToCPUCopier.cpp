@@ -3,6 +3,12 @@
 
 
 
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
+
+
+
 namespace VVGL
 {
 
@@ -79,7 +85,7 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	
 	
 	//	bind the PBO and texture
-	glBindBufferARB(inPBOBuffer->desc.target, inPBOBuffer->name);
+	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	
 	//glEnable(inTexBuffer->desc.target);
 	//glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
@@ -108,7 +114,7 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	//	unbind the texture and PBO
 	//glBindTexture(inTexBuffer->desc.target, 0);
 	//glDisable(inTexBuffer->desc.target);
-	glBindBufferARB(inPBOBuffer->desc.target, 0);
+	glBindBuffer(inPBOBuffer->desc.target, 0);
 	
 	//	flush- this starts the DMA transfer.  the CPU won't wait for this transfer to complete, and will return execution immediately.
 	glFlush();
@@ -139,7 +145,7 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		return;
 	
 	//	try to map the PBO
-	inPBOBuffer->mapPBO(GL_READ_ONLY_ARB, true);
+	inPBOBuffer->mapPBO(GL_READ_ONLY, true);
 	//	if we mapped the PBO and got a valid cpu backing...
 	if (inPBOBuffer->pboMapped && inPBOBuffer->cpuBackingPtr!=nullptr)	{
 		//	if the CPU buffer is non-null, copy the contents of the PBO to the CPU buffer.
@@ -178,7 +184,9 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	
 	//	make sure the created buffers inherit the texture's flippedness...
 	inCPUBuffer->flipped = inTexBuffer->flipped;
+	inCPUBuffer->contentTimestamp = inTexBuffer->contentTimestamp;
 	inPBOBuffer->flipped = inTexBuffer->flipped;
+	inPBOBuffer->contentTimestamp = inTexBuffer->contentTimestamp;
 }
 
 
@@ -309,3 +317,10 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 
 
 }
+
+
+
+
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
+

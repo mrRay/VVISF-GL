@@ -618,9 +618,12 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 		GLERRLOG
 		break;
 	case GLBuffer::Type_PBO:
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 		if (inBuffer->pboMapped)	{
 			inBuffer->unmapPBO(true);
 		}
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 		glDeleteBuffers(1, &inBuffer->name);
 		GLERRLOG
 		break;
@@ -1172,6 +1175,8 @@ GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, 
 	
 	return returnMe;
 }
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
 	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
 	GLBuffer::Descriptor		&desc = returnMe->desc;
@@ -1206,6 +1211,7 @@ VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeIn
 	
 	return returnMe;
 }
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 
 
 /*	========================================	*/
@@ -1275,6 +1281,7 @@ GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & inCreateInCurrent
 	
 	return returnMe;
 }
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 GLBufferRef CreateYCbCrTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inPoolRef == nullptr)
@@ -1299,6 +1306,7 @@ GLBufferRef CreateYCbCrTex(const Size & size, const bool & createInCurrentContex
 	
 	return returnMe;
 }
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 GLBufferRef CreateDepthBuffer(const Size & size, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
@@ -1595,6 +1603,9 @@ GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, cons
 
 
 
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
 /*
 "pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage())
 "unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D())
@@ -1648,7 +1659,7 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	if the pbo is currently mapped, unmap it
 		if (returnMe->pboMapped)	{
 			glUnmapBuffer(inTarget);
@@ -1660,7 +1671,7 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		}
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	//	else we didn't find a matching PBO
 	else	{
@@ -1672,14 +1683,14 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 		returnMe->backingSize = inSize;
 		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	reserve-initialize the PBO the pool just created with the data we were passed
 		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
 		if (inData != NULL)
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	
 	return returnMe;
@@ -1724,7 +1735,7 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	if the pbo is currently mapped, unmap it
 		if (returnMe->pboMapped)	{
 			glUnmapBuffer(inTarget);
@@ -1736,7 +1747,7 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		}
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	//	else we didn't find a matching PBO
 	else	{
@@ -1748,14 +1759,14 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 		returnMe->backingSize = inSize;
 		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	reserve-initialize the PBO the pool just created with the data we were passed
 		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
 		if (inData != NULL)
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	
 	return returnMe;
@@ -1795,7 +1806,7 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	if the pbo is currently mapped, unmap it
 		if (returnMe->pboMapped)	{
 			glUnmapBuffer(inTarget);
@@ -1807,7 +1818,7 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		}
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	//	else we didn't find a matching PBO
 	else	{
@@ -1819,14 +1830,14 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		returnMe->backingSize = inSize;
 		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	reserve-initialize the PBO the pool just created with the data we were passed
 		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
 		if (inData != NULL)
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	
 	return returnMe;
@@ -1866,7 +1877,7 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	if the pbo is currently mapped, unmap it
 		if (returnMe->pboMapped)	{
 			glUnmapBuffer(inTarget);
@@ -1878,7 +1889,7 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		}
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	//	else we didn't find a matching PBO
 	else	{
@@ -1890,14 +1901,14 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		returnMe->backingSize = inSize;
 		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	reserve-initialize the PBO the pool just created with the data we were passed
 		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
 		if (inData != NULL)
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	
 	return returnMe;
@@ -1937,7 +1948,7 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	if the pbo is currently mapped, unmap it
 		if (returnMe->pboMapped)	{
 			glUnmapBuffer(inTarget);
@@ -1949,7 +1960,7 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		}
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	//	else we didn't find a matching PBO
 	else	{
@@ -1961,18 +1972,20 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 		returnMe->backingSize = inSize;
 		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
 		//	bind the PBO
-		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		glBindBuffer(returnMe->desc.target, returnMe->name);
 		//	reserve-initialize the PBO the pool just created with the data we were passed
 		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
 		if (inData != NULL)
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		//	un-bind the PBO
-		glBindBufferARB(returnMe->desc.target, 0);
+		glBindBuffer(returnMe->desc.target, 0);
 	}
 	
 	return returnMe;
 }
+
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 
 
 

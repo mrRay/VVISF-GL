@@ -258,6 +258,8 @@ VVGL_EXPORT GLBufferRef CreateBGRACPUBufferUsing(const Size & inCPUBufferSizeInP
 \param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns a GLBuffer that describes a non-planar YCbCr image (16 bits per pixel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
@@ -269,6 +271,7 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSi
 \param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 
 ///@}
 
@@ -297,6 +300,8 @@ VVGL_EXPORT GLBufferRef CreateRGBATex(const Size & size, const bool & createInCu
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns an OpenGL texture that has an internal RGB (no alhpa!) format and is 32 bits per component (128 bit color).  Internally, the data store for this texture is expected to be packed (non-planar) YCbCr data (uyvy or 2vuy).
@@ -305,6 +310,8 @@ VVGL_EXPORT GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & creat
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateYCbCrTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns an OpenGL texture configured to be a 16 bit per pixel depth buffer
@@ -426,6 +433,9 @@ VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPat
 
 
 
+//	none of this stuff should be available if we're running ES
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
+
 /*!
 \name PBO creation functions
 \brief These functions create GLBuffers that represent PBOs, which are used primarily to stream image data to/from GPUs.
@@ -435,7 +445,7 @@ VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPat
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates a GLBufferRef that represents a PBO (pixel buffer object).  These functions are used by GLTexToCPUCopier and GLBufferTexUploader to move memory between RAM and VRAM.
-\param inTarget GL_PIXEL_UNPACK_BUFFER_ARB or GL_PIXEL_PACK_BUFFER_ARB.  "pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage()).  "unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D()).
+\param inTarget GL_PIXEL_UNPACK_BUFFER or GL_PIXEL_PACK_BUFFER.  "pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage()).  "unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D()).
 \param inUsage GL_STREAM_DRAW, GL_STREAM_READ, etc.
 \param inSize The dimensions of the image that this PBO will need to contain.
 \param inData A pointer to the data in CPU memory, or null.  If this data is padded, 'inSize' needs to describe the size of the image including the padding.  Must be at least as large as the value returned by backingLengthForSize() for the appropriate GLBuffer::Descriptor.
@@ -478,6 +488,8 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32
 VVGL_EXPORT GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 ///@}
+
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 
 
 

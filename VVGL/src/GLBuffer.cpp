@@ -396,6 +396,8 @@ bool GLBuffer::safeToPublishToSyphon() const	{
 	return false;
 }
 #endif
+
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 void GLBuffer::mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContext)	{
 	if (desc.type != Type_PBO || pboMapped)
 		return;
@@ -408,11 +410,11 @@ void GLBuffer::mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContex
 		//	intentionally blank- we're using the current thread's GL context...
 	}
 	
-	glBindBufferARB(desc.target, name);
-	cpuBackingPtr = glMapBufferARB(desc.target, inAccess);
+	glBindBuffer(desc.target, name);
+	cpuBackingPtr = glMapBuffer(desc.target, inAccess);
 	if (cpuBackingPtr != nullptr)
 		pboMapped = true;
-	glBindBufferARB(desc.target, 0);
+	glBindBuffer(desc.target, 0);
 }
 void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
 	if (desc.type != Type_PBO || !pboMapped)
@@ -426,13 +428,14 @@ void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
 		//	intentionally blank- we're using the current thread's GL context...
 	}
 	
-	glBindBufferARB(desc.target, name);
+	glBindBuffer(desc.target, name);
 	glUnmapBuffer(desc.target);
-	glBindBufferARB(desc.target, 0);
+	glBindBuffer(desc.target, 0);
 	
 	cpuBackingPtr = nullptr;
 	pboMapped = false;
 }
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 bool GLBuffer::isContentMatch(GLBuffer & n) const	{
 	return this->contentTimestamp == n.contentTimestamp;
 }

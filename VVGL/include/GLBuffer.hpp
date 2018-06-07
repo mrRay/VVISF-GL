@@ -235,9 +235,11 @@ class VVGL_EXPORT GLBuffer	{
 		//!	Mac SDK only.  Returns a true if the receiver is safe to publish to Syphon.
 		bool safeToPublishToSyphon() const;
 #endif
+		
+#if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 		/*!
 		\brief Maps the PBO if the receiver is a PBO-type GLBuffer, does nothing if it's not a PBO-type GLBuffer.
-		\param inAccess The access policy OpenGL will use when mapping the PBO.  GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB, or GL_READ_WRITE_ARB.
+		\param inAccess The access policy OpenGL will use when mapping the PBO.  GL_READ_ONLY, GL_WRITE_ONLY, or GL_READ_WRITE.
 		\param inUseCurrentContext If true, the current GL context for this thread will be used to perform the GL operation.  Defaults to false (by default, it will make its buffer pool's context current before doing the GL op).
 		*/
 		void mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContext=false);
@@ -246,6 +248,7 @@ class VVGL_EXPORT GLBuffer	{
 		\param inUseCurrentContext If true, the current GL context for this thread will be used to perform the GL operation.  Defaults to false (by default, it will make its buffer pool's context current before doing the GL op).
 		*/
 		void unmapPBO(const bool & inUseCurrentContext=false);
+#endif	//	!defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 		//!	Returns a true if the receiver's timestamp is a match to the passed GLBuffer's timestamp (assumes that timestamps can be used to uniquely identify the content of a GLBuffer instance).
 		bool isContentMatch(GLBuffer & n) const;
 		//void draw(const Rect & dst) const;
