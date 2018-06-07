@@ -102,12 +102,10 @@ VVGL_EXPORT QSurfaceFormat CreateGL4SurfaceFormat();
 
 
 
+//! GLContext is an attempt to make a platform/SDK-agnostic representation of an OpenGL context.
 /*!
 \ingroup VVGL_BASIC
-
-\brief GLContext is an attempt to make a platform/SDK-agnostic representation of an OpenGL context.
-
-\detail GLContext is a OpenGL context- this class wraps up whatever the native object is for whatever platform/SDK you're compiling VVGL against, and presents a single standard interface across all platforms for the rest of VVGL and any libs that derive from it.  You can create a GLContext around an existing platform-specific OpenGL context- which makes integration with existing codebases easy- or you can also create new OpenGL contexts by making a new instance of GLContext or using the newContextSharingMe() member function of an existing context.  Has explicit support for sharing of multiple contexts so resources (textures, models, etc) can be shared between contexts.
+GLContext is a OpenGL context- this class wraps up whatever the native object is for whatever platform/SDK you're compiling VVGL against, and presents a single standard interface across all platforms for the rest of VVGL and any libs that derive from it.  You can create a GLContext around an existing platform-specific OpenGL context- which makes integration with existing codebases easy- or you can also create new OpenGL contexts by making a new instance of GLContext or using the newContextSharingMe() member function of an existing context.  Has explicit support for sharing of multiple contexts so resources (textures, models, etc) can be shared between contexts.
 
 Notes on use:
 - You should strive whenever possible to work with #GLContextRef instead of GLContext.

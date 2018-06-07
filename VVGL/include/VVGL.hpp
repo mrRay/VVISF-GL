@@ -33,6 +33,11 @@
 #include "GLBufferCopier.hpp"
 
 
+//	these classes use PBOs to implement efficient texture upload/downloads
+#include "GLCPUToTexCopier.hpp"
+#include "GLTexToCPUCopier.hpp"
+
+
 //	if we're compiling against the os x sdk then we've got some cocoa additions.  os x, not ios.
 #if defined(VVGL_SDK_MAC) && defined(__OBJC__)
 #include "GLBufferPool_CocoaAdditions.h"

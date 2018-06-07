@@ -213,12 +213,10 @@ struct VVGL_EXPORT VT_RGBA : public VT	{
 
 
 
+//! Abstract base struct for a vertex that has one or kinds of data stored in one or more vertex types
 /*!
 \ingroup VVGL_GEOM
-
-\brief Abstract base struct for a vertex that has one or kinds of data stored in one or more vertex types
-
-\detail Structs derived from VVGL::Vertex describe a single vertex and the various kinds of data associated with it (geometry, color, texture coords, and various combinations thereof).  Typically, these derived structs are passed to the Quad template (Quad consists of four vertices and the template is used to determine what kind of data is contained in each vertex)
+Structs derived from VVGL::Vertex describe a single vertex and the various kinds of data associated with it (geometry, color, texture coords, and various combinations thereof).  Typically, these derived structs are passed to the Quad template (Quad consists of four vertices and the template is used to determine what kind of data is contained in each vertex)
 */
 struct VVGL_EXPORT Vertex	{
 	//!	Zeros out any data contained by the vertex.

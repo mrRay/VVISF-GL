@@ -19,6 +19,7 @@
 				1A56121C209A82030027F83B /* PBXTargetDependency */,
 				1A56121E209A82030027F83B /* PBXTargetDependency */,
 				1A561220209A82030027F83B /* PBXTargetDependency */,
+				1A32CBFE20C87E8D002EDFB9 /* PBXTargetDependency */,
 				1A561222209A82030027F83B /* PBXTargetDependency */,
 				1A561224209A82030027F83B /* PBXTargetDependency */,
 				1A561226209A82030027F83B /* PBXTargetDependency */,
@@ -67,6 +68,10 @@
 		1A023C9B1F2011AD004FFB3A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A023C991F2011AD004FFB3A /* MainMenu.xib */; };
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
 		1A2587141ED497AE009FC66A /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1A32CBD220C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */; };
+		1A32CBD420C87E74002EDFB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD320C87E74002EDFB9 /* Assets.xcassets */; };
+		1A32CBD720C87E74002EDFB9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD520C87E74002EDFB9 /* MainMenu.xib */; };
+		1A32CBDA20C87E74002EDFB9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A32CBD920C87E74002EDFB9 /* main.m */; };
 		1A365CBA2090B2B000771520 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A365CBB2090B2E000771520 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
 		1A365CDB2090B39000771520 /* exprtk.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A0224511E390C9E00C110B8 /* exprtk.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -84,15 +89,31 @@
 		1A365CF32090B5EC00771520 /* VVISF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CC12090B35C00771520 /* VVISF.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1A365CF72090B69200771520 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A365CF82090B6A700771520 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
-		1A365D052090B97800771520 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CFE2090B97800771520 /* VVGL.framework */; };
-		1A365D062090B97800771520 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CFE2090B97800771520 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		1A365D172090B98000771520 /* VVISF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365D102090B98000771520 /* VVISF.framework */; };
-		1A365D182090B98000771520 /* VVISF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365D102090B98000771520 /* VVISF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A365D4F2090BF8900771520 /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
 		1A37BD1F1F17D410006B2475 /* blueelectricspiral.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A37BD1E1F17D410006B2475 /* blueelectricspiral.fs */; };
 		1A47DFD8200EAA9B00FF206A /* GeoShaderTest_modern.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */; };
 		1A47DFD9200EAA9B00FF206A /* GeoShaderTest_modern.gs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */; };
 		1A47DFDA200EAA9B00FF206A /* GeoShaderTest_modern.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */; };
+		1A4816DF20C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4816E020C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4816E120C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4816E320C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4816E420C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4816E520C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A48170720C9AAF6006BB843 /* BigImg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A48170620C9AAF6006BB843 /* BigImg.png */; };
+		1A48170820C9B8F3006BB843 /* SampleImg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A901A371F464949009FEE74 /* SampleImg.png */; };
+		1A4A0EB820C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
+		1A4A0EB920C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
+		1A4A0EBA20C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
+		1A4A0EBB20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
+		1A4A0EBC20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
+		1A4A0EBD20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
+		1A4A0EC020C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4A0EC120C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4A0EC220C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4A0EC320C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4A0EC420C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A4A0EC520C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A4EEA531F17B75B00B6C3F4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA521F17B75B00B6C3F4 /* main.m */; };
 		1A4EEA561F17B75B00B6C3F4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA551F17B75B00B6C3F4 /* AppDelegate.m */; };
 		1A4EEA591F17B75B00B6C3F4 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA581F17B75B00B6C3F4 /* ViewController.mm */; };
@@ -425,6 +446,9 @@
 		1AA239DC209FD3BA00C2E10B /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AA239D9209FD3BA00C2E10B /* VVGLBufferGLView.mm */; };
 		1AA239DD209FD3BA00C2E10B /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AA239D9209FD3BA00C2E10B /* VVGLBufferGLView.mm */; };
 		1AA239DE209FD3BA00C2E10B /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AA239D9209FD3BA00C2E10B /* VVGLBufferGLView.mm */; };
+		1AAC2BF620C87F6A00BAE336 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
+		1AAC2BF820C87FB300BAE336 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1AAC2BF920C8801200BAE336 /* VVGLBufferGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AA239D9209FD3BA00C2E10B /* VVGLBufferGLView.mm */; };
 		1AC2A34E209125E500228669 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE5BCF120912232008BF2F5 /* IOSurface.framework */; };
 		1AC2A34F209125E500228669 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE5BCF220912232008BF2F5 /* OpenGL.framework */; };
 		1AC2A3522091260A00228669 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AC2A3512091260A00228669 /* CoreMedia.framework */; };
@@ -652,6 +676,13 @@
 			remoteGlobalIDString = 711FDDD8A4F64C00A3AB4EE3;
 			remoteInfo = windows;
 		};
+		1A32CBFD20C87E8D002EDFB9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A32CBCD20C87E73002EDFB9;
+			remoteInfo = TexDownloadUpload;
+		};
 		1A365CB72090B29600771520 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
@@ -700,20 +731,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1A10DDFA2090AD4A00771795;
 			remoteInfo = VVGL_Mac;
-		};
-		1A365D032090B97800771520 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1A365CFD2090B97800771520;
-			remoteInfo = VVGL_GLFW;
-		};
-		1A365D152090B98000771520 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1A365D0F2090B98000771520;
-			remoteInfo = VVISF_GLFW;
 		};
 		1A4EEAA61F17C90A00B6C3F4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -855,6 +872,13 @@
 			remoteGlobalIDString = 1A23114C1E2D63C700B0EF84;
 			remoteInfo = ISFinGLFW;
 		};
+		1AAC2BF420C87F6100BAE336 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A10DDFA2090AD4A00771795;
+			remoteInfo = VVGL_Mac;
+		};
 		1AE177A51E2581EA00E978E5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AB0491A1DFDFE2500A59A85 /* Project object */;
@@ -920,18 +944,6 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1A365D0A2090B97800771520 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				1A365D062090B97800771520 /* VVGL.framework in Embed Frameworks */,
-				1A365D182090B98000771520 /* VVISF.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1A4EEAAC1F17C91200B6C3F4 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -954,6 +966,17 @@
 				1AF28FEB1F31F718007D9901 /* Syphon.framework in Embed Frameworks */,
 				1A365CF22090B5EA00771520 /* VVGL.framework in Embed Frameworks */,
 				1A365CF32090B5EC00771520 /* VVISF.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1AAC2BF720C87F6E00BAE336 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1AAC2BF820C87FB300BAE336 /* VVGL.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1027,6 +1050,14 @@
 		1A2311531E2D63C700B0EF84 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		1A23115A1E2D63C700B0EF84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLFW.xcodeproj; path = "../../../glfw-3.2.1/GLFW.xcodeproj"; sourceTree = "<group>"; };
+		1A32CBCE20C87E73002EDFB9 /* TexDownloadUpload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TexDownloadUpload.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A32CBD020C87E73002EDFB9 /* TexDownloadUploadAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexDownloadUploadAppDelegate.h; sourceTree = "<group>"; };
+		1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TexDownloadUploadAppDelegate.mm; sourceTree = "<group>"; };
+		1A32CBD320C87E74002EDFB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A32CBD620C87E74002EDFB9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		1A32CBD820C87E74002EDFB9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A32CBD920C87E74002EDFB9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1A32CBDB20C87E74002EDFB9 /* TexDownloadUpload.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TexDownloadUpload.entitlements; sourceTree = "<group>"; };
 		1A365CC12090B35C00771520 /* VVISF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVISF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A365CC32090B35C00771520 /* VVISF_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVISF_Mac.h; sourceTree = "<group>"; };
 		1A365CC42090B35C00771520 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1038,6 +1069,13 @@
 		1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.fs; sourceTree = "<group>"; };
 		1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.gs; sourceTree = "<group>"; };
 		1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.vs; sourceTree = "<group>"; };
+		1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Doxygen.hpp; path = ../../../VVGL/include/VVGL_Doxygen.hpp; sourceTree = "<group>"; };
+		1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_HardCodedDefines.hpp; path = ../../../VVGL/include/VVGL_HardCodedDefines.hpp; sourceTree = "<group>"; };
+		1A48170620C9AAF6006BB843 /* BigImg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BigImg.png; sourceTree = "<group>"; };
+		1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToCPUCopier.cpp; path = ../../../VVGL/src/GLTexToCPUCopier.cpp; sourceTree = "<group>"; };
+		1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCPUToTexCopier.cpp; path = ../../../VVGL/src/GLCPUToTexCopier.cpp; sourceTree = "<group>"; };
+		1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToCPUCopier.hpp; path = ../../../VVGL/include/GLTexToCPUCopier.hpp; sourceTree = "<group>"; };
+		1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCPUToTexCopier.hpp; path = ../../../VVGL/include/GLCPUToTexCopier.hpp; sourceTree = "<group>"; };
 		1A4EEA4F1F17B75B00B6C3F4 /* ISFonIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISFonIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A4EEA521F17B75B00B6C3F4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1A4EEA541F17B75B00B6C3F4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -1330,7 +1368,6 @@
 		1A90EE83209A017B00FA4392 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/GLKit.framework; sourceTree = DEVELOPER_DIR; };
 		1AA239BA209FD3BA00C2E10B /* VVGLBufferGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VVGLBufferGLView.h; sourceTree = "<group>"; };
 		1AA239D9209FD3BA00C2E10B /* VVGLBufferGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VVGLBufferGLView.mm; sourceTree = "<group>"; };
-		1AB049221DFDFE2500A59A85 /* ISFSandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISFSandbox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AC2A3512091260A00228669 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		1AC2A3532091261400228669 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1AC2A3552091263F00228669 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -1412,6 +1449,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A32CBCB20C87E73002EDFB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AAC2BF620C87F6A00BAE336 /* VVGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1A365CBD2090B35C00771520 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1490,15 +1535,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A365CBB2090B2E000771520 /* VVGL.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1AB0491F1DFDFE2500A59A85 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1A365D172090B98000771520 /* VVISF.framework in Frameworks */,
-				1A365D052090B97800771520 /* VVGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1688,6 +1724,21 @@
 				1A2587131ED49470009FC66A /* windows */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1A32CBCF20C87E73002EDFB9 /* TexDownloadUpload */ = {
+			isa = PBXGroup;
+			children = (
+				1A48170620C9AAF6006BB843 /* BigImg.png */,
+				1A32CBD020C87E73002EDFB9 /* TexDownloadUploadAppDelegate.h */,
+				1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */,
+				1A32CBD320C87E74002EDFB9 /* Assets.xcassets */,
+				1A32CBD520C87E74002EDFB9 /* MainMenu.xib */,
+				1A32CBD820C87E74002EDFB9 /* Info.plist */,
+				1A32CBD920C87E74002EDFB9 /* main.m */,
+				1A32CBDB20C87E74002EDFB9 /* TexDownloadUpload.entitlements */,
+			);
+			path = TexDownloadUpload;
 			sourceTree = "<group>";
 		};
 		1A365CC22090B35C00771520 /* VVISF_Mac */ = {
@@ -2095,18 +2146,22 @@
 				1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */,
 				1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */,
 				1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */,
+				1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */,
+				1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */,
 				1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */,
 				1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */,
-				1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */,
 				1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */,
 				1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */,
 				1A90EDCA2099FD1800FA4392 /* GLContext.hpp */,
+				1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */,
+				1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */,
 				1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */,
 				1A90EDC92099FD1800FA4392 /* GLScene.hpp */,
 				1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */,
 				1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */,
+				1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */,
 				1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */,
-				1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */,
+				1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */,
 				1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */,
 				1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */,
 				1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */,
@@ -2120,15 +2175,17 @@
 			children = (
 				1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */,
 				1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */,
-				1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */,
 				1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */,
 				1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */,
 				1A90EE142099FD2300FA4392 /* GLContext.cpp */,
-				1A90EE0C2099FD2300FA4392 /* GLContext.mm */,
+				1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */,
+				1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */,
 				1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */,
 				1A90EE0D2099FD2300FA4392 /* GLScene.cpp */,
 				1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */,
 				1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */,
+				1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */,
+				1A90EE0C2099FD2300FA4392 /* GLContext.mm */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -2193,6 +2250,7 @@
 				1AD86D031F4EFB4300DEED3E /* GeoShaderTest */,
 				1A569887200F821500437867 /* TransFeedbackTest */,
 				1A5698C8201012C100437867 /* JustTransFeedback */,
+				1A32CBCF20C87E73002EDFB9 /* TexDownloadUpload */,
 				1A365CC22090B35C00771520 /* VVISF_Mac */,
 				1A6ED6111F47A40A00227712 /* ISFFuncTest */,
 				1A023C901F2011AD004FFB3A /* ISF Editor */,
@@ -2208,7 +2266,6 @@
 		1AB049231DFDFE2500A59A85 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1AB049221DFDFE2500A59A85 /* ISFSandbox.app */,
 				1AE177631E2581B500E978E5 /* VVISF.framework */,
 				1AE177701E2581BB00E978E5 /* VVGL.framework */,
 				1A23114D1E2D63C700B0EF84 /* ISFinGLFW.app */,
@@ -2224,6 +2281,7 @@
 				1A365CC12090B35C00771520 /* VVISF.framework */,
 				1A365CFE2090B97800771520 /* VVGL.framework */,
 				1A365D102090B98000771520 /* VVISF.framework */,
+				1A32CBCE20C87E73002EDFB9 /* TexDownloadUpload.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2356,6 +2414,10 @@
 				1A90EDEA2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
 				1A90EDF92099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
 				1A90EE052099FD1900FA4392 /* GLScene.hpp in Headers */,
+				1A4A0EC420C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
+				1A4816E020C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
+				1A4816E420C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A4A0EC120C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
 				1A90EDF62099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2404,6 +2466,10 @@
 				1A90EDEB2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
 				1A90EDFA2099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
 				1A90EE062099FD1900FA4392 /* GLScene.hpp in Headers */,
+				1A4A0EC520C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
+				1A4816E120C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
+				1A4816E520C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A4A0EC220C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
 				1A90EDF72099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2470,6 +2536,10 @@
 				1A90EDE92099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
 				1A90EDF82099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
 				1A90EE042099FD1900FA4392 /* GLScene.hpp in Headers */,
+				1A4A0EC320C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
+				1A4816DF20C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
+				1A4816E320C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A4A0EC020C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
 				1A90EDF52099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2533,6 +2603,25 @@
 			name = ISFinGLFW;
 			productName = GLFWGears;
 			productReference = 1A23114D1E2D63C700B0EF84 /* ISFinGLFW.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1A32CBCD20C87E73002EDFB9 /* TexDownloadUpload */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A32CBFC20C87E74002EDFB9 /* Build configuration list for PBXNativeTarget "TexDownloadUpload" */;
+			buildPhases = (
+				1A32CBCA20C87E73002EDFB9 /* Sources */,
+				1A32CBCB20C87E73002EDFB9 /* Frameworks */,
+				1A32CBCC20C87E73002EDFB9 /* Resources */,
+				1AAC2BF720C87F6E00BAE336 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1AAC2BF520C87F6100BAE336 /* PBXTargetDependency */,
+			);
+			name = TexDownloadUpload;
+			productName = TexDownloadUpload;
+			productReference = 1A32CBCE20C87E73002EDFB9 /* TexDownloadUpload.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1A365CC02090B35C00771520 /* VVISF_Mac */ = {
@@ -2707,26 +2796,6 @@
 			productReference = 1A901A051F4648C0009FEE74 /* BasicGLFunc.app */;
 			productType = "com.apple.product-type.application";
 		};
-		1AB049211DFDFE2500A59A85 /* ISFSandbox */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1AB049331DFDFE2500A59A85 /* Build configuration list for PBXNativeTarget "ISFSandbox" */;
-			buildPhases = (
-				1AB0491E1DFDFE2500A59A85 /* Sources */,
-				1AB0491F1DFDFE2500A59A85 /* Frameworks */,
-				1AB049201DFDFE2500A59A85 /* Resources */,
-				1A365D0A2090B97800771520 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1A365D042090B97800771520 /* PBXTargetDependency */,
-				1A365D162090B98000771520 /* PBXTargetDependency */,
-			);
-			name = ISFSandbox;
-			productName = ISFSandbox;
-			productReference = 1AB049221DFDFE2500A59A85 /* ISFSandbox.app */;
-			productType = "com.apple.product-type.application";
-		};
 		1AD86D011F4EFB4300DEED3E /* GeoShaderTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1AD86D301F4EFB4300DEED3E /* Build configuration list for PBXNativeTarget "GeoShaderTest" */;
@@ -2802,6 +2871,10 @@
 					1A23114C1E2D63C700B0EF84 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
+					1A32CBCD20C87E73002EDFB9 = {
+						CreatedOnToolsVersion = 9.3.1;
+						ProvisioningStyle = Automatic;
+					};
 					1A365CC02090B35C00771520 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
@@ -2845,9 +2918,6 @@
 					1A901A041F4648C0009FEE74 = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
-					1AB049211DFDFE2500A59A85 = {
-						CreatedOnToolsVersion = 7.3.1;
-					};
 					1AD86D011F4EFB4300DEED3E = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
@@ -2878,7 +2948,6 @@
 			);
 			projectRoot = "";
 			targets = (
-				1AB049211DFDFE2500A59A85 /* ISFSandbox */,
 				1AE1776F1E2581BB00E978E5 /* VVGL_iOS */,
 				1AE177621E2581B500E978E5 /* VVISF_iOS */,
 				1A4EEA4E1F17B75B00B6C3F4 /* ISFonIOS */,
@@ -2888,6 +2957,7 @@
 				1AD86D011F4EFB4300DEED3E /* GeoShaderTest */,
 				1A569885200F821500437867 /* TransFeedbackTest */,
 				1A5698C6201012C100437867 /* JustTransFeedback */,
+				1A32CBCD20C87E73002EDFB9 /* TexDownloadUpload */,
 				1A365CC02090B35C00771520 /* VVISF_Mac */,
 				1A6ED60F1F47A40A00227712 /* ISFFuncTest */,
 				1A023C8E1F2011AD004FFB3A /* ISF Editor */,
@@ -3194,6 +3264,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A32CBCC20C87E73002EDFB9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A48170720C9AAF6006BB843 /* BigImg.png in Resources */,
+				1A32CBD420C87E74002EDFB9 /* Assets.xcassets in Resources */,
+				1A32CBD720C87E74002EDFB9 /* MainMenu.xib in Resources */,
+				1A48170820C9B8F3006BB843 /* SampleImg.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1A365CBF2090B35C00771520 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3278,13 +3359,6 @@
 				1A901A0E1F4648C0009FEE74 /* Assets.xcassets in Resources */,
 				1A901A111F4648C0009FEE74 /* MainMenu.xib in Resources */,
 				1A901A381F464949009FEE74 /* SampleImg.png in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1AB049201DFDFE2500A59A85 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3404,11 +3478,13 @@
 				1A90EE312099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
 				1A90EE2B2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
 				1A90EE2E2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A4A0EBC20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
 				1A90EE192099FD2400FA4392 /* GLBuffer.cpp in Sources */,
 				1A90EE252099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE282099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE342099FD2400FA4392 /* GLContext.cpp in Sources */,
 				1A90EE162099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A4A0EB920C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3417,6 +3493,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A2311541E2D63C700B0EF84 /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A32CBCA20C87E73002EDFB9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A32CBDA20C87E74002EDFB9 /* main.m in Sources */,
+				1AAC2BF920C8801200BAE336 /* VVGLBufferGLView.mm in Sources */,
+				1A32CBD220C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3445,11 +3531,13 @@
 				1A90EE322099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
 				1A90EE2C2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
 				1A90EE2F2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A4A0EBD20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
 				1A90EE1A2099FD2400FA4392 /* GLBuffer.cpp in Sources */,
 				1A90EE262099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE292099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE352099FD2400FA4392 /* GLContext.cpp in Sources */,
 				1A90EE172099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A4A0EBA20C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3528,13 +3616,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1AB0491E1DFDFE2500A59A85 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1AD86CFE1F4EFB4300DEED3E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3570,17 +3651,24 @@
 				1A90EE302099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
 				1A90EE2A2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
 				1A90EE2D2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A4A0EBB20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
 				1A90EE182099FD2400FA4392 /* GLBuffer.cpp in Sources */,
 				1A90EE242099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE272099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE332099FD2400FA4392 /* GLContext.cpp in Sources */,
 				1A90EE152099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A4A0EB820C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1A32CBFE20C87E8D002EDFB9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A32CBCD20C87E73002EDFB9 /* TexDownloadUpload */;
+			targetProxy = 1A32CBFD20C87E8D002EDFB9 /* PBXContainerItemProxy */;
+		};
 		1A365CB82090B29600771520 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1A10DDFA2090AD4A00771795 /* VVGL_Mac */;
@@ -3615,16 +3703,6 @@
 			isa = PBXTargetDependency;
 			target = 1A10DDFA2090AD4A00771795 /* VVGL_Mac */;
 			targetProxy = 1A365CF42090B66F00771520 /* PBXContainerItemProxy */;
-		};
-		1A365D042090B97800771520 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1A365CFD2090B97800771520 /* VVGL_GLFW */;
-			targetProxy = 1A365D032090B97800771520 /* PBXContainerItemProxy */;
-		};
-		1A365D162090B98000771520 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1A365D0F2090B98000771520 /* VVISF_GLFW */;
-			targetProxy = 1A365D152090B98000771520 /* PBXContainerItemProxy */;
 		};
 		1A4EEAA71F17C90A00B6C3F4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3726,6 +3804,11 @@
 			target = 1A23114C1E2D63C700B0EF84 /* ISFinGLFW */;
 			targetProxy = 1A561235209A821C0027F83B /* PBXContainerItemProxy */;
 		};
+		1AAC2BF520C87F6100BAE336 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A10DDFA2090AD4A00771795 /* VVGL_Mac */;
+			targetProxy = 1AAC2BF420C87F6100BAE336 /* PBXContainerItemProxy */;
+		};
 		1AE177A61E2581EA00E978E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1AE1776F1E2581BB00E978E5 /* VVGL_iOS */;
@@ -3753,6 +3836,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				1A023C9A1F2011AD004FFB3A /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		1A32CBD520C87E74002EDFB9 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1A32CBD620C87E74002EDFB9 /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -3986,6 +4077,50 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_CFLAGS = "-DVVGL_SDK_GLFW";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.GLFWGears;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1A32CBDC20C87E74002EDFB9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = TexDownloadUpload/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.TexDownloadUpload;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1A32CBDD20C87E74002EDFB9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = TexDownloadUpload/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.companyname.TexDownloadUpload;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -4579,34 +4714,6 @@
 			};
 			name = Release;
 		};
-		1AB049341DFDFE2500A59A85 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = ISFSandbox/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		1AB049351DFDFE2500A59A85 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = ISFSandbox/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.ISFSandbox;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		1AD86D101F4EFB4300DEED3E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4767,6 +4874,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		1A32CBFC20C87E74002EDFB9 /* Build configuration list for PBXNativeTarget "TexDownloadUpload" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A32CBDC20C87E74002EDFB9 /* Debug */,
+				1A32CBDD20C87E74002EDFB9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1A365CC62090B35C00771520 /* Build configuration list for PBXNativeTarget "VVISF_Mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4880,15 +4996,6 @@
 			buildConfigurations = (
 				1AB049311DFDFE2500A59A85 /* Debug */,
 				1AB049321DFDFE2500A59A85 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1AB049331DFDFE2500A59A85 /* Build configuration list for PBXNativeTarget "ISFSandbox" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1AB049341DFDFE2500A59A85 /* Debug */,
-				1AB049351DFDFE2500A59A85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

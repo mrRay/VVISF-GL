@@ -4,7 +4,9 @@ enum Target	{
 	Target_RB,
 	Target_2D = GL_TEXTURE_2D,
 	Target_Rect = GL_TEXTURE_RECTANGLE,
-	Target_Cube = GL_TEXTURE_CUBE_MAP
+	Target_Cube = GL_TEXTURE_CUBE_MAP,
+	Target_PBOPack = GL_PIXEL_PACK_BUFFER,
+	Target_PBOUnpack = GL_PIXEL_UNPACK_BUFFER
 };
 enum InternalFormat	{
 	IF_None = 0,

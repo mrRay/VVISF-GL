@@ -21,11 +21,10 @@ using namespace std;
 
 
 
+//! Abstract base class that caches the location of an arbitrary GL "object" that we do not own.
 /*!
 \ingroup VVGL_MISC
-\brief Abstract base class that caches the location of an arbitrary GL "object" that we do not own.
-
-\detail A lot of GL "objects"- like attributes, uniforms, etc- are numbers that we have to keep track of (but not assume ownership of).  Querying the context for the location of these "objects" every render pass is a performance sink.  The goal of this class is to eliminate the need to repeatedly query the GL context by caching the location along with the relevant program and a string that can be used to look up the property.
+A lot of GL "objects"- like attributes, uniforms, etc- are numbers that we have to keep track of (but not assume ownership of).  Querying the context for the location of these "objects" every render pass is a performance sink.  The goal of this class is to eliminate the need to repeatedly query the GL context by caching the location along with the relevant program and a string that can be used to look up the property.
 
 This is an abstract base class, so you should never create an instance of it directly- instead, use one of its subclasses (or write another subclass) which cache specific kinds of data: GLCachedAttrib caches the location of an attribute in a GLSL program, and GLCachedUni caches the location of a uniform in a GLSL program.
 

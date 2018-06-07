@@ -109,7 +109,7 @@
 	[self drawBuffer:lastBuffer];
 }
 - (void) drawBuffer:(VVGL::GLBufferRef)b	{
-	//NSLog(@"%s ... %p, %s",__func__,self,b->getDescriptionString().c_str());
+	//NSLog(@"%s ... %p, %s",__func__,self,(b==nullptr)?"null":b->getDescriptionString().c_str());
 	
 	BOOL			bail = NO;
 	

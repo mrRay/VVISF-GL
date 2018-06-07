@@ -239,7 +239,9 @@ void GLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 	GLERRLOG
 	uint32_t		mask = GL_COLOR_BUFFER_BIT;
 #if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
-	mask |= GL_DEPTH_BUFFER_BIT;
+	if (inRenderTarget.depth != nullptr)	{
+		mask |= GL_DEPTH_BUFFER_BIT;
+	}
 #endif
 	glClear(mask);
 	GLERRLOG

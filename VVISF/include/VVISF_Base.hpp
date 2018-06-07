@@ -40,11 +40,10 @@ class ISFScene;
 \relates VVISF::ISFPassTarget
 */
 using ISFPassTargetRef = shared_ptr<ISFPassTarget>;
+//! ISFDocRef is a shared pointer around an ISFDoc instance.
 /*!
-\brief ISFDocRef is a shared pointer around an ISFDoc instance.
 \relates VVISF::ISFDoc
-
-\detail ISFDocRef is the preferred means of working with ISFDoc instances, which can be extremely simple with no overhead or can potentially contain a variety of data values including GL resources (texture, buffers, etc).
+ISFDocRef is the preferred means of working with ISFDoc instances, which can be extremely simple with no overhead or can potentially contain a variety of data values including GL resources (texture, buffers, etc).
 */
 using ISFDocRef = shared_ptr<ISFDoc>;
 /*!
@@ -52,11 +51,10 @@ using ISFDocRef = shared_ptr<ISFDoc>;
 \relates VVISF::ISFAttr
 */
 using ISFAttrRef = std::shared_ptr<ISFAttr>;
+//! ISFSceneRef is a shared pointer around an ISFScene instance.
 /*!
-\brief ISFSceneRef is a shared pointer around an ISFScene instance.
 \relates VVISF::ISFScene
-
-\detail ISFScene is a subclass of GLScene, and like its parent, you should strive to work exclusively with ISFSceneRef instead of ISFScene directly.
+ISFScene is a subclass of GLScene, and like its parent, you should strive to work exclusively with ISFSceneRef instead of ISFScene directly.
 */
 using ISFSceneRef = std::shared_ptr<ISFScene>;
 

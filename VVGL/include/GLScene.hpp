@@ -24,11 +24,10 @@ using namespace std;
 
 
 
+//! Manages drawing in a GLContext, provides a simple interface for orthographic rendering, render-to-texture operations, and loading vert/geo/frag shaders.
 /*!
 \ingroup VVGL_BASIC
-\brief Manages drawing in a GLContext, provides a simple interface for orthographic rendering, render-to-texture operations, and loading vert/geo/frag shaders.
-
-\detail A GLScene is a container for a GL context that lets you provide various callbacks which are executed at specific times during rendering.  The interface is geared towards making it easy to load frag/vert/geo shaders, perform orthographic projection, providing customized drawing code, subclassing, and rendering to textures/buffers/GLBuffers.  Used as a subclass of several other classes, also used in sample apps to perform GL rendering and output.
+A GLScene is a container for a GL context that lets you provide various callbacks which are executed at specific times during rendering.  The interface is geared towards making it easy to load frag/vert/geo shaders, perform orthographic projection, providing customized drawing code, subclassing, and rendering to textures/buffers/GLBuffers.  Used as a subclass of several other classes, also used in sample apps to perform GL rendering and output.
 */
 
 class VVGL_EXPORT GLScene	{

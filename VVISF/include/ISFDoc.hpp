@@ -76,22 +76,20 @@ class VVISF_EXPORT ISFDoc	{
 		*/
 		///@{
 		
+		//! Constructs an ISFDoc instance from a passed file on disk.  Consider using CreateISFDocRef() instead.
 		/*!
-		\brief Constructs an ISFDoc instance from a passed file on disk.  Consider using CreateISFDocRef() instead.
 		\param inPath The path to the ISF file you want to load as an ISFDoc.
 		\param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
-		
-		\detail Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
+		Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
 		*/
 		ISFDoc(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr);
 		
+		//! Constructs an ISFDoc instance from shader strings.  Consider using CreateISFDocRef() instead.
 		/*
-		\brief Constructs an ISFDoc instance from shader strings.  Consider using CreateISFDocRef() instead.
 		\param inFSContents A string containing the fragment shader portion of the ISF file.  The JSON blob that defines the ISF file must be contained in here.
 		\param inVSContents A string containing the vertex shader portion of the ISF file.  If you don't have a vertex shader to pass, VVISF defines a static string "ISFVertPassthru_GL2", which should work as a "passthru" vertex shader for most purposes.
 		\param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
-		
-		\detail Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
+		Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 		*/
 		ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr);
 		
@@ -223,23 +221,22 @@ class VVISF_EXPORT ISFDoc	{
 
 
 
+//! Constructs an ISFDoc instance from a passed file on disk.
 /*!
 \relatedalso ISFDoc
-\brief Constructs an ISFDoc instance from a passed file on disk.
 \param inPath The path to the ISF file you want to load as an ISFDoc.
 \param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
-
-\detail Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
+Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
 */
 inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr) { return make_shared<ISFDoc>(inPath,inParentScene); }
+
+//! Constructs an ISFDoc instance from shader strings.
 /*!
 \relatedalso ISFDoc
-\brief Constructs an ISFDoc instance from shader strings.
 \param inFSContents A string containing the fragment shader portion of the ISF file.  The JSON blob that defines the ISF file must be contained in here.
 \param inVSContents A string containing the vertex shader portion of the ISF file.  If you don't have a vertex shader to pass, VVISF defines a static string "ISFVertPassthru_GL2", which should work as a "passthru" vertex shader for most purposes.
 \param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
-
-\detail Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
+Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 */
 inline ISFDocRef CreateISFDocRef(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene); }
 

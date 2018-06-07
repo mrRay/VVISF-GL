@@ -18,11 +18,10 @@ using namespace std;
 
 
 
+//! Struct describing a timevalue as the quotient of two numbers, a value (64-bit unsigned int) and a scale factor (32-bit int).
 /*!
 \ingroup VVGL_MISC
-\brief Struct describing a timevalue as the quotient of two numbers, a value (64-bit unsigned int) and a scale factor (32-bit int).
-
-\detail GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
+GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
 */
 struct Timestamp	{
 	uint64_t	value=0;
@@ -43,12 +42,10 @@ struct Timestamp	{
 };
 
 
-//	Timestamper class- vends timestamps for buffers
+//! Class that vends Timestamp structs
 /*!
 \ingroup VVGL_MISC
-\brief Class that vends Timestamp structs
-
-\detail GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
+GLBuffers vended by the pool are timestamped so the stamps can be compared and used to determine if the content is different without analyzing the contents of the frame.
 */
 class Timestamper	{
 	private:

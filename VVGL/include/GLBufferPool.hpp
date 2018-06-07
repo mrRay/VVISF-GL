@@ -28,13 +28,9 @@ using namespace std;
 
 
 
+//! Buffer pools create and manage GL resources which, on deletion, are either destroyed or returned to the pool for re-use.
 /*!
 \ingroup VVGL_BASIC
-\brief Buffer pools create and manage GL resources which, on deletion, are either destroyed or returned to the pool for re-use.
-
-\detail
-
-
 
 Notes on use:
 - GLBufferPool creates GLBuffer/GLBufferRef instances.  You need a GLBufferPool to create a GLBuffer.  If you're using VVGL you're almost certainly going to want to create a buffer pool.
@@ -105,7 +101,7 @@ class VVGL_EXPORT GLBufferPool	{
 /*!
 \relatesalso GLBufferPool
 \brief This is how you create the global buffer pool.
-\param inShareCtx The buffer pool that is created will share this context (textures and buffers created by the buffer pool will be compatible with all other GL contexts in the same sharegroup).
+\param inPoolCtx The buffer pool that is created will share this context (textures and buffers created by the buffer pool will be compatible with all other GL contexts in the same sharegroup).
 */
 VVGL_EXPORT GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCtx=nullptr);
 /*!
@@ -185,38 +181,94 @@ VVGL_EXPORT GLBufferRef CreateRB(const Size & size, const bool & createInCurrent
 
 /*!
 \name CPU-based buffer creation functions
-\brief These functions create GLBuffers that are entirely CPU-based- no GL resources.
+\brief These functions create GLBuffers that are entirely CPU-based- no GL resources.  Some of these functions allocate memory- others just create a GLBuffer representation of an existing block of memory that was created by another API.
 */
 ///@{
 
 /*!
 \ingroup VVGL_BUFFERCREATE
-\brief Creates and returns a GLBuffer that uses a 32 bit per pixel RGBA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.
+\brief Creates and returns a GLBuffer that uses a 32 bit per pixel non-planar RGBA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.  The CPU buffer is allocated by this function.
 \param size The size of the buffer to create (in pixels).
-\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateRGBACPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
-\brief Creates and returns a GLBuffer that uses a 128 bit per pixel RGBA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.
+\brief Creates and returns a GLBuffer that uses a 128 bit per pixel non-planar RGBA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.  The CPU buffer is allocated by this function.
 \param size The size of the buffer to create (in pixels).
-\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateRGBAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
-\brief Creates and returns a GLBuffer that uses a 32 bit per pixel BGRA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.
+\brief Creates and returns a GLBuffer that uses a 32 bit per pixel non-planar BGRA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.  The CPU buffer is allocated by this function.
 \param size The size of the buffer to create (in pixels).
-\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateBGRACPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
-\brief Creates and returns a GLBuffer that uses a 128 bit per pixel BGRA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.
+\brief Creates and returns a GLBuffer that uses a 128 bit per pixel non-planar BGRA CPU buffer as its backing.  This GLBuffer doesn't have any GL resources.  The CPU buffer is allocated by this function.
 \param size The size of the buffer to create (in pixels).
-\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
 */
 VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a GLBuffer that describes a non-planar RGBA image (32 bits per pixel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
+\param inCPUBufferSizeInPixels The size of the buffer at inCPUBackingPtr, expressed in pixels.  If the image is padded, this size needs to include the padding.  If the padding is a non-integral value, you can't use this function and will instead have to create a CPU buffer (using CreateRGBACPUBuffer() or another function that allocates memory) and copy the image data to it.
+\param inCPUBackingPtr A pointer to the memory containing the image data- this is the data that will eventually get uploaded to OpenGL (the bitmap data).  Must not be null.
+\param inImageSizeInPixels The size of the image at inCPUBackingPtr, expressed in pixels.  This is the size of the image- not the size of the buffer- and as such, it should not include any padding.
+\param inReleaseCallbackContext An arbitrary pointer you supply.  A weak ref to this pointer is maintained by the GLBuffer, and it is passed to the buffer's release callback (which is executed when the buffer is freed).
+\param inReleaseCallback This function or block will be executed when the GLBuffer is destroyed- the release callback context from inReleaseCallbackContext is passed to this function.
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
+*/
+VVGL_EXPORT GLBufferRef CreateRGBACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a GLBuffer that describes a non-planar RGBA image (128 bits per pixel, or 32 bits per channel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
+\param inCPUBufferSizeInPixels The size of the buffer at inCPUBackingPtr, expressed in pixels.  If the image is padded, this size needs to include the padding.  If the padding is a non-integral value, you can't use this function and will instead have to create a CPU buffer (using CreateRGBACPUBuffer() or another function that allocates memory) and copy the image data to it.
+\param inCPUBackingPtr A pointer to the memory containing the image data- this is the data that will eventually get uploaded to OpenGL (the bitmap data).  Must not be null.
+\param inImageSizeInPixels The size of the image at inCPUBackingPtr, expressed in pixels.  This is the size of the image- not the size of the buffer- and as such, it should not include any padding.
+\param inReleaseCallbackContext An arbitrary pointer you supply.  A weak ref to this pointer is maintained by the GLBuffer, and it is passed to the buffer's release callback (which is executed when the buffer is freed).
+\param inReleaseCallback This function or block will be executed when the GLBuffer is destroyed- the release callback context from inReleaseCallbackContext is passed to this function.
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
+*/
+VVGL_EXPORT GLBufferRef CreateRGBAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a GLBuffer that describes a non-planar BGRA image (32 bits per pixel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
+\param inCPUBufferSizeInPixels The size of the buffer at inCPUBackingPtr, expressed in pixels.  If the image is padded, this size needs to include the padding.  If the padding is a non-integral value, you can't use this function and will instead have to create a CPU buffer (using CreateRGBACPUBuffer() or another function that allocates memory) and copy the image data to it.
+\param inCPUBackingPtr A pointer to the memory containing the image data- this is the data that will eventually get uploaded to OpenGL (the bitmap data).  Must not be null.
+\param inImageSizeInPixels The size of the image at inCPUBackingPtr, expressed in pixels.  This is the size of the image- not the size of the buffer- and as such, it should not include any padding.
+\param inReleaseCallbackContext An arbitrary pointer you supply.  A weak ref to this pointer is maintained by the GLBuffer, and it is passed to the buffer's release callback (which is executed when the buffer is freed).
+\param inReleaseCallback This function or block will be executed when the GLBuffer is destroyed- the release callback context from inReleaseCallbackContext is passed to this function.
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
+*/
+VVGL_EXPORT GLBufferRef CreateBGRACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a GLBuffer that describes a non-planar BGRA image (128 bits per pixel, or 32 bits per channel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
+\param inCPUBufferSizeInPixels The size of the buffer at inCPUBackingPtr, expressed in pixels.  If the image is padded, this size needs to include the padding.  If the padding is a non-integral value, you can't use this function and will instead have to create a CPU buffer (using CreateRGBACPUBuffer() or another function that allocates memory) and copy the image data to it.
+\param inCPUBackingPtr A pointer to the memory containing the image data- this is the data that will eventually get uploaded to OpenGL (the bitmap data).  Must not be null.
+\param inImageSizeInPixels The size of the image at inCPUBackingPtr, expressed in pixels.  This is the size of the image- not the size of the buffer- and as such, it should not include any padding.
+\param inReleaseCallbackContext An arbitrary pointer you supply.  A weak ref to this pointer is maintained by the GLBuffer, and it is passed to the buffer's release callback (which is executed when the buffer is freed).
+\param inReleaseCallback This function or block will be executed when the GLBuffer is destroyed- the release callback context from inReleaseCallbackContext is passed to this function.
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
+*/
+VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a GLBuffer that describes a non-planar YCbCr image (16 bits per pixel) in CPU memory- doesn't create any GL resources, and also doesn't allocate the CPU memory required for the image.  This function is a good way to create a GLBuffer using a block of memory from another API- the release callback and release callback context can be used to ensure that the GLBuffer has a strong reference to any memory structures that need to exist for the duration of the GLBuffer's lifetime.  This function does not copy any memory.
+\param inCPUBufferSizeInPixels The size of the buffer at inCPUBackingPtr, expressed in pixels.  If the image is padded, this size needs to include the padding.  If the padding is a non-integral value, you can't use this function and will instead have to create a CPU buffer (using CreateRGBACPUBuffer() or another function that allocates memory) and copy the image data to it.
+\param inCPUBackingPtr A pointer to the memory containing the image data- this is the data that will eventually get uploaded to OpenGL (the bitmap data).  Must not be null.
+\param inImageSizeInPixels The size of the image at inCPUBackingPtr, expressed in pixels.  This is the size of the image- not the size of the buffer- and as such, it should not include any padding.
+\param inReleaseCallbackContext An arbitrary pointer you supply.  A weak ref to this pointer is maintained by the GLBuffer, and it is passed to the buffer's release callback (which is executed when the buffer is freed).
+\param inReleaseCallback This function or block will be executed when the GLBuffer is destroyed- the release callback context from inReleaseCallbackContext is passed to this function.
+\param inPoolRef The pool that the GLBuffer should be created with.  This is a CPU-based buffer, so there aren't any GL resources that need to be freed by a GL context, but it has a pool regardless.
+*/
+VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 ///@}
 
@@ -224,7 +276,7 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBuffer(const Size & size, const GLBuff
 
 
 /*!
-\name Texture Image Buffers
+\name Texture Buffers
 \brief These functions create GLBuffers that are OpenGL textures
 */
 ///@{
@@ -245,6 +297,14 @@ VVGL_EXPORT GLBufferRef CreateRGBATex(const Size & size, const bool & createInCu
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns an OpenGL texture that has an internal RGB (no alhpa!) format and is 32 bits per component (128 bit color).  Internally, the data store for this texture is expected to be packed (non-planar) YCbCr data (uyvy or 2vuy).
+\param size The size of the buffer to create (in pixels).
+\param createInCurrentContext If true, the GL resource will be created in the current context (assumes that a GL context is active in the current thread).  If false, the GL resource will be created by the GL context owned by the buffer pool.
+\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+*/
+VVGL_EXPORT GLBufferRef CreateYCbCrTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns an OpenGL texture configured to be a 16 bit per pixel depth buffer
@@ -288,8 +348,7 @@ VVGL_EXPORT GLBufferRef CreateBGRATex(const Size & size, const bool & createInCu
 */
 VVGL_EXPORT GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
-#if !(VVGL_SDK_RPI)
-
+#if defined(VVGL_SDK_MAC)
 /*!
 \name CPU-backed Texture Image Buffers
 \brief These functions create GLBuffers that are OpenGL textures backed by a CPU buffer.  Changes made to the CPU buffer can be quickly pushed to the GL texture.
@@ -331,7 +390,7 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const boo
 
 ///@}
 
-#endif	//	!VVGL_SDK_RPI
+#endif	//	VVGL_SDK_MAC
 #endif	//	!VVGL_SDK_IOS
 
 ///@}
@@ -340,7 +399,7 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const boo
 
 
 /*!
-\name Image file to buffer function
+\name Image file to buffer functions
 \brief These functions create GLBuffers from image files on disk
 */
 ///@{
@@ -361,6 +420,62 @@ VVGL_EXPORT GLBufferRef CreateTexFromImage(const string & inPath, const bool & c
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
+///@}
+
+
+
+
+/*!
+\name PBO creation functions
+\brief These functions create GLBuffers that represent PBOs, which are used primarily to stream image data to/from GPUs.
+*/
+///@{
+
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates a GLBufferRef that represents a PBO (pixel buffer object).  These functions are used by GLTexToCPUCopier and GLBufferTexUploader to move memory between RAM and VRAM.
+\param inTarget GL_PIXEL_UNPACK_BUFFER_ARB or GL_PIXEL_PACK_BUFFER_ARB.  "pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage()).  "unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D()).
+\param inUsage GL_STREAM_DRAW, GL_STREAM_READ, etc.
+\param inSize The dimensions of the image that this PBO will need to contain.
+\param inData A pointer to the data in CPU memory, or null.  If this data is padded, 'inSize' needs to describe the size of the image including the padding.  Must be at least as large as the value returned by backingLengthForSize() for the appropriate GLBuffer::Descriptor.
+\param inCreateInCurrentContext If true, the GL resource will be created in the current context (assumes that a GL context is active in the current thread).  If false, the GL resource will be created by the GL context owned by the buffer pool.
+\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+
+- "pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage())
+- "unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D())
+<BR>
+
+decoding "GL_STREAM_DRAW, GL_STREAM_READ, etc:
+- STREAM		write once, read at most a few times
+- STATIC		write once, read many times
+- DYNAMIC		write many times, read many times
+<BR><BR>
+- DRAW		CPU -> GL
+- READ		GL -> CPU
+- COPY		GL -> GL
+*/
+VVGL_EXPORT GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates a GLBufferRef that represents a PBO.  See the documentation of CreateRGBAPBO() for more information- PBOs do not contain inherently typed data, these functions only differ in the contents of the GLBuffer::Descriptor they populate.
+*/
+VVGL_EXPORT GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates a GLBufferRef that represents a PBO.  See the documentation of CreateRGBAPBO() for more information- PBOs do not contain inherently typed data, these functions only differ in the contents of the GLBuffer::Descriptor they populate.
+*/
+VVGL_EXPORT GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates a GLBufferRef that represents a PBO.  See the documentation of CreateRGBAPBO() for more information- PBOs do not contain inherently typed data, these functions only differ in the contents of the GLBuffer::Descriptor they populate.
+*/
+VVGL_EXPORT GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates a GLBufferRef that represents a PBO.  See the documentation of CreateRGBAPBO() for more information- PBOs do not contain inherently typed data, these functions only differ in the contents of the GLBuffer::Descriptor they populate.
+*/
+VVGL_EXPORT GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData=nullptr, const bool & inCreateInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 ///@}
 

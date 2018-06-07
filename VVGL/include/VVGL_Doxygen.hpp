@@ -10,18 +10,21 @@
 A variety of sample projects that include libs and apps are included with the repos, but some sample code snippets for common or introductory actions in VVGL are listed here as a quick overview:
 
 <BR>
+<b>Creating a GLContext</b><BR>
+If you want to work with OpenGL then you need an "OpenGL context".  Every platform has its own native SDK for working with OpenGL, and they all have subtle differences- GLContext/GLContextRef is an attempt to create a cross-platform class that presents the same interface across all platforms, but the exact call to create a GLContext is going to change slightly depending on which platform you're compiling VVGL against.  The same holds true if you're compiling VVGL to use with another cross-platform GL solution, like GLFW or Qt.<BR>
+
 <b>Creating a new GLContext from an existing GLContext (all SDKs)</b>
 \code{.cpp}
 GLContextRef		origCtx;	//	this is assumed to be non-nil in the real world...
 GLContextRef		newCtx = origCtx->newContextSharingMe();
 \endcode
 
-<b>Creating a new GLContext- simplest approach, but least control over the kind of context that gets created</b>
+<b>Creating a new GLContext- simplest approach, but least control over the kind of context that gets created (all SDKs)</b>
 \code{.cpp}
 GLContextRef		newCtx = CreateNewGLContextRef();
 \endcode
 
-<b>Creating GLContext with the mac SDK:</b>
+<b>Creating a GLContext with the mac SDK:</b>
 \code{.cpp}
 NSOpenGLContext		*origMacCtx;	//	this is assumed to be non-nil in the real world...
 CGLContextObj		tmpMacCtx = [origMacCtx CGLContextObj];
@@ -45,7 +48,7 @@ GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateCompatibilityGLPixelFo
 GLContextRef		vvglCtx = CreateNewGLContextRef(NULL, CreateGL4PixelFormat());
 \endcode
 
-<b>Creating GLContext with the iOS SDK:</b>
+<b>Creating a GLContext with the iOS SDK:</b>
 \code{.cpp}
 EAGLContext			*tmpCtx;	//	this is assumed to be non-nil in the real world...
 
@@ -54,7 +57,7 @@ EAGLContext			*tmpCtx;	//	this is assumed to be non-nil in the real world...
 GLContextRef		vvglCtx = CreateGLContextRefUsing(tmpCtx);
 \endcode
 
-<b>Creating GLContext with the GLFW SDK:</b>
+<b>Creating a GLContext with the GLFW SDK:</b>
 \code{.cpp}
 GLFWwindow *	window;	//	this is assumed to be non-nil in the real world...
 
@@ -63,7 +66,7 @@ GLFWwindow *	window;	//	this is assumed to be non-nil in the real world...
 GLContextRef	ctxRef = CreateGLContextRefUsing(window);
 \endcode
 
-<b>Creating GLContext with the Qt SDK:</b>
+<b>Creating a GLContext with the Qt SDK:</b>
 \code{.cpp}
 QSurface *			origSfc;	//	this is assumed to be non-nil in the real world...
 QOpenGLContext *	origCtx;	//	this is assumed to be non-nil in the real world...
@@ -85,9 +88,12 @@ GLContextRef		vvglCtx = CreateNewGLContextRef(nullptr, nullptr, CreateDefaultSur
 //	this makes a GLContext (and new OpenGL context) using GL 4...
 GLContextRef		vvglCtx = CreateNewGLContextRef(nullptr, nullptr, CreateGL4SurfaceFormat());
 \endcode
-
-
 <BR>
+
+<b>GLBufferPool</b><BR>
+GLBufferPool is the class responsible for creating, pool, and destroying GL assets like textures, PBOs, etc.  This lib defines a global singleton that you should populate during setup by passing it a GLContext that it can use to create/destroy resources.<BR>
+
+
 <b>Creating the global buffer pool, then a couple GL resources:</b>
 \code{.cpp}
 //	first create a shared context using one of the above methods (this is just a quick example)
@@ -107,11 +113,36 @@ CreateGlobalBufferPool(sharedContext->newContextSharingMe());
 GLBufferRef			tmpTex = CreateRGBATex(VVGL::Size(1920,1080));
 
 //	makes a 1920x1080 GL texture (32 bits per pixel).  the texture 
-//	will be created by whatever GL context is current in the executing thread
+//	will be created by whatever GL context is current in the executing thread.
+//	If no GL context is current, this won't work!
 GLBufferRef			tmpTex = CreateRGBATex(VVGL::Size(1920,1080), true);
 
 //	makes a 1920x1080 GL texture (128 bits per pixel).
 GLBufferRef			tmpTex = CreateRGBAFloatTex(VVGL::Size(1920,1080));
+
+//	makes a CPU-based buffer- this GLBuffer doesn't have any GL resources,
+//	it's entirely RAM-based.  the memory that contains the image data is 
+//	allocated by this lib.
+GLBufferRef			tmpCPUImg = CreateRGBACPUBuffer(VVGL::Size(1920,1080));
+
+//	makes a CPU-based buffer- this GLBuffer doesn't have any GL resources 
+//	either, but the memory that contains the image data has been allocated 
+//	by another library and will be freed when the GLBuffer is deleted and its 
+//	backing release callback (the block below) is executed.
+VVGL::Size			cpuImageSize(1920,1080);
+VVGL::Size			cpuBackingSize(1924,1080);	//	compensates for padding
+void				*cpuBitmapData = XXX;
+AnotherAPIsImageObject		*someImageRef = XXX;
+GLBufferRef			tmpCPUImg = CreateRGBACPUBufferUsing(
+	cpuImageSize,	//	image size
+	cpuBitmapData,	//	bitmap data
+	cpuBackingSize,	//	bitmap size
+	someImageRef,	//	release callback context
+	[](GLBuffer & inBuffer, void * inReleaseCallbackContext)	{
+		AnotherAPIsImageObject		*tmpObj = (AnotherAPIsImageObject *)inReleaseCallbackContext;
+		//	...free 'tmpObj' here...
+	}
+	);
 \endcode
 */
 

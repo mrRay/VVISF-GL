@@ -32,12 +32,13 @@ class GLContext;
 class GLScene;
 struct GLCachedAttrib;
 struct GLCachedUni;
+class GLTexToCPUCopier;
+class GLCPUToTexCopier;
 
+//!	Very common- GLBufferRef is a shared pointer around a GLBuffer.
 /*!
-\brief	Very common- GLBufferRef is a shared pointer around a GLBuffer.
 \relates VVGL::GLBuffer
-
-\detail	This is the preferred means of working with GLBuffer- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resource will not be duplicated.  Working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use (and when the class instance is deleted, its corresponding GL resource will either be deleted or pooled).
+This is the preferred means of working with GLBuffer- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resource will not be duplicated.  Working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use (and when the class instance is deleted, its corresponding GL resource will either be deleted or pooled).
 */
 using GLBufferRef = shared_ptr<GLBuffer>;
 /*!
@@ -71,6 +72,16 @@ using GLCachedAttribRef = shared_ptr<GLCachedAttrib>;
 \relates VVGL::GLCachedUni
 */
 using GLCachedUniRef = shared_ptr<GLCachedUni>;
+/*!
+\brief	A GLTexToCPUCopierRef is a shared pointer around a GLTexToCPUCopier.
+\relates VVGL::GLTexToCPUCopier
+*/
+using GLTexToCPUCopierRef = shared_ptr<GLTexToCPUCopier>;
+/*!
+\brief	A GLCPUToTexCopierRef is a shared pointer around a GLCPUToTexCopier.
+\relates VVGL::GLCPUToTexCopier
+*/
+using GLCPUToTexCopierRef = shared_ptr<GLCPUToTexCopier>;
 
 
 

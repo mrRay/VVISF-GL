@@ -15,19 +15,19 @@ using namespace std;
 
 
 
-uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
-	uint32_t		bytesPerRow = 4 * s.width;
+uint32_t GLBuffer::Descriptor::bytesPerRowForWidth(const uint32_t & w) const	{
+	uint32_t		bytesPerRow = 4 * w;
 	
 	switch (this->pixelType)	{
 	case PT_Float:
 		switch (this->internalFormat)	{
 #if !defined(VVGL_SDK_RPI)
 		case IF_R:
-			bytesPerRow = 32 * 1 * s.width / 8;
+			bytesPerRow = 32 * 1 * w / 8;
 			break;
 #endif
 		default:
-			bytesPerRow = 32 * 4 * s.width / 8;
+			bytesPerRow = 32 * 4 * w / 8;
 			break;
 		}
 		break;
@@ -35,20 +35,20 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 	case PT_HalfFloat:
 		switch (this->internalFormat)	{
 		case IF_R:
-			bytesPerRow = 32 * 1 * s.width / 8;
+			bytesPerRow = 32 * 1 * w / 8;
 			break;
 		case IF_Depth24:
-			bytesPerRow = 32 * 2 * s.width / 8;
+			bytesPerRow = 32 * 2 * w / 8;
 			break;
 		case IF_RGB:
-			bytesPerRow = 32 * 3 * s.width / 8;
+			bytesPerRow = 32 * 3 * w / 8;
 			break;
 		case IF_RGBA:
 		case IF_RGBA32F:
-			bytesPerRow = 32 * 4 * s.width / 8;
+			bytesPerRow = 32 * 4 * w / 8;
 			break;
 		//case IF_RGBA16F:
-		//	bytesPerRow = 16 * 4 * s.width / 8;
+		//	bytesPerRow = 16 * 4 * w / 8;
 		//	break;
 		default:
 			break;
@@ -59,21 +59,21 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 		switch (this->internalFormat)	{
 #if !defined(VVGL_SDK_RPI)
 		case IF_R:
-			bytesPerRow = 8 * 1 * s.width / 8;
+			bytesPerRow = 8 * 1 * w / 8;
 			break;
 #endif
 		default:
-			bytesPerRow = 8 * 4 * s.width / 8;
+			bytesPerRow = 8 * 4 * w / 8;
 			break;
 		}
 		break;
 #if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
 	case PT_UInt_8888_Rev:
-		bytesPerRow = 8 * 4 * s.width / 8;
+		bytesPerRow = 8 * 4 * w / 8;
 		break;
 #endif
 	case PT_UShort88:
-		bytesPerRow = 8 * 2 * s.width / 8;
+		bytesPerRow = 8 * 2 * w / 8;
 		break;
 	}
 	
@@ -81,17 +81,19 @@ uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
 #if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
 	case IF_RGB_DXT1:
 	case IF_A_RGTC:
-		bytesPerRow = 4 * s.width / 8;
+		bytesPerRow = 4 * w / 8;
 		break;
 	case IF_RGBA_DXT5:
-		bytesPerRow = 8 * s.width / 8;
+		bytesPerRow = 8 * w / 8;
 		break;
 #endif
 	default:
 		break;
 	}
-	
-	return bytesPerRow * s.height;
+	return bytesPerRow;
+}
+uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
+	return bytesPerRowForWidth(s.width) * s.height;
 }
 
 
@@ -116,6 +118,7 @@ GLBuffer::GLBuffer(const GLBuffer & n)	{
 	flipped = n.flipped;
 	backingSize = n.backingSize;
 	contentTimestamp = n.contentTimestamp;
+	pboMapped = n.pboMapped;
 	
 	backingReleaseCallback = n.backingReleaseCallback;
 	backingContext = n.backingContext;
@@ -151,7 +154,7 @@ GLBuffer::~GLBuffer()	{
 					parentBufferPool->releaseBufferResources(this);
 				}
 			}
-			//	else the gpu backing was external or non-existent: do nothing
+			//	else the gpu backing was external or non-existent: do nothing, the callback gets executed later no matter what
 		}
 		//	else the cpu backing as internal, or there's no cpu backing
 		else	{
@@ -207,6 +210,7 @@ GLBuffer * GLBuffer::allocShallowCopy()	{
 	returnMe->flipped = flipped;
 	returnMe->backingSize = backingSize;
 	returnMe->contentTimestamp = contentTimestamp;
+	returnMe->pboMapped = pboMapped;
 	returnMe->backingReleaseCallback = backingReleaseCallback;
 	returnMe->backingContext = backingContext;
 	returnMe->backingID = backingID;
@@ -392,7 +396,43 @@ bool GLBuffer::safeToPublishToSyphon() const	{
 	return false;
 }
 #endif
-
+void GLBuffer::mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContext)	{
+	if (desc.type != Type_PBO || pboMapped)
+		return;
+	if (!inUseCurrentContext)	{
+		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->getContext();
+		if (poolCtx != nullptr)
+			poolCtx->makeCurrentIfNotCurrent();
+	}
+	else	{
+		//	intentionally blank- we're using the current thread's GL context...
+	}
+	
+	glBindBufferARB(desc.target, name);
+	cpuBackingPtr = glMapBufferARB(desc.target, inAccess);
+	if (cpuBackingPtr != nullptr)
+		pboMapped = true;
+	glBindBufferARB(desc.target, 0);
+}
+void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
+	if (desc.type != Type_PBO || !pboMapped)
+		return;
+	if (!inUseCurrentContext)	{
+		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->getContext();
+		if (poolCtx != nullptr)
+			poolCtx->makeCurrentIfNotCurrent();
+	}
+	else	{
+		//	intentionally blank- we're using the current thread's GL context...
+	}
+	
+	glBindBufferARB(desc.target, name);
+	glUnmapBuffer(desc.target);
+	glBindBufferARB(desc.target, 0);
+	
+	cpuBackingPtr = nullptr;
+	pboMapped = false;
+}
 bool GLBuffer::isContentMatch(GLBuffer & n) const	{
 	return this->contentTimestamp == n.contentTimestamp;
 }
@@ -473,6 +513,9 @@ GLBufferRef GLBufferCopy(const GLBufferRef & n)	{
 	newBuffer->flipped = srcBuffer->flipped;
 	newBuffer->backingSize = srcBuffer->backingSize;
 	newBuffer->contentTimestamp = srcBuffer->contentTimestamp;
+	newBuffer->pboMapped = srcBuffer->pboMapped;
+	newBuffer->backingID = srcBuffer->backingID;
+	newBuffer->cpuBackingPtr = srcBuffer->cpuBackingPtr;
 	
 #if defined(VVGL_SDK_MAC)
 	newBuffer->setLocalSurfaceRef(srcBuffer->getLocalSurfaceRef());

@@ -18,12 +18,9 @@ using namespace std;
 
 
 
+//! Subclass of GLScene- the primary interface for rendering and interacting with an ISF file.
 /*!
 \ingroup VVISF_BASIC
-\brief Subclass of GLScene- the primary interface for rendering and interacting with an ISF file.
-
-\detail
-
 Notes on use:
 - You should strive to work with ISFSceneRef whenever possible.
 - You should avoid calling setVertexShaderString() or setFragmentShaderString() directly on instances of ISFScene- instead, let the class populate its own shaders.

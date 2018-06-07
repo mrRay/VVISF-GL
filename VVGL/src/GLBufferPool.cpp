@@ -160,6 +160,15 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	switch (d.type)	{
 	case GLBuffer::Type_CPU:
 		break;
+	case GLBuffer::Type_PBO:
+		glGenBuffers(1, &(returnMe->name));
+		GLERRLOG
+		if (!inCreateInCurrentContext)	{
+			//	flush!
+			glFlush();
+			GLERRLOG
+		}
+		break;
 	case GLBuffer::Type_RB:
 		//	generate the renderbuffer
 		glGenRenderbuffers(1, &(returnMe->name));
@@ -382,26 +391,6 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 			GLERRLOG
 		}
 		
-		break;
-	case GLBuffer::Type_PBO:
-		glGenBuffers(1, &(returnMe->name));
-		GLERRLOG
-		if (!inCreateInCurrentContext)	{
-			//	flush!
-			glFlush();
-			GLERRLOG
-		}
-		//	"pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage())
-		//	"unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D())
-		
-		//				decoding "GL_STREAM_DRAW, GL_STREAM_READ, etc:
-		//	STREAM		write once, read at most a few times
-		//	STATIC		write once, read many times
-		//	DYNAMIC		write many times, read many times
-		//	--------	--------	--------
-		//	DRAW		CPU -> GL
-		//	READ		GL -> CPU
-		//	COPY		GL -> GL
 		break;
 	case GLBuffer::Type_VBO:
 	case GLBuffer::Type_EBO:
@@ -629,6 +618,9 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 		GLERRLOG
 		break;
 	case GLBuffer::Type_PBO:
+		if (inBuffer->pboMapped)	{
+			inBuffer->unmapPBO(true);
+		}
 		glDeleteBuffers(1, &inBuffer->name);
 		GLERRLOG
 		break;
@@ -921,13 +913,13 @@ GLBufferRef CreateRGBACPUBuffer(const Size & size, const GLBufferPoolRef & inPoo
 	
 	desc.type = GLBuffer::Type_CPU;
 	desc.target = GLBuffer::Target_None;
-#if defined(VVGL_SDK_MAC)
-	desc.internalFormat = GLBuffer::IF_RGBA8;
-	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-#else
+//#if defined(VVGL_SDK_MAC)
+//	desc.internalFormat = GLBuffer::IF_RGBA8;
+//	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+//#else
 	desc.internalFormat = GLBuffer::IF_RGBA;
 	desc.pixelType = GLBuffer::PT_UByte;
-#endif
+//#endif
 	desc.pixelFormat = GLBuffer::PF_RGBA;
 	//desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_Internal;
@@ -987,13 +979,13 @@ GLBufferRef CreateBGRACPUBuffer(const Size & size, const GLBufferPoolRef & inPoo
 	
 	desc.type = GLBuffer::Type_CPU;
 	desc.target = GLBuffer::Target_None;
-#if defined(VVGL_SDK_MAC)
-	desc.internalFormat = GLBuffer::IF_RGBA8;
-	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-#else
+//#if defined(VVGL_SDK_MAC)
+//	desc.internalFormat = GLBuffer::IF_RGBA8;
+//	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+//#else
 	desc.internalFormat = GLBuffer::IF_RGBA;
 	desc.pixelType = GLBuffer::PT_UByte;
-#endif
+//#endif
 	desc.pixelFormat = GLBuffer::PF_BGRA;
 	//desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_Internal;
@@ -1041,6 +1033,176 @@ GLBufferRef CreateBGRAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & 
 	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
 		free(inReleaseContext);
 	};
+	
+	return returnMe;
+}
+GLBufferRef CreateRGBACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = inCPUBufferSizeInPixels;
+	returnMe->srcRect = { 0, 0, inImageSizeInPixels.width, inImageSizeInPixels.height };
+	returnMe->flipped = false;
+	returnMe->backingSize = inCPUBufferSizeInPixels;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	
+	returnMe->backingReleaseCallback = inReleaseCallback;
+	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
+	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	
+	return returnMe;
+}
+GLBufferRef CreateRGBAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = inCPUBufferSizeInPixels;
+	returnMe->srcRect = { 0, 0, inImageSizeInPixels.width, inImageSizeInPixels.height };
+	returnMe->flipped = false;
+	returnMe->backingSize = inCPUBufferSizeInPixels;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	
+	returnMe->backingReleaseCallback = inReleaseCallback;
+	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
+	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = inCPUBufferSizeInPixels;
+	returnMe->srcRect = { 0, 0, inImageSizeInPixels.width, inImageSizeInPixels.height };
+	returnMe->flipped = false;
+	returnMe->backingSize = inCPUBufferSizeInPixels;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	
+	returnMe->backingReleaseCallback = inReleaseCallback;
+	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
+	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = inCPUBufferSizeInPixels;
+	returnMe->srcRect = { 0, 0, inImageSizeInPixels.width, inImageSizeInPixels.height };
+	returnMe->flipped = false;
+	returnMe->backingSize = inCPUBufferSizeInPixels;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	
+	returnMe->backingReleaseCallback = inReleaseCallback;
+	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
+	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	
+	return returnMe;
+}
+VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeInPixels, const void * inCPUBackingPtr, const Size & inImageSizeInPixels, const void * inReleaseCallbackContext, const GLBuffer::BackingReleaseCallback & inReleaseCallback, const GLBufferPoolRef & inPoolRef)	{
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGB;
+	desc.pixelFormat = GLBuffer::PF_YCbCr_422;
+	desc.pixelType = GLBuffer::PT_UShort88;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = inCPUBufferSizeInPixels;
+	returnMe->srcRect = { 0, 0, inImageSizeInPixels.width, inImageSizeInPixels.height };
+	returnMe->flipped = false;
+	returnMe->backingSize = inCPUBufferSizeInPixels;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	
+	returnMe->backingReleaseCallback = inReleaseCallback;
+	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
+	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
 	
 	return returnMe;
 }
@@ -1109,6 +1271,30 @@ GLBufferRef CreateRGBAFloatTex(const Size & size, const bool & inCreateInCurrent
 	desc.localSurfaceID = 0;
 	
 	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), inCreateInCurrentContext);
+	returnMe->parentBufferPool = inPoolRef;
+	
+	return returnMe;
+}
+GLBufferRef CreateYCbCrTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.internalFormat = GLBuffer::IF_RGB;
+	desc.pixelFormat = GLBuffer::PF_YCbCr_422;
+	desc.pixelType = GLBuffer::PT_UShort88;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, size, nullptr, Size(), createInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
@@ -1235,7 +1421,7 @@ GLBufferRef CreateBGRAFloatTex(const Size & size, const bool & inCreateInCurrent
 #pragma mark --------------------- CPU-backed texture buffer creation methods
 
 
-#if !defined(VVGL_SDK_RPI)
+#if defined(VVGL_SDK_MAC)
 GLBufferRef CreateRGBACPUBackedTex(const Size & size, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	if (inPoolRef == nullptr)
 		return nullptr;
@@ -1243,13 +1429,13 @@ GLBufferRef CreateRGBACPUBackedTex(const Size & size, const bool & createInCurre
 	GLBuffer::Descriptor		desc;
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if defined(VVGL_SDK_MAC)
+//#if defined(VVGL_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-#else
-	desc.internalFormat = GLBuffer::IF_RGBA;
-	desc.pixelType = GLBuffer::PT_UByte;
-#endif
+//#else
+//	desc.internalFormat = GLBuffer::IF_RGBA;
+//	desc.pixelType = GLBuffer::PT_UByte;
+//#endif
 	desc.pixelFormat = GLBuffer::PF_RGBA;
 	//desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_Internal;
@@ -1313,13 +1499,13 @@ GLBufferRef CreateBGRACPUBackedTex(const Size & size, const bool & createInCurre
 	GLBuffer::Descriptor		desc;
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if defined(VVGL_SDK_MAC)
+//#if defined(VVGL_SDK_MAC)
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
-#else
-	desc.internalFormat = GLBuffer::IF_RGBA;
-	desc.pixelType = GLBuffer::PT_UByte;
-#endif
+//#else
+//	desc.internalFormat = GLBuffer::IF_RGBA;
+//	desc.pixelType = GLBuffer::PT_UByte;
+//#endif
 	desc.pixelFormat = GLBuffer::PF_BGRA;
 	//desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_Internal;
@@ -1377,7 +1563,7 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 	return returnMe;
 
 }
-#endif	//	!VVGL_SDK_RPI
+#endif	//	VVGL_SDK_MAC
 #endif	//	!VVGL_SDK_IOS
 
 
@@ -1399,6 +1585,394 @@ GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, cons
 	return nullptr;
 }
 #endif	//	#if !VVGL_SDK_MAC && !VVGL_SDK_IOS
+
+
+
+
+/*	========================================	*/
+#pragma mark --------------------- PBO funcs
+
+
+
+
+/*
+"pack" means this PBO will be used to transfer pixel data TO a PBO (glReadPixels(), glGetTexImage())
+"unpack" means this PBO will be used to transfer pixel data FROM a PBO (glDrawPixels(), glTexImage2D(), glTexSubImage2D())
+
+			decoding "GL_STREAM_DRAW, GL_STREAM_READ, etc:
+STREAM		write once, read at most a few times
+STATIC		write once, read many times
+DYNAMIC		write many times, read many times
+--------	--------	--------
+DRAW		CPU -> GL
+READ		GL -> CPU
+COPY		GL -> GL
+*/
+GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_PBO;
+	desc.target = inTarget;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	size_t			pboSizeInBytes = desc.backingLengthForSize(inSize);
+	//	first try to find a PBO that matches the provided data
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, inSize);
+	//	if we found a PBO, we're recycling it: we need to discard-initialize it, and then fill it with a non-reserving call
+	if (returnMe != nullptr)	{
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...if we're recycling then we may not have a current context on this thread right now
+		if (!inCreateInCurrentContext)	{
+			GLContextRef		tmpCtx = inPoolRef->getContext();
+			if (tmpCtx == nullptr)
+				return nullptr;
+			//context->makeCurrentIfNull();
+			//context->makeCurrent();
+			tmpCtx->makeCurrentIfNotCurrent();
+		}
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	if the pbo is currently mapped, unmap it
+		if (returnMe->pboMapped)	{
+			glUnmapBuffer(inTarget);
+			returnMe->pboMapped = false;
+			returnMe->cpuBackingPtr = nullptr;
+		}
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)	{
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		}
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	//	else we didn't find a matching PBO
+	else	{
+		//	ask the pool to create a new PBO
+		returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, inSize, inCreateInCurrentContext);
+		if (returnMe == nullptr)
+			return nullptr;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_PBO;
+	desc.target = (VVGL::GLBuffer::Target)inTarget;
+#if defined(VVGL_SDK_MAC)
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+#else
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
+#endif
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	size_t			pboSizeInBytes = desc.backingLengthForSize(inSize);
+	//	first try to find a PBO that matches the provided data
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, inSize);
+	//	if we found a PBO, we're recycling it: we need to discard-initialize it, and then fill it with a non-reserving call
+	if (returnMe != nullptr)	{
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...if we're recycling then we may not have a current context on this thread right now
+		if (!inCreateInCurrentContext)	{
+			GLContextRef		tmpCtx = inPoolRef->getContext();
+			if (tmpCtx == nullptr)
+				return nullptr;
+			//context->makeCurrentIfNull();
+			//context->makeCurrent();
+			tmpCtx->makeCurrentIfNotCurrent();
+		}
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	if the pbo is currently mapped, unmap it
+		if (returnMe->pboMapped)	{
+			glUnmapBuffer(inTarget);
+			returnMe->pboMapped = false;
+			returnMe->cpuBackingPtr = nullptr;
+		}
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)	{
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		}
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	//	else we didn't find a matching PBO
+	else	{
+		//	ask the pool to create a new PBO
+		returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, inSize, inCreateInCurrentContext);
+		if (returnMe == nullptr)
+			return nullptr;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	
+	return returnMe;
+}
+GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_PBO;
+	desc.target = (VVGL::GLBuffer::Target)inTarget;
+	desc.internalFormat = GLBuffer::IF_RGBA32F;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	size_t			pboSizeInBytes = desc.backingLengthForSize(inSize);
+	//	first try to find a PBO that matches the provided data
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, inSize);
+	//	if we found a PBO, we're recycling it: we need to discard-initialize it, and then fill it with a non-reserving call
+	if (returnMe != nullptr)	{
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...if we're recycling then we may not have a current context on this thread right now
+		if (!inCreateInCurrentContext)	{
+			GLContextRef		tmpCtx = inPoolRef->getContext();
+			if (tmpCtx == nullptr)
+				return nullptr;
+			//context->makeCurrentIfNull();
+			//context->makeCurrent();
+			tmpCtx->makeCurrentIfNotCurrent();
+		}
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	if the pbo is currently mapped, unmap it
+		if (returnMe->pboMapped)	{
+			glUnmapBuffer(inTarget);
+			returnMe->pboMapped = false;
+			returnMe->cpuBackingPtr = nullptr;
+		}
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)	{
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		}
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	//	else we didn't find a matching PBO
+	else	{
+		//	ask the pool to create a new PBO
+		returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, inSize, inCreateInCurrentContext);
+		if (returnMe == nullptr)
+			return nullptr;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	
+	return returnMe;
+}
+GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_PBO;
+	desc.target = (VVGL::GLBuffer::Target)inTarget;
+	desc.internalFormat = GLBuffer::IF_RGBA32F;
+	desc.pixelType = GLBuffer::PT_Float;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	size_t			pboSizeInBytes = desc.backingLengthForSize(inSize);
+	//	first try to find a PBO that matches the provided data
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, inSize);
+	//	if we found a PBO, we're recycling it: we need to discard-initialize it, and then fill it with a non-reserving call
+	if (returnMe != nullptr)	{
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...if we're recycling then we may not have a current context on this thread right now
+		if (!inCreateInCurrentContext)	{
+			GLContextRef		tmpCtx = inPoolRef->getContext();
+			if (tmpCtx == nullptr)
+				return nullptr;
+			//context->makeCurrentIfNull();
+			//context->makeCurrent();
+			tmpCtx->makeCurrentIfNotCurrent();
+		}
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	if the pbo is currently mapped, unmap it
+		if (returnMe->pboMapped)	{
+			glUnmapBuffer(inTarget);
+			returnMe->pboMapped = false;
+			returnMe->cpuBackingPtr = nullptr;
+		}
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)	{
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		}
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	//	else we didn't find a matching PBO
+	else	{
+		//	ask the pool to create a new PBO
+		returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, inSize, inCreateInCurrentContext);
+		if (returnMe == nullptr)
+			return nullptr;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	
+	return returnMe;
+}
+GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, const Size & inSize, const void * inData, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	if (inPoolRef == nullptr)
+		return nullptr;
+	
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_PBO;
+	desc.target = (VVGL::GLBuffer::Target)inTarget;
+	desc.internalFormat = GLBuffer::IF_RGB;
+	desc.pixelType = GLBuffer::PT_UShort88;
+	desc.pixelFormat = GLBuffer::PF_YCbCr_422;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	size_t			pboSizeInBytes = desc.backingLengthForSize(inSize);
+	//	first try to find a PBO that matches the provided data
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, inSize);
+	//	if we found a PBO, we're recycling it: we need to discard-initialize it, and then fill it with a non-reserving call
+	if (returnMe != nullptr)	{
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...if we're recycling then we may not have a current context on this thread right now
+		if (!inCreateInCurrentContext)	{
+			GLContextRef		tmpCtx = inPoolRef->getContext();
+			if (tmpCtx == nullptr)
+				return nullptr;
+			//context->makeCurrentIfNull();
+			//context->makeCurrent();
+			tmpCtx->makeCurrentIfNotCurrent();
+		}
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	if the pbo is currently mapped, unmap it
+		if (returnMe->pboMapped)	{
+			glUnmapBuffer(inTarget);
+			returnMe->pboMapped = false;
+			returnMe->cpuBackingPtr = nullptr;
+		}
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)	{
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		}
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	//	else we didn't find a matching PBO
+	else	{
+		//	ask the pool to create a new PBO
+		returnMe = inPoolRef->createBufferRef(desc, inSize, nullptr, inSize, inCreateInCurrentContext);
+		if (returnMe == nullptr)
+			return nullptr;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingSize = inSize;
+		//	...logically, we shouldn't have to check GL contexts- we just created a PBO, so either the buffer pool context is current or the originally-current context is still current.
+		//	bind the PBO
+		glBindBufferARB(returnMe->desc.target, returnMe->name);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		if (inData != NULL)
+			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//	un-bind the PBO
+		glBindBufferARB(returnMe->desc.target, 0);
+	}
+	
+	return returnMe;
+}
 
 
 

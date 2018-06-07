@@ -24,11 +24,10 @@ class ISFDoc;
 
 
 
+//! Describes the target of a render pass for an ISF file, stores a number of properties and values specific to this render pass.
 /*!
 \ingroup VVISF_BASIC
-\brief Describes the target of a render pass for an ISF file, stores a number of properties and values specific to this render pass.
-
-\detail Stores the GLBuffer (the GL resource) which this pass will render into, as well as the expressions that determine the width/height (both the raw string as well as the evaluated expression, capable of being executed with substitutions for variables) and the evaluated value.  Also caches the uniform locations for this target buffer's attributes in the compiled GLSL program.
+Stores the GLBuffer (the GL resource) which this pass will render into, as well as the expressions that determine the width/height (both the raw string as well as the evaluated expression, capable of being executed with substitutions for variables) and the evaluated value.  Also caches the uniform locations for this target buffer's attributes in the compiled GLSL program.
 */
 class VVISF_EXPORT ISFPassTarget	{
 	private:
