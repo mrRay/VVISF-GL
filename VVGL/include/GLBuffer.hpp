@@ -150,9 +150,9 @@ class VVGL_EXPORT GLBuffer	{
 		uint32_t				name = 0;
 		//!	Whether or not the GL resources associated with the GL buffer should be freed when the GL buffer is deallocated.  Defaults to 'false', which indicates that the GL resource should be pooled.
 		bool					preferDeletion = false;
-		//!	The size of the OpenGL buffer, in pixels (only relevant where the GLBuffer represents an image)
+		//!	The size of the OpenGL buffer, in pixels (only relevant where the GLBuffer represents an image).  You should never change this value.
 		Size					size = { 0, 0 };
-		//!	Only relevant where the GLBuffer represents an image.  The srcRect is the region (in pixels) of the texture/renderbuffer which comprises the GLBuffer's image.  Most of the time this will be {0,0,size.width,size.height}, but it can also be a sub-region of the texture/renderbuffer, as is the case with a texture atlas.
+		//!	Only relevant where the GLBuffer represents an image.  The srcRect is the region (in pixels) of the texture/renderbuffer which comprises the GLBuffer's image.  Most of the time this will be {0,0,size.width,size.height}, but it can also be a sub-region of the texture/renderbuffer, as is the case with a texture atlas.  It is safe to change this value.
 		Rect					srcRect = { 0, 0, 0, 0 };
 		//!	Whether or not the image in "srcRect" is flipped vertically.  Other classes in VVGL and VVISF use this in an attempt to avoid having to run additional render passes that flip upside-down assets.
 		bool					flipped = false;
@@ -203,6 +203,11 @@ class VVGL_EXPORT GLBuffer	{
 		GLBuffer& operator=(const GLBuffer&) = delete;
 		//GLBuffer& operator=(GLBuffer&) = delete;
 		//GLBuffer (GLBuffer&&) = default;
+		
+		//!	Calculates the number of bytes that are required to display one row's worth of image data from this GLBuffer.
+		uint32_t calculateBackingBytesPerRow() { return desc.bytesPerRowForWidth(backingSize.width); };
+		//!	Calculates the total number of bytes that are required to contain this GLBuffer's image data in system memory.
+		uint32_t calculateBackingLength() { return desc.backingLengthForSize(backingSize); };
 		
 		//	use this to create a shallow copy (memberwise copy)
 		GLBuffer * allocShallowCopy();

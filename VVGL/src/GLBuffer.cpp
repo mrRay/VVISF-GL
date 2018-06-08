@@ -411,10 +411,13 @@ void GLBuffer::mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContex
 	}
 	
 	glBindBuffer(desc.target, name);
+	GLERRLOG
 	cpuBackingPtr = glMapBuffer(desc.target, inAccess);
+	GLERRLOG
 	if (cpuBackingPtr != nullptr)
 		pboMapped = true;
 	glBindBuffer(desc.target, 0);
+	GLERRLOG
 }
 void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
 	if (desc.type != Type_PBO || !pboMapped)
@@ -429,8 +432,11 @@ void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
 	}
 	
 	glBindBuffer(desc.target, name);
+	GLERRLOG
 	glUnmapBuffer(desc.target);
+	GLERRLOG
 	glBindBuffer(desc.target, 0);
+	GLERRLOG
 	
 	cpuBackingPtr = nullptr;
 	pboMapped = false;
@@ -459,14 +465,22 @@ void GLBuffer::draw(const Rect & dst) const	{
 		(float)src.minX(), (flipped) ? (float)src.minY() : (float)src.maxY()
 	};
 	glEnableClientState(GL_VERTEX_ARRAY);
+	GLERRLOG
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	GLERRLOG
 	glDisableClientState(GL_COLOR_ARRAY);
+	GLERRLOG
 	
 	glVertexPointer(3, GL_FLOAT, 0, verts);
+	GLERRLOG
 	glTexCoordPointer(2, GL_FLOAT, 0, texs);
+	GLERRLOG
 	glBindTexture(desc.target, name);
+	GLERRLOG
 	glDrawArrays(GL_QUADS, 0, 4);
+	GLERRLOG
 	glBindTexture(desc.target, 0);
+	GLERRLOG
 #else
 	cout << "\tincomplete- " << __PRETTY_FUNCTION__ << endl;
 #endif

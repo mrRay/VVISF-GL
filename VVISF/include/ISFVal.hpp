@@ -97,10 +97,10 @@ struct ISFVal	{
 		///@}
 		
 		
+		//! These functions retrieve various properties of the ISFVal instance.
 		/*!
 		\name Setter/getter functions
-		\brief These functions retrieve various properties of the ISFVal instance.
-		\detail While ISFVal is meant to be immutable, a couple setters are included for populating some of the more complex value types to make life easier.
+		While ISFVal is meant to be immutable, a couple setters are included for populating some of the more complex value types to make life easier.
 		*/
 		///@{
 		

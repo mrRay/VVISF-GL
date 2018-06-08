@@ -57,14 +57,16 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 
 # actual source
 SOURCES += \
-	../../../VVGL/src/VVGL_Geom.cpp \
 	../../../VVGL/src/GLBuffer.cpp \
-	../../../VVGL/src/GLBufferCopier.cpp \
 	../../../VVGL/src/GLBufferPool.cpp \
 	../../../VVGL/src/GLCachedProperty.cpp \
 	../../../VVGL/src/GLContext.cpp \
+	../../../VVGL/src/GLCPUToTexCopier.cpp \
 	../../../VVGL/src/GLQtCtxWrapper.cpp \
 	../../../VVGL/src/GLScene.cpp \
+	../../../VVGL/src/GLTexToCPUCopier.cpp \
+	../../../VVGL/src/GLTexToTexCopier.cpp \
+	../../../VVGL/src/VVGL_Geom.cpp \
 	../../../VVGL/src/VVGL_StringUtils.cpp
 
 HEADERS += \
@@ -73,18 +75,22 @@ HEADERS += \
 	../../../VVGL/include/GLBuffer_Mac_Enums.h \
 	../../../VVGL/include/GLBuffer_Qt_Enums.h \
 	../../../VVGL/include/GLBuffer_RPI_Enums.h \
-	../../../VVGL/include/GLBufferPool_CocoaAdditions.h \
-	../../../VVGL/include/vvgl_qt_global.h \
 	../../../VVGL/include/GLBuffer.hpp \
-	../../../VVGL/include/GLBufferCopier.hpp \
+	../../../VVGL/include/GLBufferPool_CocoaAdditions.h \
 	../../../VVGL/include/GLBufferPool.hpp \
 	../../../VVGL/include/GLCachedProperty.hpp \
 	../../../VVGL/include/GLContext.hpp \
+	../../../VVGL/include/GLCPUToTexCopier.hpp \
 	../../../VVGL/include/GLQtCtxWrapper.hpp \
 	../../../VVGL/include/GLScene.hpp \
+	../../../VVGL/include/GLTexToCPUCopier.hpp \
+	../../../VVGL/include/GLTexToTexCopier.hpp \
 	../../../VVGL/include/VVGL_Base.hpp \
 	../../../VVGL/include/VVGL_Defines.hpp \
+	../../../VVGL/include/VVGL_Doxygen.hpp \
 	../../../VVGL/include/VVGL_Geom.hpp \
+	../../../VVGL/include/VVGL_HardCodedDefines.hpp \
+	../../../VVGL/include/VVGL_Qt_global.h \
 	../../../VVGL/include/VVGL_Range.hpp \
 	../../../VVGL/include/VVGL_StringUtils.hpp \
 	../../../VVGL/include/VVGL_Time.hpp \

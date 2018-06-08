@@ -735,6 +735,7 @@ void GLContext::calculateVersion()	{
 #endif
 	makeCurrentIfNotCurrent();
 	const unsigned char			*versString = glGetString(GL_VERSION);
+	GLERRLOG
 	//cout << "\tversion string is " << versString << endl;
 	switch (*versString)	{
 	case '2': version = GLVersion_2; break;

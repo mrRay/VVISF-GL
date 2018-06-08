@@ -1116,6 +1116,7 @@ void ISFScene::_initialize()	{
 	GLScene::_initialize();
 	
 	glDisable(GL_BLEND);
+	GLERRLOG
 	
 	//if (context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;

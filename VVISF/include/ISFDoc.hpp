@@ -21,15 +21,6 @@ class ISFScene;
 
 
 
-/*	this class describes an ISF document.  constructing an instance of this class requires a valid 
-path, and during construction the ISF file is parsed and this class gets "filled in" completely.  
-this class doesn't do any GL work during construction- it's entirely CPU-based until a scene starts 
-using a doc to render.  for the most part, this class is immutable- the only notable exception is 
-that the ISFAttr instances in the various input arrays can be used to store values for the document 
-when a scene is rendering it.  even then, the contents of the arrays aren't changed- just the contents 
-of the objects in the array.	*/
-
-
 /*!
 \ingroup VVISF_BASIC
 \brief Describes an "ISF file"- requires an actual file on disk which is parsed.  Capable of generating GLSL source code for the various shader types.

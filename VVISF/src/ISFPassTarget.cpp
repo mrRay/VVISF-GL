@@ -15,8 +15,10 @@ using namespace exprtk;
 
 
 
-//	this modifies the passed vars, so you shoud probably make sure the owning doc is locked before running it
+//	this function modifies the passed vars, so you shoud probably make sure the owning doc is locked before running it
 void ExpressionUpdater(string ** exprString, expression<double> ** expr, const map<string,double*> & inSubDict, double * outVal);
+//	this is the global copier shared amongst all pass targets as a backup.
+static GLTexToTexCopierRef _isfPassTargetCopier = nullptr;
 
 
 
@@ -78,7 +80,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	
 	//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
 	GLBufferPoolRef		bp = nullptr;
-	GLBufferCopierRef		copier = nullptr;
+	GLTexToTexCopierRef		copier = nullptr;
 	bool					shouldBeFloat = false;
 	bool					shouldBeIOSurface = false;
 	if (parentDoc != nullptr)	{
@@ -93,8 +95,17 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	//	if that didn't work, use the globals...
 	if (bp == nullptr)
 		bp = GetGlobalBufferPool();
-	if (copier == nullptr)
-		copier = GetGlobalBufferCopier();
+	if (copier == nullptr)	{
+		if (_isfPassTargetCopier == nullptr)	{
+			GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+			if (bufferPoolCtx != nullptr)	{
+				_isfPassTargetCopier = make_shared<GLTexToTexCopier>(bufferPoolCtx);
+				copier = _isfPassTargetCopier;
+			}
+		}
+		else
+			copier = _isfPassTargetCopier;
+	}
 	
 	if (bp==nullptr || copier==nullptr)	{
 		cout << "\tERR: bailing, pool/copier null, " << __PRETTY_FUNCTION__ << endl;
@@ -219,7 +230,7 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 	if (buffer != nullptr)	{
 		//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
 		GLBufferPoolRef		bp = nullptr;
-		GLBufferCopierRef		copier = nullptr;
+		GLTexToTexCopierRef		copier = nullptr;
 		bool					shouldBeFloat = false;
 		bool					shouldBeIOSurface = false;
 		if (parentDoc != nullptr)	{
@@ -234,8 +245,17 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		//	if that didn't work, use the globals...
 		if (bp == nullptr)
 			bp = GetGlobalBufferPool();
-		if (copier == nullptr)
-			copier = GetGlobalBufferCopier();
+		if (copier == nullptr)	{
+			if (_isfPassTargetCopier == nullptr)	{
+				GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+				if (bufferPoolCtx != nullptr)	{
+					_isfPassTargetCopier = make_shared<GLTexToTexCopier>(bufferPoolCtx);
+					copier = _isfPassTargetCopier;
+				}
+			}
+			else
+				copier = _isfPassTargetCopier;
+		}
 		
 		if (bp==nullptr || copier==nullptr)	{
 			cout << "\tERR: bailing, pool/copier null, " << __PRETTY_FUNCTION__ << endl;

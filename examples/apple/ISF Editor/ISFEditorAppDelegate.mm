@@ -145,7 +145,8 @@
 	[_globalVVBufferCopier copyBlackFrameToThisBuffer:lastSourceBuffer];
 	*/
 	lastSourceBuffer = CreateRGBATex(VVGL::Size(800,600));
-	GetGlobalBufferCopier()->copyBlackFrameTo(lastSourceBuffer);
+	NSLog(@"\t\tshould be filling frame with black here? %s",__func__);
+	//GetGlobalTexToTexCopier()->copyBlackFrameTo(lastSourceBuffer);
 	
 	
 	
@@ -989,7 +990,7 @@
 						//srcBuffer = [_globalVVBufferPool allocBGRTexSized:lastSourceBuffer->srcRect.size];
 						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
 						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalBufferCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
 						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
 						//[srcBuffer setSrcRect:lastSourceBuffer->srcRect];
 						srcBuffer->srcRect = lastSourceBuffer->srcRect;
@@ -1006,7 +1007,7 @@
 						//srcBuffer = [_globalVVBufferPool allocBGR2DPOTTexSized:[lastSourceBuffer srcRect].size];
 						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
 						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalBufferCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
 						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
 						srcBuffer->srcRect = lastSourceBuffer->srcRect;
 						//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
@@ -1022,7 +1023,7 @@
 						//srcBuffer = [_globalVVBufferPool allocBGR2DTexSized:[lastSourceBuffer srcRect].size];
 						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
 						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalBufferCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
 						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
 						srcBuffer->srcRect = lastSourceBuffer->srcRect;
 						//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);

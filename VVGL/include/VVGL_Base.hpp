@@ -27,7 +27,7 @@ using namespace std;
 //	some forward declarations used in this header
 class GLBuffer;
 class GLBufferPool;
-class GLBufferCopier;
+class GLTexToTexCopier;
 class GLContext;
 class GLScene;
 struct GLCachedAttrib;
@@ -47,10 +47,10 @@ using GLBufferRef = shared_ptr<GLBuffer>;
 */
 using GLBufferPoolRef = shared_ptr<GLBufferPool>;
 /*!
-\brief A GLBufferCopierRef is a shared pointer around a GLBufferCopier.
-\relates VVGL::GLBufferCopier
+\brief A GLTexToTexCopierRef is a shared pointer around a GLTexToTexCopier.
+\relates VVGL::GLTexToTexCopier
 */
-using GLBufferCopierRef = shared_ptr<GLBufferCopier>;
+using GLTexToTexCopierRef = shared_ptr<GLTexToTexCopier>;
 
 /*!
 \brief A GLContextRef is a shared pointer around a GLContext.

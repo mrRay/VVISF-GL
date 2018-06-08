@@ -44,11 +44,11 @@ void GLTexToCPUCopier::setQueueSize(const int & inNewQueueSize)	{
 	if (queueSize < 0)
 		queueSize = 0;
 	
-	while (cpuQueue.size() > queueSize)
+	while ((int)cpuQueue.size() > queueSize)
 		cpuQueue.pop();
-	while (pboQueue.size() > queueSize)
+	while ((int)pboQueue.size() > queueSize)
 		pboQueue.pop();
-	while (texQueue.size() > queueSize)
+	while ((int)texQueue.size() > queueSize)
 		texQueue.pop();
 }
 
@@ -79,19 +79,25 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	
 	//	bind the framebuffer, attach the texture to it
 	glBindFramebuffer(GL_FRAMEBUFFER, inFBOBuffer->name);
+	GLERRLOG
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, inTexBuffer->desc.target, inTexBuffer->name, 0);
+	GLERRLOG
 	
 	
 	
 	
 	//	bind the PBO and texture
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
+	GLERRLOG
 	
 	//glEnable(inTexBuffer->desc.target);
+	//GLERRLOG
 	//glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
+	//GLERRLOG
 	
 	//	set up some pixel transfer modes
 	glPixelStorei(GL_PACK_ROW_LENGTH, inPBOBuffer->size.width);
+	GLERRLOG
 	
 	//	start packing the texture data into the pbo
 	//glGetTexImage(
@@ -101,6 +107,7 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	//	inTexBuffer->desc.pixelType,
 	//	NULL
 	//	);
+	//GLERRLOG
 	glReadPixels(
 		0,
 		0,
@@ -110,18 +117,25 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		inTexBuffer->desc.pixelType,
 		NULL
 		);
+	GLERRLOG
 	
 	//	unbind the texture and PBO
 	//glBindTexture(inTexBuffer->desc.target, 0);
+	//GLERRLOG
 	//glDisable(inTexBuffer->desc.target);
+	//GLERRLOG
 	glBindBuffer(inPBOBuffer->desc.target, 0);
+	GLERRLOG
 	
 	//	flush- this starts the DMA transfer.  the CPU won't wait for this transfer to complete, and will return execution immediately.
 	glFlush();
+	GLERRLOG
 	
 	//	unbind the FBO
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0, 0);
+	GLERRLOG
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLERRLOG
 }
 void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer)	{
 	/*
@@ -179,8 +193,11 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	
 	//	un-bind the texture from the FBO
 	//glBindFramebuffer(GL_FRAMEBUFFER, inFBOBuffer->name);
+	//GLERRLOG
 	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0, 0);
+	//GLERRLOG
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//GLERRLOG
 	
 	//	make sure the created buffers inherit the texture's flippedness...
 	inCPUBuffer->flipped = inTexBuffer->flipped;
@@ -242,8 +259,8 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 		queueCtx->makeCurrentIfNotCurrent();
 	
 	//	make sure the queues have the appropriate and expected number of elements
-	size_t		tmpQueueSize = pboQueue.size();
-	if (tmpQueueSize != cpuQueue.size() || tmpQueueSize != texQueue.size())	{
+	int			tmpQueueSize = (int)pboQueue.size();
+	if (tmpQueueSize != (int)cpuQueue.size() || tmpQueueSize != (int)texQueue.size())	{
 		cout << "\tERR: queue size discrepancy, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}

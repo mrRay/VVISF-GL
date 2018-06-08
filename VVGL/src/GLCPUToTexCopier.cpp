@@ -51,11 +51,11 @@ void GLCPUToTexCopier::setQueueSize(const int & inNewQueueSize)	{
 	if (queueSize < 0)
 		queueSize = 0;
 	
-	while (cpuQueue.size() > queueSize)
+	while ((int)cpuQueue.size() > queueSize)
 		cpuQueue.pop();
-	while (pboQueue.size() > queueSize)
+	while ((int)pboQueue.size() > queueSize)
 		pboQueue.pop();
-	while (texQueue.size() > queueSize)
+	while ((int)texQueue.size() > queueSize)
 		texQueue.pop();
 }
 
@@ -67,13 +67,18 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	
 	//	bind the PBO and texture
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
+	GLERRLOG
 	
 	glEnable(inTexBuffer->desc.target);
+	GLERRLOG
 	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
+	GLERRLOG
 	
 	//	set up some pixel transfer modes
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
+	GLERRLOG
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
+	GLERRLOG
 	
 	//	start copying the buffer data from the PBO to the texture
 	glTexSubImage2D(inTexBuffer->desc.target,
@@ -85,18 +90,24 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		inTexBuffer->desc.pixelFormat, 
 		inTexBuffer->desc.pixelType,
 		0);
+	GLERRLOG
 	
 	//	tear down pixel transfer modes
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
+	GLERRLOG
 	
 	//	unbind the PBO and texture
 	glBindTexture(inTexBuffer->desc.target, 0);
+	GLERRLOG
 	glDisable(inTexBuffer->desc.target);
+	GLERRLOG
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
+	GLERRLOG
 	
 	//	flush- this starts the DMA transfer.  the CPU won't wait for this transfer to complete, and will return execution immediately.
 	glFlush();
+	GLERRLOG
 	*/
 	
 	
@@ -108,8 +119,10 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		return;
 	//	bind the PBO
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
+	GLERRLOG
 	//	map the PBO- this should return immediately, provided that we discard-initialized the PBO just before this
 	inPBOBuffer->cpuBackingPtr = glMapBuffer(inPBOBuffer->desc.target, GL_WRITE_ONLY);
+	GLERRLOG
 	inPBOBuffer->pboMapped = (inPBOBuffer->cpuBackingPtr != NULL) ? true : false;
 	if (!inPBOBuffer->pboMapped)
 		cout << "\tERR: couldnt map PBO in " << __PRETTY_FUNCTION__ << endl;
@@ -135,11 +148,13 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		}
 		//	unmap the PBO
 		glUnmapBuffer(inPBOBuffer->desc.target);
+		GLERRLOG
 		inPBOBuffer->pboMapped = false;
 		inPBOBuffer->cpuBackingPtr = nullptr;
 	}
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
+	GLERRLOG
 #endif	//	PATHTYPE==1
 
 }
@@ -162,13 +177,18 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	
 	//	bind the PBO and texture
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
+	GLERRLOG
 	
 	glEnable(inTexBuffer->desc.target);
+	GLERRLOG
 	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
+	GLERRLOG
 	
 	//	set up some pixel transfer modes
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
+	GLERRLOG
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
+	GLERRLOG
 	
 	//	start copying the buffer data from the PBO to the texture
 	glTexSubImage2D(inTexBuffer->desc.target,
@@ -180,15 +200,20 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		inTexBuffer->desc.pixelFormat, 
 		inTexBuffer->desc.pixelType,
 		0);
+	GLERRLOG
 	
 	//	tear down pixel transfer modes
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
+	GLERRLOG
 	
 	//	unbind the PBO and texture
 	glBindTexture(inTexBuffer->desc.target, 0);
+	GLERRLOG
 	glDisable(inTexBuffer->desc.target);
+	GLERRLOG
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
+	GLERRLOG
 	
 	//	timestamp the buffer...
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
@@ -281,8 +306,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 		queueCtx->makeCurrentIfNotCurrent();
 	
 	//	make sure the queues have the appropriate and expected number of elements
-	size_t		tmpQueueSize = cpuQueue.size();
-	if (tmpQueueSize != pboQueue.size() || tmpQueueSize != texQueue.size())	{
+	int			tmpQueueSize = (int)cpuQueue.size();
+	if (tmpQueueSize != (int)pboQueue.size() || tmpQueueSize != (int)texQueue.size())	{
 		cout << "\tERR: queue size discrepancy, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}

@@ -1,5 +1,5 @@
-#ifndef VVGL_GLBufferCopier_hpp
-#define VVGL_GLBufferCopier_hpp
+#ifndef VVGL_GLTexToTexCopier_hpp
+#define VVGL_GLTexToTexCopier_hpp
 
 #include "VVGL_Defines.hpp"
 
@@ -18,12 +18,12 @@ namespace VVGL
 
 
 
-//! Copies the contents of one GLBuffer to another, capable of basic resizing.
+//! Copies the contents of one texture-type GLBuffer to another texture-type GLBuffer, capable of basic resizing.
 /*!
 \ingroup VVGL_BASIC
-This object copies the image data in a GLBuffer by drawing it while another GLBuffer is bound as the render target.  This performs GL rendering- GLBufferCopier is a subclass of GLScene, so it has a GL context it can use.  If you require GLBufferCopier to use an existing GLContext to draw, use the constructor that accepts a GLContextRef (much like the GLScene constructor with the same signature)
+This object copies the image data in a GLBuffer by drawing it while another GLBuffer is bound as the render target.  This performs GL rendering- GLTexToTexCopier is a subclass of GLScene, so it has a GL context it can use.  If you require GLTexToTexCopier to use an existing GLContext to draw, use the constructor that accepts a GLContextRef (much like the GLScene constructor with the same signature)
 */
-class VVGL_EXPORT GLBufferCopier : public GLScene	{
+class VVGL_EXPORT GLTexToTexCopier : public GLScene	{
 	private:
 		bool			copyToIOSurface = false;
 		bool			copyAndResize = false;
@@ -46,12 +46,12 @@ class VVGL_EXPORT GLBufferCopier : public GLScene	{
 		GLCachedUni		isRectTexLoc = GLCachedUni("isRectTex");	//	address of the uniform we use to indicate whether the program should sample the 2D or RECT texture
 		
 	public:
-		//!	Creates a new OpenGL context that shares the global buffer pool's context, uses that to create a new GLBufferCopier instance
-		GLBufferCopier();
-		//!	Uses the passed GL context to create a new GLBufferCopier.  No new OpenGL context is created- the buffer copier/scene will use the passed context to do its rendering.
-		GLBufferCopier(const GLContextRef & inCtx);
+		//!	Creates a new OpenGL context that shares the global buffer pool's context, uses that to create a new GLTexToTexCopier instance
+		GLTexToTexCopier();
+		//!	Uses the passed GL context to create a new GLTexToTexCopier.  No new OpenGL context is created- the buffer copier/scene will use the passed context to do its rendering.
+		GLTexToTexCopier(const GLContextRef & inCtx);
 		
-		virtual ~GLBufferCopier();
+		virtual ~GLTexToTexCopier();
 		
 		virtual void prepareToBeDeleted();
 		
@@ -99,13 +99,21 @@ class VVGL_EXPORT GLBufferCopier : public GLScene	{
 
 
 
-VVGL_EXPORT GLBufferCopierRef CreateGlobalBufferCopier();
-VVGL_EXPORT GLBufferCopierRef CreateGlobalBufferCopier(const GLContextRef & inCtx);
-VVGL_EXPORT GLBufferCopierRef GetGlobalBufferCopier();
+
+/*!
+\relatedalso GLTexToTexCopier
+\brief Creates and returns a GLTexToTexCopier.  The scene makes a new GL context which shares the context of the global buffer pool.
+*/
+inline GLTexToTexCopierRef CreateGLTexToTexCopierRef() { return make_shared<GLTexToTexCopier>(); }
+/*!
+\relatedalso GLTexToTexCopier
+\brief Creates and returns a GLTexToTexCopier.  The downloader uses the passed GL context to perform its GL operations.
+*/
+inline GLTexToTexCopierRef CreateGLTexToTexCopierRefUsing(const GLContextRef & inCtx) { return make_shared<GLTexToTexCopier>(inCtx); }
 
 
 
 
 }
 
-#endif /* VVGL_GLBufferCopier_hpp */
+#endif /* VVGL_GLTexToTexCopier_hpp */

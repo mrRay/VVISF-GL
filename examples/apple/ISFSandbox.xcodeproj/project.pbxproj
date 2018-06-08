@@ -292,9 +292,9 @@
 		1A90EDCE2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EDCF2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EDD02099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD12099FD1900FA4392 /* GLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD22099FD1900FA4392 /* GLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD32099FD1900FA4392 /* GLBufferCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A90EDD12099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A90EDD22099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A90EDD32099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EDD42099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EDD52099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EDD62099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -349,9 +349,9 @@
 		1A90EE072099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE082099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE092099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE152099FD2400FA4392 /* GLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */; };
-		1A90EE162099FD2400FA4392 /* GLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */; };
-		1A90EE172099FD2400FA4392 /* GLBufferCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */; };
+		1A90EE152099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
+		1A90EE162099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
+		1A90EE172099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
 		1A90EE182099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
 		1A90EE192099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
 		1A90EE1A2099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
@@ -1316,7 +1316,7 @@
 		1A90EDB42099FC3500FA4392 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Base.hpp; path = ../../../VVGL/include/VVGL_Base.hpp; sourceTree = "<group>"; };
 		1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Qt_Enums.h; path = ../../../VVGL/include/GLBuffer_Qt_Enums.h; sourceTree = "<group>"; };
-		1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferCopier.hpp; path = ../../../VVGL/include/GLBufferCopier.hpp; sourceTree = "<group>"; };
+		1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToTexCopier.hpp; path = ../../../VVGL/include/GLTexToTexCopier.hpp; sourceTree = "<group>"; };
 		1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Mac_Enums.h; path = ../../../VVGL/include/GLBuffer_Mac_Enums.h; sourceTree = "<group>"; };
 		1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferPool.hpp; path = ../../../VVGL/include/GLBufferPool.hpp; sourceTree = "<group>"; };
 		1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLQtCtxWrapper.hpp; path = ../../../VVGL/include/GLQtCtxWrapper.hpp; sourceTree = "<group>"; };
@@ -1335,7 +1335,7 @@
 		1A90EDC82099FD1800FA4392 /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
 		1A90EDC92099FD1800FA4392 /* GLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLScene.hpp; path = ../../../VVGL/include/GLScene.hpp; sourceTree = "<group>"; };
 		1A90EDCA2099FD1800FA4392 /* GLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLContext.hpp; path = ../../../VVGL/include/GLContext.hpp; sourceTree = "<group>"; };
-		1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBufferCopier.cpp; path = ../../../VVGL/src/GLBufferCopier.cpp; sourceTree = "<group>"; };
+		1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToTexCopier.cpp; path = ../../../VVGL/src/GLTexToTexCopier.cpp; sourceTree = "<group>"; };
 		1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBuffer.cpp; path = ../../../VVGL/src/GLBuffer.cpp; sourceTree = "<group>"; };
 		1A90EE0C2099FD2300FA4392 /* GLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLContext.mm; path = ../../../VVGL/src/GLContext.mm; sourceTree = "<group>"; };
 		1A90EE0D2099FD2300FA4392 /* GLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLScene.cpp; path = ../../../VVGL/src/GLScene.cpp; sourceTree = "<group>"; };
@@ -2149,7 +2149,7 @@
 				1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */,
 				1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */,
 				1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */,
-				1A90EDB82099FD1700FA4392 /* GLBufferCopier.hpp */,
+				1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */,
 				1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */,
 				1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */,
 				1A90EDCA2099FD1800FA4392 /* GLContext.hpp */,
@@ -2174,7 +2174,7 @@
 			isa = PBXGroup;
 			children = (
 				1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */,
-				1A90EE0A2099FD2300FA4392 /* GLBufferCopier.cpp */,
+				1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */,
 				1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */,
 				1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */,
 				1A90EE142099FD2300FA4392 /* GLContext.cpp */,
@@ -2408,7 +2408,7 @@
 				1A90EDD52099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
 				1A90EDD82099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
 				1A90EDDB2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD22099FD1900FA4392 /* GLBufferCopier.hpp in Headers */,
+				1A90EDD22099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
 				1A90EE022099FD1900FA4392 /* VVGL.hpp in Headers */,
 				1A90EDE42099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
 				1A90EDEA2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
@@ -2460,7 +2460,7 @@
 				1A90EDD62099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
 				1A90EDD92099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
 				1A90EDDC2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD32099FD1900FA4392 /* GLBufferCopier.hpp in Headers */,
+				1A90EDD32099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
 				1A90EE032099FD1900FA4392 /* VVGL.hpp in Headers */,
 				1A90EDE52099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
 				1A90EDEB2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
@@ -2530,7 +2530,7 @@
 				1A90EDD42099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
 				1A90EDD72099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
 				1A90EDDA2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD12099FD1900FA4392 /* GLBufferCopier.hpp in Headers */,
+				1A90EDD12099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
 				1A90EE012099FD1900FA4392 /* VVGL.hpp in Headers */,
 				1A90EDE32099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
 				1A90EDE92099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
@@ -3483,7 +3483,7 @@
 				1A90EE252099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE282099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE342099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE162099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A90EE162099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
 				1A4A0EB920C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3536,7 +3536,7 @@
 				1A90EE262099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE292099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE352099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE172099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A90EE172099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
 				1A4A0EBA20C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3656,7 +3656,7 @@
 				1A90EE242099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
 				1A90EE272099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
 				1A90EE332099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE152099FD2400FA4392 /* GLBufferCopier.cpp in Sources */,
+				1A90EE152099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
 				1A4A0EB820C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

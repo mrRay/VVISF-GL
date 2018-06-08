@@ -1,4 +1,4 @@
-	#include "GLBufferCopier.hpp"
+	#include "GLTexToTexCopier.hpp"
 
 #include <vector>
 #include <iostream>
@@ -17,77 +17,25 @@ using namespace std;
 
 
 
-static GLBufferCopierRef * _globalBufferCopier = nullptr;
-
-
-
-
-/*	========================================	*/
-#pragma mark --------------------- global instance factory
-
-
-GLBufferCopierRef CreateGlobalBufferCopier()	{
-	//cout << __PRETTY_FUNCTION__ << endl;
-	//	if there's already a global buffer copier, delete it
-	if (_globalBufferCopier != nullptr)	{
-		delete _globalBufferCopier;
-		_globalBufferCopier = nullptr;
-	}
-	//	get the vars i need to create the buffer copier
-	GLBufferPoolRef	bp = GetGlobalBufferPool();
-	if (bp == nullptr)	{
-		cout << "\tERR: no global buffer pool, can't make global buffer copier: " << __PRETTY_FUNCTION__ << endl;
-		return nullptr;
-	}
-	//	make a shared ptr that retains a buffer copier
-	GLBufferCopierRef	newCopier = make_shared<GLBufferCopier>();
-	//	make the global buffer copier
-	_globalBufferCopier = new shared_ptr<GLBufferCopier>();
-	*_globalBufferCopier = newCopier;
-	return *_globalBufferCopier;
-	
-}
-GLBufferCopierRef CreateGlobalBufferCopier(const GLContextRef & inCtx)	{
-	//	if there's already a global buffer copier, delete it
-	if (_globalBufferCopier != nullptr)	{
-		delete _globalBufferCopier;
-		_globalBufferCopier = nullptr;
-	}
-	//	make a shared ptr that retains a buffer copier
-	GLBufferCopierRef	newCopier = make_shared<GLBufferCopier>(inCtx);
-	//	make the global buffer copier
-	_globalBufferCopier = new shared_ptr<GLBufferCopier>();
-	*_globalBufferCopier = newCopier;
-	return *_globalBufferCopier;
-}
-GLBufferCopierRef GetGlobalBufferCopier()	{
-	if (_globalBufferCopier == nullptr)	{
-		cout << "\tERR: copier null, " << __PRETTY_FUNCTION__ << endl;
-		return nullptr;
-	}
-	return *_globalBufferCopier;
-}
-
-
 /*	========================================	*/
 #pragma mark --------------------- constructor/destructor
 
 
-GLBufferCopier::GLBufferCopier() : GLScene()	{
+GLTexToTexCopier::GLTexToTexCopier() : GLScene()	{
 	generalInit();
 }
-GLBufferCopier::GLBufferCopier(const GLContextRef & inCtx) : GLScene(inCtx)	{
+GLTexToTexCopier::GLTexToTexCopier(const GLContextRef & inCtx) : GLScene(inCtx)	{
 	generalInit();
 }
 
 
-void GLBufferCopier::prepareToBeDeleted()	{
+void GLTexToTexCopier::prepareToBeDeleted()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
 	//	now call the super, which deletes the context
 	GLScene::prepareToBeDeleted();
 }
 
-GLBufferCopier::~GLBufferCopier()	{
+GLTexToTexCopier::~GLTexToTexCopier()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
 	if (!deleted)
 		prepareToBeDeleted();
@@ -98,7 +46,7 @@ GLBufferCopier::~GLBufferCopier()	{
 	vbo = nullptr;
 #endif
 }
-void GLBufferCopier::generalInit()	{
+void GLTexToTexCopier::generalInit()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//	set up simple frag & vert shaders that draw a tex
 #if defined(VVGL_TARGETENV_GL3PLUS)
@@ -211,7 +159,7 @@ void main()	{\r\
 #pragma mark --------------------- superclass overrides
 
 
-void GLBufferCopier::_initialize()	{
+void GLTexToTexCopier::_initialize()	{
 	GLScene::_initialize();
 }
 
@@ -220,35 +168,35 @@ void GLBufferCopier::_initialize()	{
 #pragma mark --------------------- getter/setter
 
 
-void GLBufferCopier::setCopyToIOSurface(const bool & n)	{
+void GLTexToTexCopier::setCopyToIOSurface(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copyToIOSurface = n;
 }
-bool GLBufferCopier::getCopyToIOSurface()	{
+bool GLTexToTexCopier::getCopyToIOSurface()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return copyToIOSurface;
 }
-void GLBufferCopier::setCopyAndResize(const bool & n)	{
+void GLTexToTexCopier::setCopyAndResize(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copyAndResize = n;
 }
-bool GLBufferCopier::getCopyAndResize()	{
+bool GLTexToTexCopier::getCopyAndResize()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return copyAndResize;
 }
-void GLBufferCopier::setCopySize(const Size & n)	{
+void GLTexToTexCopier::setCopySize(const Size & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copySize = n;
 }
-Size GLBufferCopier::getCopySize()	{
+Size GLTexToTexCopier::getCopySize()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return copySize;
 }
-void GLBufferCopier::setCopySizingMode(const SizingMode & n)	{
+void GLTexToTexCopier::setCopySizingMode(const SizingMode & n)	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	copySizingMode = n;
 }
-SizingMode GLBufferCopier::getCopySizingMode()	{
+SizingMode GLTexToTexCopier::getCopySizingMode()	{
 	lock_guard<recursive_mutex>		lock(renderLock);
 	return copySizingMode;
 }
@@ -258,7 +206,7 @@ SizingMode GLBufferCopier::getCopySizingMode()	{
 #pragma mark --------------------- interface methods
 
 
-GLBufferRef GLBufferCopier::copyToNewBuffer(const GLBufferRef & n)	{
+GLBufferRef GLTexToTexCopier::copyToNewBuffer(const GLBufferRef & n)	{
 	if (n == nullptr)
 		return nullptr;
 	
@@ -303,7 +251,7 @@ GLBufferRef GLBufferCopier::copyToNewBuffer(const GLBufferRef & n)	{
 	
 	return color;
 }
-bool GLBufferCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	{
+bool GLTexToTexCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	{
 	
 	if (a==nullptr || b==nullptr)
 		return false;
@@ -350,7 +298,7 @@ bool GLBufferCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	{
 	
 }
 
-void GLBufferCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef & b)	{
+void GLTexToTexCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef & b)	{
 	
 	if (a==nullptr || b==nullptr)
 		return;
@@ -390,7 +338,7 @@ void GLBufferCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef & 
 	
 }
 
-void GLBufferCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef & b)	{
+void GLTexToTexCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef & b)	{
 	
 	if (a==nullptr || b==nullptr)
 		return;
@@ -430,7 +378,7 @@ void GLBufferCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef & b
 }
 
 
-void GLBufferCopier::copyBlackFrameTo(const GLBufferRef & n)	{
+void GLTexToTexCopier::copyBlackFrameTo(const GLBufferRef & n)	{
 	
 	if (n == nullptr)
 		return;
@@ -444,7 +392,7 @@ void GLBufferCopier::copyBlackFrameTo(const GLBufferRef & n)	{
 	
 }
 
-void GLBufferCopier::copyOpaqueBlackFrameTo(const GLBufferRef & n)	{
+void GLTexToTexCopier::copyOpaqueBlackFrameTo(const GLBufferRef & n)	{
 	
 	if (n == nullptr)
 		return;
@@ -458,7 +406,7 @@ void GLBufferCopier::copyOpaqueBlackFrameTo(const GLBufferRef & n)	{
 	
 }
 
-void GLBufferCopier::copyRedFrameTo(const GLBufferRef & n)	{
+void GLTexToTexCopier::copyRedFrameTo(const GLBufferRef & n)	{
 	
 	if (n == nullptr)
 		return;
@@ -471,7 +419,7 @@ void GLBufferCopier::copyRedFrameTo(const GLBufferRef & n)	{
 	renderRedFrame(newTarget);
 	
 }
-void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
+void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
 	GLVersion		myVers = getGLVersion();
 	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
@@ -594,7 +542,9 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 	
 		//	at this point, we've got a VBO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
 		//glClearColor(1., 0., 0., 1.);
+		//GLERRLOG
 		//glClear(GL_COLOR_BUFFER_BIT);
+		//GLERRLOG
 	
 		//	bind the VBO
 		//if (vbo != nullptr)	{
@@ -657,6 +607,7 @@ void GLBufferCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<Ver
 			inputSTLoc.disable();
 		}
 		glDisable(GL_TEXTURE_2D);
+		GLERRLOG
 	
 		//	un-bind the VBO
 		//if (vbo != nullptr)	{

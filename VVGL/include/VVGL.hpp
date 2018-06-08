@@ -29,8 +29,8 @@
 #include "GLScene.hpp"
 
 
-//	a GLBufferCopier will copy texture-based GLBuffer instances into other texture-based GLBuffer instances.  it's a GL texture copier, basically.  it has some frills for easily resizing textures or creating textures filled with a solid color.
-#include "GLBufferCopier.hpp"
+//	a GLTexToTexCopier will copy texture-based GLBuffer instances into other texture-based GLBuffer instances.  it's a GL texture copier, basically.  it has some frills for easily resizing textures or creating textures filled with a solid color.
+#include "GLTexToTexCopier.hpp"
 
 
 //	these classes use PBOs to implement efficient texture upload/downloads

@@ -685,7 +685,9 @@ void GLScene::_initialize()	{
 		return;
 	
 	//glEnable(GL_TEXTURE_RECTANGLE);
+	//GLERRLOG
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	//GLERRLOG
 	if (getGLVersion() == GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 		glEnable(GL_BLEND);
@@ -700,10 +702,14 @@ void GLScene::_initialize()	{
 	//CGLSetParameter(cgl_ctx, kCGLCPSwapInterval, &swap);
 	
 	//glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_FASTEST);
+	//GLERRLOG
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+	//GLERRLOG
 	//glDisable(GL_DEPTH_TEST);
+	//GLERRLOG
 	
 	//glClearColor(0.0, 0.0, 0.0, 0.0);
+	//GLERRLOG
 	
 	//glDisable(GL_BLEND);
 	//GLERRLOG
