@@ -112,7 +112,7 @@ class VVISF_EXPORT ISFAttr	{
 		VVISF_EXPORT friend ostream & operator<<(ostream & os, const ISFAttr & n);
 		void lengthyDescription();
 		//!	Returns a human-readable string that briefly describes the attribute.
-		string getDescription();
+		string getAttrDescription();
 };
 
 

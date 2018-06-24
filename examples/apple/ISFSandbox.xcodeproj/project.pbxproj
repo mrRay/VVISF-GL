@@ -68,6 +68,141 @@
 		1A023C9B1F2011AD004FFB3A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A023C991F2011AD004FFB3A /* MainMenu.xib */; };
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
 		1A2587141ED497AE009FC66A /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1A29269020DC42B9006DCE1D /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267720DC42B8006DCE1D /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269120DC42B9006DCE1D /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267720DC42B8006DCE1D /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269220DC42B9006DCE1D /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267720DC42B8006DCE1D /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269320DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267820DC42B8006DCE1D /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269420DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267820DC42B8006DCE1D /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269520DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267820DC42B8006DCE1D /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269620DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267920DC42B8006DCE1D /* GLBuffer_Enums_RPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269720DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267920DC42B8006DCE1D /* GLBuffer_Enums_RPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269820DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267920DC42B8006DCE1D /* GLBuffer_Enums_RPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269920DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267A20DC42B8006DCE1D /* GLBuffer_Enums_GLFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269A20DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267A20DC42B8006DCE1D /* GLBuffer_Enums_GLFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269B20DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267A20DC42B8006DCE1D /* GLBuffer_Enums_GLFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269C20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267B20DC42B8006DCE1D /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269D20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267B20DC42B8006DCE1D /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269E20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267B20DC42B8006DCE1D /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29269F20DC42B9006DCE1D /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267C20DC42B8006DCE1D /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A020DC42B9006DCE1D /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267C20DC42B8006DCE1D /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A120DC42B9006DCE1D /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267C20DC42B8006DCE1D /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A220DC42B9006DCE1D /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267D20DC42B8006DCE1D /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A320DC42B9006DCE1D /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267D20DC42B8006DCE1D /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A420DC42B9006DCE1D /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267D20DC42B8006DCE1D /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A520DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267E20DC42B8006DCE1D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A620DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267E20DC42B8006DCE1D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A720DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267E20DC42B8006DCE1D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A820DC42B9006DCE1D /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267F20DC42B8006DCE1D /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926A920DC42B9006DCE1D /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267F20DC42B8006DCE1D /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AA20DC42B9006DCE1D /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29267F20DC42B8006DCE1D /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AB20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268020DC42B8006DCE1D /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AC20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268020DC42B8006DCE1D /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AD20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268020DC42B8006DCE1D /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AE20DC42B9006DCE1D /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268120DC42B8006DCE1D /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926AF20DC42B9006DCE1D /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268120DC42B8006DCE1D /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B020DC42B9006DCE1D /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268120DC42B8006DCE1D /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B120DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268220DC42B8006DCE1D /* GLBuffer_Enums_Qt.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B220DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268220DC42B8006DCE1D /* GLBuffer_Enums_Qt.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B320DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268220DC42B8006DCE1D /* GLBuffer_Enums_Qt.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B420DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268320DC42B8006DCE1D /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B520DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268320DC42B8006DCE1D /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B620DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268320DC42B8006DCE1D /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B720DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268420DC42B8006DCE1D /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B820DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268420DC42B8006DCE1D /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926B920DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268420DC42B8006DCE1D /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BA20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268520DC42B9006DCE1D /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BB20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268520DC42B9006DCE1D /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BC20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268520DC42B9006DCE1D /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BD20DC42B9006DCE1D /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268620DC42B9006DCE1D /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BE20DC42B9006DCE1D /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268620DC42B9006DCE1D /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926BF20DC42B9006DCE1D /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268620DC42B9006DCE1D /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C020DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268720DC42B9006DCE1D /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C120DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268720DC42B9006DCE1D /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C220DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268720DC42B9006DCE1D /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C320DC42B9006DCE1D /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268820DC42B9006DCE1D /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C420DC42B9006DCE1D /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268820DC42B9006DCE1D /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C520DC42B9006DCE1D /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268820DC42B9006DCE1D /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C620DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268920DC42B9006DCE1D /* GLBuffer_Enums_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C720DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268920DC42B9006DCE1D /* GLBuffer_Enums_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C820DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268920DC42B9006DCE1D /* GLBuffer_Enums_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926C920DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268A20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CA20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268A20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CB20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268A20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CC20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268B20DC42B9006DCE1D /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CD20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268B20DC42B9006DCE1D /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CE20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268B20DC42B9006DCE1D /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926CF20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268C20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D020DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268C20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D120DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268C20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D220DC42B9006DCE1D /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268D20DC42B9006DCE1D /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D320DC42B9006DCE1D /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268D20DC42B9006DCE1D /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D420DC42B9006DCE1D /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268D20DC42B9006DCE1D /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D520DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268E20DC42B9006DCE1D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D620DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268E20DC42B9006DCE1D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D720DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268E20DC42B9006DCE1D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D820DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268F20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926D920DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268F20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926DA20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29268F20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A2926EC20DC42D5006DCE1D /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DB20DC42D4006DCE1D /* GLContext.cpp */; };
+		1A2926ED20DC42D5006DCE1D /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DB20DC42D4006DCE1D /* GLContext.cpp */; };
+		1A2926EE20DC42D5006DCE1D /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DB20DC42D4006DCE1D /* GLContext.cpp */; };
+		1A2926F220DC42D5006DCE1D /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DD20DC42D4006DCE1D /* GLContext.mm */; };
+		1A2926F320DC42D5006DCE1D /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DD20DC42D4006DCE1D /* GLContext.mm */; };
+		1A2926F420DC42D5006DCE1D /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DD20DC42D4006DCE1D /* GLContext.mm */; };
+		1A2926F520DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DE20DC42D4006DCE1D /* GLTexToCPUCopier.cpp */; };
+		1A2926F620DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DE20DC42D4006DCE1D /* GLTexToCPUCopier.cpp */; };
+		1A2926F720DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926DE20DC42D4006DCE1D /* GLTexToCPUCopier.cpp */; };
+		1A2926FB20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E020DC42D4006DCE1D /* GLQtCtxWrapper.cpp */; };
+		1A2926FC20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E020DC42D4006DCE1D /* GLQtCtxWrapper.cpp */; };
+		1A2926FD20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E020DC42D4006DCE1D /* GLQtCtxWrapper.cpp */; };
+		1A2926FE20DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E120DC42D4006DCE1D /* VVGL_StringUtils.cpp */; };
+		1A2926FF20DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E120DC42D4006DCE1D /* VVGL_StringUtils.cpp */; };
+		1A29270020DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E120DC42D4006DCE1D /* VVGL_StringUtils.cpp */; };
+		1A29270420DC42D5006DCE1D /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E320DC42D5006DCE1D /* GLBuffer.cpp */; };
+		1A29270520DC42D5006DCE1D /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E320DC42D5006DCE1D /* GLBuffer.cpp */; };
+		1A29270620DC42D5006DCE1D /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E320DC42D5006DCE1D /* GLBuffer.cpp */; };
+		1A29270A20DC42D5006DCE1D /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E520DC42D5006DCE1D /* GLScene.cpp */; };
+		1A29270B20DC42D5006DCE1D /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E520DC42D5006DCE1D /* GLScene.cpp */; };
+		1A29270C20DC42D5006DCE1D /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E520DC42D5006DCE1D /* GLScene.cpp */; };
+		1A29270D20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E620DC42D5006DCE1D /* VVGL_Geom.cpp */; };
+		1A29270E20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E620DC42D5006DCE1D /* VVGL_Geom.cpp */; };
+		1A29270F20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E620DC42D5006DCE1D /* VVGL_Geom.cpp */; };
+		1A29271020DC42D5006DCE1D /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E720DC42D5006DCE1D /* GLBufferPool.cpp */; };
+		1A29271120DC42D5006DCE1D /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E720DC42D5006DCE1D /* GLBufferPool.cpp */; };
+		1A29271220DC42D5006DCE1D /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E720DC42D5006DCE1D /* GLBufferPool.cpp */; };
+		1A29271320DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E820DC42D5006DCE1D /* GLTexToTexCopier.cpp */; };
+		1A29271420DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E820DC42D5006DCE1D /* GLTexToTexCopier.cpp */; };
+		1A29271520DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E820DC42D5006DCE1D /* GLTexToTexCopier.cpp */; };
+		1A29271620DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E920DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm */; };
+		1A29271720DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E920DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm */; };
+		1A29271820DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926E920DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm */; };
+		1A29271920DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EA20DC42D5006DCE1D /* GLCPUToTexCopier.cpp */; };
+		1A29271A20DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EA20DC42D5006DCE1D /* GLCPUToTexCopier.cpp */; };
+		1A29271B20DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EA20DC42D5006DCE1D /* GLCPUToTexCopier.cpp */; };
+		1A29271C20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EB20DC42D5006DCE1D /* GLCachedProperty.cpp */; };
+		1A29271D20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EB20DC42D5006DCE1D /* GLCachedProperty.cpp */; };
+		1A29271E20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A2926EB20DC42D5006DCE1D /* GLCachedProperty.cpp */; };
+		1A29272620DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29271F20DC430D006DCE1D /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272720DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29271F20DC430D006DCE1D /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272820DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29271F20DC430D006DCE1D /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272920DC430E006DCE1D /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272020DC430E006DCE1D /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272A20DC430E006DCE1D /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272020DC430E006DCE1D /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272B20DC430E006DCE1D /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272020DC430E006DCE1D /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272C20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272120DC430E006DCE1D /* VVISF_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272D20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272120DC430E006DCE1D /* VVISF_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272E20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272120DC430E006DCE1D /* VVISF_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29272F20DC430E006DCE1D /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272220DC430E006DCE1D /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273020DC430E006DCE1D /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272220DC430E006DCE1D /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273120DC430E006DCE1D /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272220DC430E006DCE1D /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273220DC430E006DCE1D /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272320DC430E006DCE1D /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273320DC430E006DCE1D /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272320DC430E006DCE1D /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273420DC430E006DCE1D /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272320DC430E006DCE1D /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273520DC430E006DCE1D /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272420DC430E006DCE1D /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273620DC430E006DCE1D /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272420DC430E006DCE1D /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273720DC430E006DCE1D /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272420DC430E006DCE1D /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273820DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272520DC430E006DCE1D /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273920DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272520DC430E006DCE1D /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A29273A20DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29272520DC430E006DCE1D /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A32CBD220C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */; };
 		1A32CBD420C87E74002EDFB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD320C87E74002EDFB9 /* Assets.xcassets */; };
 		1A32CBD720C87E74002EDFB9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD520C87E74002EDFB9 /* MainMenu.xib */; };
@@ -94,26 +229,8 @@
 		1A47DFD8200EAA9B00FF206A /* GeoShaderTest_modern.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */; };
 		1A47DFD9200EAA9B00FF206A /* GeoShaderTest_modern.gs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */; };
 		1A47DFDA200EAA9B00FF206A /* GeoShaderTest_modern.vs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */; };
-		1A4816DF20C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4816E020C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4816E120C88483006BB843 /* VVGL_Doxygen.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4816E320C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4816E420C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4816E520C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A48170720C9AAF6006BB843 /* BigImg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A48170620C9AAF6006BB843 /* BigImg.png */; };
 		1A48170820C9B8F3006BB843 /* SampleImg.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A901A371F464949009FEE74 /* SampleImg.png */; };
-		1A4A0EB820C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
-		1A4A0EB920C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
-		1A4A0EBA20C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */; };
-		1A4A0EBB20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
-		1A4A0EBC20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
-		1A4A0EBD20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */; };
-		1A4A0EC020C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4A0EC120C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4A0EC220C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4A0EC320C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4A0EC420C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A4A0EC520C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A4EEA531F17B75B00B6C3F4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA521F17B75B00B6C3F4 /* main.m */; };
 		1A4EEA561F17B75B00B6C3F4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA551F17B75B00B6C3F4 /* AppDelegate.m */; };
 		1A4EEA591F17B75B00B6C3F4 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A4EEA581F17B75B00B6C3F4 /* ViewController.mm */; };
@@ -286,135 +403,21 @@
 		1A90EDB12099FC2500FA4392 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A90EDB02099FC2500FA4392 /* CoreGraphics.framework */; };
 		1A90EDB32099FC2C00FA4392 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A90EDB22099FC2C00FA4392 /* CoreVideo.framework */; };
 		1A90EDB52099FC3500FA4392 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A90EDB42099FC3500FA4392 /* UIKit.framework */; };
-		1A90EDCB2099FD1900FA4392 /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDCC2099FD1900FA4392 /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDCD2099FD1900FA4392 /* VVGL_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDCE2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDCF2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD02099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD12099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD22099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD32099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD42099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD52099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD62099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD72099FD1900FA4392 /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD82099FD1900FA4392 /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDD92099FD1900FA4392 /* GLBufferPool.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDA2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDB2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDC2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDD2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDE2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDDF2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE02099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE12099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE22099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE32099FD1900FA4392 /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE42099FD1900FA4392 /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE52099FD1900FA4392 /* VVGL_Defines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE62099FD1900FA4392 /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE72099FD1900FA4392 /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE82099FD1900FA4392 /* VVGL_Qt_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDE92099FD1900FA4392 /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDEA2099FD1900FA4392 /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDEB2099FD1900FA4392 /* VVGL_Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDEC2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDED2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDEE2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDEF2099FD1900FA4392 /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF02099FD1900FA4392 /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF12099FD1900FA4392 /* GLBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF22099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF32099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF42099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF52099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC42099FD1800FA4392 /* GLBuffer_IOS_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF62099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC42099FD1800FA4392 /* GLBuffer_IOS_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF72099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC42099FD1800FA4392 /* GLBuffer_IOS_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF82099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC52099FD1800FA4392 /* GLBuffer_GLFW_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDF92099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC52099FD1800FA4392 /* GLBuffer_GLFW_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFA2099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC52099FD1800FA4392 /* GLBuffer_GLFW_Enums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFB2099FD1900FA4392 /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFC2099FD1900FA4392 /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFD2099FD1900FA4392 /* VVGL_Time.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFE2099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EDFF2099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE002099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE012099FD1900FA4392 /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC82099FD1800FA4392 /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE022099FD1900FA4392 /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC82099FD1800FA4392 /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE032099FD1900FA4392 /* VVGL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC82099FD1800FA4392 /* VVGL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE042099FD1900FA4392 /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC92099FD1800FA4392 /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE052099FD1900FA4392 /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC92099FD1800FA4392 /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE062099FD1900FA4392 /* GLScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDC92099FD1800FA4392 /* GLScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE072099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE082099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE092099FD1900FA4392 /* GLContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EDCA2099FD1800FA4392 /* GLContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE152099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
-		1A90EE162099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
-		1A90EE172099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */; };
-		1A90EE182099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
-		1A90EE192099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
-		1A90EE1A2099FD2400FA4392 /* GLBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */; };
-		1A90EE1B2099FD2400FA4392 /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0C2099FD2300FA4392 /* GLContext.mm */; };
-		1A90EE1C2099FD2400FA4392 /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0C2099FD2300FA4392 /* GLContext.mm */; };
-		1A90EE1D2099FD2400FA4392 /* GLContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0C2099FD2300FA4392 /* GLContext.mm */; };
-		1A90EE1E2099FD2400FA4392 /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0D2099FD2300FA4392 /* GLScene.cpp */; };
-		1A90EE1F2099FD2400FA4392 /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0D2099FD2300FA4392 /* GLScene.cpp */; };
-		1A90EE202099FD2400FA4392 /* GLScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0D2099FD2300FA4392 /* GLScene.cpp */; };
-		1A90EE212099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */; };
-		1A90EE222099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */; };
-		1A90EE232099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */; };
-		1A90EE242099FD2400FA4392 /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */; };
-		1A90EE252099FD2400FA4392 /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */; };
-		1A90EE262099FD2400FA4392 /* VVGL_Geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */; };
-		1A90EE272099FD2400FA4392 /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */; };
-		1A90EE282099FD2400FA4392 /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */; };
-		1A90EE292099FD2400FA4392 /* GLBufferPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */; };
-		1A90EE2A2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */; };
-		1A90EE2B2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */; };
-		1A90EE2C2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */; };
-		1A90EE2D2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */; };
-		1A90EE2E2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */; };
-		1A90EE2F2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */; };
-		1A90EE302099FD2400FA4392 /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */; };
-		1A90EE312099FD2400FA4392 /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */; };
-		1A90EE322099FD2400FA4392 /* GLCachedProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */; };
-		1A90EE332099FD2400FA4392 /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE142099FD2300FA4392 /* GLContext.cpp */; };
-		1A90EE342099FD2400FA4392 /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE142099FD2300FA4392 /* GLContext.cpp */; };
-		1A90EE352099FD2400FA4392 /* GLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE142099FD2300FA4392 /* GLContext.cpp */; };
-		1A90EE412099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE362099FD4B00FA4392 /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE422099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE362099FD4B00FA4392 /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE432099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE362099FD4B00FA4392 /* VVISF_Qt_global.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE442099FD4B00FA4392 /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE372099FD4B00FA4392 /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE452099FD4B00FA4392 /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE372099FD4B00FA4392 /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE462099FD4B00FA4392 /* VVISF_Base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE372099FD4B00FA4392 /* VVISF_Base.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE472099FD4B00FA4392 /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE382099FD4B00FA4392 /* ISFAttr.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE482099FD4B00FA4392 /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE382099FD4B00FA4392 /* ISFAttr.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE492099FD4B00FA4392 /* ISFAttr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE382099FD4B00FA4392 /* ISFAttr.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE4A2099FD4B00FA4392 /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE392099FD4B00FA4392 /* ISFVal.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE4B2099FD4B00FA4392 /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE392099FD4B00FA4392 /* ISFVal.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE4C2099FD4B00FA4392 /* ISFVal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE392099FD4B00FA4392 /* ISFVal.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE4D2099FD4B00FA4392 /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3A2099FD4B00FA4392 /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE4E2099FD4B00FA4392 /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3A2099FD4B00FA4392 /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE4F2099FD4B00FA4392 /* VVISF.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3A2099FD4B00FA4392 /* VVISF.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE502099FD4B00FA4392 /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3B2099FD4B00FA4392 /* ISFScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE512099FD4B00FA4392 /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3B2099FD4B00FA4392 /* ISFScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE522099FD4B00FA4392 /* ISFScene.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3B2099FD4B00FA4392 /* ISFScene.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE532099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3C2099FD4B00FA4392 /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE542099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3C2099FD4B00FA4392 /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE552099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3C2099FD4B00FA4392 /* VVISF_StringUtils.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE562099FD4B00FA4392 /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3D2099FD4B00FA4392 /* ISFDoc.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE572099FD4B00FA4392 /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3D2099FD4B00FA4392 /* ISFDoc.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE582099FD4B00FA4392 /* ISFDoc.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3D2099FD4B00FA4392 /* ISFDoc.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE592099FD4B00FA4392 /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3E2099FD4B00FA4392 /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE5A2099FD4B00FA4392 /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3E2099FD4B00FA4392 /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE5B2099FD4B00FA4392 /* VVISF_Err.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3E2099FD4B00FA4392 /* VVISF_Err.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE5C2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3F2099FD4B00FA4392 /* ISFPassTarget.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE5D2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3F2099FD4B00FA4392 /* ISFPassTarget.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE5E2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE3F2099FD4B00FA4392 /* ISFPassTarget.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE5F2099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE402099FD4B00FA4392 /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE602099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE402099FD4B00FA4392 /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
-		1A90EE612099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A90EE402099FD4B00FA4392 /* VVISF_Constants.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A90EE6A2099FD5A00FA4392 /* VVISF_Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE622099FD5900FA4392 /* VVISF_Base.cpp */; };
 		1A90EE6B2099FD5A00FA4392 /* VVISF_Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE622099FD5900FA4392 /* VVISF_Base.cpp */; };
 		1A90EE6C2099FD5A00FA4392 /* VVISF_Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A90EE622099FD5900FA4392 /* VVISF_Base.cpp */; };
@@ -1050,6 +1053,51 @@
 		1A2311531E2D63C700B0EF84 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		1A23115A1E2D63C700B0EF84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A23115E1E2D63D200B0EF84 /* GLFW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLFW.xcodeproj; path = "../../../glfw-3.2.1/GLFW.xcodeproj"; sourceTree = "<group>"; };
+		1A29267720DC42B8006DCE1D /* VVGL_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Base.hpp; path = ../../../VVGL/include/VVGL_Base.hpp; sourceTree = "<group>"; };
+		1A29267820DC42B8006DCE1D /* VVGL_Geom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Geom.hpp; path = ../../../VVGL/include/VVGL_Geom.hpp; sourceTree = "<group>"; };
+		1A29267920DC42B8006DCE1D /* GLBuffer_Enums_RPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Enums_RPI.h; path = ../../../VVGL/include/GLBuffer_Enums_RPI.h; sourceTree = "<group>"; };
+		1A29267A20DC42B8006DCE1D /* GLBuffer_Enums_GLFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Enums_GLFW.h; path = ../../../VVGL/include/GLBuffer_Enums_GLFW.h; sourceTree = "<group>"; };
+		1A29267B20DC42B8006DCE1D /* GLCachedProperty.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCachedProperty.hpp; path = ../../../VVGL/include/GLCachedProperty.hpp; sourceTree = "<group>"; };
+		1A29267C20DC42B8006DCE1D /* GLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLContext.hpp; path = ../../../VVGL/include/GLContext.hpp; sourceTree = "<group>"; };
+		1A29267D20DC42B8006DCE1D /* GLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferPool.hpp; path = ../../../VVGL/include/GLBufferPool.hpp; sourceTree = "<group>"; };
+		1A29267E20DC42B8006DCE1D /* GLCPUToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCPUToTexCopier.hpp; path = ../../../VVGL/include/GLCPUToTexCopier.hpp; sourceTree = "<group>"; };
+		1A29267F20DC42B8006DCE1D /* VVGL_Time.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Time.hpp; path = ../../../VVGL/include/VVGL_Time.hpp; sourceTree = "<group>"; };
+		1A29268020DC42B8006DCE1D /* GLQtCtxWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLQtCtxWrapper.hpp; path = ../../../VVGL/include/GLQtCtxWrapper.hpp; sourceTree = "<group>"; };
+		1A29268120DC42B8006DCE1D /* VVGL_Range.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Range.hpp; path = ../../../VVGL/include/VVGL_Range.hpp; sourceTree = "<group>"; };
+		1A29268220DC42B8006DCE1D /* GLBuffer_Enums_Qt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Enums_Qt.h; path = ../../../VVGL/include/GLBuffer_Enums_Qt.h; sourceTree = "<group>"; };
+		1A29268320DC42B8006DCE1D /* VVGL_Defines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Defines.hpp; path = ../../../VVGL/include/VVGL_Defines.hpp; sourceTree = "<group>"; };
+		1A29268420DC42B8006DCE1D /* VVGL_Qt_global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGL_Qt_global.h; path = ../../../VVGL/include/VVGL_Qt_global.h; sourceTree = "<group>"; };
+		1A29268520DC42B9006DCE1D /* VVGL_StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_StringUtils.hpp; path = ../../../VVGL/include/VVGL_StringUtils.hpp; sourceTree = "<group>"; };
+		1A29268620DC42B9006DCE1D /* GLBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBuffer.hpp; path = ../../../VVGL/include/GLBuffer.hpp; sourceTree = "<group>"; };
+		1A29268720DC42B9006DCE1D /* VVGL_Doxygen.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Doxygen.hpp; path = ../../../VVGL/include/VVGL_Doxygen.hpp; sourceTree = "<group>"; };
+		1A29268820DC42B9006DCE1D /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
+		1A29268920DC42B9006DCE1D /* GLBuffer_Enums_Mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Enums_Mac.h; path = ../../../VVGL/include/GLBuffer_Enums_Mac.h; sourceTree = "<group>"; };
+		1A29268A20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBufferPool_CocoaAdditions.h; path = ../../../VVGL/include/GLBufferPool_CocoaAdditions.h; sourceTree = "<group>"; };
+		1A29268B20DC42B9006DCE1D /* GLTexToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToTexCopier.hpp; path = ../../../VVGL/include/GLTexToTexCopier.hpp; sourceTree = "<group>"; };
+		1A29268C20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_HardCodedDefines.hpp; path = ../../../VVGL/include/VVGL_HardCodedDefines.hpp; sourceTree = "<group>"; };
+		1A29268D20DC42B9006DCE1D /* GLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLScene.hpp; path = ../../../VVGL/include/GLScene.hpp; sourceTree = "<group>"; };
+		1A29268E20DC42B9006DCE1D /* GLTexToCPUCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToCPUCopier.hpp; path = ../../../VVGL/include/GLTexToCPUCopier.hpp; sourceTree = "<group>"; };
+		1A29268F20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Enums_IOS.h; path = ../../../VVGL/include/GLBuffer_Enums_IOS.h; sourceTree = "<group>"; };
+		1A2926DB20DC42D4006DCE1D /* GLContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLContext.cpp; path = ../../../VVGL/src/GLContext.cpp; sourceTree = "<group>"; };
+		1A2926DD20DC42D4006DCE1D /* GLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLContext.mm; path = ../../../VVGL/src/GLContext.mm; sourceTree = "<group>"; };
+		1A2926DE20DC42D4006DCE1D /* GLTexToCPUCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToCPUCopier.cpp; path = ../../../VVGL/src/GLTexToCPUCopier.cpp; sourceTree = "<group>"; };
+		1A2926E020DC42D4006DCE1D /* GLQtCtxWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLQtCtxWrapper.cpp; path = ../../../VVGL/src/GLQtCtxWrapper.cpp; sourceTree = "<group>"; };
+		1A2926E120DC42D4006DCE1D /* VVGL_StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_StringUtils.cpp; path = ../../../VVGL/src/VVGL_StringUtils.cpp; sourceTree = "<group>"; };
+		1A2926E320DC42D5006DCE1D /* GLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBuffer.cpp; path = ../../../VVGL/src/GLBuffer.cpp; sourceTree = "<group>"; };
+		1A2926E520DC42D5006DCE1D /* GLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLScene.cpp; path = ../../../VVGL/src/GLScene.cpp; sourceTree = "<group>"; };
+		1A2926E620DC42D5006DCE1D /* VVGL_Geom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_Geom.cpp; path = ../../../VVGL/src/VVGL_Geom.cpp; sourceTree = "<group>"; };
+		1A2926E720DC42D5006DCE1D /* GLBufferPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBufferPool.cpp; path = ../../../VVGL/src/GLBufferPool.cpp; sourceTree = "<group>"; };
+		1A2926E820DC42D5006DCE1D /* GLTexToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToTexCopier.cpp; path = ../../../VVGL/src/GLTexToTexCopier.cpp; sourceTree = "<group>"; };
+		1A2926E920DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLBufferPool_CocoaAdditions.mm; path = ../../../VVGL/src/GLBufferPool_CocoaAdditions.mm; sourceTree = "<group>"; };
+		1A2926EA20DC42D5006DCE1D /* GLCPUToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCPUToTexCopier.cpp; path = ../../../VVGL/src/GLCPUToTexCopier.cpp; sourceTree = "<group>"; };
+		1A2926EB20DC42D5006DCE1D /* GLCachedProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCachedProperty.cpp; path = ../../../VVGL/src/GLCachedProperty.cpp; sourceTree = "<group>"; };
+		1A29271F20DC430D006DCE1D /* VVISF_StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_StringUtils.hpp; path = ../../../VVISF/include/VVISF_StringUtils.hpp; sourceTree = "<group>"; };
+		1A29272020DC430E006DCE1D /* VVISF_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Base.hpp; path = ../../../VVISF/include/VVISF_Base.hpp; sourceTree = "<group>"; };
+		1A29272120DC430E006DCE1D /* VVISF_Doxygen.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Doxygen.hpp; path = ../../../VVISF/include/VVISF_Doxygen.hpp; sourceTree = "<group>"; };
+		1A29272220DC430E006DCE1D /* VVISF_Constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Constants.hpp; path = ../../../VVISF/include/VVISF_Constants.hpp; sourceTree = "<group>"; };
+		1A29272320DC430E006DCE1D /* VVISF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF.hpp; path = ../../../VVISF/include/VVISF.hpp; sourceTree = "<group>"; };
+		1A29272420DC430E006DCE1D /* VVISF_Err.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Err.hpp; path = ../../../VVISF/include/VVISF_Err.hpp; sourceTree = "<group>"; };
+		1A29272520DC430E006DCE1D /* VVISF_Qt_global.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Qt_global.hpp; path = ../../../VVISF/include/VVISF_Qt_global.hpp; sourceTree = "<group>"; };
 		1A32CBCE20C87E73002EDFB9 /* TexDownloadUpload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TexDownloadUpload.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A32CBD020C87E73002EDFB9 /* TexDownloadUploadAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexDownloadUploadAppDelegate.h; sourceTree = "<group>"; };
 		1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TexDownloadUploadAppDelegate.mm; sourceTree = "<group>"; };
@@ -1059,7 +1107,6 @@
 		1A32CBD920C87E74002EDFB9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1A32CBDB20C87E74002EDFB9 /* TexDownloadUpload.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TexDownloadUpload.entitlements; sourceTree = "<group>"; };
 		1A365CC12090B35C00771520 /* VVISF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVISF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A365CC32090B35C00771520 /* VVISF_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VVISF_Mac.h; sourceTree = "<group>"; };
 		1A365CC42090B35C00771520 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A365CFE2090B97800771520 /* VVGL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVGL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A365D012090B97800771520 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1069,13 +1116,7 @@
 		1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.fs; sourceTree = "<group>"; };
 		1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.gs; sourceTree = "<group>"; };
 		1A47DFD7200EAA9B00FF206A /* GeoShaderTest_modern.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GeoShaderTest_modern.vs; sourceTree = "<group>"; };
-		1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Doxygen.hpp; path = ../../../VVGL/include/VVGL_Doxygen.hpp; sourceTree = "<group>"; };
-		1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_HardCodedDefines.hpp; path = ../../../VVGL/include/VVGL_HardCodedDefines.hpp; sourceTree = "<group>"; };
 		1A48170620C9AAF6006BB843 /* BigImg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BigImg.png; sourceTree = "<group>"; };
-		1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToCPUCopier.cpp; path = ../../../VVGL/src/GLTexToCPUCopier.cpp; sourceTree = "<group>"; };
-		1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCPUToTexCopier.cpp; path = ../../../VVGL/src/GLCPUToTexCopier.cpp; sourceTree = "<group>"; };
-		1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToCPUCopier.hpp; path = ../../../VVGL/include/GLTexToCPUCopier.hpp; sourceTree = "<group>"; };
-		1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCPUToTexCopier.hpp; path = ../../../VVGL/include/GLCPUToTexCopier.hpp; sourceTree = "<group>"; };
 		1A4EEA4F1F17B75B00B6C3F4 /* ISFonIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISFonIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A4EEA521F17B75B00B6C3F4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1A4EEA541F17B75B00B6C3F4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -1314,49 +1355,11 @@
 		1A90EDB02099FC2500FA4392 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		1A90EDB22099FC2C00FA4392 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		1A90EDB42099FC3500FA4392 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Base.hpp; path = ../../../VVGL/include/VVGL_Base.hpp; sourceTree = "<group>"; };
-		1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Qt_Enums.h; path = ../../../VVGL/include/GLBuffer_Qt_Enums.h; sourceTree = "<group>"; };
-		1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLTexToTexCopier.hpp; path = ../../../VVGL/include/GLTexToTexCopier.hpp; sourceTree = "<group>"; };
-		1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_Mac_Enums.h; path = ../../../VVGL/include/GLBuffer_Mac_Enums.h; sourceTree = "<group>"; };
-		1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBufferPool.hpp; path = ../../../VVGL/include/GLBufferPool.hpp; sourceTree = "<group>"; };
-		1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLQtCtxWrapper.hpp; path = ../../../VVGL/include/GLQtCtxWrapper.hpp; sourceTree = "<group>"; };
-		1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Geom.hpp; path = ../../../VVGL/include/VVGL_Geom.hpp; sourceTree = "<group>"; };
-		1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_RPI_Enums.h; path = ../../../VVGL/include/GLBuffer_RPI_Enums.h; sourceTree = "<group>"; };
-		1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Defines.hpp; path = ../../../VVGL/include/VVGL_Defines.hpp; sourceTree = "<group>"; };
-		1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVGL_Qt_global.h; path = ../../../VVGL/include/VVGL_Qt_global.h; sourceTree = "<group>"; };
-		1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Range.hpp; path = ../../../VVGL/include/VVGL_Range.hpp; sourceTree = "<group>"; };
-		1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLCachedProperty.hpp; path = ../../../VVGL/include/GLCachedProperty.hpp; sourceTree = "<group>"; };
-		1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLBuffer.hpp; path = ../../../VVGL/include/GLBuffer.hpp; sourceTree = "<group>"; };
-		1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_StringUtils.hpp; path = ../../../VVGL/include/VVGL_StringUtils.hpp; sourceTree = "<group>"; };
-		1A90EDC42099FD1800FA4392 /* GLBuffer_IOS_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_IOS_Enums.h; path = ../../../VVGL/include/GLBuffer_IOS_Enums.h; sourceTree = "<group>"; };
-		1A90EDC52099FD1800FA4392 /* GLBuffer_GLFW_Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBuffer_GLFW_Enums.h; path = ../../../VVGL/include/GLBuffer_GLFW_Enums.h; sourceTree = "<group>"; };
-		1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL_Time.hpp; path = ../../../VVGL/include/VVGL_Time.hpp; sourceTree = "<group>"; };
-		1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLBufferPool_CocoaAdditions.h; path = ../../../VVGL/include/GLBufferPool_CocoaAdditions.h; sourceTree = "<group>"; };
-		1A90EDC82099FD1800FA4392 /* VVGL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVGL.hpp; path = ../../../VVGL/include/VVGL.hpp; sourceTree = "<group>"; };
-		1A90EDC92099FD1800FA4392 /* GLScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLScene.hpp; path = ../../../VVGL/include/GLScene.hpp; sourceTree = "<group>"; };
-		1A90EDCA2099FD1800FA4392 /* GLContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GLContext.hpp; path = ../../../VVGL/include/GLContext.hpp; sourceTree = "<group>"; };
-		1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLTexToTexCopier.cpp; path = ../../../VVGL/src/GLTexToTexCopier.cpp; sourceTree = "<group>"; };
-		1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBuffer.cpp; path = ../../../VVGL/src/GLBuffer.cpp; sourceTree = "<group>"; };
-		1A90EE0C2099FD2300FA4392 /* GLContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLContext.mm; path = ../../../VVGL/src/GLContext.mm; sourceTree = "<group>"; };
-		1A90EE0D2099FD2300FA4392 /* GLScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLScene.cpp; path = ../../../VVGL/src/GLScene.cpp; sourceTree = "<group>"; };
-		1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLQtCtxWrapper.cpp; path = ../../../VVGL/src/GLQtCtxWrapper.cpp; sourceTree = "<group>"; };
-		1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_Geom.cpp; path = ../../../VVGL/src/VVGL_Geom.cpp; sourceTree = "<group>"; };
-		1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLBufferPool.cpp; path = ../../../VVGL/src/GLBufferPool.cpp; sourceTree = "<group>"; };
-		1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVGL_StringUtils.cpp; path = ../../../VVGL/src/VVGL_StringUtils.cpp; sourceTree = "<group>"; };
-		1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLBufferPool_CocoaAdditions.mm; path = ../../../VVGL/src/GLBufferPool_CocoaAdditions.mm; sourceTree = "<group>"; };
-		1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLCachedProperty.cpp; path = ../../../VVGL/src/GLCachedProperty.cpp; sourceTree = "<group>"; };
-		1A90EE142099FD2300FA4392 /* GLContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLContext.cpp; path = ../../../VVGL/src/GLContext.cpp; sourceTree = "<group>"; };
-		1A90EE362099FD4B00FA4392 /* VVISF_Qt_global.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVISF_Qt_global.hpp; path = ../../../VVISF/include/VVISF_Qt_global.hpp; sourceTree = "<group>"; };
-		1A90EE372099FD4B00FA4392 /* VVISF_Base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Base.hpp; path = ../../../VVISF/include/VVISF_Base.hpp; sourceTree = "<group>"; };
 		1A90EE382099FD4B00FA4392 /* ISFAttr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFAttr.hpp; path = ../../../VVISF/include/ISFAttr.hpp; sourceTree = "<group>"; };
 		1A90EE392099FD4B00FA4392 /* ISFVal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFVal.hpp; path = ../../../VVISF/include/ISFVal.hpp; sourceTree = "<group>"; };
-		1A90EE3A2099FD4B00FA4392 /* VVISF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVISF.hpp; path = ../../../VVISF/include/VVISF.hpp; sourceTree = "<group>"; };
 		1A90EE3B2099FD4B00FA4392 /* ISFScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFScene.hpp; path = ../../../VVISF/include/ISFScene.hpp; sourceTree = "<group>"; };
-		1A90EE3C2099FD4B00FA4392 /* VVISF_StringUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_StringUtils.hpp; path = ../../../VVISF/include/VVISF_StringUtils.hpp; sourceTree = "<group>"; };
 		1A90EE3D2099FD4B00FA4392 /* ISFDoc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFDoc.hpp; path = ../../../VVISF/include/ISFDoc.hpp; sourceTree = "<group>"; };
-		1A90EE3E2099FD4B00FA4392 /* VVISF_Err.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Err.hpp; path = ../../../VVISF/include/VVISF_Err.hpp; sourceTree = "<group>"; };
 		1A90EE3F2099FD4B00FA4392 /* ISFPassTarget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ISFPassTarget.hpp; path = ../../../VVISF/include/ISFPassTarget.hpp; sourceTree = "<group>"; };
-		1A90EE402099FD4B00FA4392 /* VVISF_Constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VVISF_Constants.hpp; path = ../../../VVISF/include/VVISF_Constants.hpp; sourceTree = "<group>"; };
 		1A90EE622099FD5900FA4392 /* VVISF_Base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VVISF_Base.cpp; path = ../../../VVISF/src/VVISF_Base.cpp; sourceTree = "<group>"; };
 		1A90EE632099FD5A00FA4392 /* ISFPassTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFPassTarget.cpp; path = ../../../VVISF/src/ISFPassTarget.cpp; sourceTree = "<group>"; };
 		1A90EE642099FD5A00FA4392 /* ISFScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISFScene.cpp; path = ../../../VVISF/src/ISFScene.cpp; sourceTree = "<group>"; };
@@ -1744,7 +1747,6 @@
 		1A365CC22090B35C00771520 /* VVISF_Mac */ = {
 			isa = PBXGroup;
 			children = (
-				1A365CC32090B35C00771520 /* VVISF_Mac.h */,
 				1A365CC42090B35C00771520 /* Info.plist */,
 			);
 			path = VVISF_Mac;
@@ -2113,12 +2115,13 @@
 				1A90EE3F2099FD4B00FA4392 /* ISFPassTarget.hpp */,
 				1A90EE3B2099FD4B00FA4392 /* ISFScene.hpp */,
 				1A90EE392099FD4B00FA4392 /* ISFVal.hpp */,
-				1A90EE3A2099FD4B00FA4392 /* VVISF.hpp */,
-				1A90EE402099FD4B00FA4392 /* VVISF_Constants.hpp */,
-				1A90EE3E2099FD4B00FA4392 /* VVISF_Err.hpp */,
-				1A90EE362099FD4B00FA4392 /* VVISF_Qt_global.hpp */,
-				1A90EE372099FD4B00FA4392 /* VVISF_Base.hpp */,
-				1A90EE3C2099FD4B00FA4392 /* VVISF_StringUtils.hpp */,
+				1A29272020DC430E006DCE1D /* VVISF_Base.hpp */,
+				1A29272220DC430E006DCE1D /* VVISF_Constants.hpp */,
+				1A29272120DC430E006DCE1D /* VVISF_Doxygen.hpp */,
+				1A29272420DC430E006DCE1D /* VVISF_Err.hpp */,
+				1A29272520DC430E006DCE1D /* VVISF_Qt_global.hpp */,
+				1A29271F20DC430D006DCE1D /* VVISF_StringUtils.hpp */,
+				1A29272320DC430E006DCE1D /* VVISF.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -2141,31 +2144,31 @@
 		1A7757A91F2A164000039E3D /* include */ = {
 			isa = PBXGroup;
 			children = (
-				1A90EDC52099FD1800FA4392 /* GLBuffer_GLFW_Enums.h */,
-				1A90EDC42099FD1800FA4392 /* GLBuffer_IOS_Enums.h */,
-				1A90EDB92099FD1700FA4392 /* GLBuffer_Mac_Enums.h */,
-				1A90EDB72099FD1700FA4392 /* GLBuffer_Qt_Enums.h */,
-				1A90EDBD2099FD1800FA4392 /* GLBuffer_RPI_Enums.h */,
-				1A90EDC72099FD1800FA4392 /* GLBufferPool_CocoaAdditions.h */,
-				1A90EDBF2099FD1800FA4392 /* VVGL_Qt_global.h */,
-				1A90EDC22099FD1800FA4392 /* GLBuffer.hpp */,
-				1A90EDB82099FD1700FA4392 /* GLTexToTexCopier.hpp */,
-				1A90EDBA2099FD1700FA4392 /* GLBufferPool.hpp */,
-				1A90EDC12099FD1800FA4392 /* GLCachedProperty.hpp */,
-				1A90EDCA2099FD1800FA4392 /* GLContext.hpp */,
-				1A4A0EBE20C5DDE30039EF0D /* GLTexToCPUCopier.hpp */,
-				1A4A0EBF20C5DDE30039EF0D /* GLCPUToTexCopier.hpp */,
-				1A90EDBB2099FD1700FA4392 /* GLQtCtxWrapper.hpp */,
-				1A90EDC92099FD1800FA4392 /* GLScene.hpp */,
-				1A90EDB62099FD1700FA4392 /* VVGL_Base.hpp */,
-				1A90EDBE2099FD1800FA4392 /* VVGL_Defines.hpp */,
-				1A4816DE20C88483006BB843 /* VVGL_Doxygen.hpp */,
-				1A90EDBC2099FD1800FA4392 /* VVGL_Geom.hpp */,
-				1A4816E220C88493006BB843 /* VVGL_HardCodedDefines.hpp */,
-				1A90EDC02099FD1800FA4392 /* VVGL_Range.hpp */,
-				1A90EDC32099FD1800FA4392 /* VVGL_StringUtils.hpp */,
-				1A90EDC62099FD1800FA4392 /* VVGL_Time.hpp */,
-				1A90EDC82099FD1800FA4392 /* VVGL.hpp */,
+				1A29267A20DC42B8006DCE1D /* GLBuffer_Enums_GLFW.h */,
+				1A29268F20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h */,
+				1A29268920DC42B9006DCE1D /* GLBuffer_Enums_Mac.h */,
+				1A29268220DC42B8006DCE1D /* GLBuffer_Enums_Qt.h */,
+				1A29267920DC42B8006DCE1D /* GLBuffer_Enums_RPI.h */,
+				1A29268620DC42B9006DCE1D /* GLBuffer.hpp */,
+				1A29268A20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h */,
+				1A29267D20DC42B8006DCE1D /* GLBufferPool.hpp */,
+				1A29267B20DC42B8006DCE1D /* GLCachedProperty.hpp */,
+				1A29267C20DC42B8006DCE1D /* GLContext.hpp */,
+				1A29267E20DC42B8006DCE1D /* GLCPUToTexCopier.hpp */,
+				1A29268020DC42B8006DCE1D /* GLQtCtxWrapper.hpp */,
+				1A29268D20DC42B9006DCE1D /* GLScene.hpp */,
+				1A29268E20DC42B9006DCE1D /* GLTexToCPUCopier.hpp */,
+				1A29268B20DC42B9006DCE1D /* GLTexToTexCopier.hpp */,
+				1A29267720DC42B8006DCE1D /* VVGL_Base.hpp */,
+				1A29268320DC42B8006DCE1D /* VVGL_Defines.hpp */,
+				1A29268720DC42B9006DCE1D /* VVGL_Doxygen.hpp */,
+				1A29267820DC42B8006DCE1D /* VVGL_Geom.hpp */,
+				1A29268C20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp */,
+				1A29268420DC42B8006DCE1D /* VVGL_Qt_global.h */,
+				1A29268120DC42B8006DCE1D /* VVGL_Range.hpp */,
+				1A29268520DC42B9006DCE1D /* VVGL_StringUtils.hpp */,
+				1A29267F20DC42B8006DCE1D /* VVGL_Time.hpp */,
+				1A29268820DC42B9006DCE1D /* VVGL.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -2173,19 +2176,19 @@
 		1A7757AA1F2A164900039E3D /* src */ = {
 			isa = PBXGroup;
 			children = (
-				1A90EE0B2099FD2300FA4392 /* GLBuffer.cpp */,
-				1A90EE0A2099FD2300FA4392 /* GLTexToTexCopier.cpp */,
-				1A90EE102099FD2300FA4392 /* GLBufferPool.cpp */,
-				1A90EE132099FD2300FA4392 /* GLCachedProperty.cpp */,
-				1A90EE142099FD2300FA4392 /* GLContext.cpp */,
-				1A4A0EB620C5DDD10039EF0D /* GLTexToCPUCopier.cpp */,
-				1A4A0EB720C5DDD10039EF0D /* GLCPUToTexCopier.cpp */,
-				1A90EE0E2099FD2300FA4392 /* GLQtCtxWrapper.cpp */,
-				1A90EE0D2099FD2300FA4392 /* GLScene.cpp */,
-				1A90EE0F2099FD2300FA4392 /* VVGL_Geom.cpp */,
-				1A90EE112099FD2300FA4392 /* VVGL_StringUtils.cpp */,
-				1A90EE122099FD2300FA4392 /* GLBufferPool_CocoaAdditions.mm */,
-				1A90EE0C2099FD2300FA4392 /* GLContext.mm */,
+				1A2926E320DC42D5006DCE1D /* GLBuffer.cpp */,
+				1A2926E920DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm */,
+				1A2926E720DC42D5006DCE1D /* GLBufferPool.cpp */,
+				1A2926EB20DC42D5006DCE1D /* GLCachedProperty.cpp */,
+				1A2926DB20DC42D4006DCE1D /* GLContext.cpp */,
+				1A2926DD20DC42D4006DCE1D /* GLContext.mm */,
+				1A2926EA20DC42D5006DCE1D /* GLCPUToTexCopier.cpp */,
+				1A2926E020DC42D4006DCE1D /* GLQtCtxWrapper.cpp */,
+				1A2926E520DC42D5006DCE1D /* GLScene.cpp */,
+				1A2926DE20DC42D4006DCE1D /* GLTexToCPUCopier.cpp */,
+				1A2926E820DC42D5006DCE1D /* GLTexToTexCopier.cpp */,
+				1A2926E620DC42D5006DCE1D /* VVGL_Geom.cpp */,
+				1A2926E120DC42D4006DCE1D /* VVGL_StringUtils.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -2394,31 +2397,31 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EDE12099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */,
-				1A90EDE72099FD1900FA4392 /* VVGL_Qt_global.h in Headers */,
-				1A90EDFC2099FD1900FA4392 /* VVGL_Time.hpp in Headers */,
-				1A90EDED2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */,
-				1A90EDDE2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */,
-				1A90EDF32099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */,
-				1A90EDF02099FD1900FA4392 /* GLBuffer.hpp in Headers */,
-				1A90EDCC2099FD1900FA4392 /* VVGL_Base.hpp in Headers */,
-				1A90EE082099FD1900FA4392 /* GLContext.hpp in Headers */,
-				1A90EDCF2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */,
-				1A90EDFF2099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */,
-				1A90EDD52099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
-				1A90EDD82099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
-				1A90EDDB2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD22099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
-				1A90EE022099FD1900FA4392 /* VVGL.hpp in Headers */,
-				1A90EDE42099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
-				1A90EDEA2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
-				1A90EDF92099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
-				1A90EE052099FD1900FA4392 /* GLScene.hpp in Headers */,
-				1A4A0EC420C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
-				1A4816E020C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
-				1A4816E420C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
-				1A4A0EC120C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
-				1A90EDF62099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
+				1A2926A920DC42B9006DCE1D /* VVGL_Time.hpp in Headers */,
+				1A29269720DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */,
+				1A29269120DC42B9006DCE1D /* VVGL_Base.hpp in Headers */,
+				1A2926D620DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */,
+				1A2926A320DC42B9006DCE1D /* GLBufferPool.hpp in Headers */,
+				1A2926BB20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */,
+				1A2926B520DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */,
+				1A2926C120DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */,
+				1A2926A620DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */,
+				1A29269A20DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */,
+				1A2926C720DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */,
+				1A2926B820DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */,
+				1A2926D020DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A2926AC20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */,
+				1A29269D20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */,
+				1A2926D920DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */,
+				1A29269420DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */,
+				1A2926D320DC42B9006DCE1D /* GLScene.hpp in Headers */,
+				1A2926C420DC42B9006DCE1D /* VVGL.hpp in Headers */,
+				1A2926B220DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */,
+				1A2926CD20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */,
+				1A2926A020DC42B9006DCE1D /* GLContext.hpp in Headers */,
+				1A2926CA20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */,
+				1A2926AF20DC42B9006DCE1D /* VVGL_Range.hpp in Headers */,
+				1A2926BE20DC42B9006DCE1D /* GLBuffer.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2429,14 +2432,15 @@
 				1A90EE482099FD4B00FA4392 /* ISFAttr.hpp in Headers */,
 				1A90EE4B2099FD4B00FA4392 /* ISFVal.hpp in Headers */,
 				1A90EE572099FD4B00FA4392 /* ISFDoc.hpp in Headers */,
+				1A29273620DC430E006DCE1D /* VVISF_Err.hpp in Headers */,
+				1A29272720DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */,
+				1A29272A20DC430E006DCE1D /* VVISF_Base.hpp in Headers */,
+				1A29273320DC430E006DCE1D /* VVISF.hpp in Headers */,
+				1A29273020DC430E006DCE1D /* VVISF_Constants.hpp in Headers */,
+				1A29272D20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */,
+				1A29273920DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */,
 				1A90EE5D2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */,
-				1A90EE602099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */,
-				1A90EE4E2099FD4B00FA4392 /* VVISF.hpp in Headers */,
-				1A90EE422099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */,
 				1A90EE512099FD4B00FA4392 /* ISFScene.hpp in Headers */,
-				1A90EE542099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */,
-				1A90EE452099FD4B00FA4392 /* VVISF_Base.hpp in Headers */,
-				1A90EE5A2099FD4B00FA4392 /* VVISF_Err.hpp in Headers */,
 				1A365CDB2090B39000771520 /* exprtk.hpp in Headers */,
 				1A365CDC2090B39000771520 /* json.hpp in Headers */,
 			);
@@ -2446,31 +2450,31 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EDE22099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */,
-				1A90EDE82099FD1900FA4392 /* VVGL_Qt_global.h in Headers */,
-				1A90EDFD2099FD1900FA4392 /* VVGL_Time.hpp in Headers */,
-				1A90EDEE2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */,
-				1A90EDDF2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */,
-				1A90EDF42099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */,
-				1A90EDF12099FD1900FA4392 /* GLBuffer.hpp in Headers */,
-				1A90EDCD2099FD1900FA4392 /* VVGL_Base.hpp in Headers */,
-				1A90EE092099FD1900FA4392 /* GLContext.hpp in Headers */,
-				1A90EDD02099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */,
-				1A90EE002099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */,
-				1A90EDD62099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
-				1A90EDD92099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
-				1A90EDDC2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD32099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
-				1A90EE032099FD1900FA4392 /* VVGL.hpp in Headers */,
-				1A90EDE52099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
-				1A90EDEB2099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
-				1A90EDFA2099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
-				1A90EE062099FD1900FA4392 /* GLScene.hpp in Headers */,
-				1A4A0EC520C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
-				1A4816E120C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
-				1A4816E520C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
-				1A4A0EC220C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
-				1A90EDF72099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
+				1A2926AA20DC42B9006DCE1D /* VVGL_Time.hpp in Headers */,
+				1A29269820DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */,
+				1A29269220DC42B9006DCE1D /* VVGL_Base.hpp in Headers */,
+				1A2926D720DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */,
+				1A2926A420DC42B9006DCE1D /* GLBufferPool.hpp in Headers */,
+				1A2926BC20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */,
+				1A2926B620DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */,
+				1A2926C220DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */,
+				1A2926A720DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */,
+				1A29269B20DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */,
+				1A2926C820DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */,
+				1A2926B920DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */,
+				1A2926D120DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A2926AD20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */,
+				1A29269E20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */,
+				1A2926DA20DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */,
+				1A29269520DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */,
+				1A2926D420DC42B9006DCE1D /* GLScene.hpp in Headers */,
+				1A2926C520DC42B9006DCE1D /* VVGL.hpp in Headers */,
+				1A2926B320DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */,
+				1A2926CE20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */,
+				1A2926A120DC42B9006DCE1D /* GLContext.hpp in Headers */,
+				1A2926CB20DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */,
+				1A2926B020DC42B9006DCE1D /* VVGL_Range.hpp in Headers */,
+				1A2926BF20DC42B9006DCE1D /* GLBuffer.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2480,14 +2484,15 @@
 			files = (
 				1A90EE582099FD4B00FA4392 /* ISFDoc.hpp in Headers */,
 				1A90EE522099FD4B00FA4392 /* ISFScene.hpp in Headers */,
-				1A90EE612099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */,
+				1A29272E20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */,
+				1A29273A20DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */,
+				1A29273720DC430E006DCE1D /* VVISF_Err.hpp in Headers */,
+				1A29272B20DC430E006DCE1D /* VVISF_Base.hpp in Headers */,
+				1A29273420DC430E006DCE1D /* VVISF.hpp in Headers */,
+				1A29273120DC430E006DCE1D /* VVISF_Constants.hpp in Headers */,
+				1A29272820DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */,
 				1A90EE492099FD4B00FA4392 /* ISFAttr.hpp in Headers */,
-				1A90EE4F2099FD4B00FA4392 /* VVISF.hpp in Headers */,
 				1A90EE4C2099FD4B00FA4392 /* ISFVal.hpp in Headers */,
-				1A90EE5B2099FD4B00FA4392 /* VVISF_Err.hpp in Headers */,
-				1A90EE462099FD4B00FA4392 /* VVISF_Base.hpp in Headers */,
-				1A90EE552099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */,
-				1A90EE432099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */,
 				1A90EE5E2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2496,17 +2501,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EE592099FD4B00FA4392 /* VVISF_Err.hpp in Headers */,
-				1A90EE532099FD4B00FA4392 /* VVISF_StringUtils.hpp in Headers */,
 				1A90EE562099FD4B00FA4392 /* ISFDoc.hpp in Headers */,
 				1A90EE502099FD4B00FA4392 /* ISFScene.hpp in Headers */,
 				1A90EE472099FD4B00FA4392 /* ISFAttr.hpp in Headers */,
+				1A29273520DC430E006DCE1D /* VVISF_Err.hpp in Headers */,
+				1A29272620DC430E006DCE1D /* VVISF_StringUtils.hpp in Headers */,
+				1A29272920DC430E006DCE1D /* VVISF_Base.hpp in Headers */,
+				1A29273220DC430E006DCE1D /* VVISF.hpp in Headers */,
+				1A29272F20DC430E006DCE1D /* VVISF_Constants.hpp in Headers */,
+				1A29272C20DC430E006DCE1D /* VVISF_Doxygen.hpp in Headers */,
+				1A29273820DC430E006DCE1D /* VVISF_Qt_global.hpp in Headers */,
 				1A90EE5C2099FD4B00FA4392 /* ISFPassTarget.hpp in Headers */,
 				1A90EE4A2099FD4B00FA4392 /* ISFVal.hpp in Headers */,
-				1A90EE4D2099FD4B00FA4392 /* VVISF.hpp in Headers */,
-				1A90EE442099FD4B00FA4392 /* VVISF_Base.hpp in Headers */,
-				1A90EE412099FD4B00FA4392 /* VVISF_Qt_global.hpp in Headers */,
-				1A90EE5F2099FD4B00FA4392 /* VVISF_Constants.hpp in Headers */,
 				1A0224801E390C9E00C110B8 /* json.hpp in Headers */,
 				1A0224681E390C9E00C110B8 /* exprtk.hpp in Headers */,
 			);
@@ -2516,31 +2522,31 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EDE02099FD1900FA4392 /* GLBuffer_RPI_Enums.h in Headers */,
-				1A90EDE62099FD1900FA4392 /* VVGL_Qt_global.h in Headers */,
-				1A90EDFB2099FD1900FA4392 /* VVGL_Time.hpp in Headers */,
-				1A90EDEC2099FD1900FA4392 /* GLCachedProperty.hpp in Headers */,
-				1A90EDDD2099FD1900FA4392 /* VVGL_Geom.hpp in Headers */,
-				1A90EDF22099FD1900FA4392 /* VVGL_StringUtils.hpp in Headers */,
-				1A90EDEF2099FD1900FA4392 /* GLBuffer.hpp in Headers */,
-				1A90EDCB2099FD1900FA4392 /* VVGL_Base.hpp in Headers */,
-				1A90EE072099FD1900FA4392 /* GLContext.hpp in Headers */,
-				1A90EDCE2099FD1900FA4392 /* GLBuffer_Qt_Enums.h in Headers */,
-				1A90EDFE2099FD1900FA4392 /* GLBufferPool_CocoaAdditions.h in Headers */,
-				1A90EDD42099FD1900FA4392 /* GLBuffer_Mac_Enums.h in Headers */,
-				1A90EDD72099FD1900FA4392 /* GLBufferPool.hpp in Headers */,
-				1A90EDDA2099FD1900FA4392 /* GLQtCtxWrapper.hpp in Headers */,
-				1A90EDD12099FD1900FA4392 /* GLTexToTexCopier.hpp in Headers */,
-				1A90EE012099FD1900FA4392 /* VVGL.hpp in Headers */,
-				1A90EDE32099FD1900FA4392 /* VVGL_Defines.hpp in Headers */,
-				1A90EDE92099FD1900FA4392 /* VVGL_Range.hpp in Headers */,
-				1A90EDF82099FD1900FA4392 /* GLBuffer_GLFW_Enums.h in Headers */,
-				1A90EE042099FD1900FA4392 /* GLScene.hpp in Headers */,
-				1A4A0EC320C5DDE30039EF0D /* GLCPUToTexCopier.hpp in Headers */,
-				1A4816DF20C88483006BB843 /* VVGL_Doxygen.hpp in Headers */,
-				1A4816E320C88493006BB843 /* VVGL_HardCodedDefines.hpp in Headers */,
-				1A4A0EC020C5DDE30039EF0D /* GLTexToCPUCopier.hpp in Headers */,
-				1A90EDF52099FD1900FA4392 /* GLBuffer_IOS_Enums.h in Headers */,
+				1A2926A820DC42B9006DCE1D /* VVGL_Time.hpp in Headers */,
+				1A29269620DC42B9006DCE1D /* GLBuffer_Enums_RPI.h in Headers */,
+				1A29269020DC42B9006DCE1D /* VVGL_Base.hpp in Headers */,
+				1A2926D520DC42B9006DCE1D /* GLTexToCPUCopier.hpp in Headers */,
+				1A2926A220DC42B9006DCE1D /* GLBufferPool.hpp in Headers */,
+				1A2926BA20DC42B9006DCE1D /* VVGL_StringUtils.hpp in Headers */,
+				1A2926B420DC42B9006DCE1D /* VVGL_Defines.hpp in Headers */,
+				1A2926C020DC42B9006DCE1D /* VVGL_Doxygen.hpp in Headers */,
+				1A2926A520DC42B9006DCE1D /* GLCPUToTexCopier.hpp in Headers */,
+				1A29269920DC42B9006DCE1D /* GLBuffer_Enums_GLFW.h in Headers */,
+				1A2926C620DC42B9006DCE1D /* GLBuffer_Enums_Mac.h in Headers */,
+				1A2926B720DC42B9006DCE1D /* VVGL_Qt_global.h in Headers */,
+				1A2926CF20DC42B9006DCE1D /* VVGL_HardCodedDefines.hpp in Headers */,
+				1A2926AB20DC42B9006DCE1D /* GLQtCtxWrapper.hpp in Headers */,
+				1A29269C20DC42B9006DCE1D /* GLCachedProperty.hpp in Headers */,
+				1A2926D820DC42B9006DCE1D /* GLBuffer_Enums_IOS.h in Headers */,
+				1A29269320DC42B9006DCE1D /* VVGL_Geom.hpp in Headers */,
+				1A2926D220DC42B9006DCE1D /* GLScene.hpp in Headers */,
+				1A2926C320DC42B9006DCE1D /* VVGL.hpp in Headers */,
+				1A2926B120DC42B9006DCE1D /* GLBuffer_Enums_Qt.h in Headers */,
+				1A2926CC20DC42B9006DCE1D /* GLTexToTexCopier.hpp in Headers */,
+				1A29269F20DC42B9006DCE1D /* GLContext.hpp in Headers */,
+				1A2926C920DC42B9006DCE1D /* GLBufferPool_CocoaAdditions.h in Headers */,
+				1A2926AE20DC42B9006DCE1D /* VVGL_Range.hpp in Headers */,
+				1A2926BD20DC42B9006DCE1D /* GLBuffer.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3472,19 +3478,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EE1C2099FD2400FA4392 /* GLContext.mm in Sources */,
-				1A90EE222099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */,
-				1A90EE1F2099FD2400FA4392 /* GLScene.cpp in Sources */,
-				1A90EE312099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
-				1A90EE2B2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
-				1A90EE2E2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
-				1A4A0EBC20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
-				1A90EE192099FD2400FA4392 /* GLBuffer.cpp in Sources */,
-				1A90EE252099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
-				1A90EE282099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
-				1A90EE342099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE162099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
-				1A4A0EB920C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
+				1A2926F320DC42D5006DCE1D /* GLContext.mm in Sources */,
+				1A29270520DC42D5006DCE1D /* GLBuffer.cpp in Sources */,
+				1A29271720DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A29271120DC42D5006DCE1D /* GLBufferPool.cpp in Sources */,
+				1A29271A20DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */,
+				1A29270E20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */,
+				1A2926FF20DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */,
+				1A29271420DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */,
+				1A29270B20DC42D5006DCE1D /* GLScene.cpp in Sources */,
+				1A2926F620DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */,
+				1A29271D20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */,
+				1A2926FC20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */,
+				1A2926ED20DC42D5006DCE1D /* GLContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3525,19 +3531,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EE1D2099FD2400FA4392 /* GLContext.mm in Sources */,
-				1A90EE232099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */,
-				1A90EE202099FD2400FA4392 /* GLScene.cpp in Sources */,
-				1A90EE322099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
-				1A90EE2C2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
-				1A90EE2F2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
-				1A4A0EBD20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
-				1A90EE1A2099FD2400FA4392 /* GLBuffer.cpp in Sources */,
-				1A90EE262099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
-				1A90EE292099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
-				1A90EE352099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE172099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
-				1A4A0EBA20C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
+				1A2926F420DC42D5006DCE1D /* GLContext.mm in Sources */,
+				1A29270620DC42D5006DCE1D /* GLBuffer.cpp in Sources */,
+				1A29271820DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A29271220DC42D5006DCE1D /* GLBufferPool.cpp in Sources */,
+				1A29271B20DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */,
+				1A29270F20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */,
+				1A29270020DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */,
+				1A29271520DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */,
+				1A29270C20DC42D5006DCE1D /* GLScene.cpp in Sources */,
+				1A2926F720DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */,
+				1A29271E20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */,
+				1A2926FD20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */,
+				1A2926EE20DC42D5006DCE1D /* GLContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3645,19 +3651,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A90EE1B2099FD2400FA4392 /* GLContext.mm in Sources */,
-				1A90EE212099FD2400FA4392 /* GLQtCtxWrapper.cpp in Sources */,
-				1A90EE1E2099FD2400FA4392 /* GLScene.cpp in Sources */,
-				1A90EE302099FD2400FA4392 /* GLCachedProperty.cpp in Sources */,
-				1A90EE2A2099FD2400FA4392 /* VVGL_StringUtils.cpp in Sources */,
-				1A90EE2D2099FD2400FA4392 /* GLBufferPool_CocoaAdditions.mm in Sources */,
-				1A4A0EBB20C5DDD10039EF0D /* GLCPUToTexCopier.cpp in Sources */,
-				1A90EE182099FD2400FA4392 /* GLBuffer.cpp in Sources */,
-				1A90EE242099FD2400FA4392 /* VVGL_Geom.cpp in Sources */,
-				1A90EE272099FD2400FA4392 /* GLBufferPool.cpp in Sources */,
-				1A90EE332099FD2400FA4392 /* GLContext.cpp in Sources */,
-				1A90EE152099FD2400FA4392 /* GLTexToTexCopier.cpp in Sources */,
-				1A4A0EB820C5DDD10039EF0D /* GLTexToCPUCopier.cpp in Sources */,
+				1A2926F220DC42D5006DCE1D /* GLContext.mm in Sources */,
+				1A29270420DC42D5006DCE1D /* GLBuffer.cpp in Sources */,
+				1A29271620DC42D5006DCE1D /* GLBufferPool_CocoaAdditions.mm in Sources */,
+				1A29271020DC42D5006DCE1D /* GLBufferPool.cpp in Sources */,
+				1A29271920DC42D5006DCE1D /* GLCPUToTexCopier.cpp in Sources */,
+				1A29270D20DC42D5006DCE1D /* VVGL_Geom.cpp in Sources */,
+				1A2926FE20DC42D5006DCE1D /* VVGL_StringUtils.cpp in Sources */,
+				1A29271320DC42D5006DCE1D /* GLTexToTexCopier.cpp in Sources */,
+				1A29270A20DC42D5006DCE1D /* GLScene.cpp in Sources */,
+				1A2926F520DC42D5006DCE1D /* GLTexToCPUCopier.cpp in Sources */,
+				1A29271C20DC42D5006DCE1D /* GLCachedProperty.cpp in Sources */,
+				1A2926FB20DC42D5006DCE1D /* GLQtCtxWrapper.cpp in Sources */,
+				1A2926EC20DC42D5006DCE1D /* GLContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

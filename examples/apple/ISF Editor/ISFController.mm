@@ -416,7 +416,7 @@
 			tmpRect.origin.y += (tmpRect.size.height + ISFITEMSPACE);
 			break;
 		case ISFValType_Cube:
-			NSLog(@"\t\tskipping creation of UI item for cube input %s",attrib->getDescription().c_str());
+			NSLog(@"\t\tskipping creation of UI item for cube input %s",attrib->getAttrDescription().c_str());
 			break;
 		}
 	}

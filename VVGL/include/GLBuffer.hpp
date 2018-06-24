@@ -58,15 +58,15 @@ class VVGL_EXPORT GLBuffer	{
 		
 		//	enums describing the various GL object (usually texture) properties- split up b/c availability depends on platform
 #if defined(VVGL_SDK_MAC)
-		#include "GLBuffer_Mac_Enums.h"
+		#include "GLBuffer_Enums_Mac.h"
 #elif defined(VVGL_SDK_RPI)
-		#include "GLBuffer_RPI_Enums.h"
+		#include "GLBuffer_Enums_RPI.h"
 #elif defined(VVGL_SDK_IOS)
-		#include "GLBuffer_IOS_Enums.h"
+		#include "GLBuffer_Enums_IOS.h"
 #elif defined(VVGL_SDK_GLFW)
-		#include "GLBuffer_GLFW_Enums.h"
+		#include "GLBuffer_Enums_GLFW.h"
 #elif defined(VVGL_SDK_QT)
-		#include "GLBuffer_Qt_Enums.h"
+		#include "GLBuffer_Enums_Qt.h"
 #endif
 		
 		

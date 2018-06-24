@@ -92,7 +92,7 @@ using namespace VVGL;
 			if (firstAttr == nullptr)
 				cout << "first attr is null\n";
 			else
-				cout << "first attr is " << firstAttr->getDescription() << endl;
+				cout << "first attr is " << firstAttr->getAttrDescription() << endl;
 		}
 	}
 }

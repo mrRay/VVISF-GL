@@ -2051,7 +2051,7 @@ ostream & operator<<(ostream & os, const ISFDoc & n)	{
 	os << "\tdoc is a " << ISFFileTypeString(n.getType()) << endl;
 	
 	string				tmpDescription = n.getDescription();
-	os << "\tdesription: " << tmpDescription << endl;
+	os << "\tdescription: " << tmpDescription << endl;
 	
 	string				tmpCredit = n.getCredit();
 	os << "\tcredit: " << tmpCredit << endl;
