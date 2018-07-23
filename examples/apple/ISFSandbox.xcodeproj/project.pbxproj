@@ -474,6 +474,7 @@
 		1AD86D0E1F4EFB4300DEED3E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AD86D0C1F4EFB4300DEED3E /* MainMenu.xib */; };
 		1ADB7B11208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1ADB7AF2208E78E5009DDDCF /* SwizzleISF-CbY0CrY1toRGB.fs */; };
 		1AE177A71E2581EF00E978E5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; };
+		1AE4D17920E6B08E00699A35 /* ISFEditorAppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 1AE4D15A20E6B08E00699A35 /* ISFEditorAppIcon.iconset */; };
 		1AE5BCE32091207B008BF2F5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
 		1AE5BCE520912097008BF2F5 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1AE5BCE8209120B6008BF2F5 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
@@ -1394,6 +1395,7 @@
 		1AE177671E2581B500E978E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AE177701E2581BB00E978E5 /* VVGL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VVGL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE177741E2581BB00E978E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1AE4D15A20E6B08E00699A35 /* ISFEditorAppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ISFEditorAppIcon.iconset; sourceTree = "<group>"; };
 		1AE5BCF020912232008BF2F5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1AE5BCF120912232008BF2F5 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		1AE5BCF220912232008BF2F5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework; sourceTree = DEVELOPER_DIR; };
@@ -1666,6 +1668,7 @@
 		1A023C941F2011AD004FFB3A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				1AE4D15A20E6B08E00699A35 /* ISFEditorAppIcon.iconset */,
 				1A023C951F2011AD004FFB3A /* main.m */,
 			);
 			name = "Supporting Files";
@@ -3233,6 +3236,7 @@
 				1A608A3C1F27C03400034D0C /* ad56fba948dfba9ae698198c109e71f118a54d209c0ea50d77ea546abad89c57.png in Resources */,
 				1A608A201F27C03400034D0C /* 585f9546c092f53ded45332b343144396c0b2d70d9965f585ebc172080d8aa58_1.jpg in Resources */,
 				1A608A3F1F27C03400034D0C /* cd4c518bc6ef165c39d4405b347b51ba40f8d7a065ab0e8d2e4f422cbc1e8a43.jpg in Resources */,
+				1AE4D17920E6B08E00699A35 /* ISFEditorAppIcon.iconset in Resources */,
 				1A023C9B1F2011AD004FFB3A /* MainMenu.xib in Resources */,
 				1A608A291F27C03400034D0C /* 0681c014f6c88c356cf9c0394ffe015acc94ec1474924855f45d22c3e70b5785_4.png in Resources */,
 				1A608A271F27C03400034D0C /* 0681c014f6c88c356cf9c0394ffe015acc94ec1474924855f45d22c3e70b5785_2.png in Resources */,

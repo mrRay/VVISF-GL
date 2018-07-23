@@ -2,6 +2,27 @@
 #define VVISF_DOXYGEN_H
 
 
+#include "VVISF.hpp"
+
+
+
+
+
+/*!
+\defgroup VVISF_BASIC VVISF- Basic Classes
+
+\brief These are the classes that comprise VVISF.
+
+\detail
+	- VVISF::ISFDoc
+	- VVISF::ISFScene
+	- VVISF::ISFErr and VVISF::ISFErrType
+	- VVISF::ISFVal
+	- VVISF::ISFAttr
+	- VVISF::ISFPassTarget
+*/
+
+
 
 
 
@@ -12,7 +33,7 @@
 \defgroup VVGL_SAMPLE_1 Sample Code I- Make a context
 
 <b>Creating a GLContext</b><BR>
-If you want to work with OpenGL then you need an "OpenGL context", because a context is the primary interface for accessing GPU hardware using OpenGL.  Every platform has its own native SDK for working with OpenGL, and they all have subtle differences- GLContext/GLContextRef is an attempt to create a cross-platform class that presents the same interface across all platforms, but the exact call to create a GLContext is going to change slightly depending on which platform you're compiling VVGL against.  The same holds true if you're compiling VVGL to use with another cross-platform GL solution, like GLFW or Qt.<BR>
+If you want to work with OpenGL then you need an "OpenGL context", because a context is the primary interface for accessing GPU hardware using OpenGL.  Every platform has its own native SDK for working with OpenGL, and they all have subtle differences- VVGL::GLContext/#GLContextRef is an attempt to create a cross-platform class that presents the same interface across all platforms, but the exact call to create a GLContext is going to change slightly depending on which platform you're compiling VVGL against.  The same holds true if you're compiling VVGL to use with another cross-platform GL solution, like GLFW or Qt.<BR>
 
 <b>Creating a new GLContext from an existing GLContext (all SDKs)</b>
 \code{.cpp}
@@ -104,9 +125,9 @@ GLContextRef		vvglCtx = CreateNewGLContextRef(nullptr, nullptr, CreateGL4Surface
 <b>GLBuffer</b><BR>
 VVGL::GLBuffer represents a buffer of some kind- it could be a buffer on the GPU (VRAM), or it could be a buffer on the CPU (RAM).  Most of the time- almost all the time- a GLBuffer will represent an image.  
 
-The preferred interface for working with GLBuffer instances is GLBufferRef, which wraps a GLBuffer up in a std::shared_ptr.  GLBuffer instances should be freed as soon as they are no longer in use- freeing a GLBuffer will, if appropriate, automatically return its resources to the buffer pool that created it.
+The preferred interface for working with GLBuffer instances is #GLBufferRef, which wraps a GLBuffer up in a std::shared_ptr<GLBuffer>.  GLBuffer instances should be freed as soon as they are no longer in use- freeing a GLBuffer will, if appropriate, automatically return its resources to the buffer pool that created it.
 
-Generally speaking, you probably won't be modifying GLBuffer instances- a very common workflow is "create a buffer, render into it, display the texture or use the texture as an input for rendering something else, delete the buffer".  This isn't a "rule"- there's nothing explicitly preventing you from modifying a GLBuffer instance- it's just not a pattern employed by these libs or anything I've written with them.
+Generally speaking, you probably won't be modifying GLBuffer instances- a very common workflow is "create a buffer, render into it, display the texture or use the texture as an input for rendering something else, delete the buffer".  This isn't a "rule"- there's nothing explicitly preventing you from modifying a GLBuffer instance- it's just not a pattern employed by these libs or anything I've written with them.  Destroying a buffer just returns it to the pool where it's available for re-use, so this workflow doesn't generally result in lots of textures being created/destroyed.
 
 There are several different kinds of GLBuffers- here are the more common ones you'll encounter:
 - Texture-type GLBuffers are probably the most common type you'll work with- they store an image in a GL texture.
@@ -194,7 +215,7 @@ GLBufferRef			tmpCPUImg = CreateRGBACPUBufferUsing(
 
 An instance of GLBuffer represents an OpenGL resource, or it contains a pointer to system memory.  In either case, one thing is certain: if you want "a copy of a GLBuffer instance", you cannot simply make another copy of the struct- bad things will happen as the underlying image data either won't be duplicated.
 
-It is strongly recommended that you use GLBufferRef instead of GLBuffer if you just want to share a given GLBuffer instance with another object (displaying the same texture in two different views, for example).  As long as you use GLBufferRef and ensure that you set any GLBufferRefs you maintain to nullptr as soon as you no longer use them, all the underlying GPU/CPU resources will be freed/pooled and you'll have plenty of VRAM available.  Remember, GLBuffers come from and are returned to pools: obtaining a new buffer and setting a buffer to nil are typically very fast and very cheap (within reason).
+It is strongly recommended that you use #GLBufferRef instead of GLBuffer if you just want to share a given GLBuffer instance with another object (displaying the same texture in two different views, for example).  As long as you use #GLBufferRef and ensure that you set any GLBufferRefs you maintain to nullptr as soon as you no longer use them, all the underlying GPU/CPU resources will be freed/pooled and you'll have plenty of VRAM available.  Remember, GLBuffers come from and are returned to pools: obtaining a new buffer and setting a buffer to nil are typically very fast and very cheap (within reason).
 
 \code{.cpp}
 //	allocate an RGBA OpenGL texture
@@ -215,7 +236,7 @@ cout << ", srcRect is " << sameGLBufferNewVar->srcRect << endl;
 cout << "origTex srcRect is now " << origTex->srcRect << endl;
 \endcode
 
-GLBufferRef is great, but if you're working with it and you modify a property- like 'srcRect', for example- then every other GLBufferRef for that same GLBuffer will immediately inherit that change.  This is not always desirable- for example, you may want to crop a GLBufferRef for use in one particular scene, or use a larger texture-based GLBuffer as the source of many smaller texture-based GLBuffers that all share the same GL resource (texture atlas).  The function GLBufferCopy() accepts a GLBufferRef, makes a new GLBuffer instance that has a strong reference to the GLBuffer instance you passed in, and returns a GLBufferRef for the new instance.  Because it's an entirely different GLBuffer, you can modify the superficial properties without affecting the original GLBuffer or any of its refs- but because it's the same underlying GL resource, nothing was actually copied and the resource will automatically be retained as long as necessary.  Copying buffers in this manner is quick and cheap because the actual image data isn't being duplicated.
+#GLBufferRef is great, but if you're working with it and you modify a property- like 'srcRect', for example- then every other #GLBufferRef for that same GLBuffer will immediately inherit that change.  This is not always desirable- for example, you may want to crop a #GLBufferRef for use in one particular scene, or use a larger texture-based GLBuffer as the source of many smaller texture-based GLBuffers that all share the same GL resource (texture atlas).  The function GLBufferCopy() accepts a #GLBufferRef, makes a new GLBuffer instance that has a strong reference to the GLBuffer instance you passed in, and returns a #GLBufferRef for the new instance.  Because it's an entirely different GLBuffer, you can modify the superficial properties without affecting the original GLBuffer or any of its refs- but because it's the same underlying GL resource, nothing was actually copied and the resource will automatically be retained as long as necessary.  Copying buffers in this manner is quick and cheap because the actual image data isn't being duplicated.
 
 \code{.cpp}
 //	allocate an RGBA OpenGL texture
@@ -319,11 +340,11 @@ if (uploadedFrame != nullptr)	{
 \defgroup VVGL_SAMPLE_4 Sample Code IV- Examing ISF files: ISFDoc
 
 <b>Making and working with ISFDoc</b><BR>
-VVISF::ISFDoc is how you interface with ISF files- you can create an ISFDoc from a path to a file on disk, or from the frag/vertex shader strings.  When the doc is created, the JSON blob in the frag shader string is prased, and the ISFDoc instance is populated with a variety of ISFAttrRef and ISFPassTargetRef instances that describe the contents and value of the ISF file.
+VVISF::ISFDoc is how you interface with ISF files- you can create a VVISF::ISFDoc from a path to a file on disk, or from the frag/vertex shader strings.  When the doc is created, the JSON blob in the frag shader string is prased, and the VVISF::ISFDoc instance is populated with a variety of #ISFAttrRef and #ISFPassTargetRef instances that describe the contents and value of the ISF file.  This allows the properties of the ISF document to be examined programmatically.
 
-As with other classes, ISFDocRef is the preferred means of interacting with ISFDoc.  Because it contains attributes and passes and lots of things that have value, performing a deep copy isn't something you want to do unnecesarily.  ISFDocRef allows an instance of ISFDoc to be accessed simultaneously from number of different places (ISFDoc is threadsafe).
+As with other classes in these libs, #ISFDocRef is the preferred means of interacting with ISFDoc.  Because it contains attributes and passes and lots of things that have value, performing a deep copy isn't something you want to do unnecesarily.  #ISFDocRef allows an instance of ISFDoc to be accessed simultaneously from number of different places (ISFDoc is threadsafe).
 
-ISFDoc performs a variety of important functions beyond introspection: it generates source code for GL shaders with all the appropriate variable declarations for the ISF variables, and it maintains the state of the inputs and render passes and is used by ISFScene when doing rendering, etc.  Much of ISFScene's logic revolves around getting values from and sending values to the ISFDoc it's using.
+VVISF::ISFDoc performs a variety of important functions beyond introspection: it generates source code for GL shaders with all the appropriate variable declarations for the ISF variables, and it maintains the state of the inputs and render passes and is used by ISFScene when doing rendering, etc.  Much of VVISF::ISFScene's logic revolves around getting values from and sending values to the VVISF::ISFDoc it's using to store and track the state/value of all the shader inputs used to render frames.
 
 \code{.cpp}
 //	ISFDoc can throw a variety of exceptions, so we'll define it in a try block...
@@ -374,7 +395,7 @@ else
 
 <b>Creating an ISFScene</b><BR>
 
-ISFScene is a subclass of GLScene, and as such shares its facilities for rendering to texture, simple resizing, etc.  Likewise, creating ISFScene has the same semantics as creating a GLScene- if you don't explicitly provide a VVGL::GLContext for it to use on creation, it will create its own context in the global buffer pool's sharegroup.
+VVISF::ISFScene is a subclass of VVGL::GLScene, and as such shares its facilities for rendering to texture, simple resizing, etc.  Likewise, creating VVISF::ISFScene has the same semantics as creating a VVGL::GLScene- if you don't explicitly provide a VVGL::GLContext for it to use on creation, it will create its own context in the global buffer pool's sharegroup.
 
 \code{.cpp}
 //	put together a shared context and create the global buffer pool
@@ -435,7 +456,7 @@ catch (ISFErr & exc)	{
 
 <b>Interacting with the ISFScene</b><BR>
 
-Internally, ISFScene uses VVISF::ISFDoc to represent the value and state of an ISF file during rendering.  This means that you can get an ISFScene's currently-used ISFDoc, and adjust rendering parameters by getting the appropriate attribute from the doc and changing its value.
+Internally, VVISF::ISFScene uses VVISF::ISFDoc to represent the value and state of an ISF file during rendering.  This means that you can get an ISFScene's currently-used ISFDoc, and adjust rendering parameters by getting the appropriate attribute from the doc and changing its value.
 
 \code{.cpp}
 ISFSceneRef			tmpScene = XXX;	//	this is assumed to be non-nil in the real world...
@@ -481,7 +502,7 @@ floatAttr->setCurrentVal(currentVal);
 /*!
 \defgroup VVGL_SAMPLE_7 Sample Code VII- GLScene
 
-GLScene is a frontend for a performing custom render commands in an OpenGL context.  It's a relatively simple class- it lets you provide a block that executes drawing commands and performs a series of rendering steps that can be customized, with built-in support for orthogonal rendering, rendering to textures/GLBufferRef, and support for a variety of different versions of OpenGL.
+VVGL::GLScene is a frontend for a performing custom render commands in an OpenGL context.  It's a relatively simple class- it lets you provide a block that executes drawing commands and performs a series of rendering steps that can be customized, with built-in support for orthogonal rendering, rendering to textures/#GLBufferRef, and support for a variety of different versions of OpenGL.
 
 Following are some examples that demonstrate creating and configuring a GLScene, and then rendering it into a texture.
 
@@ -618,27 +639,6 @@ glScene->setRenderCallback([](const GLScene & inScene)	{
 GLBufferRef			renderedTexture = CreateRGBATex(VVGL::Size(1920,1080));
 glScene->renderToBuffer(renderedTexture);
 \endcode
-*/
-
-
-
-
-
-
-
-
-/*!
-\defgroup VVISF_BASIC VVISF- Basic Classes
-
-\brief These are the classes that comprise VVISF.
-
-\detail
-	- VVISF::ISFDoc
-	- VVISF::ISFScene
-	- VVISF::ISFErr and VVISF::ISFErrType
-	- VVISF::ISFVal
-	- VVISF::ISFAttr
-	- VVISF::ISFPassTarget
 */
 
 

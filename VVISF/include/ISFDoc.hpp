@@ -193,8 +193,9 @@ class VVISF_EXPORT ISFDoc	{
 		\param outFragSrc A non-null pre-allocated std::string variable which will be populated with the fragment shader source code generated for this ISF file.
 		\param outVertSrc A non-null pre-allocated std::string variable which will be populated with the vertex shader source code generated for this ISF file.
 		\param inGLVers The version of OpenGL that the generated source code must be compatible with.
+		\param inVarsAsUBO Defaults to false.  If true, variable declarations for non-image INPUTS will be assembled in a uniform block.  This option was added because a downstream utility requires it.
 		*/
-		bool generateShaderSource(string * outFragSrc, string * outVertSrc, VVGL::GLVersion & inGLVers);
+		bool generateShaderSource(string * outFragSrc, string * outVertSrc, VVGL::GLVersion & inGLVers, const bool & inVarsAsUBO=false);
 		//	this method must be called before rendering (passes/etc may have expressions that require the render dims to be evaluated)
 		void evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize);
 		
@@ -204,7 +205,7 @@ class VVISF_EXPORT ISFDoc	{
 		//	used so we can have two constructors without duplicating code
 		void _initWithRawFragShaderString(const string & inRawFile);
 		//	returns a true if successful.  populates a string with variable declarations for a frag shader
-		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, VVGL::GLVersion & inGLVers);
+		bool _assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, VVGL::GLVersion & inGLVers, const bool & inVarsAsUBO=false);
 		//	returns a true if successful.  populates a map with string/value pairs that will be used to evaluate variable names in strings
 		bool _assembleSubstitutionMap(map<string,double*> * outMap);
 };

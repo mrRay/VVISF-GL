@@ -36,6 +36,8 @@
 
 #define VVMIDX(r) (r.origin.x+(r.size.width/2.0))
 
+id			_globalAppDelegate = nil;
+
 
 
 
@@ -60,6 +62,9 @@
 			}
 		}
 		*/
+		
+		if (_globalAppDelegate == nil)
+			_globalAppDelegate = self;
 		
 		//sharedContext = nil;
 		sharedContext = nullptr;
@@ -931,543 +936,543 @@
 	
 	
 	
-	
-	//	tell the audio controller to task
-	[_globalAudioController updateAudioResults];
-	
-	//	get a frame from syphon
-	//VVBuffer			*syphonBuffer = nil;
-	//VVBuffer			*buffer2d = nil;
-	GLBufferRef		buffer2d = nullptr;
-	//VVBuffer			*outBuffer = nil;
-	GLBufferRef		outBuffer = nullptr;
-	//BOOL				use2D = ([textureToggle intValue]==NSOnState) ? YES : NO;
-	NSUInteger			textureMatrixVal = (textureMatrix==nil) ? 0 : [textureMatrix selectedRow];
-	NSMutableDictionary		*newOutDict = MUTDICT;
-	int					localOutputSource = -1;
-	BOOL				localOutputFreeze = NO;
-	
 	@synchronized (self)	{
-		if (videoSource!=nil)	{
-			
-			//VVRELEASE(lastSourceBuffer);
-			//lastSourceBuffer = [videoSource allocBuffer];
-			
-			lastSourceBuffer = nullptr;
-			lastSourceBuffer = [videoSource allocBuffer];
-		}
-		
-		//if (syphonClient!=nil && [syphonClient hasNewFrame])	{
-		//	syphonBuffer = [_globalVVBufferPool allocBufferForSyphonClient:syphonClient];
-		//	VVRELEASE(lastSourceBuffer);
-		//	lastSourceBuffer = [syphonBuffer retain];
-		//}
-		
-		localOutputSource = outputSource;
-		localOutputFreeze = outputFreeze;
-	}
+		//	tell the audio controller to task
+		[_globalAudioController updateAudioResults];
 	
-	//if( lastSourceBuffer != nullptr)
-	//	cout << "\tlastSourceBuffer is " << *lastSourceBuffer << endl;
+		//	get a frame from syphon
+		//VVBuffer			*syphonBuffer = nil;
+		//VVBuffer			*buffer2d = nil;
+		GLBufferRef		buffer2d = nullptr;
+		//VVBuffer			*outBuffer = nil;
+		GLBufferRef		outBuffer = nullptr;
+		//BOOL				use2D = ([textureToggle intValue]==NSOnState) ? YES : NO;
+		NSUInteger			textureMatrixVal = (textureMatrix==nil) ? 0 : [textureMatrix selectedRow];
+		NSMutableDictionary		*newOutDict = MUTDICT;
+		int					localOutputSource = -1;
+		BOOL				localOutputFreeze = NO;
 	
-	if (lastSourceBuffer != nullptr)	{
-		@try	{
-			//	this bit here makes a GL_TEXTURE_2D-based buffer and copies the syphon image into it
-			//if (use2D)	{
-			//	buffer2d = [_globalVVBufferPool allocBGR2DPOTTexSized:[lastSourceBuffer srcRect].size];
-			//	[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:buffer2d];
-			//	[buffer2d setSrcRect:[lastSourceBuffer srcRect]];
+		@synchronized (self)	{
+			if (videoSource!=nil)	{
+			
+				//VVRELEASE(lastSourceBuffer);
+				//lastSourceBuffer = [videoSource allocBuffer];
+			
+				lastSourceBuffer = nullptr;
+				lastSourceBuffer = [videoSource allocBuffer];
+			}
+		
+			//if (syphonClient!=nil && [syphonClient hasNewFrame])	{
+			//	syphonBuffer = [_globalVVBufferPool allocBufferForSyphonClient:syphonClient];
+			//	VVRELEASE(lastSourceBuffer);
+			//	lastSourceBuffer = [syphonBuffer retain];
 			//}
-			/*
-			//NSLog(@"\t\tlastSourceBuffer is %@",lastSourceBuffer);
-			GLBufferRef		srcBuffer = nullptr;
-			if (lastSourceBuffer!=nullptr)	{
-				switch (textureMatrixVal)	{
-				case 0:	//	nothing specified/rect
-					//NSLog(@"\t\ttexture mode is rect");
-					if (lastSourceBuffer->desc.target != GLBuffer::Target_Rect)
-					{
-						//srcBuffer = [_globalVVBufferPool allocBGRTexSized:lastSourceBuffer->srcRect.size];
-						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
-						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
-						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
-						//[srcBuffer setSrcRect:lastSourceBuffer->srcRect];
-						srcBuffer->srcRect = lastSourceBuffer->srcRect;
-						//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
-					}
-					else	{
-						//srcBuffer = [lastSourceBuffer retain];
-						srcBuffer = lastSourceBuffer;
-					}
-					break;
-				case 1:	//	2D
-					//NSLog(@"\t\ttexture mode is 2D");
-					if (!lastSourceBuffer->isPOT2DTex())	{
-						//srcBuffer = [_globalVVBufferPool allocBGR2DPOTTexSized:[lastSourceBuffer srcRect].size];
-						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
-						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
-						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
-						srcBuffer->srcRect = lastSourceBuffer->srcRect;
-						//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
-					}
-					else	{
-						//srcBuffer = [lastSourceBuffer retain];
-						srcBuffer = lastSourceBuffer;
-					}
-					break;
-				case 2:	//	NPOT 2D
-					//NSLog(@"\t\ttexture mode is NPOT 2D");
-					if (!lastSourceBuffer->isNPOT2DTex())	{
-						//srcBuffer = [_globalVVBufferPool allocBGR2DTexSized:[lastSourceBuffer srcRect].size];
-						srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
-						//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
-						GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
-						//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
-						srcBuffer->srcRect = lastSourceBuffer->srcRect;
-						//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
-					}
-					else	{
-						//srcBuffer = [lastSourceBuffer retain];
-						srcBuffer = lastSourceBuffer;
-					}
-					break;
-				}
-			}
-			*/
-			
-			//outBuffer = [isfController renderFXOnThisBuffer:srcBuffer passDict:newOutDict];
-			outBuffer = [isfController renderFXOnThisBuffer:lastSourceBuffer passDict:newOutDict];
-			//NSLog(@"\t\tnewOutDict is %@",newOutDict);
-			
-			@synchronized (self)	{
-				if (fetchShaders)	{
-					string					tmpCPPString;
-					string					*tmpCPPStringPtr = nullptr;
-					NSString				*tmpString = nil;
-					NSMutableDictionary		*contentDict = MUTDICT;
-					ISFSceneRef				scene = [isfController scene];
-					ISFDocRef				doc = (scene==nullptr) ? nullptr : scene->getDoc();
-					
-					
-					
-					tmpCPPStringPtr = (doc==nullptr) ? nil : doc->getJSONString();
-					tmpString = (tmpCPPStringPtr==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPStringPtr->c_str()];
-					if (tmpString != nil)
-						[contentDict setObject:tmpString forKey:@"json"];
-					
-					//tmpCPPString = (doc==nullptr) ? nil : doc->getVertShaderSource();
-					tmpCPPString = (scene==nullptr) ? nil : scene->getVertexShaderString();
-					tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
-					if (tmpString != nil)
-						[contentDict setObject:tmpString forKey:@"vertex"];
-					
-					//tmpCPPString = (doc==nullptr) ? nil : doc->getFragShaderSource();
-					tmpCPPString = (scene==nullptr) ? nil : scene->getFragmentShaderString();
-					tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
-					if (tmpString != nil)
-						[contentDict setObject:tmpString forKey:@"fragment"];
-					
-					
-					//NSString				*tmpString = nil;
-					//NSMutableDictionary		*contentDict = MUTDICT;
-					//tmpString = [[isfController scene] jsonString];
-					//if (tmpString!=nil)
-					//	[contentDict setObject:tmpString forKey:@"json"];
-					//tmpString = [[isfController scene] vertexShaderString];
-					//if (tmpString!=nil)
-					//	[contentDict setObject:tmpString forKey:@"vertex"];
-					//tmpString = [[isfController scene] fragmentShaderString];
-					//if (tmpString!=nil)
-					//	[contentDict setObject:tmpString forKey:@"fragment"];
-					
-					//	we only want to proceed if we have a json/vert/frag shader (if we don't, we need to try again later)
-					if ([contentDict count]==3)	{
-						NSMutableArray	*syntaxErrArray = [self createSyntaxErrorsForForbiddenTermsInRawISFFile];
-						NSArray			*origSyntaxErrArray = [contentDict objectForKey:@"syntaxErr"];
-						if (origSyntaxErrArray!=nil && [origSyntaxErrArray count]>0)	{
-							if (syntaxErrArray == nil)
-								syntaxErrArray = MUTARRAY;
-							[syntaxErrArray addObjectsFromArray:origSyntaxErrArray];
-						}
-						NSLog(@"\t\tsyntaxErrArray is %@",syntaxErrArray);
-						if (syntaxErrArray != nil && [syntaxErrArray count]>0)
-							[contentDict setObject:syntaxErrArray forKey:@"syntaxErr"];
-						
-						
-						//	run through the raw frag shader string, looking for "forbidden" terms (texture2D, texture2DRect, sampler2D, sampler2DRect), and creating errors for them
-						//NSArray			*forbiddenTerms = @[@"texture2DRectProjLod",@"texture2DRectProj",@"texture2DRect",@"texture2DProjLod",@"texture2DProj",@"texture2D",@"sampler2DRect",@"sampler2D"];
-						//NSString		*forbiddenTermsRegex = @"((texture2D(Rect)?(Proj)?(Lod)?)|(sampler2D(Rect)?))";
-						//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
-						//NSString		*jsonSrc = [[isfController scene] jsonSource];
-						////NSInteger		lineDelta = [jsonSrc numberOfLines];
-						//__block NSInteger	lineIndex = [jsonSrc numberOfLines] + 1;
-						//NSMutableArray	*syntaxErrArray = MUTARRAY;
-						//	run through all the lines in the precompiled shader
-						//[precompiledFragSrc enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
-						//	//	if the line matches the 'forbidden terms' regex...
-						//	if ([line isMatchedByRegex:forbiddenTermsRegex])	{
-						//		//	run through all the forbidden terms to figure out which one is in the line
-						//		for (NSString *forbiddenTerm in forbiddenTerms)	{
-						//			if ([line containsString:forbiddenTerm])	{
-						//				//	make a syntax error, add it to the array
-						//				SMLSyntaxError	*err = [[[SMLSyntaxError alloc] init] autorelease];
-						//				[err setLine:(int)lineIndex];
-						//				[err setCharacter:0];
-						//				[err setCode:forbiddenTerm];
-						//				[err setDescription:VVFMTSTRING(@"Warning: \'%@\' may not always work!",forbiddenTerm)];
-						//				[err setLength:1];
-						//				[syntaxErrArray addObject:err];
-						//			
-						//				break;
-						//			}
-						//		}
-						//	}
-						//	++lineIndex;
-						//}];
-						//	if there are syntax errors, add the array of errors to the content dict
-						//if ([syntaxErrArray count]>0)
-						//	[contentDict setObject:syntaxErrArray forKey:@"syntaxErr"];
-						
-					
-					
-						//NSLog(@"\t\tfetching shaders- loading non-file content dict %p in %s",contentDict,__func__);
-						dispatch_async(dispatch_get_main_queue(), ^{
-							[docController loadNonFileContentDict:contentDict];
-						});
-					
-						//NSLog(@"\t\tfetchShaders is NO in %s",__func__);
-						fetchShaders = NO;
-					}
-				}
-				
-				//	if the local output isn't frozen, update the output dict
-				if (!localOutputFreeze)	{
-					VVRELEASE(outputDict);
-					outputDict = [newOutDict retain];
-				}
-				//	else the output's frozen- get rid of the new output dict, use the old one
-				else	{
-					[newOutDict removeAllObjects];
-					newOutDict = outputDict;
-				}
-			}
-			
-			
-			//NSLog(@"\t\tlocalOutputSource is %d",localOutputSource);
-			//NSLog(@"\t\tnewOutDict is %@",newOutDict);
-			BufferObject		*displayBuffer = [newOutDict objectForKey:NUMINT(localOutputSource)];
-			//NSLog(@"\t\tdisplayBuffer is %@",displayBuffer);
-			if (displayBuffer==nil)	{
-				//NSLog(@"\t\terr: displayBuffer was nil, localOutputSource was %d dict was %@",localOutputSource,newOutDict);
-				//displayBuffer = [BufferObject createWithBuffer:srcBuffer];
-				displayBuffer = [BufferObject createWithBuffer:lastSourceBuffer];
-			}
-			[outputView drawBuffer:[displayBuffer bufferRef]];
-			//[outputView drawBuffer:(outBuffer!=nil) ? outBuffer : ((use2D) ? buffer2d : lastSourceBuffer)];
-			
-			//NSSize			bufferSize = [displayBuffer srcRect].size;
-			VVGL::Size		bufferSize = [displayBuffer bufferRef]->srcRect.size;
-			NSString		*resString = VVFMTSTRING(@"%d x %d",(int)bufferSize.width,(int)bufferSize.height);
-			NSString		*currentResString = [outputResLabel stringValue];
-			if (currentResString==nil || ![currentResString isEqualToString:resString])	{
-				//dispatch_async(dispatch_get_main_queue(), ^{
-					[outputResLabel setStringValue:resString];
-				//});
-			}
-			
-			//NSLog(@"\t\tshould be passing output to syphon server here, %s",__func__);
-			
-			//	pass the rendered frame to the syphon server
-			if (syphonServer!=nil)	{
-				if (syphonServerContext != nullptr)
-					syphonServerContext->makeCurrent();
-				//VVBuffer		*preFXBuffer = srcBuffer;
-				//GLBufferRef	preFXBuffer = srcBuffer;
-				GLBufferRef	preFXBuffer = lastSourceBuffer;
-				if (outBuffer!=nullptr)	{
-					//cout << "\tshould be publishing " << *outBuffer << endl;
-					
-					//[syphonServer
-					//	publishFrameTexture:[outBuffer name]
-					//	textureTarget:[outBuffer target]
-					//	imageRegion:[outBuffer srcRect]
-					//	textureDimensions:[outBuffer size]
-					//	flipped:[outBuffer flipped]];
-					
-					[syphonServer
-						publishFrameTexture:outBuffer->name
-						textureTarget:outBuffer->desc.target
-						imageRegion:NSMakeRect(outBuffer->srcRect.origin.x, outBuffer->srcRect.origin.y, outBuffer->srcRect.size.width, outBuffer->srcRect.size.height)
-						textureDimensions:NSMakeSize(outBuffer->size.width, outBuffer->size.height)
-						flipped:outBuffer->flipped];
-				}
-				else if (preFXBuffer!=nullptr)	{
-					//cout << "\tshould be publishing " << *preFXBuffer << endl;
-					
-					//[syphonServer
-					//	publishFrameTexture:[preFXBuffer name]
-					//	textureTarget:[preFXBuffer target]
-					//	imageRegion:[preFXBuffer srcRect]
-					//	textureDimensions:[preFXBuffer size]
-					//	flipped:[preFXBuffer flipped]];
-					
-					[syphonServer
-						publishFrameTexture:preFXBuffer->name
-						textureTarget:preFXBuffer->desc.target
-						imageRegion:NSMakeRect(preFXBuffer->srcRect.origin.x, preFXBuffer->srcRect.origin.y, preFXBuffer->srcRect.size.width, preFXBuffer->srcRect.size.height)
-						textureDimensions:NSMakeSize(preFXBuffer->size.width, preFXBuffer->size.height)
-						flipped:preFXBuffer->flipped];
-				}
-			}
-			
-			//VVRELEASE(srcBuffer);
+		
+			localOutputSource = outputSource;
+			localOutputFreeze = outputFreeze;
 		}
-		@catch (NSException *err)	{
-			NSLog(@"\t\t%scaught exception %@",__func__,err);
-			@synchronized (self)	{
-				//NSLog(@"\t\tfetchShaders is NO in %s",__func__);
-				fetchShaders = NO;
-			}
-			//dispatch_async(dispatch_get_main_queue(), ^{
-				//	assemble a dictionary (contentDict) that describes the error
-				NSMutableDictionary		*contentDict = MUTDICT;
-				NSString				*reason = [err name];
-				NSMutableString			*errString = [NSMutableString stringWithCapacity:0];
-				__block NSMutableArray	*syntaxErrorArray = MUTARRAY;
-				[errString appendString:@""];
-				if ([reason isEqualToString:@"Shader Problem"])	{
-					NSDictionary		*userInfo = [err userInfo];
-					NSString			*tmpLog = nil;
-					tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"linkErrLog"];
-					if (tmpLog!=nil)
-						[errString appendFormat:@"OpenGL link error:\n%@",tmpLog];
-					
-					
-					//	this block parses a passed string, locates a specific number value, and adds to it the passed "_lineDelta" value.  used to locate and change GLSL error logs.  if _syntaxErrArray is non-nil, SMLSyntaxErrors will be created and added to it.
-					NSString*	(^glslErrLogLineNumberChanger)(NSString *_lineIn, NSInteger _lineDelta, NSMutableArray *_syntaxErrArray) = ^(NSString *_lineIn, NSInteger _lineDelta, NSMutableArray *_syntaxErrArray)	{
-						NSString		*returnMe = nil;
-						NSString		*regexString = @"([0-9]+[\\W])([0-9]+)";
-						NSRange			regexRange = [_lineIn rangeOfRegex:regexString];
-						//	if this line doesn't match the regex string, just append it
-						if (regexRange.location==NSNotFound || regexRange.length<1)	{
-							returnMe = _lineIn;
+	
+		//if( lastSourceBuffer != nullptr)
+		//	cout << "\tlastSourceBuffer is " << *lastSourceBuffer << endl;
+	
+		if (lastSourceBuffer != nullptr)	{
+			@try	{
+				//	this bit here makes a GL_TEXTURE_2D-based buffer and copies the syphon image into it
+				//if (use2D)	{
+				//	buffer2d = [_globalVVBufferPool allocBGR2DPOTTexSized:[lastSourceBuffer srcRect].size];
+				//	[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:buffer2d];
+				//	[buffer2d setSrcRect:[lastSourceBuffer srcRect]];
+				//}
+				/*
+				//NSLog(@"\t\tlastSourceBuffer is %@",lastSourceBuffer);
+				GLBufferRef		srcBuffer = nullptr;
+				if (lastSourceBuffer!=nullptr)	{
+					switch (textureMatrixVal)	{
+					case 0:	//	nothing specified/rect
+						//NSLog(@"\t\ttexture mode is rect");
+						if (lastSourceBuffer->desc.target != GLBuffer::Target_Rect)
+						{
+							//srcBuffer = [_globalVVBufferPool allocBGRTexSized:lastSourceBuffer->srcRect.size];
+							srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
+							//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
+							GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+							//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
+							//[srcBuffer setSrcRect:lastSourceBuffer->srcRect];
+							srcBuffer->srcRect = lastSourceBuffer->srcRect;
+							//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
 						}
-						//	else this line contains the numbers i want to modify, replace them
 						else	{
-							//	capture the vals i want
-							NSArray			*capturedValsArray = [_lineIn captureComponentsMatchedByRegex:regexString];
-							//NSLog(@"\t\tcapturedValsArray is %@",capturedValsArray);
-							//	if i couldn't capture the numbers i want, just append the whole line
-							if (capturedValsArray==nil || [capturedValsArray count]!=3)	{
-								NSLog(@"\t\terr: capturedValsArray didn't have the correct number of elements, unable to correct line numbers in %s",__func__);
+							//srcBuffer = [lastSourceBuffer retain];
+							srcBuffer = lastSourceBuffer;
+						}
+						break;
+					case 1:	//	2D
+						//NSLog(@"\t\ttexture mode is 2D");
+						if (!lastSourceBuffer->isPOT2DTex())	{
+							//srcBuffer = [_globalVVBufferPool allocBGR2DPOTTexSized:[lastSourceBuffer srcRect].size];
+							srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
+							//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
+							GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+							//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
+							srcBuffer->srcRect = lastSourceBuffer->srcRect;
+							//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
+						}
+						else	{
+							//srcBuffer = [lastSourceBuffer retain];
+							srcBuffer = lastSourceBuffer;
+						}
+						break;
+					case 2:	//	NPOT 2D
+						//NSLog(@"\t\ttexture mode is NPOT 2D");
+						if (!lastSourceBuffer->isNPOT2DTex())	{
+							//srcBuffer = [_globalVVBufferPool allocBGR2DTexSized:[lastSourceBuffer srcRect].size];
+							srcBuffer = CreateBGRATex(lastSourceBuffer->srcRect.size);
+							//[_globalVVBufferCopier ignoreSizeCopyThisBuffer:lastSourceBuffer toThisBuffer:srcBuffer];
+							GetGlobalTexToTexCopier()->ignoreSizeCopy(lastSourceBuffer, srcBuffer);
+							//[srcBuffer setSrcRect:[lastSourceBuffer srcRect]];
+							srcBuffer->srcRect = lastSourceBuffer->srcRect;
+							//NSLog(@"\t\tsrcBuffer is %@",srcBuffer);
+						}
+						else	{
+							//srcBuffer = [lastSourceBuffer retain];
+							srcBuffer = lastSourceBuffer;
+						}
+						break;
+					}
+				}
+				*/
+			
+				//outBuffer = [isfController renderFXOnThisBuffer:srcBuffer passDict:newOutDict];
+				outBuffer = [isfController renderFXOnThisBuffer:lastSourceBuffer passDict:newOutDict];
+				//NSLog(@"\t\tnewOutDict is %@",newOutDict);
+			
+				//@synchronized (self)	{
+					if (fetchShaders)	{
+						string					tmpCPPString;
+						string					*tmpCPPStringPtr = nullptr;
+						NSString				*tmpString = nil;
+						NSMutableDictionary		*contentDict = MUTDICT;
+						ISFSceneRef				scene = [isfController scene];
+						ISFDocRef				doc = (scene==nullptr) ? nullptr : scene->getDoc();
+					
+					
+					
+						tmpCPPStringPtr = (doc==nullptr) ? nil : doc->getJSONString();
+						tmpString = (tmpCPPStringPtr==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPStringPtr->c_str()];
+						if (tmpString != nil)
+							[contentDict setObject:tmpString forKey:@"json"];
+					
+						//tmpCPPString = (doc==nullptr) ? nil : doc->getVertShaderSource();
+						tmpCPPString = (scene==nullptr) ? nil : scene->getVertexShaderString();
+						tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
+						if (tmpString != nil)
+							[contentDict setObject:tmpString forKey:@"vertex"];
+					
+						//tmpCPPString = (doc==nullptr) ? nil : doc->getFragShaderSource();
+						tmpCPPString = (scene==nullptr) ? nil : scene->getFragmentShaderString();
+						tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
+						if (tmpString != nil)
+							[contentDict setObject:tmpString forKey:@"fragment"];
+					
+					
+						//NSString				*tmpString = nil;
+						//NSMutableDictionary		*contentDict = MUTDICT;
+						//tmpString = [[isfController scene] jsonString];
+						//if (tmpString!=nil)
+						//	[contentDict setObject:tmpString forKey:@"json"];
+						//tmpString = [[isfController scene] vertexShaderString];
+						//if (tmpString!=nil)
+						//	[contentDict setObject:tmpString forKey:@"vertex"];
+						//tmpString = [[isfController scene] fragmentShaderString];
+						//if (tmpString!=nil)
+						//	[contentDict setObject:tmpString forKey:@"fragment"];
+					
+						//	we only want to proceed if we have a json/vert/frag shader (if we don't, we need to try again later)
+						if ([contentDict count]==3)	{
+							NSMutableArray	*syntaxErrArray = [self createSyntaxErrorsForForbiddenTermsInRawISFFile];
+							NSArray			*origSyntaxErrArray = [contentDict objectForKey:@"syntaxErr"];
+							if (origSyntaxErrArray!=nil && [origSyntaxErrArray count]>0)	{
+								if (syntaxErrArray == nil)
+									syntaxErrArray = MUTARRAY;
+								[syntaxErrArray addObjectsFromArray:origSyntaxErrArray];
+							}
+							NSLog(@"\t\tsyntaxErrArray is %@",syntaxErrArray);
+							if (syntaxErrArray != nil && [syntaxErrArray count]>0)
+								[contentDict setObject:syntaxErrArray forKey:@"syntaxErr"];
+						
+						
+							//	run through the raw frag shader string, looking for "forbidden" terms (texture2D, texture2DRect, sampler2D, sampler2DRect), and creating errors for them
+							//NSArray			*forbiddenTerms = @[@"texture2DRectProjLod",@"texture2DRectProj",@"texture2DRect",@"texture2DProjLod",@"texture2DProj",@"texture2D",@"sampler2DRect",@"sampler2D"];
+							//NSString		*forbiddenTermsRegex = @"((texture2D(Rect)?(Proj)?(Lod)?)|(sampler2D(Rect)?))";
+							//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
+							//NSString		*jsonSrc = [[isfController scene] jsonSource];
+							////NSInteger		lineDelta = [jsonSrc numberOfLines];
+							//__block NSInteger	lineIndex = [jsonSrc numberOfLines] + 1;
+							//NSMutableArray	*syntaxErrArray = MUTARRAY;
+							//	run through all the lines in the precompiled shader
+							//[precompiledFragSrc enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
+							//	//	if the line matches the 'forbidden terms' regex...
+							//	if ([line isMatchedByRegex:forbiddenTermsRegex])	{
+							//		//	run through all the forbidden terms to figure out which one is in the line
+							//		for (NSString *forbiddenTerm in forbiddenTerms)	{
+							//			if ([line containsString:forbiddenTerm])	{
+							//				//	make a syntax error, add it to the array
+							//				SMLSyntaxError	*err = [[[SMLSyntaxError alloc] init] autorelease];
+							//				[err setLine:(int)lineIndex];
+							//				[err setCharacter:0];
+							//				[err setCode:forbiddenTerm];
+							//				[err setDescription:VVFMTSTRING(@"Warning: \'%@\' may not always work!",forbiddenTerm)];
+							//				[err setLength:1];
+							//				[syntaxErrArray addObject:err];
+							//			
+							//				break;
+							//			}
+							//		}
+							//	}
+							//	++lineIndex;
+							//}];
+							//	if there are syntax errors, add the array of errors to the content dict
+							//if ([syntaxErrArray count]>0)
+							//	[contentDict setObject:syntaxErrArray forKey:@"syntaxErr"];
+						
+					
+					
+							//NSLog(@"\t\tfetching shaders- loading non-file content dict %p in %s",contentDict,__func__);
+							dispatch_async(dispatch_get_main_queue(), ^{
+								[docController loadNonFileContentDict:contentDict];
+							});
+					
+							//NSLog(@"\t\tfetchShaders is NO in %s",__func__);
+							fetchShaders = NO;
+						}
+					}
+				
+					//	if the local output isn't frozen, update the output dict
+					if (!localOutputFreeze)	{
+						VVRELEASE(outputDict);
+						outputDict = [newOutDict retain];
+					}
+					//	else the output's frozen- get rid of the new output dict, use the old one
+					else	{
+						[newOutDict removeAllObjects];
+						newOutDict = outputDict;
+					}
+				//}
+			
+			
+				//NSLog(@"\t\tlocalOutputSource is %d",localOutputSource);
+				//NSLog(@"\t\tnewOutDict is %@",newOutDict);
+				BufferObject		*displayBuffer = [newOutDict objectForKey:NUMINT(localOutputSource)];
+				//NSLog(@"\t\tdisplayBuffer is %@",displayBuffer);
+				if (displayBuffer==nil)	{
+					//NSLog(@"\t\terr: displayBuffer was nil, localOutputSource was %d dict was %@",localOutputSource,newOutDict);
+					//displayBuffer = [BufferObject createWithBuffer:srcBuffer];
+					displayBuffer = [BufferObject createWithBuffer:lastSourceBuffer];
+				}
+				[outputView drawBuffer:[displayBuffer bufferRef]];
+				//[outputView drawBuffer:(outBuffer!=nil) ? outBuffer : ((use2D) ? buffer2d : lastSourceBuffer)];
+			
+				//NSSize			bufferSize = [displayBuffer srcRect].size;
+				VVGL::Size		bufferSize = [displayBuffer bufferRef]->srcRect.size;
+				NSString		*resString = VVFMTSTRING(@"%d x %d",(int)bufferSize.width,(int)bufferSize.height);
+				NSString		*currentResString = [outputResLabel stringValue];
+				if (currentResString==nil || ![currentResString isEqualToString:resString])	{
+					//dispatch_async(dispatch_get_main_queue(), ^{
+						[outputResLabel setStringValue:resString];
+					//});
+				}
+			
+				//NSLog(@"\t\tshould be passing output to syphon server here, %s",__func__);
+			
+				//	pass the rendered frame to the syphon server
+				if (syphonServer!=nil)	{
+					if (syphonServerContext != nullptr)
+						syphonServerContext->makeCurrent();
+					//VVBuffer		*preFXBuffer = srcBuffer;
+					//GLBufferRef	preFXBuffer = srcBuffer;
+					GLBufferRef	preFXBuffer = lastSourceBuffer;
+					if (outBuffer!=nullptr)	{
+						//cout << "\tshould be publishing " << *outBuffer << endl;
+					
+						//[syphonServer
+						//	publishFrameTexture:[outBuffer name]
+						//	textureTarget:[outBuffer target]
+						//	imageRegion:[outBuffer srcRect]
+						//	textureDimensions:[outBuffer size]
+						//	flipped:[outBuffer flipped]];
+					
+						[syphonServer
+							publishFrameTexture:outBuffer->name
+							textureTarget:outBuffer->desc.target
+							imageRegion:NSMakeRect(outBuffer->srcRect.origin.x, outBuffer->srcRect.origin.y, outBuffer->srcRect.size.width, outBuffer->srcRect.size.height)
+							textureDimensions:NSMakeSize(outBuffer->size.width, outBuffer->size.height)
+							flipped:outBuffer->flipped];
+					}
+					else if (preFXBuffer!=nullptr)	{
+						//cout << "\tshould be publishing " << *preFXBuffer << endl;
+					
+						//[syphonServer
+						//	publishFrameTexture:[preFXBuffer name]
+						//	textureTarget:[preFXBuffer target]
+						//	imageRegion:[preFXBuffer srcRect]
+						//	textureDimensions:[preFXBuffer size]
+						//	flipped:[preFXBuffer flipped]];
+					
+						[syphonServer
+							publishFrameTexture:preFXBuffer->name
+							textureTarget:preFXBuffer->desc.target
+							imageRegion:NSMakeRect(preFXBuffer->srcRect.origin.x, preFXBuffer->srcRect.origin.y, preFXBuffer->srcRect.size.width, preFXBuffer->srcRect.size.height)
+							textureDimensions:NSMakeSize(preFXBuffer->size.width, preFXBuffer->size.height)
+							flipped:preFXBuffer->flipped];
+					}
+				}
+			
+				//VVRELEASE(srcBuffer);
+			}
+			@catch (NSException *err)	{
+				NSLog(@"\t\t%scaught exception %@",__func__,err);
+				@synchronized (self)	{
+					//NSLog(@"\t\tfetchShaders is NO in %s",__func__);
+					fetchShaders = NO;
+				}
+				//dispatch_async(dispatch_get_main_queue(), ^{
+					//	assemble a dictionary (contentDict) that describes the error
+					NSMutableDictionary		*contentDict = MUTDICT;
+					NSString				*reason = [err name];
+					NSMutableString			*errString = [NSMutableString stringWithCapacity:0];
+					__block NSMutableArray	*syntaxErrorArray = MUTARRAY;
+					[errString appendString:@""];
+					if ([reason isEqualToString:@"Shader Problem"])	{
+						NSDictionary		*userInfo = [err userInfo];
+						NSString			*tmpLog = nil;
+						tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"linkErrLog"];
+						if (tmpLog!=nil)
+							[errString appendFormat:@"OpenGL link error:\n%@",tmpLog];
+					
+					
+						//	this block parses a passed string, locates a specific number value, and adds to it the passed "_lineDelta" value.  used to locate and change GLSL error logs.  if _syntaxErrArray is non-nil, SMLSyntaxErrors will be created and added to it.
+						NSString*	(^glslErrLogLineNumberChanger)(NSString *_lineIn, NSInteger _lineDelta, NSMutableArray *_syntaxErrArray) = ^(NSString *_lineIn, NSInteger _lineDelta, NSMutableArray *_syntaxErrArray)	{
+							NSString		*returnMe = nil;
+							NSString		*regexString = @"([0-9]+[\\W])([0-9]+)";
+							NSRange			regexRange = [_lineIn rangeOfRegex:regexString];
+							//	if this line doesn't match the regex string, just append it
+							if (regexRange.location==NSNotFound || regexRange.length<1)	{
 								returnMe = _lineIn;
 							}
-							//	else i captured vals- time to put together the new line!
+							//	else this line contains the numbers i want to modify, replace them
 							else	{
-								//	first, copy everything in the line *before* the regex
-								//[errString appendString:[_lineIn substringToIndex:regexRange.location]];
-								//	now copy the first thing i captured (index 1 in the array)- this is presumably the file number
-								//[errString appendString:[capturedValsArray objectAtIndex:1]];
-								//	the second thing i captured (index 2 in the array) is the line number- modify it, then add it to the string
-								//[errString appendFormat:@"%d",[[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + _lineDelta];
-								//	copy everything in the line *after* the regex
-								//[errString appendString:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
+								//	capture the vals i want
+								NSArray			*capturedValsArray = [_lineIn captureComponentsMatchedByRegex:regexString];
+								//NSLog(@"\t\tcapturedValsArray is %@",capturedValsArray);
+								//	if i couldn't capture the numbers i want, just append the whole line
+								if (capturedValsArray==nil || [capturedValsArray count]!=3)	{
+									NSLog(@"\t\terr: capturedValsArray didn't have the correct number of elements, unable to correct line numbers in %s",__func__);
+									returnMe = _lineIn;
+								}
+								//	else i captured vals- time to put together the new line!
+								else	{
+									//	first, copy everything in the line *before* the regex
+									//[errString appendString:[_lineIn substringToIndex:regexRange.location]];
+									//	now copy the first thing i captured (index 1 in the array)- this is presumably the file number
+									//[errString appendString:[capturedValsArray objectAtIndex:1]];
+									//	the second thing i captured (index 2 in the array) is the line number- modify it, then add it to the string
+									//[errString appendFormat:@"%d",[[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + _lineDelta];
+									//	copy everything in the line *after* the regex
+									//[errString appendString:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
 								
-								//	...this is all of the above in one line
-								returnMe = VVFMTSTRING(@"%@%@%ld%@",[_lineIn substringToIndex:regexRange.location],[capturedValsArray objectAtIndex:1],([[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + _lineDelta),[_lineIn substringFromIndex:regexRange.location+regexRange.length]);
+									//	...this is all of the above in one line
+									returnMe = VVFMTSTRING(@"%@%@%ld%@",[_lineIn substringToIndex:regexRange.location],[capturedValsArray objectAtIndex:1],([[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + _lineDelta),[_lineIn substringFromIndex:regexRange.location+regexRange.length]);
 								
-								//	if i was passed a syntax error array to populate, create a syntax error and add it to the array
-								if (_syntaxErrArray!=nil)	{
-									SMLSyntaxError		*err = [[[SMLSyntaxError alloc] init] autorelease];
-									[err setLine:[[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + (int)_lineDelta];
-									[err setCharacter:0];
-									//[err setCode:@"CodeString"];
-									[err setCode:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
-									[err setDescription:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
-									[err setLength:1];
-									[_syntaxErrArray addObject:err];
+									//	if i was passed a syntax error array to populate, create a syntax error and add it to the array
+									if (_syntaxErrArray!=nil)	{
+										SMLSyntaxError		*err = [[[SMLSyntaxError alloc] init] autorelease];
+										[err setLine:[[[capturedValsArray objectAtIndex:2] numberByEvaluatingString] intValue] + (int)_lineDelta];
+										[err setCharacter:0];
+										//[err setCode:@"CodeString"];
+										[err setCode:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
+										[err setDescription:[_lineIn substringFromIndex:regexRange.location+regexRange.length]];
+										[err setLength:1];
+										[_syntaxErrArray addObject:err];
+									}
 								}
 							}
-						}
-						return returnMe;
-					};
+							return returnMe;
+						};
 					
 					
 					
-					//	if there's a vertex error log, parse it line-by-line, adjusting the line numbers to compensate for changes to the shader
-					tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"vertErrLog"];
-					if (tmpLog!=nil)	{
-						[errString appendString:@"OpenGL vertex shader error:\n"];
-						//	figure out the difference in line numbers between the compiled vert shader and the raw ISF file
-						NSInteger		lineDelta = 0;
-						NSString		*compiledVertSrc = [userInfo objectForKey:@"vertSrc"];
-						ISFSceneRef		scene = [isfController scene];
-						ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-						string			*tmpString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
-						NSString		*precompiledVertSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
-						//NSString		*precompiledVertSrc = [[isfController scene] vertShaderSource];
-						if (compiledVertSrc!=nil && precompiledVertSrc!=nil)	{
-							//	the compiled vertex shader has stuff added to both the beginning and the end- the first line added to the end of the raw vertex shader source is:
-							NSString			*firstLineAppendedToVS = @"\nvoid vv_vertShaderInit(void)\t{";
-							NSRange				rangeOfEndOfVS = [compiledVertSrc rangeOfString:firstLineAppendedToVS];
-							if (rangeOfEndOfVS.location==NSNotFound || rangeOfEndOfVS.length!=[firstLineAppendedToVS length])	{
-								NSLog(@"\t\tERR: couldn't locate end of precompiled shader in compiled vertex shader, %s",__func__);
-								lineDelta = 0;
-							}
-							else	{
-								firstLineAppendedToVS = @"\nvoid isf_vertShaderInit(void)\t{";
-								rangeOfEndOfVS = [compiledVertSrc rangeOfString:firstLineAppendedToVS];
+						//	if there's a vertex error log, parse it line-by-line, adjusting the line numbers to compensate for changes to the shader
+						tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"vertErrLog"];
+						if (tmpLog!=nil)	{
+							[errString appendString:@"OpenGL vertex shader error:\n"];
+							//	figure out the difference in line numbers between the compiled vert shader and the raw ISF file
+							NSInteger		lineDelta = 0;
+							NSString		*compiledVertSrc = [userInfo objectForKey:@"vertSrc"];
+							ISFSceneRef		scene = [isfController scene];
+							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+							string			*tmpString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
+							NSString		*precompiledVertSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
+							//NSString		*precompiledVertSrc = [[isfController scene] vertShaderSource];
+							if (compiledVertSrc!=nil && precompiledVertSrc!=nil)	{
+								//	the compiled vertex shader has stuff added to both the beginning and the end- the first line added to the end of the raw vertex shader source is:
+								NSString			*firstLineAppendedToVS = @"\nvoid vv_vertShaderInit(void)\t{";
+								NSRange				rangeOfEndOfVS = [compiledVertSrc rangeOfString:firstLineAppendedToVS];
 								if (rangeOfEndOfVS.location==NSNotFound || rangeOfEndOfVS.length!=[firstLineAppendedToVS length])	{
 									NSLog(@"\t\tERR: couldn't locate end of precompiled shader in compiled vertex shader, %s",__func__);
 									lineDelta = 0;
 								}
 								else	{
-									NSInteger			numberOfLinesAppendedToVS = [[compiledVertSrc substringFromIndex:rangeOfEndOfVS.location] numberOfLines];
-									lineDelta = [precompiledVertSrc numberOfLines] - ([compiledVertSrc numberOfLines]-numberOfLinesAppendedToVS);
+									firstLineAppendedToVS = @"\nvoid isf_vertShaderInit(void)\t{";
+									rangeOfEndOfVS = [compiledVertSrc rangeOfString:firstLineAppendedToVS];
+									if (rangeOfEndOfVS.location==NSNotFound || rangeOfEndOfVS.length!=[firstLineAppendedToVS length])	{
+										NSLog(@"\t\tERR: couldn't locate end of precompiled shader in compiled vertex shader, %s",__func__);
+										lineDelta = 0;
+									}
+									else	{
+										NSInteger			numberOfLinesAppendedToVS = [[compiledVertSrc substringFromIndex:rangeOfEndOfVS.location] numberOfLines];
+										lineDelta = [precompiledVertSrc numberOfLines] - ([compiledVertSrc numberOfLines]-numberOfLinesAppendedToVS);
+									}
 								}
 							}
-						}
-						//	if there's no difference in line numbers, just copy the error log in its entirety
-						if (lineDelta==0)	{
-							[errString appendString:tmpLog];
-						}
-						//	else there's a difference in line numbers, run through each line of the log- i'm looking for line numbers to replace
-						else	{
-							[tmpLog enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
-								//	run the block that changes the line numbers for the glsl error log
-								[errString appendString:glslErrLogLineNumberChanger(line, lineDelta, nil)];
-								//	always append a newline!
-								[errString appendString:@"\n"];
-							}];
-						}
+							//	if there's no difference in line numbers, just copy the error log in its entirety
+							if (lineDelta==0)	{
+								[errString appendString:tmpLog];
+							}
+							//	else there's a difference in line numbers, run through each line of the log- i'm looking for line numbers to replace
+							else	{
+								[tmpLog enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
+									//	run the block that changes the line numbers for the glsl error log
+									[errString appendString:glslErrLogLineNumberChanger(line, lineDelta, nil)];
+									//	always append a newline!
+									[errString appendString:@"\n"];
+								}];
+							}
 						
 						
-						//[errString appendFormat:@"OpenGL vertex shader error:\n%@",tmpLog];
+							//[errString appendFormat:@"OpenGL vertex shader error:\n%@",tmpLog];
 						
-					}
+						}
 					
-					//	if there's a fragment error log, parse it line-by-line, adjusting the line numbers to compensate for changes to the shader
-					tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"fragErrLog"];
-					if (tmpLog!=nil)	{
-						[errString appendString:@"OpenGL fragment shader error:\n"];
-						//	figure out the difference in line numbers between the compiled frag shader and the raw ISF file
-						NSInteger		lineDelta = 0;
-						NSString		*compiledFragSrc = [userInfo objectForKey:@"fragSrc"];
-						ISFSceneRef		scene = [isfController scene];
-						ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-						string			*tmpString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
-						NSString		*precompiledFragSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
-						//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
-						tmpString = (doc==nullptr) ? nullptr : doc->getJSONSourceString();
-						NSString		*jsonSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
-						//NSString		*jsonSrc = [[isfController scene] jsonSource];
-						if (compiledFragSrc!=nil && precompiledFragSrc!=nil && jsonSrc!=nil)	{
-							lineDelta = ([precompiledFragSrc numberOfLines]+[jsonSrc numberOfLines]) - [compiledFragSrc numberOfLines];
-						}
-						//	if there's no difference in line numbers, just copy the error log in its entirety
-						if (lineDelta==0)	{
-							[errString appendString:tmpLog];
-						}
-						//	else there's a difference in line numbers, run through each line of the log- i'm looking for line numbers to replace
-						else	{
-							[tmpLog enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
-								//	run the block that changes the line numbers for the glsl error log
-								[errString appendString:glslErrLogLineNumberChanger(line, lineDelta, syntaxErrorArray)];
-								//	always append a newline!
-								[errString appendString:@"\n"];
-							}];
+						//	if there's a fragment error log, parse it line-by-line, adjusting the line numbers to compensate for changes to the shader
+						tmpLog = (userInfo==nil) ? nil : [userInfo objectForKey:@"fragErrLog"];
+						if (tmpLog!=nil)	{
+							[errString appendString:@"OpenGL fragment shader error:\n"];
+							//	figure out the difference in line numbers between the compiled frag shader and the raw ISF file
+							NSInteger		lineDelta = 0;
+							NSString		*compiledFragSrc = [userInfo objectForKey:@"fragSrc"];
+							ISFSceneRef		scene = [isfController scene];
+							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+							string			*tmpString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
+							NSString		*precompiledFragSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
+							//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
+							tmpString = (doc==nullptr) ? nullptr : doc->getJSONSourceString();
+							NSString		*jsonSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
+							//NSString		*jsonSrc = [[isfController scene] jsonSource];
+							if (compiledFragSrc!=nil && precompiledFragSrc!=nil && jsonSrc!=nil)	{
+								lineDelta = ([precompiledFragSrc numberOfLines]+[jsonSrc numberOfLines]) - [compiledFragSrc numberOfLines];
+							}
+							//	if there's no difference in line numbers, just copy the error log in its entirety
+							if (lineDelta==0)	{
+								[errString appendString:tmpLog];
+							}
+							//	else there's a difference in line numbers, run through each line of the log- i'm looking for line numbers to replace
+							else	{
+								[tmpLog enumerateLinesUsingBlock:^(NSString *line, BOOL *stop)	{
+									//	run the block that changes the line numbers for the glsl error log
+									[errString appendString:glslErrLogLineNumberChanger(line, lineDelta, syntaxErrorArray)];
+									//	always append a newline!
+									[errString appendString:@"\n"];
+								}];
+							}
 						}
 					}
-				}
-				else	{
-					[errString appendFormat:@"%@-%@",[err name],[err reason]];
-				}
-				[contentDict setObject:errString forKey:@"error"];
+					else	{
+						[errString appendFormat:@"%@-%@",[err name],[err reason]];
+					}
+					[contentDict setObject:errString forKey:@"error"];
 				
-				//[contentDict setObject:syntaxErrorArray forKey:@"syntaxErr"];
-				NSArray			*origSyntaxErrArray = [contentDict objectForKey:@"syntaxErr"];
-				if (origSyntaxErrArray!=nil && [origSyntaxErrArray count]>0)	{
-					[syntaxErrorArray addObjectsFromArray:origSyntaxErrArray];
-				}
-				if (syntaxErrorArray != nil)
-					[contentDict setObject:syntaxErrorArray forKey:@"syntaxErr"];
-				
-				
-				//	populate contentDict with the source code compiled and in use by the GL scene
-				ISFSceneRef		scene = [isfController scene];
-				ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-				string			*tmpCPPString = nullptr;
-				NSString		*tmpString = nil;
-				
-				tmpCPPString = (doc==nullptr) ? nullptr : doc->getJSONString();
-				tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
-				if (tmpString == nil)
-					tmpString = @"";
-				[contentDict setObject:tmpString forKey:@"json"];
-				
-				tmpCPPString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
-				tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
-				if (tmpString == nil)
-					tmpString = @"";
-				[contentDict setObject:tmpString forKey:@"vertex"];
-				
-				tmpCPPString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
-				tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
-				if (tmpString == nil)
-					tmpString = @"";
-				[contentDict setObject:tmpString forKey:@"fragment"];
-				
-				//tmpString = [[isfController scene] jsonString];
-				//if (tmpString==nil)
-				//	tmpString = @"";
-				//[contentDict setObject:tmpString forKey:@"json"];
-				//
-				//tmpString = [[isfController scene] vertexShaderString];
-				//if (tmpString == nil)
-				//	tmpString = @"";
-				//[contentDict setObject:tmpString forKey:@"vertex"];
-				//
-				//tmpString = [[isfController scene] fragmentShaderString];
-				//if (tmpString == nil)
-				//	tmpString = @"";
-				//[contentDict setObject:tmpString forKey:@"fragment"];
+					//[contentDict setObject:syntaxErrorArray forKey:@"syntaxErr"];
+					NSArray			*origSyntaxErrArray = [contentDict objectForKey:@"syntaxErr"];
+					if (origSyntaxErrArray!=nil && [origSyntaxErrArray count]>0)	{
+						[syntaxErrorArray addObjectsFromArray:origSyntaxErrArray];
+					}
+					if (syntaxErrorArray != nil)
+						[contentDict setObject:syntaxErrorArray forKey:@"syntaxErr"];
 				
 				
-				//	kill stuff so i don't keep displaying the error...
-				[isfController loadFile:nil];
+					//	populate contentDict with the source code compiled and in use by the GL scene
+					ISFSceneRef		scene = [isfController scene];
+					ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+					string			*tmpCPPString = nullptr;
+					NSString		*tmpString = nil;
+				
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->getJSONString();
+					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					if (tmpString == nil)
+						tmpString = @"";
+					[contentDict setObject:tmpString forKey:@"json"];
+				
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
+					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					if (tmpString == nil)
+						tmpString = @"";
+					[contentDict setObject:tmpString forKey:@"vertex"];
+				
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
+					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
+					if (tmpString == nil)
+						tmpString = @"";
+					[contentDict setObject:tmpString forKey:@"fragment"];
+				
+					//tmpString = [[isfController scene] jsonString];
+					//if (tmpString==nil)
+					//	tmpString = @"";
+					//[contentDict setObject:tmpString forKey:@"json"];
+					//
+					//tmpString = [[isfController scene] vertexShaderString];
+					//if (tmpString == nil)
+					//	tmpString = @"";
+					//[contentDict setObject:tmpString forKey:@"vertex"];
+					//
+					//tmpString = [[isfController scene] fragmentShaderString];
+					//if (tmpString == nil)
+					//	tmpString = @"";
+					//[contentDict setObject:tmpString forKey:@"fragment"];
 				
 				
-				NSLog(@"\t\tcaught exception: loading non-file content dict %p in %s",contentDict,__func__);
-				//	tell the doc controller to load the dict of error stuff i assembled
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[docController loadNonFileContentDict:contentDict];
-				});
+					//	kill stuff so i don't keep displaying the error...
+					[isfController loadFile:nil];
 				
 				
-			//});
+					NSLog(@"\t\tcaught exception: loading non-file content dict %p in %s",contentDict,__func__);
+					//	tell the doc controller to load the dict of error stuff i assembled
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[docController loadNonFileContentDict:contentDict];
+					});
+				
+				
+				//});
 			
+			}
+		
+		
+		
+		
+		
+		
+			//VVRELEASE(outBuffer);
+			outBuffer = nullptr;
+			//VVRELEASE(buffer2d);
+			buffer2d = nullptr;
+			//VVRELEASE(syphonCopy);
+			//VVRELEASE(syphonBuffer);
+		
 		}
-		
-		
-		
-		
-		
-		
-		//VVRELEASE(outBuffer);
-		outBuffer = nullptr;
-		//VVRELEASE(buffer2d);
-		buffer2d = nullptr;
-		//VVRELEASE(syphonCopy);
-		//VVRELEASE(syphonBuffer);
-		
+		//[_globalVVBufferPool housekeeping];
+		const GLBufferPoolRef		&bp = GetGlobalBufferPool();
+		if (bp != nullptr)
+			bp->housekeeping();
 	}
-	//[_globalVVBufferPool housekeeping];
-	const GLBufferPoolRef		&bp = GetGlobalBufferPool();
-	if (bp != nullptr)
-		bp->housekeeping();
-	
 }
 /*
 //	used to render for recording

@@ -372,7 +372,7 @@ string ISFDoc::generateTextureTypeString()	{
 	}
 	return returnMe;
 }
-bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers)	{
+bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVersion & inGLVers, const bool & inVarsAsUBO)	{
 	//cout << __PRETTY_FUNCTION__ << ", vers is " << inGLVers << endl;
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -381,7 +381,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	//	assemble the variable declarations
 	string		vsVarDeclarations = string("");
 	string		fsVarDeclarations = string("");
-	if (!_assembleShaderSource_VarDeclarations(&vsVarDeclarations, &fsVarDeclarations, inGLVers))
+	if (!_assembleShaderSource_VarDeclarations(&vsVarDeclarations, &fsVarDeclarations, inGLVers, inVarsAsUBO))
 		throw ISFErr(ISFErrType_ErrorParsingFS, "Var Dec failed", __PRETTY_FUNCTION__);
 	//cout << "vs var declarations:\n*******************\n" << vsVarDeclarations << "*******************\n";
 	//cout << "fs var declarations:\n*******************\n" << fsVarDeclarations << "*******************\n";
@@ -1816,7 +1816,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 			type = ISFFileType_Transition;
 	}
 }
-bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers)	{
+bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string * outFSString, GLVersion & inGLVers, const bool & inVarsAsUBO)	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	if (outVSString==nullptr || outFSString==nullptr)
@@ -1825,8 +1825,11 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	//	we're going to work this by assembling an array of strings, one for each line- have the vector reserve space for enough strings
 	vector<string>		vsDeclarations;
 	vector<string>		fsDeclarations;
+	vector<string>		uboDeclarations;
+	
 	vsDeclarations.reserve(inputs.size()+imageImports.size()+persistentBuffers.size()+tempBuffers.size()+9);
 	fsDeclarations.reserve(vsDeclarations.capacity());
+	uboDeclarations.reserve(vsDeclarations.capacity());
 	
 	//	frag shader always needs an output, which we're naming gl_FragColor so shaders written against GL 2.1 will work.  we'll use a #define in the shader source to make the shader precompiler change gl_FragColor to isf_FragColor
 	switch (inGLVers)	{
@@ -1844,10 +1847,16 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	}
 	
 	//	these are the 9 standard entries
-	vsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
-	fsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
-	vsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
-	fsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
+	if (!inVarsAsUBO)	{
+		vsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
+		fsDeclarations.emplace_back("uniform int\t\tPASSINDEX;\n");
+		vsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
+		fsDeclarations.emplace_back("uniform vec2\t\tRENDERSIZE;\n");
+	}
+	else	{
+		uboDeclarations.emplace_back("\tint\t\tPASSINDEX;\n");
+		uboDeclarations.emplace_back("\tvec2\t\tRENDERSIZE;\n");
+	}
 	switch (inGLVers)	{
 	case GLVersion_Unknown:
 	case GLVersion_2:
@@ -1871,14 +1880,22 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 		//fsDeclarations.emplace_back("in vec3\t\tisf_VertPos;\n");
 		break;
 	}
-	vsDeclarations.emplace_back("uniform float\t\tTIME;\n");
-	fsDeclarations.emplace_back("uniform float\t\tTIME;\n");
-	vsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
-	fsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
-	vsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
-	fsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
-	vsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
-	fsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
+	if (!inVarsAsUBO)	{
+		vsDeclarations.emplace_back("uniform float\t\tTIME;\n");
+		fsDeclarations.emplace_back("uniform float\t\tTIME;\n");
+		vsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
+		fsDeclarations.emplace_back("uniform float\t\tTIMEDELTA;\n");
+		vsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
+		fsDeclarations.emplace_back("uniform vec4\t\tDATE;\n");
+		vsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
+		fsDeclarations.emplace_back("uniform int\t\tFRAMEINDEX;\n");
+	}
+	else	{
+		uboDeclarations.emplace_back("\tfloat\t\tTIME;\n");
+		uboDeclarations.emplace_back("\tfloat\t\tTIMEDELTA;\n");
+		uboDeclarations.emplace_back("\tvec4\t\tDATE;\n");
+		uboDeclarations.emplace_back("\tint\t\tFRAMEINDEX;\n");
+	}
 	
 	//	this block will be used to add declarations for a provided ISFAttr
 	auto	attribDecBlock = [&](const ISFAttrRef & inRef)	{
@@ -1889,32 +1906,62 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 			break;
 		case ISFValType_Event:
 		case ISFValType_Bool:
-			vsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform bool\t\t%s;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tbool\t\t%s;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Long:
-			vsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform int\t\t%s;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tint\t\t%s;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Float:
-			vsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform float\t\t%s;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tfloat\t\t%s;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Point2D:
-			vsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform vec2\t\t%s;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tvec2\t\t%s;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Color:
-			vsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform vec4\t\t%s;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tvec4\t\t%s;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Cube:
 			//	make a sampler for the cubemap texture
 			vsDeclarations.emplace_back(FmtString("uniform samplerCube\t\t%s;\n", nameCStr));
 			fsDeclarations.emplace_back(FmtString("uniform samplerCube\t\t%s;\n", nameCStr));
 			//	just pass in the imgSize
-			vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
-			fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			if (!inVarsAsUBO)	{
+				vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+				fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			}
+			else	{
+				uboDeclarations.emplace_back(FmtString("\tvec2\t\t_%s_imgSize;\n", nameCStr));
+			}
 			break;
 		case ISFValType_Image:
 		case ISFValType_Audio:
@@ -1931,14 +1978,29 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 					fsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
 				}
 				//	a vec4 describing the image rect IN NATIVE GL TEXTURE COORDS (2D is normalized, RECT is not)
-				vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
-				fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+				if (!inVarsAsUBO)	{
+					vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+					fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+				}
+				else	{
+					uboDeclarations.emplace_back(FmtString("\tvec4\t\t_%s_imgRect;\n", nameCStr));
+				}
 				//	a vec2 describing the size in pixels of the image
-				vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
-				fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+				if (!inVarsAsUBO)	{
+					vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+					fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+				}
+				else	{
+					uboDeclarations.emplace_back(FmtString("\tvec2\t\t_%s_imgSize;\n", nameCStr));
+				}
 				//	a bool describing whether the image in the texture should be flipped vertically
-				vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
-				fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+				if (!inVarsAsUBO)	{
+					vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+					fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+				}
+				else	{
+					uboDeclarations.emplace_back(FmtString("\tbool\t\t_%s_flip;\n", nameCStr));
+				}
 				break;
 			}
 		}
@@ -1957,12 +2019,19 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 			vsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
 			fsDeclarations.emplace_back(FmtString("uniform sampler2DRect\t\t%s;\n", nameCStr));
 		}
-		vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
-		fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
-		vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
-		fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
-		vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
-		fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+		if (!inVarsAsUBO)	{
+			vsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform vec4\t\t_%s_imgRect;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform vec2\t\t_%s_imgSize;\n", nameCStr));
+			vsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+			fsDeclarations.emplace_back(FmtString("uniform bool\t\t_%s_flip;\n", nameCStr));
+		}
+		else	{
+			uboDeclarations.emplace_back(FmtString("\tvec4\t\t_%s_imgRect;\n", nameCStr));
+			uboDeclarations.emplace_back(FmtString("\tvec2\t\t_%s_imgSize;\n", nameCStr));
+			uboDeclarations.emplace_back(FmtString("\tbool\t\t_%s_flip;\n", nameCStr));
+		}
 	};
 	
 	//	add the variables for the various inputs
@@ -1992,6 +2061,13 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	for (const auto & stringIt : fsDeclarations)	{
 		reserveSize += stringIt.size();
 	}
+	//	reserve a bit extra if we're declaring the vars as a UBO
+	const string		varsAsUBOHeader = string("layout (std140) uniform VVISF_UNIFORMS\t{\n");
+	const string		varsAsUBOFooter = string("};\n");
+	if (inVarsAsUBO)	{
+		reserveSize += varsAsUBOHeader.size();
+		reserveSize += varsAsUBOFooter.size();
+	}
 	outVSString->reserve(reserveSize);
 	outFSString->reserve(reserveSize);
 	//	now copy the individual declarations to the output string
@@ -2000,6 +2076,17 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	}
 	for (const auto & stringIt : fsDeclarations)	{
 		outFSString->append(stringIt);
+	}
+	//	dump the ubo declarations (if there are any)
+	if (uboDeclarations.size() > 0)	{
+		outVSString->append(varsAsUBOHeader);
+		outFSString->append(varsAsUBOHeader);
+		for (const auto & stringIt : uboDeclarations)	{
+			outVSString->append(stringIt);
+			outFSString->append(stringIt);
+		}
+		outVSString->append(varsAsUBOFooter);
+		outFSString->append(varsAsUBOFooter);
 	}
 	
 	return true;

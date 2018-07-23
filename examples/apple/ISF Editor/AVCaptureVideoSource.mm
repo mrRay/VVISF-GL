@@ -1,4 +1,5 @@
 #import "AVCaptureVideoSource.h"
+#import "ISFEditorAppDelegate.h"
 
 
 
@@ -225,61 +226,63 @@ using namespace VVISF;
 	NSLog(@"\t\t\tport size is %d x %d",vidDims.width,vidDims.height);
 	*/
 	
-	OSSpinLockLock(&propLock);
-	if (propGLCtx != nullptr)	{
-		propGLCtx->makeCurrentIfNotCurrent();
-		//	this buffer is either YCbCr/4:2:2, or an RGB texture with half the width of the output image (which contains YCbCr data, and needs to be converted to an RGB image via a shader)
-		GLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
-		//cout << "\tnewBuffer from isight is " << *newBuffer << endl;
-		if (newBuffer != nullptr)	{
-			if (propGLCtx->version == GLVersion_2)	{
-				propLastBuffer = newBuffer;
-			}
-			else if (propGLCtx->version == GLVersion_4)	{
-				VVGL::Size		outputImageSize = VVGL::Size(newBuffer->srcRect.size.width*2., newBuffer->srcRect.size.height);
-				//cout << "\toutputImageSize is " << outputImageSize << endl;
-				swizzleScene->setFilterInputBuffer(newBuffer);
-				//swizzleScene->setBufferForInputNamed(newBuffer, string("inputImage"));
-				GLBufferRef		swizzledBuffer = swizzleScene->createAndRenderABuffer(outputImageSize);
-				//cout << "\tswizzledBuffer is " << *swizzledBuffer << endl;
-				propLastBuffer = swizzledBuffer;
+	@synchronized (_globalAppDelegate)	{
+		OSSpinLockLock(&propLock);
+		if (propGLCtx != nullptr)	{
+			propGLCtx->makeCurrentIfNotCurrent();
+			//	this buffer is either YCbCr/4:2:2, or an RGB texture with half the width of the output image (which contains YCbCr data, and needs to be converted to an RGB image via a shader)
+			GLBufferRef			newBuffer = CreateTexRangeFromCMSampleBuffer(b, true);
+			//cout << "\tnewBuffer from isight is " << *newBuffer << endl;
+			if (newBuffer != nullptr)	{
+				if (propGLCtx->version == GLVersion_2)	{
+					propLastBuffer = newBuffer;
+				}
+				else if (propGLCtx->version == GLVersion_4)	{
+					VVGL::Size		outputImageSize = VVGL::Size(newBuffer->srcRect.size.width*2., newBuffer->srcRect.size.height);
+					//cout << "\toutputImageSize is " << outputImageSize << endl;
+					swizzleScene->setFilterInputBuffer(newBuffer);
+					//swizzleScene->setBufferForInputNamed(newBuffer, string("inputImage"));
+					GLBufferRef		swizzledBuffer = swizzleScene->createAndRenderABuffer(outputImageSize);
+					//cout << "\tswizzledBuffer is " << *swizzledBuffer << endl;
+					propLastBuffer = swizzledBuffer;
+				}
 			}
 		}
-	}
 	
-	/*
-	//	if this came from a connection belonging to the data output
-	GLBufferRef			newBuffer = nullptr;
-	//CMBlockBufferRef		blockBufferRef = CMSampleBufferGetDataBuffer(b)
-	CVImageBufferRef		imgBufferRef = CMSampleBufferGetImageBuffer(b);
-	if (imgBufferRef != NULL)	{
-		//CGSize		imgBufferSize = CVImageBufferGetDisplaySize(imgBufferRef);
-		//NSSizeLog(@"\t\timg buffer size is",imgBufferSize);
-		CVOpenGLTextureRef		cvTexRef = NULL;
-		CVReturn				err = kCVReturnSuccess;
+		/*
+		//	if this came from a connection belonging to the data output
+		GLBufferRef			newBuffer = nullptr;
+		//CMBlockBufferRef		blockBufferRef = CMSampleBufferGetDataBuffer(b)
+		CVImageBufferRef		imgBufferRef = CMSampleBufferGetImageBuffer(b);
+		if (imgBufferRef != NULL)	{
+			//CGSize		imgBufferSize = CVImageBufferGetDisplaySize(imgBufferRef);
+			//NSSizeLog(@"\t\timg buffer size is",imgBufferSize);
+			CVOpenGLTextureRef		cvTexRef = NULL;
+			CVReturn				err = kCVReturnSuccess;
 		
 		
-		err = CVOpenGLTextureCacheCreateTextureFromImage(NULL,propTextureCache,imgBufferRef,NULL,&cvTexRef);
-		if (err != kCVReturnSuccess)	{
-			NSLog(@"\t\terr %d at CVOpenGLTextureCacheCreateTextureFromImage() in %s",err,__func__);
-		}
-		else	{
-			//newBuffer = [_globalVVBufferPool allocBufferForCVGLTex:cvTexRef];
-			newBuffer = CreateBufferForCVGLTex(cvTexRef);
-			if (newBuffer != nil)	{
-				//VVRELEASE(propLastBuffer);
-				//propLastBuffer = [newBuffer retain];
-				propLastBuffer = newBuffer;
-				
-				//[newBuffer release];
-				//newBuffer = nil;
+			err = CVOpenGLTextureCacheCreateTextureFromImage(NULL,propTextureCache,imgBufferRef,NULL,&cvTexRef);
+			if (err != kCVReturnSuccess)	{
+				NSLog(@"\t\terr %d at CVOpenGLTextureCacheCreateTextureFromImage() in %s",err,__func__);
 			}
-			CVOpenGLTextureRelease(cvTexRef);
+			else	{
+				//newBuffer = [_globalVVBufferPool allocBufferForCVGLTex:cvTexRef];
+				newBuffer = CreateBufferForCVGLTex(cvTexRef);
+				if (newBuffer != nil)	{
+					//VVRELEASE(propLastBuffer);
+					//propLastBuffer = [newBuffer retain];
+					propLastBuffer = newBuffer;
+				
+					//[newBuffer release];
+					//newBuffer = nil;
+				}
+				CVOpenGLTextureRelease(cvTexRef);
+			}
 		}
+		CVOpenGLTextureCacheFlush(propTextureCache,0);
+		*/
+		OSSpinLockUnlock(&propLock);
 	}
-	CVOpenGLTextureCacheFlush(propTextureCache,0);
-	*/
-	OSSpinLockUnlock(&propLock);
 	
 }
 
