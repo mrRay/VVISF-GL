@@ -41,12 +41,13 @@ struct VVGL_EXPORT GLCachedProperty	{
 		//	The id of the GLSL program that was checked to create the current loc
 		int32_t			prog = -1;
 	public:
-		GLCachedProperty(string & inName);
-		GLCachedProperty(const string & inName);
+		GLCachedProperty(string & inName) : name(inName)	{}
+		GLCachedProperty(const string & inName) : name(inName)	{}
 		GLCachedProperty(const GLCachedProperty & n) : loc(n.loc), name(n.name), prog(n.prog) {}
+		virtual ~GLCachedProperty();
 	public:
 		//!	Pure virtual function, subclasses *must* implement this.  This is where the GL stuff specific to the subclass is performed.  A valid GL context *must* be current before you call this function- subclasses may have additional requirements.
-		virtual void cacheTheLoc(const int32_t & inPgmToCheck) = 0;
+		virtual void cacheTheLoc(const int32_t & inPgmToCheck);
 		inline void purgeCache() { loc=-1; prog=-1; }
 	public:
 		//!	Returns the location of the property cached by the receiver.  A valid GL context must be current before you call this function.  Caches the location if it hasn't been looked up/cached yet.  Will only return -1 if there's a problem (if the attrib doesn't exist in the current program in use by the current context).
@@ -75,7 +76,7 @@ struct VVGL_EXPORT GLCachedAttrib : GLCachedProperty	{
 		void disable();
 		
 		//!	Caches the location of the receiver's attribute in the passed program.  A valid GL context must be current and the program this attribute refers to must be bound before you call this function!
-		virtual void cacheTheLoc(const int32_t & inPgmToCheck);
+		void cacheTheLoc(const int32_t & inPgmToCheck) override;
 };
 
 
@@ -90,11 +91,12 @@ struct VVGL_EXPORT GLCachedUni : GLCachedProperty	{
 		GLCachedUni(string & inName) : GLCachedProperty(inName) {}
 		GLCachedUni(const string & inName) : GLCachedProperty(inName) {}
 		GLCachedUni(const GLCachedUni & n) : GLCachedProperty(n) {}
+		//~GLCachedUni() {}
 	public:
 		string getDescriptionString() const { return FmtString("<GLCachedUni \"%s\", %d>",this->name.c_str(),this->loc); }
 		
 		//!	Caches the location of the receiver's uniform in the passed program.  A valid GL context must be current and the program this uniform refers to must be bound before you call this function!
-		virtual void cacheTheLoc(const int32_t & inPgmToCheck);
+		void cacheTheLoc(const int32_t & inPgmToCheck) override;
 };
 
 

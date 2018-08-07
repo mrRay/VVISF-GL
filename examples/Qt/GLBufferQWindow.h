@@ -20,6 +20,7 @@ class GLBufferQWindow : public QWindow	{
 
 public:
 	explicit GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent=nullptr);
+	explicit GLBufferQWindow(QWindow * inParent = nullptr);
 	~GLBufferQWindow();
 	
 	void startRendering();

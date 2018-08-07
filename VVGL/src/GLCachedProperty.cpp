@@ -13,17 +13,11 @@ using namespace std;
 
 
 
-GLCachedProperty::GLCachedProperty(string & inName)	{
-	name = inName;
-}
-GLCachedProperty::GLCachedProperty(const string & inName)	{
-	name = inName;
-}
-/*
-void GLCachedProperty::cacheTheLoc(const int32_t & inPgmToCheck)	{
+GLCachedProperty::~GLCachedProperty()	{}
+void GLCachedProperty::cacheTheLoc(const int32_t & /*inPgmToCheck*/)
+{
 	//	subclasses of this should override this member function and cache the location and program here as appropriate
 }
-*/
 
 
 
@@ -37,7 +31,7 @@ void GLCachedAttrib::cacheTheLoc(const int32_t & inPgmToCheck)	{
 		return;
 	}
 	prog = inPgmToCheck;
-	loc = glGetAttribLocation(prog, name.c_str());
+	loc = glGetAttribLocation(static_cast<uint32_t>(const_cast<int32_t&>(prog)), name.c_str());
 	GLERRLOG
 	if (loc < 0)	{
 		//cout << "\terr: checked, attrib for \"" << name << "\" not present.\n";

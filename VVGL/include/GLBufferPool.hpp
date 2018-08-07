@@ -73,7 +73,7 @@ class VVGL_EXPORT GLBufferPool	{
 		//!	If needed you can call this to release all inactive buffers in the pool.
 		void purge();
 		//!	Returns a timestamp generated for the current time
-		inline Timestamp getTimestamp() const { return timestamper.nowTime(); };
+		inline Timestamp getTimestamp() const { return timestamper.nowTime(); }
 		//!	Timestamps the passed buffer with the current time
 		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
 		//!	Returns the GLContextRef used by the buffer pool to create and destroy its GL resources.

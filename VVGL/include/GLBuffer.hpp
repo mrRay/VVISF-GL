@@ -159,7 +159,7 @@ class VVGL_EXPORT GLBuffer	{
 		//!	The size of the CPU backing, in pixels
 		Size					backingSize = { 0, 0 };
 		//!	The content timestamp- when the buffer was created.  Every GLBufferPool has its own Timestamper object which is used to stamp the GLBuffers it vends.
-		Timestamp				contentTimestamp = { (uint64_t)0, (uint32_t)0 };
+		Timestamp				contentTimestamp = { static_cast<uint64_t>(0), static_cast<uint32_t>(0) };
 		//!	If this is a PBO-type GLBuffer, this indicates whether or not the PBO is currently mapped, and must correspondingly be unmapped before use.
 		bool					pboMapped = false;
 		
@@ -205,9 +205,9 @@ class VVGL_EXPORT GLBuffer	{
 		//GLBuffer (GLBuffer&&) = default;
 		
 		//!	Calculates the number of bytes that are required to display one row's worth of image data from this GLBuffer.
-		uint32_t calculateBackingBytesPerRow() { return desc.bytesPerRowForWidth(backingSize.width); };
+		uint32_t calculateBackingBytesPerRow() { return desc.bytesPerRowForWidth(static_cast<uint32_t>(round(backingSize.width))); }
 		//!	Calculates the total number of bytes that are required to contain this GLBuffer's image data in system memory.
-		uint32_t calculateBackingLength() { return desc.backingLengthForSize(backingSize); };
+		uint32_t calculateBackingLength() { return desc.backingLengthForSize(backingSize); }
 		
 		//	use this to create a shallow copy (memberwise copy)
 		GLBuffer * allocShallowCopy();

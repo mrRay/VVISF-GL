@@ -179,10 +179,10 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3) || defined(VVGL_SDK_MAC)
 		if (returnMe->desc.msAmount > 0)	{
 			glRenderbufferStorageMultisample(returnMe->desc.target,
-				returnMe->desc.msAmount,
+				static_cast<int>(returnMe->desc.msAmount),
 				returnMe->desc.pixelFormat,
-				s.width,
-				s.height);
+				static_cast<int>(round(s.width)),
+				static_cast<int>(round(s.height)));
 			GLERRLOG
 		}
 #endif
@@ -339,12 +339,12 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 				glTexImage2D(newBufferDesc.target,
 					0,
 					newBufferDesc.internalFormat,
-					s.width,
-					s.height,
+					static_cast<int>(round(s.width)),
+					static_cast<int>(round(s.height)),
 					0,
 					newBufferDesc.pixelFormat,
 					newBufferDesc.pixelType,
-					NULL);
+					nullptr);
 				GLERRLOG
 			}
 			else	{
@@ -356,8 +356,8 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 				glTexImage2D(newBufferDesc.target,
 					0,
 					newBufferDesc.internalFormat,
-					s.width,
-					s.height,
+					static_cast<int>(round(s.width)),
+					static_cast<int>(round(s.height)),
 					0,
 					newBufferDesc.pixelFormat,
 					newBufferDesc.pixelType,
@@ -404,7 +404,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	returnMe->size = s;
 	returnMe->srcRect = {0,0,s.width,s.height};
 	returnMe->backingSize = bs;
-	returnMe->cpuBackingPtr = (void *)b;
+	returnMe->cpuBackingPtr = const_cast<void*>(b);
 	
 	//	timestamp the buffer!
 	timestampThisBuffer(returnMe);
@@ -752,7 +752,7 @@ GLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int
 	GLERRLOG
 	glBindBuffer(GL_ARRAY_BUFFER, returnMe->name);
 	GLERRLOG
-	glBufferData(GL_ARRAY_BUFFER, inByteSize, inBytes, inUsage);
+	glBufferData(GL_ARRAY_BUFFER, inByteSize, inBytes, static_cast<int>(round(inUsage)));
 	GLERRLOG
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	GLERRLOG
@@ -1061,9 +1061,9 @@ GLBufferRef CreateRGBACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const
 	
 	
 	returnMe->backingReleaseCallback = inReleaseCallback;
-	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
-	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	returnMe->cpuBackingPtr = const_cast<void*>(inCPUBackingPtr);
 	
 	return returnMe;
 }
@@ -1095,9 +1095,9 @@ GLBufferRef CreateRGBAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, 
 	
 	
 	returnMe->backingReleaseCallback = inReleaseCallback;
-	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
-	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	returnMe->cpuBackingPtr = const_cast<void*>(inCPUBackingPtr);
 	
 	return returnMe;
 }
@@ -1129,9 +1129,9 @@ GLBufferRef CreateBGRACPUBufferUsing(const Size & inCPUBufferSizeInPixels, const
 	
 	
 	returnMe->backingReleaseCallback = inReleaseCallback;
-	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
-	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	returnMe->cpuBackingPtr = const_cast<void*>(inCPUBackingPtr);
 	
 	return returnMe;
 }
@@ -1163,9 +1163,9 @@ GLBufferRef CreateBGRAFloatCPUBufferUsing(const Size & inCPUBufferSizeInPixels, 
 	
 	
 	returnMe->backingReleaseCallback = inReleaseCallback;
-	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
-	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	returnMe->cpuBackingPtr = const_cast<void*>(inCPUBackingPtr);
 	
 	return returnMe;
 }
@@ -1199,9 +1199,9 @@ VVGL_EXPORT GLBufferRef CreateYCbCrCPUBufferUsing(const Size & inCPUBufferSizeIn
 	
 	
 	returnMe->backingReleaseCallback = inReleaseCallback;
-	returnMe->backingContext = (void*)inReleaseCallbackContext;
+	returnMe->backingContext = const_cast<void*>(inReleaseCallbackContext);
 	returnMe->backingID = GLBuffer::BackingID_GenericExternalCPU;
-	returnMe->cpuBackingPtr = (void*)inCPUBackingPtr;
+	returnMe->cpuBackingPtr = const_cast<void*>(inCPUBackingPtr);
 	
 	return returnMe;
 }
@@ -1662,9 +1662,9 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1685,9 +1685,9 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1749,9 +1749,9 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1772,9 +1772,9 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1831,9 +1831,9 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1854,9 +1854,9 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1913,9 +1913,9 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1936,9 +1936,9 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -1995,9 +1995,9 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}
@@ -2018,9 +2018,9 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, NULL, inUsage);
+		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		GLERRLOG
-		if (inData != NULL)	{
+		if (inData != nullptr)	{
 			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
 			GLERRLOG
 		}

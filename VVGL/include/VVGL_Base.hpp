@@ -103,7 +103,7 @@ enum GLVersion	{
 \ingroup VVGL_BASIC
 \brief Returns a std::string describing the passed GLVersion.
 */
-inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return string("Unknown"); case GLVersion_2: return string("2"); case GLVersion_ES: return string("ES"); case GLVersion_ES2: return string("ES2"); case GLVersion_ES3: return string("ES3"); case GLVersion_33: return string("3.3"); case GLVersion_4: return string("4"); default: return string("???"); } return string("err"); }
+inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return string("Unknown"); case GLVersion_2: return string("2"); case GLVersion_ES: return string("ES"); case GLVersion_ES2: return string("ES2"); case GLVersion_ES3: return string("ES3"); case GLVersion_33: return string("3.3"); case GLVersion_4: return string("4"); } return string("err"); }
 
 
 
@@ -122,9 +122,9 @@ struct GLColor	{
 	//!	The alpha component.
 	float		a = 0.0;
 	GLColor() {}
-	GLColor(const float & inR, const float & inG, const float & inB, const float & inA) { r=inR;g=inG;b=inB;a=inA; };
-	bool operator==(const GLColor & n) const { return (this->r==n.r && this->g==n.g && this->b==n.b && this->a==n.a); };
-	bool operator!=(const GLColor & n) const { return !(*this==n); };
+	GLColor(const float & inR, const float & inG, const float & inB, const float & inA) { r=inR;g=inG;b=inB;a=inA; }
+	bool operator==(const GLColor & n) const { return (this->r==n.r && this->g==n.g && this->b==n.b && this->a==n.a); }
+	bool operator!=(const GLColor & n) const { return !(*this==n); }
 };
 
 
@@ -137,7 +137,7 @@ struct GLColor	{
 
 
 //	this function dumps a 4cc to chars
-inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if (destCharPtr==nullptr) return; for (int i=0; i<4; ++i) destCharPtr[i] = (fourCC >> ((3-i)*8)) & 0xFF; }
+inline void VVUnpackFourCC_toChar(unsigned long fourCC, char *destCharPtr) { if (destCharPtr==nullptr) return; for (int i=0; i<4; ++i) destCharPtr[i] = (char)((fourCC >> ((3-i)*8)) & 0xFF); }
 
 
 

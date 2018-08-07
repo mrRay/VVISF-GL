@@ -51,69 +51,21 @@ void GLCPUToTexCopier::setQueueSize(const int & inNewQueueSize)	{
 	if (queueSize < 0)
 		queueSize = 0;
 	
-	while ((int)cpuQueue.size() > queueSize)
+	while (static_cast<int>(cpuQueue.size()) > queueSize)
 		cpuQueue.pop();
-	while ((int)pboQueue.size() > queueSize)
+	while (static_cast<int>(pboQueue.size()) > queueSize)
 		pboQueue.pop();
-	while ((int)texQueue.size() > queueSize)
+	while (static_cast<int>(texQueue.size()) > queueSize)
 		texQueue.pop();
 }
 
 
 void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer)	{
-	/*
-	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
-		return;
-	
-	//	bind the PBO and texture
-	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
-	GLERRLOG
-	
-	glEnable(inTexBuffer->desc.target);
-	GLERRLOG
-	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
-	GLERRLOG
-	
-	//	set up some pixel transfer modes
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
-	GLERRLOG
-	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
-	GLERRLOG
-	
-	//	start copying the buffer data from the PBO to the texture
-	glTexSubImage2D(inTexBuffer->desc.target,
-		0,
-		0,
-		0,
-		inCPUBuffer->srcRect.size.width,
-		inCPUBuffer->srcRect.size.height,
-		inTexBuffer->desc.pixelFormat, 
-		inTexBuffer->desc.pixelType,
-		0);
-	GLERRLOG
-	
-	//	tear down pixel transfer modes
-	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
-	GLERRLOG
-	
-	//	unbind the PBO and texture
-	glBindTexture(inTexBuffer->desc.target, 0);
-	GLERRLOG
-	glDisable(inTexBuffer->desc.target);
-	GLERRLOG
-	
-	glBindBuffer(inPBOBuffer->desc.target, 0);
-	GLERRLOG
-	
-	//	flush- this starts the DMA transfer.  the CPU won't wait for this transfer to complete, and will return execution immediately.
-	glFlush();
-	GLERRLOG
-	*/
-	
-	
-	
+
 #if PATHTYPE==0
 	//	intentionally blank
+	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
+		return;
 #elif PATHTYPE==1
 	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
 		return;

@@ -44,16 +44,16 @@ void GLTexToCPUCopier::setQueueSize(const int & inNewQueueSize)	{
 	if (queueSize < 0)
 		queueSize = 0;
 	
-	while ((int)cpuQueue.size() > queueSize)
+	while (static_cast<int>(cpuQueue.size()) > queueSize)
 		cpuQueue.pop();
-	while ((int)pboQueue.size() > queueSize)
+	while (static_cast<int>(pboQueue.size()) > queueSize)
 		pboQueue.pop();
-	while ((int)texQueue.size() > queueSize)
+	while (static_cast<int>(texQueue.size()) > queueSize)
 		texQueue.pop();
 }
 
 
-void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer)	{
+void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & /*inCPUBuffer*/, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer)	{
 	/*
 	cout << __FUNCTION__ << endl;
 	if (inCPUBuffer == nullptr)
@@ -96,7 +96,7 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	//GLERRLOG
 	
 	//	set up some pixel transfer modes
-	glPixelStorei(GL_PACK_ROW_LENGTH, inPBOBuffer->size.width);
+	glPixelStorei(GL_PACK_ROW_LENGTH, static_cast<int>(inPBOBuffer->size.width));
 	GLERRLOG
 	
 	//	start packing the texture data into the pbo
@@ -111,11 +111,11 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	glReadPixels(
 		0,
 		0,
-		inPBOBuffer->size.width,
-		inPBOBuffer->size.height,
+		static_cast<int>(inPBOBuffer->size.width),
+		static_cast<int>(inPBOBuffer->size.height),
 		inTexBuffer->desc.pixelFormat,
 		inTexBuffer->desc.pixelType,
-		NULL
+		nullptr
 		);
 	GLERRLOG
 	
@@ -137,7 +137,7 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GLERRLOG
 }
-void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer)	{
+void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & /*inFBOBuffer*/)	{
 	/*
 	cout << __FUNCTION__ << endl;
 	if (inCPUBuffer == nullptr)
@@ -164,10 +164,10 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	if (inPBOBuffer->pboMapped && inPBOBuffer->cpuBackingPtr!=nullptr)	{
 		//	if the CPU buffer is non-null, copy the contents of the PBO to the CPU buffer.
 		if (inCPUBuffer != nullptr)	{
-			size_t		cpuBPR = inCPUBuffer->desc.bytesPerRowForWidth(inCPUBuffer->size.width);
-			size_t		pboBPR = inPBOBuffer->desc.bytesPerRowForWidth(inPBOBuffer->size.width);
-			uint8_t		*rPtr = (uint8_t*)inPBOBuffer->cpuBackingPtr;
-			uint8_t		*wPtr = (uint8_t*)inCPUBuffer->cpuBackingPtr;
+			size_t		cpuBPR = inCPUBuffer->desc.bytesPerRowForWidth(static_cast<uint32_t>(inCPUBuffer->size.width));
+			size_t		pboBPR = inPBOBuffer->desc.bytesPerRowForWidth(static_cast<uint32_t>(inPBOBuffer->size.width));
+			uint8_t		*rPtr = static_cast<uint8_t*>(inPBOBuffer->cpuBackingPtr);
+			uint8_t		*wPtr = static_cast<uint8_t*>(inCPUBuffer->cpuBackingPtr);
 	
 			//	if the cpu buffer's bytes per row differs from the PBO's bytes per row, we have to copy one row at a time
 			if (cpuBPR != pboBPR)	{
@@ -180,7 +180,7 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 			}
 			//	else the CPU buffer and the PBO have the same exact number of bytes per row- we can copy their contents in a single call
 			else	{
-				memcpy(wPtr, rPtr, pboBPR * inPBOBuffer->size.height);
+				memcpy(wPtr, rPtr, pboBPR * static_cast<size_t>(inPBOBuffer->size.height));
 			}
 	
 		}
@@ -259,8 +259,8 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 		queueCtx->makeCurrentIfNotCurrent();
 	
 	//	make sure the queues have the appropriate and expected number of elements
-	int			tmpQueueSize = (int)pboQueue.size();
-	if (tmpQueueSize != (int)cpuQueue.size() || tmpQueueSize != (int)texQueue.size())	{
+	int			tmpQueueSize = static_cast<int>(pboQueue.size());
+	if (tmpQueueSize != static_cast<int>(cpuQueue.size()) || tmpQueueSize != static_cast<int>(texQueue.size()))	{
 		cout << "\tERR: queue size discrepancy, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}

@@ -15,6 +15,10 @@ GLBufferQWindow::GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inPar
 	setContext((inSharedContext==nullptr) ? nullptr : inSharedContext->newContextSharingMe());
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 }
+GLBufferQWindow::GLBufferQWindow(QWindow * inParent) : QWindow(inParent)	{
+	setSurfaceType(QWindow::OpenGLSurface);
+	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+}
 GLBufferQWindow::~GLBufferQWindow()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	stopRenderingImmediately();

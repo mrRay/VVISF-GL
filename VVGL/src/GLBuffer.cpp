@@ -93,7 +93,7 @@ uint32_t GLBuffer::Descriptor::bytesPerRowForWidth(const uint32_t & w) const	{
 	return bytesPerRow;
 }
 uint32_t GLBuffer::Descriptor::backingLengthForSize(const Size & s) const	{
-	return bytesPerRowForWidth(s.width) * s.height;
+	return bytesPerRowForWidth(static_cast<uint32_t>(round(s.width))) * static_cast<uint32_t>(round(s.height));
 }
 
 
@@ -501,7 +501,7 @@ string GLBuffer::getDescriptionString() const	{
 	case GLBuffer::Type_EBO:	typeChar='E'; break;
 	case GLBuffer::Type_VAO:	typeChar='A'; break;
 	}
-	return FmtString("<GLBuffer %c, %d, %dx%d>",typeChar,name,(int)this->size.width,(int)this->size.height);
+	return FmtString("<GLBuffer %c, %d, %dx%d>",typeChar,name,static_cast<int>(round(this->size.width)),static_cast<int>(round(this->size.height)));
 }
 
 
