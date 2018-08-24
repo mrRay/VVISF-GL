@@ -27,7 +27,7 @@ using namespace std;
 
 
 //	this is the global buffer pool
-static GLBufferPoolRef * _globalBufferPool = nullptr;
+static GLBufferPoolRef _globalBufferPool = nullptr;
 static GLBufferPoolRef _nullGlobalBufferPool = nullptr;
 
 
@@ -657,7 +657,7 @@ GLBufferPoolRef CreateGlobalBufferPool(const GLContext * inShareCtx)	{
 	
 	GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inShareCtx);
 	if (_globalBufferPool != nullptr)	{
-		delete _globalBufferPool;
+		//delete _globalBufferPool;
 		_globalBufferPool = nullptr;
 	}
 	_globalBufferPool = new shared_ptr<GLBufferPool>(returnMe);
@@ -670,10 +670,10 @@ GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCtx)	{
 	
 	GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inPoolCtx);
 	if (_globalBufferPool != nullptr)	{
-		delete _globalBufferPool;
+		//delete _globalBufferPool;
 		_globalBufferPool = nullptr;
 	}
-	_globalBufferPool = new shared_ptr<GLBufferPool>(returnMe);
+	_globalBufferPool = returnMe;
 	
 	return returnMe;
 }
@@ -689,7 +689,14 @@ const GLBufferPoolRef & GetGlobalBufferPool()	{
 	if (_globalBufferPool==nullptr)	{
 		return _nullGlobalBufferPool;
 	}
-	return *_globalBufferPool;
+	return _globalBufferPool;
+}
+void SetGlobalBufferPool(const GLBufferPoolRef & inPoolRef)	{
+	if (_globalBufferPool != nullptr)	{
+		//delete _globalBufferPool;
+		_globalBufferPool = nullptr;
+	}
+	_globalBufferPool = inPoolRef;
 }
 
 
@@ -2052,9 +2059,10 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	void			*pixelData = inImg->bits();
 	if (pixelData == nullptr)
 		return nullptr;
-	QSize			imgSize = inImg->size();
-	VVGL::Size		repSize(imgSize.width(), imgSize.height());
-	VVGL::Size		gpuSize = repSize;
+	QSize			rawImgSize = inImg->size();
+	VVGL::Size		imgSize(rawImgSize.width(), rawImgSize.height());
+	VVGL::Size		repSize(inImg->bytesPerLine()*8/32, rawImgSize.height());
+	VVGL::Size		gpuSize = imgSize;
 	
 	GLBuffer::Descriptor		desc;
 	desc.type = GLBuffer::Type_Tex;
@@ -2071,12 +2079,58 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	
 	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
-	returnMe->srcRect = VVGL::Rect(0,0,repSize.width,repSize.height);
+	returnMe->srcRect = VVGL::Rect(0,0,imgSize.width,imgSize.height);
 	returnMe->backingID = GLBuffer::BackingID_None;
-	returnMe->backingSize = repSize;
+	returnMe->backingSize = imgSize;
 	returnMe->flipped = true;
 	
 	returnMe->preferDeletion = true;
+	
+	return returnMe;
+}
+GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inPoolRef)	{
+	if (inImg==nullptr || inPoolRef==nullptr)
+		return nullptr;
+	void			*pixelData = inImg->bits();
+	if (pixelData == nullptr)
+		return nullptr;
+	QSize			rawImgSize = inImg->size();
+	VVGL::Size		imgSize(rawImgSize.width(), rawImgSize.height());
+	VVGL::Size		repSize(inImg->bytesPerLine()*8/32, rawImgSize.height());
+	//VVGL::Size		gpuSize = imgSize;
+	
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = repSize;
+	returnMe->srcRect = { 0, 0, imgSize.width, imgSize.height };
+	returnMe->flipped = true;
+	returnMe->backingSize = repSize;
+	//returnMe->contentTimestamp = XXX;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		QImage			*tmpImg = static_cast<QImage*>(inReleaseContext);
+		delete tmpImg;
+	};
+	returnMe->backingContext = static_cast<void*>(inImg);
+	returnMe->backingID = GLBuffer::BackingID_QImage;
+	returnMe->cpuBackingPtr = static_cast<void*>(inImg->bits());
 	
 	return returnMe;
 }

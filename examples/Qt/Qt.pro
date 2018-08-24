@@ -6,8 +6,10 @@ SUBDIRS += \
     VVGL \
     VVGLTestApp \
 	VVISF \
-	VVISFTestApp
+	VVISFTestApp \
+    TexUploadBenchmark
 
+TexUploadBenchmark.depends += VVGL
 VVGLTestApp.depends += VVGL
 VVISF.depends += VVGL
 VVISFTestApp.depends += VVISF

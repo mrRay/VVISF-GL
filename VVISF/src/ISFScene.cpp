@@ -60,7 +60,8 @@ void ISFScene::useFile()	{
 	doc = nullptr;
 	
 	//	reset the timestamper and render frame index
-	timestamper.reset();
+	//timestamper.reset();
+	baseTime = Timestamp();
 	renderTime = 0.;
 	renderTimeDelta = 0.;
 	renderFrameIndex = 0;
@@ -82,7 +83,8 @@ void ISFScene::useFile(const string & inPath)	{
 		doc = newDoc;
 		
 		//	reset the timestamper and render frame index
-		timestamper.reset();
+		//timestamper.reset();
+		baseTime = Timestamp();
 		renderTime = 0.;
 		renderTimeDelta = 0.;
 		renderFrameIndex = 0;
@@ -96,7 +98,8 @@ void ISFScene::useFile(const string & inPath)	{
 		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;
 		doc = nullptr;
 		//	reset the timestamper and render frame index
-		timestamper.reset();
+		//timestamper.reset();
+		baseTime = Timestamp();
 		renderTime = 0.;
 		renderTimeDelta = 0.;
 		renderFrameIndex = 0;
@@ -120,7 +123,8 @@ void ISFScene::useDoc(ISFDocRef & inDoc)	{
 	doc->setParentScene(this);
 	
 	//	reset the timestamper and render frame index
-	timestamper.reset();
+	//timestamper.reset();
+	baseTime = Timestamp();
 	renderTime = 0.;
 	renderTimeDelta = 0.;
 	renderFrameIndex = 0;
@@ -324,7 +328,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const GL
 }
 */
 GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, map<int32_t,GLBufferRef> * outPassDict, const GLBufferPoolRef & inPoolRef)	{
-	return createAndRenderABuffer(inSize, timestamper.nowTime().getTimeInSeconds(), outPassDict, inPoolRef);
+	return createAndRenderABuffer(inSize, (Timestamp()-baseTime).getTimeInSeconds(), outPassDict, inPoolRef);
 }
 /*
 GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const GLBufferPoolRef & inPoolRef)	{
@@ -386,16 +390,16 @@ void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Si
 	_render(inTargetBuffer, inRenderSize, inRenderTime, nullptr);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,GLBufferRef> * outPassDict)	{
-	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), outPassDict);
+	_render(inTargetBuffer, inRenderSize, (Timestamp()-baseTime).getTimeInSeconds(), outPassDict);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize)	{
-	_render(inTargetBuffer, inRenderSize, timestamper.nowTime().getTimeInSeconds(), nullptr);
+	_render(inTargetBuffer, inRenderSize, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer)	{
 	if (inTargetBuffer != nullptr)
-		_render(inTargetBuffer, inTargetBuffer->srcRect.size, timestamper.nowTime().getTimeInSeconds(), nullptr);
+		_render(inTargetBuffer, inTargetBuffer->srcRect.size, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
 	else
-		_render(nullptr, orthoSize, timestamper.nowTime().getTimeInSeconds(), nullptr);
+		_render(nullptr, orthoSize, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
 }
 
 

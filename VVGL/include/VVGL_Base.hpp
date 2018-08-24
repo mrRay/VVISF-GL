@@ -34,6 +34,7 @@ struct GLCachedAttrib;
 struct GLCachedUni;
 class GLTexToCPUCopier;
 class GLCPUToTexCopier;
+struct Timestamp;
 
 //!	Very common- GLBufferRef is a shared pointer around a GLBuffer.
 /*!
@@ -82,6 +83,11 @@ using GLTexToCPUCopierRef = shared_ptr<GLTexToCPUCopier>;
 \relates VVGL::GLCPUToTexCopier
 */
 using GLCPUToTexCopierRef = shared_ptr<GLCPUToTexCopier>;
+/*!
+\brief	A TimestampRef is a shared pointer around a Timestamp struct.
+\relates VVGL::Timestamp
+*/
+using TimestampRef = shared_ptr<Timestamp>;
 
 
 

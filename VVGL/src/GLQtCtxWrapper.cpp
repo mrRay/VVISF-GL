@@ -39,6 +39,8 @@ public:
 	//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 	//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
 	GLQtCtxHidden(QSurface * inSurface, QOpenGLContext * inCtx, bool inCreateCtx=true, QSurfaceFormat inSfcFmt=GLQtCtxWrapper::CreateDefaultSurfaceFormat());
+	//	establishes a weak ref to inCtx- doesn't create anything, doesn't have a surface.  made for working with Qt contexts from QOpenGLWidgets with VVGL.
+	GLQtCtxHidden(QOpenGLContext * inCtx);
 
 	~GLQtCtxHidden();
 
@@ -50,6 +52,7 @@ public:
 	//	accessors
 	void setShareContext(QOpenGLContext * inCtx);
 	QOpenGLContext * getContext();
+	QSurfaceFormat format();
 	bool isSharingWith(QOpenGLContext * inCtx);
 	void setSurface(const QSurface * inTargetSurface);
 	void swap();
@@ -101,6 +104,9 @@ GLQtCtxHidden::GLQtCtxHidden(QSurface * inSurface, QOpenGLContext * inCtx, bool 
 		weakCtx = inCtx;
 	}
 }
+GLQtCtxHidden::GLQtCtxHidden(QOpenGLContext * inCtx)	{
+	weakCtx = inCtx;
+}
 GLQtCtxHidden::~GLQtCtxHidden()	{
 	//cout << __PRETTY_FUNCTION__ << ", " << this << endl;
 	
@@ -128,7 +134,7 @@ GLQtCtxHidden::GLQtCtxHidden(const GLQtCtxHidden * n)	{
 		if (n->weakSurface != nullptr)
 			weakSurface = n->weakSurface;
 		//	else the passed object either has a strong surface (offscreen, i need my own) or no surface (i need an offscreen)
-		else	{
+		else if (n->strongSurface != nullptr)	{
 			strongSurface = new QOffscreenSurface;
 			strongSurface->create();
 		}
@@ -150,7 +156,7 @@ GLQtCtxHidden::GLQtCtxHidden(const GLQtCtxHidden & n)	{
 		if (n.weakSurface != nullptr)
 			weakSurface = n.weakSurface;
 		//	else the passed object either has a strong surface (offscreen, i can't share & need my own) or no surface (i need an offscreen)
-		else	{
+		else if (n.weakSurface != nullptr)	{
 			strongSurface = new QOffscreenSurface;
 			strongSurface->create();
 		}
@@ -172,7 +178,7 @@ GLQtCtxHidden::GLQtCtxHidden(const std::shared_ptr<GLQtCtxHidden> & n)	{
 		if (n->weakSurface != nullptr)
 			weakSurface = n->weakSurface;
 		//	else the passed object either has a strong surface (offscreen, i need my own) or no surface (i need an offscreen)
-		else	{
+		else if (n->strongSurface != nullptr)	{
 			strongSurface = new QOffscreenSurface;
 			strongSurface->create();
 		}
@@ -201,6 +207,13 @@ QOpenGLContext * GLQtCtxHidden::getContext()	{
 	if (strongCtx != nullptr)
 		return &(*strongCtx);
 	return nullptr;
+}
+QSurfaceFormat GLQtCtxHidden::format()	{
+	if (weakCtx != nullptr)
+		return weakCtx->format();
+	if (strongCtx != nullptr)
+		return strongCtx->format();
+	return GLQtCtxWrapper::CreateDefaultSurfaceFormat();
 }
 bool GLQtCtxHidden::isSharingWith(QOpenGLContext * inCtx)	{
 	if (inCtx == nullptr)
@@ -246,7 +259,7 @@ void GLQtCtxHidden::moveToThread(QThread * inThread)	{
 	if (ctxToUse != nullptr)	{
 		ctxToUse->moveToThread(inThread);
 	}
-	//qDebug()<<"ctx "<<this<<" is now on thread "<<inThread;
+	qDebug()<<"ctx "<<this<<" is now on thread "<<inThread;
 }
 void GLQtCtxHidden::makeCurrent()	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -262,8 +275,10 @@ void GLQtCtxHidden::makeCurrent()	{
 	else
 		sfcToUse = strongSurface;
 
-	if (ctxToUse!=nullptr && sfcToUse!=nullptr)
+	if (ctxToUse!=nullptr && sfcToUse!=nullptr)	{
+		//cout << "\tmaking context current in " << __PRETTY_FUNCTION__ << endl;
 		ctxToUse->makeCurrent(sfcToUse);
+	}
 }
 void GLQtCtxHidden::makeCurrentIfNotCurrent()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -275,20 +290,26 @@ void GLQtCtxHidden::makeCurrentIfNotCurrent()	{
 	else
 		ctxToUse = strongCtx.data();
 	QSurface			*sfcToUse = nullptr;
-	if (weakSurface != nullptr)
+	bool				surfaceExists = false;
+	if (weakSurface != nullptr)	{
 		sfcToUse = weakSurface;
-	else
+		surfaceExists = true;
+	}
+	else if (strongSurface != nullptr)	{
 		sfcToUse = strongSurface;
+		surfaceExists = true;
+	}
 
 	if (ctxToUse!=nullptr && sfcToUse!=nullptr)	{
 		if (ctxToUse != current)	{
 			//cout << "\tshould be making current, ctx thread is " << ctxToUse->thread() << ", current thread is " << QThread::currentThread() << endl;
+			//cout << "\tmaking context current in " << __PRETTY_FUNCTION__ << endl;
 			ctxToUse->makeCurrent(sfcToUse);
 			//qDebug() << "\tcurrent context is " << QOpenGLContext::currentContext();
 		}
 	}
 	else	{
-		qDebug() << "ERR: " << __PRETTY_FUNCTION__ << " ctx (" << ctxToUse << ") or surface (" << sfcToUse << ") was nil";
+		//qDebug() << "ERR: " << __PRETTY_FUNCTION__ << " ctx (" << ctxToUse << ") or surface (" << sfcToUse << ") was nil";
 	}
 }
 void GLQtCtxHidden::makeCurrentIfNull()	{
@@ -311,11 +332,12 @@ void GLQtCtxHidden::makeCurrentIfNull()	{
 
 	if (ctxToUse!=nullptr && sfcToUse!=nullptr)	{
 		if (ctxToUse != current)	{
+			//cout << "\tmaking context current in " << __PRETTY_FUNCTION__ << endl;
 			ctxToUse->makeCurrent(sfcToUse);
 		}
 	}
 	else	{
-		qDebug() << "ERR: " << __PRETTY_FUNCTION__ << " ctx (" << ctxToUse << ") or surface (" << sfcToUse << ") was nil";
+		//qDebug() << "ERR: " << __PRETTY_FUNCTION__ << " ctx (" << ctxToUse << ") or surface (" << sfcToUse << ") was nil";
 	}
 }
 
@@ -413,6 +435,9 @@ GLQtCtxWrapper::GLQtCtxWrapper()	{
 GLQtCtxWrapper::GLQtCtxWrapper(QSurface * inSurface, QOpenGLContext * inCtx, bool inCreateCtx, QSurfaceFormat inSfcFmt)	{
 	hidden = new GLQtCtxHidden(inSurface, inCtx, inCreateCtx, inSfcFmt);
 }
+GLQtCtxWrapper::GLQtCtxWrapper(QOpenGLContext * inCtx)	{
+	hidden = new GLQtCtxHidden(inCtx);
+}
 
 
 GLQtCtxWrapper::~GLQtCtxWrapper()	{
@@ -461,6 +486,12 @@ bool GLQtCtxWrapper::isSharingWith(QOpenGLContext * inCtx)	{
 		return false;
 	return hidden->isSharingWith(inCtx);
 }
+QSurfaceFormat GLQtCtxWrapper::format()	{
+	if (hidden == nullptr)
+		return GLQtCtxWrapper::CreateDefaultSurfaceFormat();
+	return hidden->format();
+}
+
 
 void GLQtCtxWrapper::setSurface(const QSurface * inTargetSurface)	{
 	if (hidden == nullptr)

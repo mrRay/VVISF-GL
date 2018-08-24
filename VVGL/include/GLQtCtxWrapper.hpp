@@ -56,8 +56,10 @@ public:
 	//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 	//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
 	GLQtCtxWrapper(QSurface * inSurface, QOpenGLContext * inCtx, bool inCreateCtx=true, QSurfaceFormat inSfcFmt=GLQtCtxWrapper::CreateDefaultSurfaceFormat());
+	//	same rules as above, just doesn't accept a surface- nor will it create a QOffscreenSurface.  this constructor exists to wrap contexts owned by QOpenGLContext instances, which don't give you access to the surface or anything like that.
+	GLQtCtxWrapper(QOpenGLContext * inCtx);
 	~GLQtCtxWrapper();
-
+	
 	//	copy constructors- these do NOT create new GL contexts, they merely copy/retain the GL contexts from the passed var
 	GLQtCtxWrapper(const GLQtCtxWrapper * n);
 	GLQtCtxWrapper(const GLQtCtxWrapper & n);
@@ -67,6 +69,7 @@ public:
 	void setShareContext(QOpenGLContext * inCtx);
 	QOpenGLContext * getContext();
 	bool isSharingWith(QOpenGLContext * inCtx);
+	QSurfaceFormat format();
 	
 	void setSurface(const QSurface * inTargetSurface);
 	void swap();

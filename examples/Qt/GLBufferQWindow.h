@@ -45,8 +45,10 @@ public slots:
 protected:
 	bool event(QEvent * inEvent) Q_DECL_OVERRIDE;
 	//void exposeEvent(QExposeEvent * inEvent) Q_DECL_OVERRIDE;
+	void resizeEvent(QResizeEvent *ev) Q_DECL_OVERRIDE;
+	
 private:
-	void renderNow();
+	void _renderNow();
 
 private:
 	recursive_mutex		ctxLock;

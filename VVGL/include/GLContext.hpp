@@ -50,6 +50,13 @@ namespace VVGL
 using namespace std;
 
 
+
+
+static GLContextRef			_globalSharedContext = nullptr;
+
+
+
+
 #if defined(VVGL_SDK_MAC)
 /*!
 \relatesalso GLContext
@@ -165,6 +172,8 @@ class VVGL_EXPORT GLContext	{
 		//	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 		//	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
 		GLContext(QSurface * inTargetSurface, QOpenGLContext * inCtx, bool inCreateCtx=true, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat());
+		//	you probably don't want to use this constructor.  this function wraps the passed context in a GLContext instance.  it doesn't create a context, nor does it have a surface- i wrote this because i need to wrap contexts in QOpenGLWidgets, which don't like letting you mess with their contexts.
+		GLContext(QOpenGLContext * inCtx);
 		
 		static QOpenGLContext * GetCurrentContext();
 		

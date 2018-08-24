@@ -3,6 +3,7 @@
 //#include <QString>
 //#include "VVGL.hpp"
 #include <QCoreApplication>
+#include <QResizeEvent>
 
 
 /*	========================================	*/
@@ -36,7 +37,7 @@ GLBufferQWindow::~GLBufferQWindow()	{
 #pragma mark --------------------- private methods
 
 
-void GLBufferQWindow::renderNow()	{
+void GLBufferQWindow::_renderNow()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	bool		renderedSomething = false;
@@ -50,9 +51,9 @@ void GLBufferQWindow::renderNow()	{
 			}
 			if (isExposed())	{
 				if (scene != nullptr)	{
-					double		ltbbm = devicePixelRatio();
-					Size		tmpSize(width()*ltbbm,height()*ltbbm);
-					scene->setOrthoSize(tmpSize);
+					//double		ltbbm = devicePixelRatio();
+					//Size		tmpSize(width()*ltbbm,height()*ltbbm);
+					//scene->setOrthoSize(tmpSize);
 					scene->render();
 
 					//	swap the context
@@ -144,6 +145,13 @@ void GLBufferQWindow::stopRenderingImmediately()	{
 	}
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
+
+
+QThread * GLBufferQWindow::getRenderThread()	{
+	lock_guard<recursive_mutex>		lock(ctxLock);
+	return ctxThread;
+}
+
 
 void GLBufferQWindow::setContext(const GLContextRef & inCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -421,11 +429,6 @@ else\r\
 	}
 }
 
-QThread * GLBufferQWindow::getRenderThread()	{
-	lock_guard<recursive_mutex>		lock(ctxLock);
-	return ctxThread;
-}
-
 
 /*	========================================	*/
 #pragma mark --------------------- public slots
@@ -494,27 +497,26 @@ bool GLBufferQWindow::event(QEvent * inEvent)
 	//cout << __PRETTY_FUNCTION__ << ", event type is " << inEvent->type() << endl;
 	switch (inEvent->type()) {
 	case QEvent::UpdateRequest:
-		renderNow();
+		_renderNow();
 		return true;
 	default:
 		//return QWindow::event(inEvent);
 		{
 			lock_guard<recursive_mutex>		lock(ctxLock);
+			
 			if (ctxThread == nullptr)
 				return QWindow::event(inEvent);
+			else if (ctxThread == QThread::currentThread())
+				return QWindow::event(inEvent);
 			else	{
-				if (ctxThread == QThread::currentThread())
-					return QWindow::event(inEvent);
-				else	{
-					perform_async([=](){
-						//cout << "actually processing event in appropriate thread..." << endl;
-						QWindow::event(inEvent);
-					},
-					this);
-					return true;
-				}
+				perform_async([=](){
+					//cout << "actually processing event in appropriate thread..." << endl;
+					QWindow::event(inEvent);
+				},
+				this);
+				return true;
 			}
-
+			
 		}
 	}
 }
@@ -524,7 +526,16 @@ void GLBufferQWindow::exposeEvent(QExposeEvent * inEvent)
 	//cout << __PRETTY_FUNCTION__ << endl;
 	Q_UNUSED(inEvent);
 	if (isExposed())
-		renderNow();
+		_renderNow();
 }
 */
+void GLBufferQWindow::resizeEvent(QResizeEvent *ev)
+{
+	double			ltbbm = devicePixelRatio();
+	const QSize	&	tmpQSize = ev->size();
+	Size			tmpSize(tmpQSize.width()*ltbbm, tmpQSize.height()*ltbbm);
+	
+	lock_guard<recursive_mutex>		lock(ctxLock);
+	scene->setOrthoSize(tmpSize);
+}
 

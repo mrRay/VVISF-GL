@@ -78,7 +78,7 @@ Additionally, VVGL has a couple structs that can be used to populate OpenGL buff
 \defgroup VVGL_MISC VVGL- other classes
 
 	- VVGL::Range
-	- VVGL::Timestamp and VVGL::Timestamper
+	- VVGL::Timestamp
 	- There are some basic geometric primitives defined in \ref VVGL_GEOM
 	- VVGL::GLCachedProperty, VVGL::GLCachedAttrib and VVGL::GLCachedUni
 */

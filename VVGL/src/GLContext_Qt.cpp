@@ -63,6 +63,14 @@ GLContext::GLContext(QSurface * inTargetSurface, QOpenGLContext * inCtx, bool in
 	sfcFmt = inSfcFmt;
 	generalInit();
 }
+GLContext::GLContext(QOpenGLContext * inCtx)	{
+	if (ctx != nullptr)
+		delete ctx;
+	ctx = new GLQtCtxWrapper(inCtx);
+	initializedFuncs = false;
+	sfcFmt = ctx->format();
+	generalInit();
+}
 GLContext::GLContext()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	if (ctx != nullptr)
@@ -151,7 +159,9 @@ void GLContext::makeCurrent()	{
 	if (ctx != nullptr)	{
 		ctx->makeCurrent();
 		if (!initializedFuncs)	{
-			glewInit();
+			GLenum			err = glewInit();
+			if (err != GLEW_OK)
+				cout << "\tERR: failed to initialize GLEW\n";
 			initializedFuncs = true;
 		}
 	}
@@ -161,7 +171,9 @@ void GLContext::makeCurrentIfNotCurrent()	{
 	if (ctx != nullptr)	{
 		ctx->makeCurrentIfNotCurrent();
 		if (!initializedFuncs)	{
-			glewInit();
+			GLenum			err = glewInit();
+			if (err != GLEW_OK)
+				cout << "\tERR: failed to initialize GLEW\n";
 			initializedFuncs = true;
 		}
 	}
@@ -171,7 +183,9 @@ void GLContext::makeCurrentIfNull()	{
 	if (ctx != nullptr)	{
 		ctx->makeCurrentIfNull();
 		if (!initializedFuncs)	{
-			glewInit();
+			GLenum			err = glewInit();
+			if (err != GLEW_OK)
+				cout << "\tERR: failed to initialize GLEW\n";
 			initializedFuncs = true;
 		}
 	}

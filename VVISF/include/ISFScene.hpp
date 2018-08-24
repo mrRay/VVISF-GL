@@ -35,7 +35,7 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 
 		//	access to these vars should be restricted by the 'renderLock' var inherited from GLScene
 		VVGL::Size		renderSize = orthoSize;	//	the last size at which i was requested to render a buffer (used to produce vals from normalized point inputs that need a render size to be used)
-		Timestamper		timestamper;	//	used to generate time values, some of which get passed to the ISF scene
+		Timestamp		baseTime;	//	used to generate time values, some of which get passed to the ISF scene
 		uint32_t		renderFrameIndex = 0;	//	used to pass FRAMEINDEX to shaders
 		double			renderTime = 0.;	//	this is the render time that gets passed to the ISF
 		double			renderTimeDelta = 0.;	//	this is the render time delta (frame duration) which gets passed to the ISF
@@ -183,8 +183,8 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		virtual void setSize(const VVGL::Size & n);
 		VVGL::Size getSize() const { return orthoSize; }
 		VVGL::Size getRenderSize() const { return renderSize; }
-		//!	Creates a a new Timestamp using the scene's built-in Timestamper instance.  This is how the render time is calculated.
-		inline Timestamp getTimestamp() { return timestamper.nowTime(); }
+		//!	Creates a a new Timestamp relative to the scene's built-in baseTime instance.  This is how the render time is calculated.
+		inline Timestamp getTimestamp() { return Timestamp()-baseTime; }
 		//!	Sets the "throwExceptions" member var, which is false by default.  If true, the ISFScene will throw an exception using the ISFErr object to describe the nature and type of the problem.  Exceptions may be thrown if the file is missing, if there's a problem reading it or parsing the JSON, if there's a problem compiling the GLSL source code for the shaders, etc.
 		inline void setThrowExceptions(const bool & n) { throwExceptions=n; }
 

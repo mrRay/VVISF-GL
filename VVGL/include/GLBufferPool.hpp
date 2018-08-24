@@ -50,7 +50,7 @@ class VVGL_EXPORT GLBufferPool	{
 		recursive_mutex		contextLock;
 		GLContextRef		context = nullptr;	//	this is the context that the buffer pool will use to create/destroy GL resources
 		
-		Timestamper			timestamper;
+		Timestamp			baseTime;
 		
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 		CGColorSpaceRef		colorSpace = nullptr;
@@ -73,9 +73,9 @@ class VVGL_EXPORT GLBufferPool	{
 		//!	If needed you can call this to release all inactive buffers in the pool.
 		void purge();
 		//!	Returns a timestamp generated for the current time
-		inline Timestamp getTimestamp() const { return timestamper.nowTime(); }
+		inline Timestamp getTimestamp() const { return Timestamp()-baseTime; }
 		//!	Timestamps the passed buffer with the current time
-		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=timestamper.nowTime(); }
+		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=getTimestamp(); }
 		//!	Returns the GLContextRef used by the buffer pool to create and destroy its GL resources.
 		inline GLContextRef & getContext() { return context; }
 		inline recursive_mutex & getContextLock() { return contextLock; }
@@ -109,6 +109,11 @@ VVGL_EXPORT GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCt
 \brief This is how you retrieve the global buffer pool.
 */
 VVGL_EXPORT const GLBufferPoolRef & GetGlobalBufferPool();
+/*!
+\relatesalso GLBufferPool
+\brief This is another way to set a global buffer pool, but I mostly use it for deleting the global buffer pool.
+*/
+VVGL_EXPORT void SetGlobalBufferPool(const GLBufferPoolRef & inPoolRef=nullptr);
 
 
 
@@ -509,6 +514,14 @@ VVGL_EXPORT GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t &
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a CPU-based buffer from the passed QImage.
+\param inImg The QImage that will be represented as a CPU-based buffer.  The returned GLBuffer instance assumes ownership of this image, and will delete it when it is no longer needed by the buffer.
+\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+*/
+VVGL_EXPORT GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+
 
 ///@}
 #endif
