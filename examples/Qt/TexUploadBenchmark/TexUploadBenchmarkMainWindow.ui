@@ -39,7 +39,7 @@
     <property name="title">
      <string>Target texture pixel format</string>
     </property>
-    <widget class="QRadioButton" name="radioButton">
+    <widget class="QRadioButton" name="pf_rgba">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -52,7 +52,7 @@
       <string>RGBA</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButton_2">
+    <widget class="QRadioButton" name="pf_bgra">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -78,7 +78,7 @@
     <property name="title">
      <string>Target texture internal format</string>
     </property>
-    <widget class="QRadioButton" name="radioButton_3">
+    <widget class="QRadioButton" name="if_rgba">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -91,7 +91,7 @@
       <string>RGBA</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButton_4">
+    <widget class="QRadioButton" name="if_rgba8">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -111,13 +111,13 @@
       <x>20</x>
       <y>220</y>
       <width>251</width>
-      <height>101</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="title">
      <string>Target texture pixel type</string>
     </property>
-    <widget class="QRadioButton" name="radioButton_5">
+    <widget class="QRadioButton" name="pt_ubyte">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -130,7 +130,7 @@
       <string>GL_UNSIGNED_BYTE</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButton_6">
+    <widget class="QRadioButton" name="pt_u8888rev">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -143,29 +143,6 @@
       <string>GL_UNSIGNED_INT_8_8_8_8_REV</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButton_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>70</y>
-       <width>221</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>GL_UNSIGNED_INT_8_8_8_8</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGraphicsView" name="graphicsView">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>30</y>
-      <width>271</width>
-      <height>201</height>
-     </rect>
-    </property>
    </widget>
    <widget class="QPushButton" name="checkButton">
     <property name="geometry">
@@ -264,6 +241,22 @@
     </property>
     <property name="text">
      <string>Test Results Here!</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cpuPreview">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>35</y>
+      <width>271</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

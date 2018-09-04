@@ -12,8 +12,8 @@
 //	we're using this PATHTYPE define to crudely establish two different paths that have 
 //	approximately the same performance characteristics.  path 0 delete-initializes a PBO and then 
 //	reserve-initializes it with the passed data directly.  path 1 maps the PBO and then copies the 
-//	CPU data to it manually.  path 1 is slightly less efficient.
-#define PATHTYPE 0
+//	CPU data to it manually.  path 1 is slightly faster on the mac i'm writing this on.
+#define PATHTYPE 1
 
 
 
@@ -107,6 +107,9 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
 	GLERRLOG
+	
+	glFlush();
+	GLERRLOG
 #endif	//	PATHTYPE==1
 
 }
@@ -167,6 +170,10 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	glBindBuffer(inPBOBuffer->desc.target, 0);
 	GLERRLOG
 	
+	//	flush- start the DMA transfer.  the CPU doesn't wait for this to complete, and returns immediately.
+	glFlush();
+	GLERRLOG
+	
 	//	timestamp the buffer...
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp == nullptr)
@@ -185,6 +192,39 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 	if (inCPUBuffer == nullptr)
 		return nullptr;
 	
+	GLBufferRef		texBuffer = nullptr;
+	{
+		lock_guard<recursive_mutex>		lock(queueLock);
+	
+		//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
+		if (!createInCurrentContext)
+			queueCtx->makeCurrentIfNotCurrent();
+	
+		//	create a PBO and a texture for the CPU buffer
+		switch (inCPUBuffer->desc.pixelFormat)	{
+		case GLBuffer::PF_RGBA:
+			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		case GLBuffer::PF_BGRA:
+			texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		case GLBuffer::PF_YCbCr_422:
+			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	if (texBuffer==nullptr)
+		return nullptr;
+	
+	return uploadCPUToTex(inCPUBuffer, texBuffer, createInCurrentContext);
+}
+GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, const GLBufferRef & inTexBuffer, const bool & createInCurrentContext)	{
+	if (inCPUBuffer == nullptr || inTexBuffer == nullptr)
+		return nullptr;
+	
 	lock_guard<recursive_mutex>		lock(queueLock);
 	
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
@@ -194,13 +234,12 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 	Size		cpuBufferDims = inCPUBuffer->size;
 	
 	//	create a PBO and a texture for the CPU buffer
-	GLBufferRef		inPBOBuffer = nullptr;
-	GLBufferRef		inTexBuffer = nullptr;
+	GLBufferRef		pboBuffer = nullptr;
 	switch (inCPUBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_RGBA:
-		inPBOBuffer = CreateRGBAPBO(
+		pboBuffer = CreateRGBAPBO(
 			GLBuffer::Target_PBOUnpack,
-			GL_STATIC_DRAW,
+			GL_STREAM_DRAW,
 			cpuBufferDims,
 #if PATHTYPE==0
 			inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -208,12 +247,11 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 			NULL,	//	this will delete-initialize the buffer
 #endif
 			createInCurrentContext);
-		inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 		break;
 	case GLBuffer::PF_BGRA:
-		inPBOBuffer = CreateBGRAPBO(
+		pboBuffer = CreateBGRAPBO(
 			GLBuffer::Target_PBOUnpack,
-			GL_STATIC_DRAW,
+			GL_STREAM_DRAW,
 			cpuBufferDims,
 #if PATHTYPE==0
 			inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -221,12 +259,11 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 			NULL,	//	this will delete-initialize the buffer
 #endif
 			createInCurrentContext);
-		inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 		break;
 	case GLBuffer::PF_YCbCr_422:
-		inPBOBuffer = CreateYCbCrPBO(
+		pboBuffer = CreateYCbCrPBO(
 			GLBuffer::Target_PBOUnpack,
-			GL_STATIC_DRAW,
+			GL_STREAM_DRAW,
 			cpuBufferDims,
 #if PATHTYPE==0
 			inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -234,21 +271,73 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 			NULL,	//	this will delete-initialize the buffer
 #endif
 			createInCurrentContext);
-		inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 		break;
 	default:
 		break;
 	}
 	
-	if (inPBOBuffer==nullptr || inTexBuffer==nullptr)
+	if (pboBuffer==nullptr)
 		return nullptr;
 	
-	_beginProcessing(inCPUBuffer, inPBOBuffer, inTexBuffer);
-	_finishProcessing(inCPUBuffer, inPBOBuffer, inTexBuffer);
+	_beginProcessing(inCPUBuffer, pboBuffer, inTexBuffer);
+	_finishProcessing(inCPUBuffer, pboBuffer, inTexBuffer);
 	
 	return inTexBuffer;
 }
 GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext)	{
+	//cout << __FUNCTION__ << endl;
+	
+	lock_guard<recursive_mutex>		lock(queueLock);
+	
+	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
+	if (!createInCurrentContext)
+		queueCtx->makeCurrentIfNotCurrent();
+	
+	//	make sure the queues have the appropriate and expected number of elements
+	int			tmpQueueSize = (int)cpuQueue.size();
+	if (tmpQueueSize != (int)pboQueue.size() || tmpQueueSize != (int)texQueue.size())	{
+		cout << "\tERR: queue size discrepancy, " << __PRETTY_FUNCTION__ << endl;
+		return nullptr;
+	}
+	
+	bool		safeToPush = false;
+	bool		safeToPop = false;
+	//	we're safe to push if the queue isn't too large AND there's a non-null input buffer
+	if (tmpQueueSize<=queueSize && inCPUBuffer!=nullptr)
+		safeToPush = true;
+	//	we're safe to pop a val if the queue is too large AND if we're safe to push
+	if (tmpQueueSize>=queueSize && safeToPush)
+		safeToPop = true;
+	
+	//	if we're safe to push, we need to create a PBO and a texture for the CPU buffer
+	GLBufferRef		inTexBuffer = nullptr;
+	if (safeToPush)	{
+		switch (inCPUBuffer->desc.pixelFormat)	{
+		case GLBuffer::PF_RGBA:
+			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		case GLBuffer::PF_BGRA:
+			inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		case GLBuffer::PF_YCbCr_422:
+			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			break;
+		default:
+			break;
+		}
+		
+		//	if we couldn't create the buffers we need then we're not safe to push, and if we're not safe to push then we're not safe to pop.
+		if (inTexBuffer==nullptr)	{
+			cout << "\tERR: couldnt make tex, " << __PRETTY_FUNCTION__ << endl;
+			safeToPush = false;
+			safeToPop = false;
+			return nullptr;
+		}
+	}
+	
+	return streamCPUToTex(inCPUBuffer, inTexBuffer, createInCurrentContext);
+}
+GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, const GLBufferRef & inTexBuffer, const bool & createInCurrentContext)	{
 	//cout << __FUNCTION__ << endl;
 	
 	lock_guard<recursive_mutex>		lock(queueLock);
@@ -276,13 +365,12 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	
 	//	if we're safe to push, we need to create a PBO and a texture for the CPU buffer
 	GLBufferRef		inPBOBuffer = nullptr;
-	GLBufferRef		inTexBuffer = nullptr;
 	if (safeToPush)	{
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
 			inPBOBuffer = CreateRGBAPBO(
 				GLBuffer::Target_PBOUnpack,
-				GL_STATIC_DRAW,
+				GL_STREAM_DRAW,
 				cpuBufferDims,
 #if PATHTYPE==0
 				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -290,12 +378,11 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 				NULL,	//	this will delete-initialize the buffer
 #endif
 				createInCurrentContext);
-			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 			break;
 		case GLBuffer::PF_BGRA:
 			inPBOBuffer = CreateBGRAPBO(
 				GLBuffer::Target_PBOUnpack,
-				GL_STATIC_DRAW,
+				GL_STREAM_DRAW,
 				cpuBufferDims,
 #if PATHTYPE==0
 				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -303,12 +390,11 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 				NULL,	//	this will delete-initialize the buffer
 #endif
 				createInCurrentContext);
-			inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 			break;
 		case GLBuffer::PF_YCbCr_422:
 			inPBOBuffer = CreateYCbCrPBO(
 				GLBuffer::Target_PBOUnpack,
-				GL_STATIC_DRAW,
+				GL_STREAM_DRAW,
 				cpuBufferDims,
 #if PATHTYPE==0
 				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
@@ -316,15 +402,14 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 				NULL,	//	this will delete-initialize the buffer
 #endif
 				createInCurrentContext);
-			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 			break;
 		default:
 			break;
 		}
 		
 		//	if we couldn't create the buffers we need then we're not safe to push, and if we're not safe to push then we're not safe to pop.
-		if (inPBOBuffer==nullptr || inTexBuffer==nullptr)	{
-			cout << "\tERR: couldnt make PBO or tex, " << __PRETTY_FUNCTION__ << endl;
+		if (inPBOBuffer==nullptr)	{
+			cout << "\tERR: couldnt make PBO " << __PRETTY_FUNCTION__ << endl;
 			safeToPush = false;
 			safeToPop = false;
 		}

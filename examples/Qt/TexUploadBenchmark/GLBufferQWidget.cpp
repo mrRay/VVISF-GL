@@ -71,8 +71,9 @@ void GLBufferQWidget::_renderNow()	{
 		//}
 	}
 	
-	if (renderAnotherFrame)
+	if (renderAnotherFrame)	{
 		update();
+	}
 
 	bp->housekeeping();
 	

@@ -18,6 +18,8 @@ using namespace std;
 using namespace chrono;
 
 
+
+
 //! Struct describing a timevalue as the quotient of two numbers, a value (64-bit unsigned int) and a scale factor (32-bit int).
 /*!
 \ingroup VVGL_MISC
@@ -104,6 +106,24 @@ struct Timestamp	{
 private:
 	RawTSTime		rawTime;
 };
+
+
+
+
+/*!
+\brief	A TimestampRef is a shared pointer around a Timestamp struct.
+\relates VVGL::Timestamp
+*/
+using TimestampRef = shared_ptr<Timestamp>;
+
+
+
+
+/*!
+\relatesalso Timestamp
+\brief Creates a new Timestamp instance with the current time, returned as a TimestampRef.
+*/
+inline TimestampRef CreateTimestampRef() { return make_shared<Timestamp>(); }
 
 
 

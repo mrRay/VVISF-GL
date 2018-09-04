@@ -90,6 +90,8 @@ win32: PRE_TARGETDEPS += $$_PRO_FILE_PWD_/../../../external/GLEW/win_x64/glew32.
 
 # macs need some assembly for deployment
 mac	{
+	QMAKE_INFO_PLIST = Info.plist
+	
 	CONFIG(debug, debug|release)	{
 		# intentionally blank, debug builds don't need any work (build & run works just fine)
 	}

@@ -62,6 +62,8 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		
 		//!	Immediately uploads the passed CPU-based buffer to a GL texture- doesn't use the queues.  Less efficient.  Good for quick single-shot texture uploads.
 		GLBufferRef uploadCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext=false);
+		//!	Immediately uploads the passed CPU-based buffer to the passed GL texture- doesn't use the queues.  Less efficient.  Good for quick single-shot texture uploads.  Does not check the format or dimensions of the passed texture- make sure it's correct before calling!
+		GLBufferRef uploadCPUToTex(const GLBufferRef & inCPUBuffer, const GLBufferRef & inTexBuffer, const bool & createInCurrentContext=false);
 		
 		//! Begins uploading the passed CPU-based buffer to a GL texture, but stashes it in a queue and will return the texture when this function is called again at a later time (ping-pong/double-/triple-/n-buffering).  Good for streaming texture upload.
 		/*!
@@ -70,6 +72,13 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		More efficient than uploadCPUToTex()- CPU use will probably be lower and execution will return to the calling thread more rapidly, though the queue means that there's more latency (it won't start returning buffers until you submit one or two- depending on the size of the queue).
 		*/
 		GLBufferRef streamCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext=false);
+		//! Begins uploading the passed CPU-based buffer to the passed GL texture, but stashes it in a queue and will return the texture when this function is called again at a later time (ping-pong/double-/triple-/n-buffering).  Good for streaming texture upload.  Does not check the format or dimensions of the passed texture- make sure it's correct before calling!
+		/*!
+		\param inCPUBuffer This must be a CPU-based GLBuffer.  This may not be null.
+		\param createInCurrentContext Defaults to false- if true, any GL resources will be created by the current GL context in the calling thread.  If false, the local var queueCtx will be used.
+		More efficient than uploadCPUToTex()- CPU use will probably be lower and execution will return to the calling thread more rapidly, though the queue means that there's more latency (it won't start returning buffers until you submit one or two- depending on the size of the queue).
+		*/
+		GLBufferRef streamCPUToTex(const GLBufferRef & inCPUBuffer, const GLBufferRef & inTexBuffer, const bool & createInCurrentContext=false);
 };
 
 

@@ -1228,7 +1228,7 @@ GLBufferRef CreateRGBATex(const Size & size, const bool & inCreateInCurrentConte
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if defined(VVGL_SDK_MAC)
+#if (defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT))
 	desc.internalFormat = GLBuffer::IF_RGBA8;
 	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
 #else
@@ -1372,13 +1372,15 @@ GLBufferRef CreateBGRATex(const Size & size, const bool & inCreateInCurrentConte
 	
 	desc.type = GLBuffer::Type_Tex;
 	desc.target = GLBuffer::Target_2D;
-#if defined(VVGL_SDK_MAC)
+#if (defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT))
 	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
 #else
 	desc.internalFormat = GLBuffer::IF_RGBA;
+	desc.pixelType = GLBuffer::PT_UByte;
 #endif
 	desc.pixelFormat = GLBuffer::PF_BGRA;
-	desc.pixelType = GLBuffer::PT_UByte;
 	desc.cpuBackingType = GLBuffer::Backing_None;
 	desc.gpuBackingType = GLBuffer::Backing_Internal;
 	desc.texRangeFlag = false;
@@ -1692,14 +1694,14 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
-		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
-		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		GLERRLOG
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1756,12 +1758,15 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1779,14 +1784,14 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
-		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
-		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		GLERRLOG
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1838,12 +1843,15 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1861,14 +1869,14 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
-		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
-		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		GLERRLOG
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1920,12 +1928,15 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -1943,14 +1954,14 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
-		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
-		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		GLERRLOG
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -2002,12 +2013,15 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 			returnMe->pboMapped = false;
 			returnMe->cpuBackingPtr = nullptr;
 		}
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//	reserve-initialize the PBO the pool just created with the data we were passed
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
+		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
 		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG
@@ -2025,14 +2039,14 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 		glBindBuffer(returnMe->desc.target, returnMe->name);
 		GLERRLOG
 		//	reserve-initialize the PBO the pool just created with the data we were passed
-		glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
-		GLERRLOG
-		if (inData != nullptr)	{
-			glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
-			GLERRLOG
-		}
-		//glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		//glBufferData(inTarget, pboSizeInBytes, nullptr, inUsage);
 		//GLERRLOG
+		//if (inData != nullptr)	{
+		//	glBufferSubData(inTarget, 0, pboSizeInBytes, inData);
+		//	GLERRLOG
+		//}
+		glBufferData(inTarget, pboSizeInBytes, inData, inUsage);
+		GLERRLOG
 		//	un-bind the PBO
 		glBindBuffer(returnMe->desc.target, 0);
 		GLERRLOG

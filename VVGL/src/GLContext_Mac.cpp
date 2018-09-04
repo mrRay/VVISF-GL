@@ -44,7 +44,7 @@ CGLPixelFormatObj CreateDefaultPixelFormat()	{
 }
 CGLPixelFormatObj CreateCompatibilityGLPixelFormat()	{
 	CGLPixelFormatAttribute		attribs[] = {
-		kCGLPFAAcceleratedCompute,
+		kCGLPFAAccelerated,
 		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_Legacy,
 		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
 		kCGLPFANoRecovery,
@@ -61,7 +61,7 @@ CGLPixelFormatObj CreateCompatibilityGLPixelFormat()	{
 }
 CGLPixelFormatObj CreateGL3PixelFormat()	{
 	CGLPixelFormatAttribute		attribs[] = {
-		kCGLPFAAcceleratedCompute,
+		kCGLPFAAccelerated,
 		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_GL3_Core,
 		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
 		kCGLPFANoRecovery,
@@ -78,7 +78,7 @@ CGLPixelFormatObj CreateGL3PixelFormat()	{
 }
 CGLPixelFormatObj CreateGL4PixelFormat()	{
 	CGLPixelFormatAttribute		attribs[] = {
-		kCGLPFAAcceleratedCompute,
+		kCGLPFAAccelerated,
 		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_GL4_Core,
 		kCGLPFADisplayMask, (CGLPixelFormatAttribute)GLDisplayMaskForAllScreens(),
 		kCGLPFANoRecovery,

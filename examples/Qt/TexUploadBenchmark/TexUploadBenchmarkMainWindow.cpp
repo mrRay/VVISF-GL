@@ -2,6 +2,7 @@
 #include "ui_TexUploadBenchmarkMainWindow.h"
 
 //#include <QOpenGLContext>
+#include <QPainter>
 #include <QTimer>
 #include <iostream>
 
@@ -49,6 +50,21 @@ TexUploadBenchmarkMainWindow::TexUploadBenchmarkMainWindow(QWidget *parent) :
 	//	we need to know when the user starts the test, or clicks 'checkImage'
 	connect(ui->checkButton, SIGNAL(clicked()), this, SLOT(checkImageClicked()));
 	connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startTestClicked()));
+	
+	//	populate the pixel format group
+	pixelFormatGroup.addButton(ui->pf_rgba, GLBuffer::PF_RGBA);
+	pixelFormatGroup.addButton(ui->pf_bgra, GLBuffer::PF_BGRA);
+	ui->pf_rgba->setChecked(true);
+	
+	//	populate the internal format group
+	internalFormatGroup.addButton(ui->if_rgba, GLBuffer::IF_RGBA);
+	internalFormatGroup.addButton(ui->if_rgba8, GLBuffer::IF_RGBA8);
+	ui->if_rgba->setChecked(true);
+	
+	//	populate the pixel type group
+	pixelTypeGroup.addButton(ui->pt_ubyte, GLBuffer::PT_UByte);
+	pixelTypeGroup.addButton(ui->pt_u8888rev, GLBuffer::PT_UInt_8888_Rev);
+	ui->pt_u8888rev->setChecked(true);
 }
 
 
@@ -95,8 +111,16 @@ void TexUploadBenchmarkMainWindow::checkImageClicked()
 	
 	prepForWork();
 	
+	/*
 	GLBufferRef		tmpTex = cpuToTex->streamCPUToTex(cpuBuffer);
 	ui->bufferView->drawBuffer(tmpTex);
+	*/
+	
+	/*
+	GLBufferRef		tmpTex = createTexForWork();
+	GLBufferRef		outTex = cpuToTex->uploadCPUToTex(cpuBuffer,tmpTex);
+	ui->bufferView->drawBuffer(outTex);
+	*/
 }
 
 
@@ -110,9 +134,9 @@ void TexUploadBenchmarkMainWindow::prepForWork()
 	
 	cpuBuffer = nullptr;
 	
-	
+	//	load the raw image from the file
 	QImage			rawImg(":/files/IMG_0885.JPG");
-	
+	//	use QPainter to resize the image and get a bitmap of the dimensions specified in the UI
 	QSize			tmpSize(ui->widthField->value(), ui->heightField->value());
 	QImage			*tmpImg = new QImage(tmpSize, QImage::Format_ARGB32);
 	QPainter		tmpPainter(tmpImg);
@@ -120,8 +144,10 @@ void TexUploadBenchmarkMainWindow::prepForWork()
 	QRect			tmpDstFrame(QPoint(0,0), tmpSize);
 	tmpPainter.drawImage(tmpDstFrame, rawImg, tmpSrcFrame);
 	tmpPainter.end();
+	//	draw the QImage in the label
+	ui->cpuPreview->setPixmap(QPixmap::fromImage(*tmpImg));
 	
-	//cpuBuffer = CreateBufferForQImage(tmpImg);
+	//	make a CPU-based buffer from the QImage- this is what we'll be uploading
 	cpuBuffer = CreateCPUBufferForQImage(tmpImg);
 	
 	//	prime the uploader with a couple frames so when we start streaming we'll be pulling stuff out right away
@@ -129,20 +155,67 @@ void TexUploadBenchmarkMainWindow::prepForWork()
 	cpuToTex->clearStream();
 	for (int i=0; i<cpuToTex->getQueueSize()+1; ++i)	{
 		GLBufferRef		tmpTex = cpuToTex->streamCPUToTex(cpuBuffer);
+		if (i == cpuToTex->getQueueSize())
+			ui->bufferView->drawBuffer(tmpTex);
 	}
-	
 	
 	//	clear the start/end times and the test count
 	startTime = nullptr;
 	endTime = nullptr;
 	testCount = 0;
 }
+GLBufferRef TexUploadBenchmarkMainWindow::createTexForWork()
+{
+	//	we're constructing the buffer manually here, which...probably isn't the best idea
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.pixelFormat = static_cast<GLBuffer::PixelFormat>(pixelFormatGroup.checkedId());
+	desc.internalFormat = static_cast<GLBuffer::InternalFormat>(internalFormatGroup.checkedId());
+	desc.pixelType = static_cast<GLBuffer::PixelType>(pixelTypeGroup.checkedId());
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef		returnMe = GetGlobalBufferPool()->createBufferRef(desc, cpuBuffer->srcRect.size, nullptr, Size(), true);
+	returnMe->parentBufferPool = GetGlobalBufferPool();
+	
+	return returnMe;
+}
 void TexUploadBenchmarkMainWindow::workMethod()
 {
 	if (cpuBuffer == nullptr)
 		return;
-	
+	/*
 	GLBufferRef		tmpTex = cpuToTex->streamCPUToTex(cpuBuffer);
+	*/
+	
+	/*
+	//	we're constructing the buffer manually here, which...probably isn't the best idea
+	GLBuffer::Descriptor	desc;
+	
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.pixelFormat = static_cast<GLBuffer::PixelFormat>(pixelFormatGroup.checkedId());
+	desc.internalFormat = static_cast<GLBuffer::InternalFormat>(internalFormatGroup.checkedId());
+	desc.pixelType = static_cast<GLBuffer::PixelType>(pixelTypeGroup.checkedId());
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	GLBufferRef		newTex = GetGlobalBufferPool()->createBufferRef(desc, cpuBuffer->srcRect.size, nullptr, Size(), true);
+	newTex->parentBufferPool = GetGlobalBufferPool();
+	*/
+	
+	GLBufferRef		newTex = createTexForWork();
+	GLBufferRef		outTex = cpuToTex->streamCPUToTex(cpuBuffer,newTex);
 	
 	++testCount;
 }
@@ -161,14 +234,19 @@ void TexUploadBenchmarkMainWindow::widgetDrewItsFirstFrame()
 	if (widgetCtx == nullptr)
 		return;
 	
+	//cout << "\tversion is " << GLVersionToString(widgetCtx->version) << endl;
+	
 	//	disconnect immediately- we're only doing this because we need to create the shared context from the widget's context
 	disconnect(ui->bufferView, SIGNAL(frameSwapped()), this, SLOT(widgetDrewItsFirstFrame()));
 	
 	//	make the global buffer pool, using a newly-created context that shares the base global context
 	CreateGlobalBufferPool(widgetCtx->newContextSharingMe());
 	
-	//	tell the widget to start rendering?
+	//	don't tell the widget to start rendering- doing so will cause it to start rendering at 60fps
 	//ui->bufferView->startRendering();
+	
+	//	tell the widget to draw a single frame.  for some reason, GL widgets on os x don't have their internal sizes set properly when they draw their first frame.
+	ui->bufferView->drawBuffer(nullptr);
 	
 	/*
 	//	load the image file we include with the sample app, convert it to a VVGLBufferRef
@@ -181,7 +259,7 @@ void TexUploadBenchmarkMainWindow::widgetDrewItsFirstFrame()
 	*/
 	
 	cpuToTex = CreateGLCPUToTexCopierRef();
-	//cpuToTex->setQueueSize(4);	//	no discernible effect
+	cpuToTex->setQueueSize(1);	//	no discernible effect
 }
 void TexUploadBenchmarkMainWindow::aboutToQuit()
 {

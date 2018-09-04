@@ -83,11 +83,6 @@ using GLTexToCPUCopierRef = shared_ptr<GLTexToCPUCopier>;
 \relates VVGL::GLCPUToTexCopier
 */
 using GLCPUToTexCopierRef = shared_ptr<GLCPUToTexCopier>;
-/*!
-\brief	A TimestampRef is a shared pointer around a Timestamp struct.
-\relates VVGL::Timestamp
-*/
-using TimestampRef = shared_ptr<Timestamp>;
 
 
 

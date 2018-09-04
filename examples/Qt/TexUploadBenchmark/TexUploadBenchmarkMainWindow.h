@@ -2,6 +2,7 @@
 #define TEXUPLOADBENCHMARKMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QButtonGroup>
 
 #include <VVGL.hpp>
 
@@ -24,8 +25,12 @@ public slots:
 	Q_SLOT void startTestClicked();
 	Q_SLOT void checkImageClicked();
 	
+
+
+
 private:
 	void prepForWork();
+	VVGL::GLBufferRef createTexForWork();
 	void workMethod();
 	
 private slots:
@@ -34,6 +39,10 @@ private slots:
 
 private:
 	Ui::TexUploadBenchmarkMainWindow		*ui;
+	
+	QButtonGroup				pixelFormatGroup;
+	QButtonGroup				internalFormatGroup;
+	QButtonGroup				pixelTypeGroup;
 	
 	VVGL::GLBufferRef			cpuBuffer;	//	CPU-based, created when you start a test or check.  this gets copied into a buffer of the appropriate target/format, which is then uploaded
 	VVGL::TimestampRef			startTime = nullptr;	//	null until the test is started.  used to calculate how long the test takes.
