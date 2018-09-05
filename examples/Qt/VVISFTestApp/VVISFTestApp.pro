@@ -28,11 +28,11 @@ DEFINES += VVGL_SDK_QT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-	../GLBufferQWindow.cpp \
+	../common/GLBufferQWindow.cpp \
     VVISFTestApp.cpp
 
 HEADERS += \
-	../GLBufferQWindow.h
+	../common/GLBufferQWindow.h
 
 
 
@@ -49,6 +49,7 @@ else:unix: LIBS += -L$$OUT_PWD/../VVISF/ -lVVISF
 
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVISF/include
+INCLUDEPATH += $$_PRO_FILE_PWD_/../common
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF

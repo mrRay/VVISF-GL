@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TexUploadBenchmarkMainWindow</class>
- <widget class="QMainWindow" name="TexUploadBenchmarkMainWindow">
+ <class>TexDownloadBenchmarkMainWindow</class>
+ <widget class="QMainWindow" name="TexDownloadBenchmarkMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TexUploadBenchmarkMainWindow</string>
+   <string>TexDownloadBenchmarkMainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label">
@@ -211,7 +211,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>240</y>
+      <y>30</y>
       <width>271</width>
       <height>201</height>
      </rect>
@@ -247,7 +247,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>35</y>
+      <y>250</y>
       <width>271</width>
       <height>191</height>
      </rect>

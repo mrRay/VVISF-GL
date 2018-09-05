@@ -1,4 +1,4 @@
-#include "TexUploadBenchmarkMainWindow.h"
+#include "TexDownloadBenchmarkMainWindow.h"
 #include <QApplication>
 #include <VVGL.hpp>
 
@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace VVGL;
+using namespace VVISF;
 
 
 int main(int argc, char *argv[])
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	
 	//	make the window, which contains all the moving parts for the app
-	TexUploadBenchmarkMainWindow w;
+	TexDownloadBenchmarkMainWindow w;
 	w.show();
 
 	return a.exec();

@@ -32,16 +32,16 @@ DEFINES += VVGL_SDK_QT
 
 
 SOURCES += \
-        main.cpp \
-        TexUploadBenchmarkMainWindow.cpp \
-    GLBufferQWidget.cpp
+	main.cpp \
+	TexUploadBenchmarkMainWindow.cpp \
+	../common/GLBufferQWidget.cpp \
 
 HEADERS += \
-        TexUploadBenchmarkMainWindow.h \
-    GLBufferQWidget.h
+	TexUploadBenchmarkMainWindow.h \
+	../common/GLBufferQWidget.h \
 
 FORMS += \
-        TexUploadBenchmarkMainWindow.ui
+	TexUploadBenchmarkMainWindow.ui
 
 
 

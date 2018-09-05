@@ -200,8 +200,10 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	//GLERRLOG
 	
 	//	make sure the created buffers inherit the texture's flippedness...
-	inCPUBuffer->flipped = inTexBuffer->flipped;
-	inCPUBuffer->contentTimestamp = inTexBuffer->contentTimestamp;
+	if (inCPUBuffer != nullptr)	{
+		inCPUBuffer->flipped = inTexBuffer->flipped;
+		inCPUBuffer->contentTimestamp = inTexBuffer->contentTimestamp;
+	}
 	inPBOBuffer->flipped = inTexBuffer->flipped;
 	inPBOBuffer->contentTimestamp = inTexBuffer->contentTimestamp;
 }
@@ -230,7 +232,6 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 		inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext);
 		break;
 	case GLBuffer::PF_BGRA:
-		cout << "\tBGR A...\n";
 		inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext);
 		break;
 	case GLBuffer::PF_YCbCr_422:
@@ -251,7 +252,10 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 	return inPBOBuffer;
 }
 GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext)	{
-	//cout << __PRETTY_FUNCTION__ << "... " << *inTexBuffer << endl;
+	//cout << __PRETTY_FUNCTION__;
+	//if (inTexBuffer == nullptr) cout << endl;
+	//else cout << "... " << *inTexBuffer << endl;
+	
 	lock_guard<recursive_mutex>		lock(queueLock);
 	
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread

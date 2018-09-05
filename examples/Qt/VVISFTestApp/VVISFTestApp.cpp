@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 	QTextStream		tmpStream(&tmpFile);
 	QString			fileContentsString = tmpStream.readAll();
 	std::string		fileContents = fileContentsString.toStdString();
+	tmpFile.close();
 	//cout << "fileContents are:\n" << fileContents << endl;
 	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
     //cout << "isf doc is " << *tmpDoc << endl;

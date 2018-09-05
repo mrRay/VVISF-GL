@@ -150,32 +150,29 @@ GLBuffer::~GLBuffer()	{
 			//	if the gpu backing was internal, release it
 			if (desc.gpuBackingType == Backing_Internal)	{
 				if (parentBufferPool != nullptr)	{
-					//(*parentBufferPool).releaseBufferResources(this);
 					parentBufferPool->releaseBufferResources(this);
 				}
 			}
-			//	else the gpu backing was external or non-existent: do nothing, the callback gets executed later no matter what
+			//	else the gpu backing was external or non-existent: do nothing, the backing release callback gets executed later no matter what
 		}
-		//	else the cpu backing as internal, or there's no cpu backing
+		//	else the cpu backing was internal, or there's no cpu backing
 		else	{
-			//	if the gpu backing was internal, release it
-			if (desc.gpuBackingType == Backing_Internal)	{
+			//	if the gpu backing was internal or there wasn't a gpu backing
+			if (desc.gpuBackingType == Backing_Internal || desc.gpuBackingType == Backing_None)	{
 				//	if my idleCount is 0, i'm being freed from rendering and i go back in the pool
 				if (idleCount==0 && !preferDeletion)	{
 					if (parentBufferPool != nullptr)	{
-						//(*parentBufferPool).returnBufferToPool(this);
 						parentBufferPool->returnBufferToPool(this);
 					}
 				}
 				//	else i was in the pool (or i just want to be deleted), and now the resources i contain need to be freed
 				else	{
 					if (parentBufferPool != nullptr)	{
-						//(*parentBufferPool).releaseBufferResources(this);
 						parentBufferPool->releaseBufferResources(this);
 					}
 				}
 			}
-			//	else this buffer was either external, or non-existent: do nothing
+			//	else this buffer's gpu backing was external: do nothing
 		}
 		//	now call the backing release callback
 		if (backingReleaseCallback != nullptr)	{
@@ -316,7 +313,7 @@ uint32_t GLBuffer::backingLengthForSize(Size s) const	{
 }
 
 Rect GLBuffer::glReadySrcRect() const	{
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT)
 	if (this->desc.target == Target_Rect)
 		return srcRect;
 #endif
@@ -493,15 +490,32 @@ string GLBuffer::getDescriptionString() const	{
 	char		typeChar = '?';
 	switch (this->desc.type)	{
 	case GLBuffer::Type_CPU:	typeChar='C'; break;
-	case GLBuffer::Type_RB:	typeChar='R'; break;
+	case GLBuffer::Type_RB:		typeChar='R'; break;
 	case GLBuffer::Type_FBO:	typeChar='F'; break;
-	case GLBuffer::Type_Tex:	typeChar='T'; break;
 	case GLBuffer::Type_PBO:	typeChar='P'; break;
 	case GLBuffer::Type_VBO:	typeChar='V'; break;
 	case GLBuffer::Type_EBO:	typeChar='E'; break;
 	case GLBuffer::Type_VAO:	typeChar='A'; break;
+	case GLBuffer::Type_Tex:	typeChar='T'; break;
 	}
-	return FmtString("<GLBuffer %c, %d, %dx%d>",typeChar,name,static_cast<int>(round(this->size.width)),static_cast<int>(round(this->size.height)));
+	
+	int			tmpWidth = static_cast<int>(round(this->size.width));
+	int			tmpHeight = static_cast<int>(round(this->size.height));
+	if (this->desc.type == GLBuffer::Type_Tex)	{
+		char		targetChar = '?';
+		switch (this->desc.target)	{
+		case GLBuffer::Target_None:		targetChar = 'X'; break;
+		case GLBuffer::Target_RB:		targetChar = 'B'; break;
+		case GLBuffer::Target_2D:		targetChar = '2'; break;
+		case GLBuffer::Target_Rect:		targetChar = 'R'; break;
+		case GLBuffer::Target_Cube:		targetChar = 'C'; break;
+		case GLBuffer::Target_PBOPack:		targetChar = 'P'; break;
+		case GLBuffer::Target_PBOUnpack:		targetChar = 'U'; break;
+		}
+		return FmtString("<GLBuffer %c-%c, %d, %dx%d>", typeChar, targetChar, name, tmpWidth, tmpHeight);
+	}
+	
+	return FmtString("<GLBuffer %c, %d, %dx%d>", typeChar, name, tmpWidth, tmpHeight);
 }
 
 

@@ -933,14 +933,17 @@ GLBufferRef CreateRGBACPUBuffer(const Size & size, const GLBufferPoolRef & inPoo
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
-	returnMe->parentBufferPool = inPoolRef;
-	returnMe->backingID = GLBuffer::BackingID_Pixels;
-	returnMe->backingContext = bufferMemory;
-	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
-		free(inReleaseContext);
-	};
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe == nullptr)	{
+		void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingID = GLBuffer::BackingID_Pixels;
+		returnMe->backingContext = bufferMemory;
+		returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+			free(inReleaseContext);
+		};
+	}
 	
 	return returnMe;
 }
@@ -963,14 +966,17 @@ GLBufferRef CreateRGBAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & 
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
-	returnMe->parentBufferPool = inPoolRef;
-	returnMe->backingID = GLBuffer::BackingID_Pixels;
-	returnMe->backingContext = bufferMemory;
-	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
-		free(inReleaseContext);
-	};
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe == nullptr)	{
+		void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingID = GLBuffer::BackingID_Pixels;
+		returnMe->backingContext = bufferMemory;
+		returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+			free(inReleaseContext);
+		};
+	}
 	
 	return returnMe;
 }
@@ -999,14 +1005,17 @@ GLBufferRef CreateBGRACPUBuffer(const Size & size, const GLBufferPoolRef & inPoo
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
-	returnMe->parentBufferPool = inPoolRef;
-	returnMe->backingID = GLBuffer::BackingID_Pixels;
-	returnMe->backingContext = bufferMemory;
-	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
-		free(inReleaseContext);
-	};
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe == nullptr)	{
+		void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingID = GLBuffer::BackingID_Pixels;
+		returnMe->backingContext = bufferMemory;
+		returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+			free(inReleaseContext);
+		};
+	}
 	
 	return returnMe;
 }
@@ -1029,14 +1038,17 @@ GLBufferRef CreateBGRAFloatCPUBuffer(const Size & size, const GLBufferPoolRef & 
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	void			*bufferMemory = malloc(desc.backingLengthForSize(size));
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
-	returnMe->parentBufferPool = inPoolRef;
-	returnMe->backingID = GLBuffer::BackingID_Pixels;
-	returnMe->backingContext = bufferMemory;
-	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
-		free(inReleaseContext);
-	};
+	GLBufferRef		returnMe = inPoolRef->fetchMatchingFreeBuffer(desc, size);
+	if (returnMe == nullptr)	{
+		void			*bufferMemory = malloc(desc.backingLengthForSize(size));
+		returnMe = inPoolRef->createBufferRef(desc, size, bufferMemory, size, false);
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->backingID = GLBuffer::BackingID_Pixels;
+		returnMe->backingContext = bufferMemory;
+		returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+			free(inReleaseContext);
+		};
+	}
 	
 	return returnMe;
 }

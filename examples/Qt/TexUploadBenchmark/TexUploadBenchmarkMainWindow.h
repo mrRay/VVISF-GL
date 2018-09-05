@@ -40,6 +40,7 @@ private slots:
 private:
 	Ui::TexUploadBenchmarkMainWindow		*ui;
 	
+	QButtonGroup				textureTypeGroup;
 	QButtonGroup				pixelFormatGroup;
 	QButtonGroup				internalFormatGroup;
 	QButtonGroup				pixelTypeGroup;
@@ -48,6 +49,7 @@ private:
 	VVGL::TimestampRef			startTime = nullptr;	//	null until the test is started.  used to calculate how long the test takes.
 	int							testCount = 0;
 	VVGL::TimestampRef			endTime = nullptr;
+	
 	VVGL::GLCPUToTexCopierRef	cpuToTex = nullptr;
 };
 

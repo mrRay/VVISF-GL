@@ -52,11 +52,6 @@ using namespace std;
 
 
 
-static GLContextRef			_globalSharedContext = nullptr;
-
-
-
-
 #if defined(VVGL_SDK_MAC)
 /*!
 \relatesalso GLContext

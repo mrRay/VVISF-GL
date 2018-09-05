@@ -78,13 +78,13 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVISF/include
 
 
 SOURCES += \
+	../../../VVISF/src/ISFVal.cpp \
+	../../../VVISF/src/ISFAttr.cpp \
     ../../../VVISF/src/ISFDoc.cpp \
     ../../../VVISF/src/VVISF_StringUtils.cpp \
     ../../../VVISF/src/ISFScene.cpp \
     ../../../VVISF/src/ISFPassTarget.cpp \
-    ../../../VVISF/src/VVISF_Base.cpp \
-    ../../../VVISF/src/ISFAttr.cpp \
-    ../../../VVISF/src/ISFVal.cpp
+	../../../VVISF/src/VVISF_Base.cpp
 
 HEADERS += \
 	../../../VVISF/include/VVISF_Qt_global.hpp \
