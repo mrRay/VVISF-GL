@@ -32,6 +32,9 @@ static GLTexToTexCopierRef _isfPassTargetCopier = nullptr;
 ISFPassTargetRef ISFPassTarget::Create(const string & inName, const ISFDoc * inParentDoc)	{
 	return make_shared<ISFPassTarget>(inName, inParentDoc);
 }
+void ISFPassTarget::cleanup()	{
+	_isfPassTargetCopier = nullptr;
+}
 
 /*	========================================	*/
 #pragma mark --------------------- constructor/destructor

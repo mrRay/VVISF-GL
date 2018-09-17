@@ -52,6 +52,8 @@ class VVISF_EXPORT ISFPassTarget	{
 	public:
 		//	"class method" that creates a buffer ref
 		static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
+		//	clears the static tex-to-tex copier maintained by the class
+		static void cleanup();
 		
 		ISFPassTarget(const string & inName, const ISFDoc * inParentDoc);
 		~ISFPassTarget();

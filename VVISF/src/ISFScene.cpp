@@ -52,7 +52,7 @@ ISFScene::~ISFScene()	{
 #pragma mark --------------------- public methods
 
 
-void ISFScene::useFile()	{
+void ISFScene::useFile() throw(ISFErr)	{
 	lock_guard<recursive_mutex> rlock(renderLock);
 	lock_guard<mutex>	plock(propertyLock);
 	if (doc != nullptr)
@@ -71,8 +71,8 @@ void ISFScene::useFile()	{
 		compiledInputTypeString=nullptr;
 	}
 }
-void ISFScene::useFile(const string & inPath)	{
-	cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
+void ISFScene::useFile(const string & inPath) throw(ISFErr)	{
+	//cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{
 		lock_guard<recursive_mutex> rlock(renderLock);
 		lock_guard<mutex>	plock(propertyLock);
