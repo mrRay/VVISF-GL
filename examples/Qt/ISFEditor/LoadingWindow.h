@@ -2,6 +2,7 @@
 #define LOADINGWINDOW_H
 
 #include <QWidget>
+#include <QSpinBox>
 class QItemSelection;
 class QScrollArea;
 
@@ -24,14 +25,13 @@ public:
 	~LoadingWindow();
 	
 	QScrollArea * getScrollArea();
+	QSpinBox * getWidthSB();
+	QSpinBox * getHeightSB();
 	inline QString getBaseDirectory() { return baseDirectory; }
 	
 	void on_createNewFile();
 	void on_loadFile(const QString & n);
 	void on_saveFile();
-
-public slots:
-	void updateRenderSizeUI();
 
 private slots:
 	void on_loadUserISFsButton_clicked();

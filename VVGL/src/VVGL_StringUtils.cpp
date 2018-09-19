@@ -89,6 +89,20 @@ string FmtString(const char * fmt, ...)	{
 	free(buf);
 	return returnMe;
 }
+int NumLines(const string & n)	{
+	int			returnMe = 0;
+	for (const char & c : n)	{
+		switch (c)	{
+		case '\r':
+		case '\n':
+			++returnMe;
+			break;
+		default:
+			break;
+		}
+	}
+	return returnMe;
+}
 
 
 

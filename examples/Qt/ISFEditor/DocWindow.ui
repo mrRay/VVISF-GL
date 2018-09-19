@@ -122,7 +122,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="compilerErrorsListWidget"/>
+         <widget class="QPlainTextEdit" name="compilerErrorsTextWidget"/>
         </item>
        </layout>
       </widget>

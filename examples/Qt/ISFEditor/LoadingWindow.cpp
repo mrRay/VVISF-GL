@@ -35,6 +35,12 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	
 	ui->setupUi(this);
 	
+	//	the spinboxes for setting rendering res need sane min/maxes
+	ui->renderResWidthWidget->setMinimum(1);
+	ui->renderResWidthWidget->setMaximum(16384);
+	ui->renderResHeightWidget->setMinimum(1);
+	ui->renderResHeightWidget->setMaximum(16384);
+	
 	//	figure out what directory's contents we want to display, and use it to set the base directory
 	QString			defaultDirToLoad;
 #ifdef Q_OS_MAC
@@ -92,6 +98,8 @@ LoadingWindow::~LoadingWindow()
 QScrollArea * LoadingWindow::getScrollArea()	{
 	return ui->scrollArea;
 }
+QSpinBox * LoadingWindow::getWidthSB() { return ui->renderResWidthWidget; }
+QSpinBox * LoadingWindow::getHeightSB() { return ui->renderResHeightWidget; }
 void LoadingWindow::on_createNewFile()	{
 	//	make new tmp file, populate its contents
 	QString			tmpFilePath = QString();
@@ -117,27 +125,11 @@ void LoadingWindow::on_createNewFile()	{
 	on_loadFile(tmpFilePath);
 }
 void LoadingWindow::on_loadFile(const QString & n)	{
-	//	tell the doc window to clear everything
-	GetDocWindow()->clearFileAndVars();
-	//	tell the ISF controller to load the passed file
+	//	tell the ISF controller to load the passed file- the ISF controller will tell the doc window (and myself) to load when it's ready
 	GetISFController()->loadFile(n);
-	//	tell the doc window to update its contents
-	GetDocWindow()->updateContentsFromISFController();
 }
 void LoadingWindow::on_saveFile()	{
-}
-
-
-
-
-void LoadingWindow::updateRenderSizeUI()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	ISFController		*ic = GetISFController();
-	if (ic == nullptr)
-		return;
-	Size			renderSize = ic->getRenderSize();
-	ui->renderResWidthWidget->setValue(renderSize.width);
-	ui->renderResHeightWidget->setValue(renderSize.height);
 }
 
 

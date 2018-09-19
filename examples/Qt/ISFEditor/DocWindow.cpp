@@ -52,14 +52,20 @@ DocWindow::DocWindow(QWidget *parent) :
 		if (jsonTableWidget != nullptr)	{
 			jsonTableWidget->setMinimumSize(QSize(250,250));
 		}
-		//int			tmpPos = ui->splitter->closestLegalPosition(999999,0);
-		//ui->splitter->moveSplitter(0,tmpPos);
+		
 		QList<int>		tmpSizes;
 		tmpSizes.append(99999);
 		tmpSizes.append(0);
 		tmpSizes.append(0);
 		ui->splitter->setSizes(tmpSizes);
 		
+		QFont		tmpFont;
+		tmpFont.setFamily("Courier");
+		tmpFont.setFixedPitch(true);
+		tmpFont.setPointSize(12);
+		ui->compilerErrorsTextWidget->setFont(tmpFont);
+		
+		ui->compilerErrorsTextWidget->setReadOnly(true);
 		ui->compiledVertShader->setReadOnly(true);
 		ui->compiledFragShader->setReadOnly(true);
 		ui->parsedJSON->setReadOnly(true);
@@ -119,29 +125,12 @@ DocWindow::~DocWindow()	{
 	VVDELETE(_vertFilePath);
 	VVDELETE(_vertFilePathContentsOnOpen);
 	//	delete any tmp files that may exist
-	//VVDELETE(_tmpFragShaderFile);
-	//VVDELETE(_tmpVertShaderFile);
 	
 }
 
 
 
 
-void DocWindow::clearFileAndVars()	{
-	lock_guard<recursive_mutex>		lock(propLock);
-	
-	//	kill the save timer if it exists
-	if (_tmpFileSaveTimer != nullptr)	{
-		_tmpFileSaveTimer->stop();
-		delete _tmpFileSaveTimer;
-		_tmpFileSaveTimer = nullptr;
-	}
-	//	clear out the old paths and file contents
-	VVDELETE(_fragFilePath);
-	VVDELETE(_fragFilePathContentsOnOpen);
-	VVDELETE(_vertFilePath);
-	VVDELETE(_vertFilePathContentsOnOpen);
-}
 void DocWindow::updateContentsFromISFController()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
@@ -167,16 +156,23 @@ void DocWindow::updateContentsFromISFController()	{
 		_fragFilePath = new QString( QString::fromStdString(doc->getPath()) );
 		//	check for a vert file by using the common recognized extensions for vert shaders
 		QFileInfo		fragFileInfo(*_fragFilePath);
-		QString			tmpPath = QString("%1/%2.vs").arg( fragFileInfo.dir().currentPath(), fragFileInfo.completeBaseName() );
+		QString			tmpPath = QString("%1/%2.vs").arg( fragFileInfo.dir().absolutePath(), fragFileInfo.completeBaseName() );
+		//qDebug() << "\tchecking for vert file at " << tmpPath;
 		if (QFileInfo::exists(tmpPath))	{
+			//qDebug() << "\tfound the file!";
 			_vertFilePath = new QString(tmpPath);
 		}
 		else	{
-			tmpPath = QString("%1/%2.vert").arg( fragFileInfo.dir().currentPath(), fragFileInfo.completeBaseName() );
+			tmpPath = QString("%1/%2.vert").arg( fragFileInfo.dir().absolutePath(), fragFileInfo.completeBaseName() );
+			//qDebug() << "\tchecking for vert file at " << tmpPath;
 			if (QFileInfo::exists(tmpPath))	{
+				//qDebug() << "\tfound the file!";
 				_vertFilePath = new QString(tmpPath);
 			}
 		}
+		
+		
+		QString			errString;
 		
 		//	if there's a frag file, load its contents and populate the editor
 		if (_fragFilePath != nullptr)	{
@@ -187,10 +183,28 @@ void DocWindow::updateContentsFromISFController()	{
 				tmpFragFile.close();
 			}
 		}
-		if (_fragFilePathContentsOnOpen == nullptr)
+		if (_fragFilePathContentsOnOpen == nullptr)	{
 			ui->fragShaderEditor->clear();
-		else
+			ui->fragShaderEditor->setErrorLineNumbers(nullptr);
+		}
+		else	{
+			//	set the contents of the frag shader editor
 			ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
+			//	assemble a vector containing the line numbers with errors
+			QVector<int>		tmpLineNos;
+			auto				fragErrs = GetISFController()->getSceneFragErrors();
+			if (fragErrs.size() > 0)
+				errString.append("Fragment shader errors:\n");
+			for (auto fragErrPair : fragErrs)	{
+				tmpLineNos.append(fragErrPair.first);
+				errString.append( QString::fromStdString(fragErrPair.second) );
+			}
+			if (fragErrs.size() > 0)
+				errString.append("\n\n");
+			//	give the vector of line numbers for errors to the frag shader editor
+			ui->fragShaderEditor->setErrorLineNumbers(tmpLineNos);
+		}
+		
 		
 		//	if there's a vert file, load its contents and populate the editor
 		if (_vertFilePath != nullptr)	{
@@ -201,18 +215,32 @@ void DocWindow::updateContentsFromISFController()	{
 				tmpVertFile.close();
 			}
 		}
-		if (_vertFilePathContentsOnOpen == nullptr)
+		if (_vertFilePathContentsOnOpen == nullptr)	{
 			ui->vertShaderEditor->clear();
-		else
+			ui->vertShaderEditor->setErrorLineNumbers(nullptr);
+		}
+		else	{
+			//	set the contents of the vert shader editor
 			ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
+			//	assemble a vector containing the line numbers with errors
+			QVector<int>		tmpLineNos;
+			auto				vertErrs = GetISFController()->getSceneVertErrors();
+			if (vertErrs.size() > 0)
+				errString.append("Vertex shader errors:\n");
+			for (auto vertErrPair : vertErrs)	{
+				tmpLineNos.append(vertErrPair.first);
+				errString.append( QString::fromStdString(vertErrPair.second) );
+			}
+			//	give the vector of line numbers for errors to the frag shader editor
+			ui->vertShaderEditor->setErrorLineNumbers(tmpLineNos);
+		}
 		
-		/*
-		_fragFilePathContentsOnOpen = new QString( QString::fromStdString(*doc->getFragShaderSource()) );
-		ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
-		_vertFilePathContentsOnOpen = new QString( QString::fromStdString(*doc->getVertShaderSource()) );
-		ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
-		*/
 		
+		if (errString.length() < 1)
+			errString.append("No compiler errors!  Hooray!");
+		
+		
+		ui->compilerErrorsTextWidget->setPlainText( errString );
 		ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
 		ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
 		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->getJSONString()) );
@@ -221,9 +249,10 @@ void DocWindow::updateContentsFromISFController()	{
 		ui->fragShaderEditor->setPlainText(QString(""));
 		ui->vertShaderEditor->setPlainText(QString(""));
 		
-		ui->compiledVertShader->setReadOnly(true);
-		ui->compiledFragShader->setReadOnly(true);
-		ui->parsedJSON->setReadOnly(true);
+		ui->compilerErrorsTextWidget->setPlainText( "" );
+		ui->compiledFragShader->setPlainText( "" );
+		ui->compiledVertShader->setPlainText( "" );
+		ui->parsedJSON->setPlainText( "" );
 	}
 }
 void DocWindow::saveOpenFile()	{

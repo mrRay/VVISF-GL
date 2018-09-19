@@ -1136,14 +1136,22 @@ void ISFDoc::evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize)	{
 
 void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	//	isolate the JSON blob that should be at the beginning of the file in a comment, save it as one string- save everything else as the raw shader source string
-	auto			openCommentIndex = inRawFile.find("/*");	//	the "+2" is to move the index up past the string we're searching for
+	auto			openCommentIndex = inRawFile.find("/*");
 	auto			closeCommentIndex = inRawFile.find("*/");
 	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
 		throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *path);
 	}
-	jsonSourceString = new string(inRawFile, 0, closeCommentIndex+2);
-	jsonString = new string(inRawFile, openCommentIndex+2, closeCommentIndex - (openCommentIndex+2));
-	fragShaderSource = new string(inRawFile, closeCommentIndex + 2);
+	//	we need to advance 'closeCommentLineEnd' to include both the full "close comment" as well as the next "line break"
+	auto			tmpIt = inRawFile.begin();
+	tmpIt += closeCommentIndex;
+	while (*tmpIt!='\n' && *tmpIt!='\r')
+		++tmpIt;
+	++tmpIt;
+	auto			closeCommentLineEnd = tmpIt - inRawFile.begin();
+	
+	jsonSourceString = new string(inRawFile, 0, closeCommentLineEnd);
+	jsonString = new string(inRawFile, openCommentIndex+2, closeCommentIndex - (openCommentIndex+2) );
+	fragShaderSource = new string(inRawFile, closeCommentLineEnd);
 	
 	//	parse the JSON blob, turning it into objects we can parse programmatically
 	json			jblob;

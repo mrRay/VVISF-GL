@@ -31,7 +31,6 @@ public:
 	explicit DocWindow(QWidget *parent = nullptr);
 	~DocWindow();
 	
-	void clearFileAndVars();
 	void updateContentsFromISFController();
 	
 	void saveOpenFile();

@@ -35,6 +35,7 @@ public:
 	
 	//	the passed line numbers will be flagged for display as errors of some sort in the UI, and the signal 'selectedErrorAtLine' will be emitted when the cursor navigates over any of these lines
 	void setErrorLineNumbers(const QVector<int> & inVect);
+	void setErrorLineNumbers(const QVector<int> * inVect);
 	
 	//	the passed QJsonDocument is expected to be a JSON object with the following key/value pairs which define syntax coloring and auto-completion content.  when syntax coloring is applied, it is applied in the order in which the following key/value pairs are listed (so if a word matches multiple patterns- like a keyword that has been commented out- the last will take precedence):
 	//		VARIABLES : array of strings, each string is a defined variable name

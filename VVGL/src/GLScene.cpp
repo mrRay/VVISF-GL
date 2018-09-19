@@ -446,8 +446,8 @@ void GLScene::_renderPrep()	{
 				glGetShaderInfoLog(vs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling vertex shader in " << __PRETTY_FUNCTION__ << endl;
-				cout << "\terr: " << log << endl;
-				cout << "\traw shader is:\n" << vsString << endl;
+				//cout << "\terr: " << log << endl;
+				//cout << "\traw shader is:\n" << vsString << endl;
 				encounteredError = true;
 				
 				{
@@ -483,8 +483,8 @@ void GLScene::_renderPrep()	{
 				glGetShaderInfoLog(gs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling geo shader in " << __PRETTY_FUNCTION__ << endl;
-				cout << "\terr: " << log << endl;
-				cout << "\traw shader is:\n" << gsString << endl;
+				//cout << "\terr: " << log << endl;
+				//cout << "\traw shader is:\n" << gsString << endl;
 				encounteredError = true;
 				
 				{
@@ -520,8 +520,8 @@ void GLScene::_renderPrep()	{
 				glGetShaderInfoLog(fs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling fragment shader in " << __PRETTY_FUNCTION__ << endl;
-				cout << "\terr: " << log << endl;
-				cout << "\traw shader is:\n" << fsString << endl;
+				//cout << "\terr: " << log << endl;
+				//cout << "\traw shader is:\n" << fsString << endl;
 				encounteredError = true;
 				
 				{

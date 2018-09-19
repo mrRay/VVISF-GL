@@ -77,13 +77,28 @@ SimpleSourceCodeEdit::~SimpleSourceCodeEdit()
 }
 
 
-void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> & inVect)
-{
+void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> & inVect)	{
 	{
 		std::lock_guard<std::recursive_mutex>		lock(errLock);
 		if (errLineNumbers != nullptr)
 			delete errLineNumbers;
-		errLineNumbers = new QVector<int>(inVect);
+		if (inVect.length() < 1)
+			errLineNumbers = nullptr;
+		else
+			errLineNumbers = new QVector<int>(inVect);
+	}
+	
+	highlightCurrentLine();
+}
+void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> * inVect)	{
+	{
+		std::lock_guard<std::recursive_mutex>		lock(errLock);
+		if (errLineNumbers != nullptr)
+			delete errLineNumbers;
+		if (inVect ==nullptr)
+			errLineNumbers = nullptr;
+		else
+			errLineNumbers = new QVector<int>(*inVect);
 	}
 	
 	highlightCurrentLine();

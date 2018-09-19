@@ -24,6 +24,8 @@ VVGL_EXPORT string StringByDeletingExtension(const string & n);
 VVGL_EXPORT string StringByDeletingLastAndAddingFirstSlash(const string & n);
 //	this function returns a string instance created by passing a c-style format string + any number of arguments
 VVGL_EXPORT string FmtString(const char * fmt, ...);
+//	this function returns the number of lines in the passed string
+VVGL_EXPORT int NumLines(const string & n);
 
 
 
