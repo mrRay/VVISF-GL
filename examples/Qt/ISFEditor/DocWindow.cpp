@@ -47,6 +47,19 @@ DocWindow::DocWindow(QWidget *parent) :
 		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
 		
+		ui->splitter->setCollapsible(2, false);
+		QWidget		*jsonTableWidget = ui->splitter->widget(2);
+		if (jsonTableWidget != nullptr)	{
+			jsonTableWidget->setMinimumSize(QSize(250,250));
+		}
+		//int			tmpPos = ui->splitter->closestLegalPosition(999999,0);
+		//ui->splitter->moveSplitter(0,tmpPos);
+		QList<int>		tmpSizes;
+		tmpSizes.append(99999);
+		tmpSizes.append(0);
+		tmpSizes.append(0);
+		ui->splitter->setSizes(tmpSizes);
+		
 		ui->compiledVertShader->setReadOnly(true);
 		ui->compiledFragShader->setReadOnly(true);
 		ui->parsedJSON->setReadOnly(true);
