@@ -73,7 +73,32 @@
          </widget>
         </item>
         <item>
-         <widget class="QTableView" name="jsonEditor"/>
+         <widget class="JSONScrollWidget" name="jsonGUIWidget">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>97</width>
+             <height>249</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+           </layout>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -223,6 +248,12 @@
    <class>SimpleSourceCodeEdit</class>
    <extends>QPlainTextEdit</extends>
    <header>SimpleSourceCodeEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>JSONScrollWidget</class>
+   <extends>QScrollArea</extends>
+   <header>JSONScrollWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

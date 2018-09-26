@@ -65,6 +65,11 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	else
 		setBaseDirectory(defaultDirToLoad);
 	
+	//	restore the window position
+	if (settings.contains("LoadingWindowGeometry"))	{
+		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
+	}
+	
 	//	we need to load a new file as the selection changes
 	QItemSelectionModel		*selModel = ui->filterListView->selectionModel();
 	if (selModel != nullptr)	{
@@ -130,6 +135,16 @@ void LoadingWindow::on_loadFile(const QString & n)	{
 }
 void LoadingWindow::on_saveFile()	{
 	qDebug() << __PRETTY_FUNCTION__;
+}
+
+
+
+
+void LoadingWindow::closeEvent(QCloseEvent * event)	{
+	QSettings		settings;
+	settings.setValue("LoadingWindowGeometry", saveGeometry());
+	
+	QWidget::closeEvent(event);
 }
 
 

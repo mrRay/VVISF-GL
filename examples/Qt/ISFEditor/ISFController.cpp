@@ -255,7 +255,7 @@ void ISFController::populateLoadingWindowUI()	{
 	QScrollArea				*scrollArea = lw->getScrollArea();
 	QWidget					*scrollWidget = (scrollArea==nullptr) ? nullptr : scrollArea->widget();
 	QLayout					*scrollLayout = (scrollWidget==nullptr) ? nullptr : scrollWidget->layout();
-	if (scrollWidget == nullptr)
+	if (scrollLayout == nullptr)
 		return;
 	
 	//	get a lock

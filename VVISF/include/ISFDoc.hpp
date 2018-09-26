@@ -40,6 +40,7 @@ class VVISF_EXPORT ISFDoc	{
 		string			*name = nullptr;	//	just the file name (including its extension)
 		string			*description = nullptr;	//	description of whatever the file does
 		string			*credit = nullptr;	//	credit
+		string			*vsn = nullptr;
 		ISFFileType		type = ISFFileType_Source;
 		
 		vector<string>			categories;	//	array of strings of the category names this doc should be listed under
@@ -103,6 +104,8 @@ class VVISF_EXPORT ISFDoc	{
 		string getDescription() const { return (description==nullptr) ? string("") : string(*description); }
 		//!	Returns the receiver's "credit" string, as defined in its JSON blob ("CREDIT").
 		string getCredit() const { return (credit==nullptr) ? string("") : string(*credit); }
+		//!	Returns the receiver's "vsn" string, as defined in its JSON blob ("VSN")
+		string getVsn() const { return (vsn==nullptr) ? string("") : string(*vsn); }
 		//!	Returns the receiver's file type.
 		ISFFileType getType() const { return type; }
 		//!	Returns a vector containing strings listing the receiver's categories.

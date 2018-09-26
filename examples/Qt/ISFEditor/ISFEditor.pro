@@ -41,7 +41,27 @@ SOURCES += \
     SimpleSourceCodeEdit.cpp \
     ISFController.cpp \
     ISFUIItem.cpp \
-    ISFRemoteImageClient.cpp
+    ISFRemoteImageClient.cpp \
+    JSONScrollWidget.cpp \
+    JSONGUI/JSONGUIBasicInfoWidget.cpp \
+    JSONGUI/JSONGUIGroupInputWidget.cpp \
+    JSONGUI/JSONGUIGroupPassWidget.cpp \
+    JSONGUI/JSONGUIInputAudioWidget.cpp \
+    JSONGUI/JSONGUIInputAudioFFTWidget.cpp \
+    JSONGUI/JSONGUIInputBoolWidget.cpp \
+    JSONGUI/JSONGUIInputColorWidget.cpp \
+    JSONGUI/JSONGUIInputEventWidget.cpp \
+    JSONGUI/JSONGUIInputFloatWidget.cpp \
+    JSONGUI/JSONGUIInputImageWidget.cpp \
+    JSONGUI/JSONGUIInputLongWidget.cpp \
+    JSONGUI/JSONGUIInputPoint2DWidget.cpp \
+    JSONGUI/JSONGUIPassWidget.cpp \
+    JSONGUI/JSONGUIArrayGroup.cpp \
+    JSONGUI/JSONGUIDictGroup.cpp \
+    JSONGUI/JSONGUIInput.cpp \
+    JSONGUI/JSONGUIPass.cpp \
+    JSONGUI/JSONGUIPersistentBuffer.cpp \
+    JSONGUI/JSONGUITop.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -53,13 +73,46 @@ HEADERS += \
     ISFController.h \
     ISFUIItem.h \
     ISFRemoteImageClient.h \
-	QDoubleSlider.h
+	QDoubleSlider.h \
+    JSONScrollWidget.h \
+    JSONGUI/JSONGUIBasicInfoWidget.h \
+    JSONGUI/JSONGUIGroupInputWidget.h \
+    JSONGUI/JSONGUIGroupPassWidget.h \
+    JSONGUI/JSONGUIInputAudioWidget.h \
+    JSONGUI/JSONGUIInputAudioFFTWidget.h \
+    JSONGUI/JSONGUIInputBoolWidget.h \
+    JSONGUI/JSONGUIInputColorWidget.h \
+    JSONGUI/JSONGUIInputEventWidget.h \
+    JSONGUI/JSONGUIInputFloatWidget.h \
+    JSONGUI/JSONGUIInputImageWidget.h \
+    JSONGUI/JSONGUIInputLongWidget.h \
+    JSONGUI/JSONGUIInputPoint2DWidget.h \
+    JSONGUI/JSONGUIPassWidget.h \
+    JSONGUI/JSONGUIArrayGroup.h \
+    JSONGUI/JSONGUIDictGroup.h \
+    JSONGUI/JSONGUIInput.h \
+    JSONGUI/JSONGUIPass.h \
+    JSONGUI/JSONGUIPersistentBuffer.h \
+    JSONGUI/JSONGUITop.h
 
 FORMS += \
         MainWindow.ui \
     LoadingWindow.ui \
     OutputWindow.ui \
-    DocWindow.ui
+    DocWindow.ui \
+    JSONGUI/JSONGUIGroupInputWidget.ui \
+    JSONGUI/JSONGUIBasicInfoWidget.ui \
+    JSONGUI/JSONGUIGroupPassWidget.ui \
+    JSONGUI/JSONGUIInputAudioWidget.ui \
+    JSONGUI/JSONGUIInputAudioFFTWidget.ui \
+    JSONGUI/JSONGUIInputBoolWidget.ui \
+    JSONGUI/JSONGUIInputColorWidget.ui \
+    JSONGUI/JSONGUIInputEventWidget.ui \
+    JSONGUI/JSONGUIInputFloatWidget.ui \
+    JSONGUI/JSONGUIInputImageWidget.ui \
+    JSONGUI/JSONGUIInputLongWidget.ui \
+    JSONGUI/JSONGUIInputPoint2DWidget.ui \
+    JSONGUI/JSONGUIPassWidget.ui
 
 RESOURCES += \
     shaderLanguagefiles.qrc \
@@ -84,6 +137,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../common
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF
+INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
 
 
 

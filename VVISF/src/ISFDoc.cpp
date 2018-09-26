@@ -113,6 +113,10 @@ ISFDoc::~ISFDoc()	{
 		delete credit;
 		credit = nullptr;
 	}
+	if (vsn != nullptr)	{
+		delete vsn;
+		vsn = nullptr;
+	}
 	
 	
 	if (jsonSourceString != nullptr)	{
@@ -1181,6 +1185,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	anObj = jblob.value("CREDIT",json());
 	if (anObj.is_string())	{
 		credit = new string(anObj.get<string>());
+	}
+	
+	//	parse the vsn
+	anObj = jblob.value("VSN",json());
+	if (anObj.is_string())	{
+		vsn = new string(anObj.get<string>());
 	}
 	
 	//	parse the categories

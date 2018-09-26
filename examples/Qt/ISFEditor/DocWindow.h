@@ -38,6 +38,8 @@ public:
 	bool contentsNeedToBeSaved();
 	QString fragFilePath();
 	
+protected:
+	void closeEvent(QCloseEvent * event);
 	
 private:
 	Ui::DocWindow		*ui;

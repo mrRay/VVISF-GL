@@ -32,6 +32,9 @@ public:
 	void on_createNewFile();
 	void on_loadFile(const QString & n);
 	void on_saveFile();
+	
+protected:
+	void closeEvent(QCloseEvent * event);
 
 private slots:
 	void on_loadUserISFsButton_clicked();

@@ -2,6 +2,7 @@
 #include "ui_OutputWindow.h"
 
 #include <QDebug>
+#include <QSettings>
 
 #include "ISFPassTarget.hpp"
 
@@ -20,10 +21,23 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	connect(ui->bufferView, SIGNAL(frameSwapped()), this, SLOT(widgetDrewItsFirstFrame()));
 	//	we need to shut stuff down and delete contexts gracefull on quit
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+	
+	//	restore the window position
+	QSettings		settings;
+	if (settings.contains("OutputWindowGeometry"))	{
+		restoreGeometry(settings.value("OutputWindowGeometry").toByteArray());
+	}
 }
 
 OutputWindow::~OutputWindow()	{
 	delete ui;
+}
+
+void OutputWindow::closeEvent(QCloseEvent * event)	{
+	QSettings		settings;
+	settings.setValue("OutputWindowGeometry", saveGeometry());
+	
+	QWidget::closeEvent(event);
 }
 
 void OutputWindow::on_renderPassComboBox_currentIndexChanged(int index)	{

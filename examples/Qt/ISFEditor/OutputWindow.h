@@ -21,6 +21,9 @@ class OutputWindow : public QWidget
 public:
 	explicit OutputWindow(QWidget *parent = nullptr);
 	~OutputWindow();
+	
+protected:
+	void closeEvent(QCloseEvent * event);
 
 private slots:
 	void on_renderPassComboBox_currentIndexChanged(int index);

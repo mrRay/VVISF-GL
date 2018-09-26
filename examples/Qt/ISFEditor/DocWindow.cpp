@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QFileDialog>
+#include <QSettings>
 
 #include "SimpleSourceCodeEdit.h"
 #include "LoadingWindow.h"
@@ -107,6 +108,12 @@ DocWindow::DocWindow(QWidget *parent) :
 	}
 	else
 		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
+	
+	//	restore the window position
+	QSettings		settings;
+	if (settings.contains("DocWindowGeometry"))	{
+		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
+	}
 }
 DocWindow::~DocWindow()	{
 	delete ui;
@@ -244,6 +251,8 @@ void DocWindow::updateContentsFromISFController()	{
 		ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
 		ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
 		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->getJSONString()) );
+		
+		ui->jsonGUIWidget->loadDocFromISFController();
 	}
 	else	{
 		ui->fragShaderEditor->setPlainText(QString(""));
@@ -253,6 +262,8 @@ void DocWindow::updateContentsFromISFController()	{
 		ui->compiledFragShader->setPlainText( "" );
 		ui->compiledVertShader->setPlainText( "" );
 		ui->parsedJSON->setPlainText( "" );
+		
+		ui->jsonGUIWidget->loadDocFromISFController();
 	}
 }
 void DocWindow::saveOpenFile()	{
@@ -406,6 +417,20 @@ QString DocWindow::fragFilePath()	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	QString		returnMe = (_fragFilePath==nullptr) ? QString("") : QString(*_fragFilePath);
 	return returnMe;
+}
+
+
+
+
+
+
+
+
+void DocWindow::closeEvent(QCloseEvent * event)	{
+	QSettings		settings;
+	settings.setValue("DocWindowGeometry", saveGeometry());
+	
+	QWidget::closeEvent(event);
 }
 
 
