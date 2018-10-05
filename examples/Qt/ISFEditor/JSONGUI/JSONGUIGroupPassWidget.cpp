@@ -1,5 +1,5 @@
 #include "JSONGUIGroupPassWidget.h"
-#include "ui_JSONGUIGroupPass.h"
+#include "ui_JSONGUIGroupPassWidget.h"
 
 
 

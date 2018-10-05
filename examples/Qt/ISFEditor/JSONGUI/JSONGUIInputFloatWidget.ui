@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>376</width>
     <height>160</height>
    </rect>
   </property>
@@ -31,6 +31,19 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="2">
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="pushButton">
        <property name="sizePolicy">
@@ -45,25 +58,12 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label">
+      <widget class="QLineEdit" name="inputNameEdit">
+       <property name="styleSheet">
+        <string notr="true">background: rgba(0,0,0,0); border-radius: 0px;</string>
+       </property>
        <property name="text">
         <string>INPUTNAME</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
        </property>
       </widget>
      </item>
@@ -100,7 +100,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="labelField"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_3">
@@ -119,7 +119,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="typePUB">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -139,13 +139,13 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <property name="leftMargin">
-      <number>12</number>
+      <number>0</number>
      </property>
      <property name="rightMargin">
-      <number>12</number>
+      <number>0</number>
      </property>
      <item row="0" column="2">
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="defaultCBox">
        <property name="text">
         <string/>
        </property>
@@ -190,7 +190,7 @@
       </widget>
      </item>
      <item row="0" column="5">
-      <widget class="QCheckBox" name="checkBox_2">
+      <widget class="QCheckBox" name="identityCBox">
        <property name="text">
         <string/>
        </property>
@@ -219,7 +219,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QCheckBox" name="checkBox_3">
+      <widget class="QCheckBox" name="minCBox">
        <property name="text">
         <string/>
        </property>
@@ -242,23 +242,39 @@
       </widget>
      </item>
      <item row="1" column="5">
-      <widget class="QCheckBox" name="checkBox_4">
+      <widget class="QCheckBox" name="maxCBox">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+      <widget class="QDoubleSpinBox" name="defaultSBox">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+      <widget class="QDoubleSpinBox" name="minSBox">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
      <item row="0" column="4">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+      <widget class="QDoubleSpinBox" name="identitySBox">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
      <item row="1" column="4">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+      <widget class="QDoubleSpinBox" name="maxSBox">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

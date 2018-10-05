@@ -7,8 +7,14 @@
 #include <QVector>
 #include <QPointer>
 #include <QSpacerItem>
+//#include <QMap>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QSharedPointer>
 
 #include "VVISF.hpp"
+
+class JGMTop;
 
 
 
@@ -27,14 +33,19 @@ public:
 	~JSONScrollWidget();
 	
 	void loadDocFromISFController();
+	void recreateJSONAndExport();
 	
 private:
 	std::recursive_mutex	itemLock;
 	ISFDocRef				doc = nullptr;
+	QSharedPointer<JGMTop>	top = nullptr;
+	//JGMTopRef				top = nullptr;
+	
 	QVector<QPointer<QWidget>>		items;	//	weak refs 'cause the layout owns the widgets...
 	QSpacerItem				*spacerItem = nullptr;
 	
 	void clearItems();
+	void repopulateUI();
 	
 	int indexBasicInfo();
 	int indexInputsGroupItem();
@@ -43,6 +54,12 @@ private:
 	int indexPassesGroupItem();
 	int indexPassByIndex(const int & n);
 };
+
+
+
+
+//	calls recreateJSONAndExport() on the global singleton of JSONScrollWidget
+void RecreateJSONAndExport();
 
 
 

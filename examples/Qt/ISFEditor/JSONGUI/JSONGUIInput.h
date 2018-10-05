@@ -1,17 +1,38 @@
-#ifndef JSONGUIINPUT_H
-#define JSONGUIINPUT_H
+#ifndef JSONGUIINPUTWIDGET_H
+#define JSONGUIINPUTWIDGET_H
 
 #include <QObject>
+class QLabel;
+class QComboBox;
+class QLineEdit;
 
-class JSONGUIInput : public QObject
+#include "JGMObject.h"
+
+
+
+
+class JSONGUIInput
 {
-	Q_OBJECT
 public:
-	explicit JSONGUIInput(QObject *parent = nullptr);
-
-signals:
-
-public slots:
+	JSONGUIInput(const JGMInputRef & inInput);
+	~JSONGUIInput();
+	
+	void prepareInputNameEdit(QLineEdit & inputNameEdit);
+	void prepareLabelField(QLineEdit & labelField);
+	void prepareTypeCBox(QComboBox & typeCB);
+	
+	void refreshInputNameEdit(QLineEdit & inputNameEdit);
+	void refreshLabelField(QLineEdit & labelField);
+	void refreshTypeCBox(QComboBox & typeCB);
+	
+	virtual void prepareUIItems() {};
+	virtual void refreshUIItems() {};
+	
+protected:
+	JGMInputRef		_input = nullptr;
 };
 
-#endif // JSONGUIINPUT_H
+
+
+
+#endif // JSONGUIINPUTWIDGET_H

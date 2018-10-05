@@ -56,12 +56,11 @@ SOURCES += \
     JSONGUI/JSONGUIInputLongWidget.cpp \
     JSONGUI/JSONGUIInputPoint2DWidget.cpp \
     JSONGUI/JSONGUIPassWidget.cpp \
-    JSONGUI/JSONGUIArrayGroup.cpp \
-    JSONGUI/JSONGUIDictGroup.cpp \
-    JSONGUI/JSONGUIInput.cpp \
-    JSONGUI/JSONGUIPass.cpp \
-    JSONGUI/JSONGUIPersistentBuffer.cpp \
-    JSONGUI/JSONGUITop.cpp
+    JGMObject.cpp \
+    JSONGUI/JGMTop.cpp \
+    JSONGUI/JGMCArray.cpp \
+    JSONGUI/JGMCDict.cpp \
+    JSONGUI/JSONGUIInput.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -88,12 +87,13 @@ HEADERS += \
     JSONGUI/JSONGUIInputLongWidget.h \
     JSONGUI/JSONGUIInputPoint2DWidget.h \
     JSONGUI/JSONGUIPassWidget.h \
-    JSONGUI/JSONGUIArrayGroup.h \
-    JSONGUI/JSONGUIDictGroup.h \
+    JGMObject.h \
+    JSONGUI/JGMTop.h \
+    JSONGUI/JGMCArray.h \
+    JSONGUI/JGMCDict.h \
+    JSONGUI/JGMDefs.h \
     JSONGUI/JSONGUIInput.h \
-    JSONGUI/JSONGUIPass.h \
-    JSONGUI/JSONGUIPersistentBuffer.h \
-    JSONGUI/JSONGUITop.h
+    JSONGUI/QLabelClickable.h
 
 FORMS += \
         MainWindow.ui \

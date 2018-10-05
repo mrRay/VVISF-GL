@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "VVISF.hpp"
+#include "JSONGUIInput.h"
 
 
 
@@ -12,18 +12,19 @@ namespace Ui {
 	class JSONGUIInputColor;
 }
 
-using namespace VVISF;
 
 
 
-
-class JSONGUIInputColorWidget : public QWidget
+class JSONGUIInputColorWidget : public QWidget, public JSONGUIInput
 {
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputColorWidget(const ISFAttrRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputColorWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
 	~JSONGUIInputColorWidget();
+	
+	virtual void prepareUIItems() override;
+	virtual void refreshUIItems() override;
 
 private:
 	Ui::JSONGUIInputColor *ui;

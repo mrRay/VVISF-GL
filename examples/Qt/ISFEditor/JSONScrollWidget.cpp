@@ -2,8 +2,11 @@
 
 #include <QDebug>
 #include <QLayout>
+#include <QFile>
 
 #include "ISFController.h"
+
+#include "JGMTop.h"
 
 #include "JSONGUIBasicInfoWidget.h"
 #include "JSONGUIGroupInputWidget.h"
@@ -24,6 +27,8 @@
 
 using namespace std;
 
+static JSONScrollWidget * globalScrollWidget = nullptr;
+
 
 
 
@@ -34,6 +39,8 @@ JSONScrollWidget::JSONScrollWidget(QWidget * inParent) : QScrollArea(inParent)	{
 	setAutoFillBackground(true);
 	setPalette(p);
 	*/
+	
+	globalScrollWidget = this;
 }
 JSONScrollWidget::~JSONScrollWidget()	{
 	clearItems();
@@ -48,6 +55,10 @@ JSONScrollWidget::~JSONScrollWidget()	{
 		delete spacerItem;
 		spacerItem = nullptr;
 	}
+	
+	if (top != nullptr)
+		top = nullptr;
+	
 }
 
 
@@ -61,89 +72,42 @@ void JSONScrollWidget::loadDocFromISFController()	{
 	ISFSceneRef			scene = (isfc==nullptr) ? nullptr : isfc->getScene();
 	doc = (scene==nullptr) ? nullptr : scene->getDoc();
 	
+	QJsonObject			isfDict = QJsonObject();
+	string				*jsonStr = doc->getJSONString();
+	if (jsonStr != nullptr)	{
+		QJsonDocument		tmpDoc = QJsonDocument::fromJson( jsonStr->c_str() );
+		if (!tmpDoc.isEmpty() && tmpDoc.isObject())	{
+			isfDict = QJsonObject(tmpDoc.object());
+		}
+	}
+	
+	//	update the JGMTop instance
+	if (top != nullptr)
+		top = nullptr;
+	//top = QSharedPointer<JGMTop>(new JGMTop(isfDict));
+	top = JGMTopRef(new JGMTop(isfDict));
+	
+	
 	if (doc == nullptr)
 		return;
 	
-	QWidget		*scrollWidget = widget();
-	QLayout		*scrollLayout = (scrollWidget==nullptr) ? nullptr : scrollWidget->layout();
-	if (scrollLayout == nullptr)
+	//	repopulate the UI
+	repopulateUI();
+}
+void JSONScrollWidget::recreateJSONAndExport()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	if (top==nullptr || doc==nullptr)
 		return;
 	
-	//	create objects from the ISFDocRef
-	lock_guard<recursive_mutex>		tmpLock(itemLock);
-	
-	//	make the basic info widget
-	JSONGUIBasicInfoWidget		*basicInfo = new JSONGUIBasicInfoWidget(doc);
-	QPointer<QWidget>		basicInfoPtr(basicInfo);
-	items.append(basicInfoPtr);
-	scrollLayout->addWidget(basicInfo);
-	
-	//	make the inputs widget
-	JSONGUIGroupInputWidget		*inputsWidget = new JSONGUIGroupInputWidget();
-	QPointer<QWidget>		inputsWidgetPtr(inputsWidget);
-	items.append(inputsWidgetPtr);
-	scrollLayout->addWidget(inputsWidget);
-	
-	//	make objects for each of the inputs
-	vector<ISFAttrRef>		&docInputs = doc->getInputs();
-	for (ISFAttrRef docInput : docInputs)	{
-		QWidget		*newWidget = nullptr;
-		switch (docInput->getType())	{
-		case ISFValType_None:
-			break;
-		case ISFValType_Event:
-			newWidget = new JSONGUIInputEventWidget(docInput);
-			break;
-		case ISFValType_Bool:
-			newWidget = new JSONGUIInputBoolWidget(docInput);
-			break;
-		case ISFValType_Long:
-			newWidget = new JSONGUIInputLongWidget(docInput);
-			break;
-		case ISFValType_Float:
-			newWidget = new JSONGUIInputFloatWidget(docInput);
-			break;
-		case ISFValType_Point2D:
-			newWidget = new JSONGUIInputPoint2DWidget(docInput);
-			break;
-		case ISFValType_Color:
-			newWidget = new JSONGUIInputColorWidget(docInput);
-			break;
-		case ISFValType_Cube:
-			break;
-		case ISFValType_Image:
-			newWidget = new JSONGUIInputImageWidget(docInput);
-			break;
-		case ISFValType_Audio:
-			newWidget = new JSONGUIInputAudioWidget(docInput);
-			break;
-		case ISFValType_AudioFFT:
-			newWidget = new JSONGUIInputAudioFFTWidget(docInput);
-			break;
-		}
-		if (newWidget == nullptr)
-			continue;
-		
-		QPointer<QWidget>		newWidgetPtr(newWidget);
-		items.append(newWidgetPtr);
-		scrollLayout->addWidget(newWidget);
-	}
-	
-	//	make the passes widget
-	JSONGUIGroupPassWidget		*passesWidget = new JSONGUIGroupPassWidget();
-	QPointer<QWidget>		passesWidgetPtr(passesWidget);
-	items.append(passesWidgetPtr);
-	scrollLayout->addWidget(passesWidget);
-	
-	//	make objects for each of the passes
-	
-	//	add the spacer at the bottom so the UI items are pushed to the top of the scroll area
-	if (spacerItem == nullptr)
-		spacerItem = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	if (spacerItem != nullptr)
-		scrollLayout->addItem(spacerItem);
+	QJsonObject		exportObj = top->createJSONExport();
+	QJsonDocument	exportDoc(exportObj);
+	QFile			tmpFile("/Users/testadmin/Desktop/tmpFile.txt");
+	tmpFile.open(QFile::WriteOnly);
+	tmpFile.write(exportDoc.toJson());
+	tmpFile.close();
 	
 }
+
 
 
 
@@ -175,6 +139,89 @@ void JSONScrollWidget::clearItems()	{
 	
 	
 }
+void JSONScrollWidget::repopulateUI()	{
+	QWidget		*scrollWidget = widget();
+	QLayout		*scrollLayout = (scrollWidget==nullptr) ? nullptr : scrollWidget->layout();
+	if (scrollLayout == nullptr || top==nullptr)
+		return;
+	
+	//	create objects from the ISFDocRef
+	lock_guard<recursive_mutex>		tmpLock(itemLock);
+	
+	//	make the basic info widget
+	JSONGUIBasicInfoWidget		*basicInfo = new JSONGUIBasicInfoWidget(top);
+	QPointer<QWidget>		basicInfoPtr(basicInfo);
+	items.append(basicInfoPtr);
+	scrollLayout->addWidget(basicInfo);
+	
+	//	make the inputs widget
+	JSONGUIGroupInputWidget		*inputsWidget = new JSONGUIGroupInputWidget(top);
+	QPointer<QWidget>		inputsWidgetPtr(inputsWidget);
+	items.append(inputsWidgetPtr);
+	scrollLayout->addWidget(inputsWidget);
+	
+	//	make objects for each of the inputs
+	JGMCInputArray			&inputsContainer = top->inputsContainer();
+	QVector<JGMInputRef>	&inputs = inputsContainer.contents();
+	for (const JGMInputRef & input : inputs)	{
+		if (input == nullptr)
+			continue;
+		QWidget		*newWidget = nullptr;
+		QString		inputTypeString = input->value("TYPE").toString();
+		if (inputTypeString == "event")	{
+			newWidget = new JSONGUIInputEventWidget(input);
+		}
+		else if (inputTypeString == "bool")	{
+			newWidget = new JSONGUIInputBoolWidget(input);
+		}
+		else if (inputTypeString == "long")	{
+			newWidget = new JSONGUIInputLongWidget(input);
+		}
+		else if (inputTypeString == "float")	{
+			newWidget = new JSONGUIInputFloatWidget(input);
+		}
+		else if (inputTypeString == "point2D")	{
+			newWidget = new JSONGUIInputPoint2DWidget(input);
+		}
+		else if (inputTypeString == "color")	{
+			newWidget = new JSONGUIInputColorWidget(input);
+		}
+		else if (inputTypeString == "cube")	{
+			//	intentionally blank, no UI should be shown?
+		}
+		else if (inputTypeString == "image")	{
+			newWidget = new JSONGUIInputImageWidget(input);
+		}
+		else if (inputTypeString == "audio")	{
+			newWidget = new JSONGUIInputAudioWidget(input);
+		}
+		else if (inputTypeString == "audioFFT")	{
+			newWidget = new JSONGUIInputAudioFFTWidget(input);
+		}
+		
+		if (newWidget == nullptr)
+			continue;
+		
+		QPointer<QWidget>		newWidgetPtr(newWidget);
+		items.append(newWidgetPtr);
+		scrollLayout->addWidget(newWidget);
+	}
+	
+	//	make the passes widget
+	JSONGUIGroupPassWidget		*passesWidget = new JSONGUIGroupPassWidget();
+	QPointer<QWidget>		passesWidgetPtr(passesWidget);
+	items.append(passesWidgetPtr);
+	scrollLayout->addWidget(passesWidget);
+	
+	//	make objects for each of the passes
+	
+	//	add the spacer at the bottom so the UI items are pushed to the top of the scroll area
+	if (spacerItem == nullptr)
+		spacerItem = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
+	if (spacerItem != nullptr)
+		scrollLayout->addItem(spacerItem);
+	
+}
 int JSONScrollWidget::indexBasicInfo()	{
 	return 0;
 }
@@ -192,5 +239,14 @@ int JSONScrollWidget::indexPassesGroupItem()	{
 }
 int JSONScrollWidget::indexPassByIndex(const int & n)	{
 	return 0;
+}
+
+
+
+
+void RecreateJSONAndExport()	{
+	if (globalScrollWidget == nullptr)
+		return;
+	globalScrollWidget->recreateJSONAndExport();
 }
 

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "VVISF.hpp"
+#include "JGMTop.h"
 
 
 
@@ -20,13 +20,20 @@ class JSONGUIBasicInfoWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIBasicInfoWidget(const VVISF::ISFDocRef & inDoc, QWidget *parent = nullptr);
+	explicit JSONGUIBasicInfoWidget(const JGMTopRef & inTop, QWidget *parent = nullptr);
 	~JSONGUIBasicInfoWidget();
+
+public slots:
+	void descriptionFieldUsed();
+	void creditFieldUsed();
+	void categoriesFieldUsed();
+	void vsnFieldUsed();
 
 private:
 	Ui::JSONGUIBasicInfo *ui;
 	
-	VVISF::ISFDocRef		doc = nullptr;
+	//VVISF::ISFDocRef		doc = nullptr;
+	JGMTopRef				_top = nullptr;
 };
 
 

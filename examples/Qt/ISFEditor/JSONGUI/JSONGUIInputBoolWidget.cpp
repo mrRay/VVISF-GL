@@ -1,17 +1,71 @@
 #include "JSONGUIInputBoolWidget.h"
-#include "ui_JSONGUIInputBool.h"
+#include "ui_JSONGUIInputBoolWidget.h"
+
+#include "JSONScrollWidget.h"
 
 
 
 
-JSONGUIInputBoolWidget::JSONGUIInputBoolWidget(const ISFAttrRef & inRef, QWidget *parent) :
+JSONGUIInputBoolWidget::JSONGUIInputBoolWidget(const JGMInputRef & inRef, QWidget *parent) :
 	QWidget(parent),
+	JSONGUIInput(inRef),
 	ui(new Ui::JSONGUIInputBool)
 {
 	ui->setupUi(this);
+	
+	if (_input != nullptr)	{
+		prepareUIItems();
+		refreshUIItems();
+	}
 }
 
 JSONGUIInputBoolWidget::~JSONGUIInputBoolWidget()
 {
 	delete ui;
+}
+
+
+
+
+void JSONGUIInputBoolWidget::prepareUIItems() {
+	//	have my super prepare the UI items common to all of these
+	prepareInputNameEdit( *(ui->inputNameEdit) );
+	prepareLabelField( *(ui->labelField) );
+	prepareTypeCBox( *(ui->typePUB) );
+	
+	//	prepare the UI items specific to this input
+	QObject::disconnect(ui->defaultCBox, 0, 0, 0);
+	QObject::connect(ui->defaultCBox, &QCheckBox::clicked, [&](bool checked)	{
+		if (_input == nullptr)
+			return;
+		if (checked)
+			_input->setValue("DEFAULT", QJsonValue(checked));
+		else
+			_input->setValue("DEFAULT", QJsonValue::Undefined);
+		RecreateJSONAndExport();
+	});
+}
+void JSONGUIInputBoolWidget::refreshUIItems() {
+	//	have my super refresh the UI items common to all of these
+	refreshInputNameEdit( *(ui->inputNameEdit) );
+	refreshLabelField( *(ui->labelField) );
+	refreshTypeCBox( *(ui->typePUB) );
+	
+	//	refresh the UI items specific to this input
+	QJsonValue		defVal = (!_input->contains("DEFAULT")) ? QJsonValue(false) : _input->value("DEFAULT");
+	bool			def = false;
+	if (defVal.isBool())
+		def = defVal.toBool();
+	else
+		def = (defVal.toInt() > 0) ? true : false;
+	ui->defaultCBox->setChecked(def);
+	
+	
+	QJsonValue		idenVal = (!_input->contains("IDENTITY")) ? QJsonValue(false) : _input->value("DEFAULT");
+	bool			iden = false;
+	if (idenVal.isBool())
+		iden = idenVal.toBool();
+	else
+		iden = (idenVal.toInt() > 0) ? true  :false;
+	ui->identityCBox->setChecked(iden);
 }

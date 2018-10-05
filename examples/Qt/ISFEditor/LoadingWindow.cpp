@@ -14,6 +14,7 @@
 
 #include "DocWindow.h"
 #include "ISFController.h"
+#include "JGMTop.h"
 
 
 

@@ -154,12 +154,15 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			colorLabel->setPalette(tmpPalette);
 		
 			//	the color button should open a color dialog
-			connect(colorButton, &QAbstractButton::pressed, [&]()	{
-				//	the color dialog should update the local color ivar and the label's background color
+			connect(colorButton, &QAbstractButton::clicked, [&](bool /*inChecked*/)	{
+				//	make a color dialog
 				QColorDialog		*colorDialog = new QColorDialog(this);
+				colorDialog->setOptions( QColorDialog::DontUseNativeDialog );
+				colorDialog->setAttribute( Qt::WA_DeleteOnClose );
+				//	the color dialog should update the local color ivar and the label's background color as its color is updated
 				connect(colorDialog, &QColorDialog::currentColorChanged, [&](const QColor & inColor)	{
 					color = inColor;
-				
+			
 					QPalette		tmpPalette = colorLabel->palette();
 					tmpPalette.setColor(colorLabel->backgroundRole(), color);
 					colorLabel->setPalette(tmpPalette);

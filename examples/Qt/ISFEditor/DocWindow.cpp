@@ -48,66 +48,72 @@ DocWindow::DocWindow(QWidget *parent) :
 		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
 		
-		ui->splitter->setCollapsible(2, false);
-		QWidget		*jsonTableWidget = ui->splitter->widget(2);
-		if (jsonTableWidget != nullptr)	{
-			jsonTableWidget->setMinimumSize(QSize(250,250));
-		}
-		
-		QList<int>		tmpSizes;
-		tmpSizes.append(99999);
-		tmpSizes.append(0);
-		tmpSizes.append(0);
-		ui->splitter->setSizes(tmpSizes);
-		
-		QFont		tmpFont;
-		tmpFont.setFamily("Courier");
-		tmpFont.setFixedPitch(true);
-		tmpFont.setPointSize(12);
-		ui->compilerErrorsTextWidget->setFont(tmpFont);
-		
-		ui->compilerErrorsTextWidget->setReadOnly(true);
-		ui->compiledVertShader->setReadOnly(true);
-		ui->compiledFragShader->setReadOnly(true);
-		ui->parsedJSON->setReadOnly(true);
-		
-		connect(ui->fragShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
-			lock_guard<recursive_mutex>		lock(propLock);
-			//	update the ivar so we know there have been edits
-			_fragEditsPerformed = true;
-			//	kill the save timer if it exists
-			if (_tmpFileSaveTimer != nullptr)	{
-				_tmpFileSaveTimer->stop();
-				delete _tmpFileSaveTimer;
-				_tmpFileSaveTimer = nullptr;
-			}
-			//	if the file is saved in a tmp dir, start a timer to save it again in a couple seconds
-			if (_fragFilePath!=nullptr && _fragFilePath->contains(QDir::tempPath()))	{
-				_tmpFileSaveTimer = new QTimer(this);
-				connect(_tmpFileSaveTimer, SIGNAL(timeout()), this, SLOT(tmpSaveTimerSlot()));
-				_tmpFileSaveTimer->start(2000);
-			}
-		});
-		connect(ui->vertShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
-			lock_guard<recursive_mutex>		lock(propLock);
-			//	update the ivar so we know there have been edits
-			_vertEditsPerformed = true;
-			//	kill the save timer if it exists
-			if (_tmpFileSaveTimer != nullptr)	{
-				_tmpFileSaveTimer->stop();
-				delete _tmpFileSaveTimer;
-				_tmpFileSaveTimer = nullptr;
-			}
-			//	if the file is saved in a tmp dir, start a timer to save it again in a couple seconds
-			if (_vertFilePath!=nullptr && _vertFilePath->contains(QDir::tempPath()))	{
-				_tmpFileSaveTimer = new QTimer(this);
-				connect(_tmpFileSaveTimer, SIGNAL(timeout()), this, SLOT(tmpSaveTimerSlot()));
-				_tmpFileSaveTimer->start(2000);
-			}
-		});
 	}
 	else
 		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
+	
+	//	configure the splitter
+	ui->splitter->setCollapsible(2, false);
+	QWidget		*jsonTableWidget = ui->splitter->widget(2);
+	if (jsonTableWidget != nullptr)	{
+		jsonTableWidget->setMinimumSize(QSize(350,350));
+	}
+	
+	QList<int>		tmpSizes;
+	tmpSizes.append(99999);
+	tmpSizes.append(0);
+	tmpSizes.append(0);
+	ui->splitter->setSizes(tmpSizes);
+	
+	//	configure the compiler errors widget
+	QFont		tmpFont;
+	tmpFont.setFamily("Courier");
+	tmpFont.setFixedPitch(true);
+	tmpFont.setPointSize(12);
+	ui->compilerErrorsTextWidget->setFont(tmpFont);
+	
+	//	all of the various error/shader/parsed json widgets are read-only...
+	ui->compilerErrorsTextWidget->setReadOnly(true);
+	ui->compiledVertShader->setReadOnly(true);
+	ui->compiledFragShader->setReadOnly(true);
+	ui->parsedJSON->setReadOnly(true);
+	
+	//	set up the frag shader editor so tmp files are auto-saved
+	connect(ui->fragShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
+		lock_guard<recursive_mutex>		lock(propLock);
+		//	update the ivar so we know there have been edits
+		_fragEditsPerformed = true;
+		//	kill the save timer if it exists
+		if (_tmpFileSaveTimer != nullptr)	{
+			_tmpFileSaveTimer->stop();
+			delete _tmpFileSaveTimer;
+			_tmpFileSaveTimer = nullptr;
+		}
+		//	if the file is saved in a tmp dir, start a timer to save it again in a couple seconds
+		if (_fragFilePath!=nullptr && _fragFilePath->contains(QDir::tempPath()))	{
+			_tmpFileSaveTimer = new QTimer(this);
+			connect(_tmpFileSaveTimer, SIGNAL(timeout()), this, SLOT(tmpSaveTimerSlot()));
+			_tmpFileSaveTimer->start(2000);
+		}
+	});
+	//	set up the vert shader editor so tmp files are auto-saved
+	connect(ui->vertShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
+		lock_guard<recursive_mutex>		lock(propLock);
+		//	update the ivar so we know there have been edits
+		_vertEditsPerformed = true;
+		//	kill the save timer if it exists
+		if (_tmpFileSaveTimer != nullptr)	{
+			_tmpFileSaveTimer->stop();
+			delete _tmpFileSaveTimer;
+			_tmpFileSaveTimer = nullptr;
+		}
+		//	if the file is saved in a tmp dir, start a timer to save it again in a couple seconds
+		if (_vertFilePath!=nullptr && _vertFilePath->contains(QDir::tempPath()))	{
+			_tmpFileSaveTimer = new QTimer(this);
+			connect(_tmpFileSaveTimer, SIGNAL(timeout()), this, SLOT(tmpSaveTimerSlot()));
+			_tmpFileSaveTimer->start(2000);
+		}
+	});
 	
 	//	restore the window position
 	QSettings		settings;

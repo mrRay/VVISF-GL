@@ -86,6 +86,9 @@
              <height>249</height>
             </rect>
            </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <property name="spacing">
              <number>2</number>

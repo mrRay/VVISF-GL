@@ -1,8 +1,13 @@
 #include "JSONGUIBasicInfoWidget.h"
-#include "ui_JSONGUIBasicInfo.h"
+#include "ui_JSONGUIBasicInfoWidget.h"
 
 #include <QDebug>
 #include <QLayout>
+#include <QJsonValue>
+#include <QJsonObject>
+#include <QJsonArray>
+
+#include "JSONScrollWidget.h"
 
 
 
@@ -12,43 +17,112 @@ using namespace std;
 
 
 
-JSONGUIBasicInfoWidget::JSONGUIBasicInfoWidget(const VVISF::ISFDocRef & inDoc, QWidget *parent) :
+JSONGUIBasicInfoWidget::JSONGUIBasicInfoWidget(const JGMTopRef & inTop, QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::JSONGUIBasicInfo)
+	ui(new Ui::JSONGUIBasicInfo),
+	_top(inTop)
 {
 	ui->setupUi(this);
 	
-	doc = inDoc;
+	//doc = inDoc;
 	
 	QPalette			p = palette();
 	p.setColor(QPalette::Background, p.color(QPalette::Background).darker(110));
 	setAutoFillBackground(true);
 	setPalette(p);
 	
-	if (doc != nullptr)	{
-		QString				tmpString;
-		
-		tmpString = QString::fromStdString(doc->getDescription());
-		ui->descriptionEdit->setText(tmpString);
-		
-		tmpString = QString::fromStdString(doc->getCredit());
-		ui->creditEdit->setText(tmpString);
-		
-		tmpString = QString("");
-		for (const string category : doc->getCategories())	{
+	QJsonObject			defObj;
+	QJsonObject			&isfDict = (_top==nullptr) ? defObj : _top->isfDict();
+	QJsonValue			tmpVal;
+	QString				tmpString;
+	
+	tmpVal = isfDict["DESCRIPTION"];
+	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	ui->descriptionEdit->setText(tmpString);
+	
+	tmpVal = isfDict["CREDIT"];
+	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	ui->creditEdit->setText(tmpString);
+	
+	tmpString = QString("");
+	tmpVal = isfDict["CATEGORIES"];
+	if (tmpVal.isArray())	{
+		for (const auto & catVal : tmpVal.toArray())	{
+			if (!catVal.isString())
+				continue;
 			if (tmpString.length() < 1)
-				tmpString = QString::fromStdString(category);
+				tmpString = catVal.toString();
 			else
-				tmpString.append( QString(", %1").arg(QString::fromStdString(category)) );
+				tmpString.append( QString(", %1").arg(catVal.toString()) );
 		}
-		ui->categoriesEdit->setText(tmpString);
-		
-		tmpString = QString::fromStdString(doc->getVsn());
-		ui->vsnEdit->setText(tmpString);
 	}
+	ui->categoriesEdit->setText(tmpString);
+	
+	tmpVal = isfDict["VSN"];
+	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	ui->vsnEdit->setText(tmpString);
+	
+	connect(ui->descriptionEdit, &QLineEdit::editingFinished, this, &JSONGUIBasicInfoWidget::descriptionFieldUsed);
+	connect(ui->creditEdit, &QLineEdit::editingFinished, this, &JSONGUIBasicInfoWidget::creditFieldUsed);
+	connect(ui->categoriesEdit, &QLineEdit::editingFinished, this, &JSONGUIBasicInfoWidget::categoriesFieldUsed);
+	connect(ui->vsnEdit, &QLineEdit::editingFinished, this, &JSONGUIBasicInfoWidget::vsnFieldUsed);
 }
-
 JSONGUIBasicInfoWidget::~JSONGUIBasicInfoWidget()
 {
 	delete ui;
 }
+
+
+
+
+void JSONGUIBasicInfoWidget::descriptionFieldUsed()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	if (_top == nullptr)
+		return;
+	QJsonObject			&isfDict = _top->isfDict();
+	isfDict["DESCRIPTION"] = QJsonValue(ui->descriptionEdit->text());
+	
+	//	tell the global scroll widget that it has to recreate the JSON and export
+	RecreateJSONAndExport();
+}
+void JSONGUIBasicInfoWidget::creditFieldUsed()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	if (_top == nullptr)
+		return;
+	QJsonObject			&isfDict = _top->isfDict();
+	isfDict["CREDIT"] = QJsonValue(ui->creditEdit->text());
+	
+	//	tell the global scroll widget that it has to recreate the JSON and export
+	RecreateJSONAndExport();
+}
+void JSONGUIBasicInfoWidget::categoriesFieldUsed()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	if (_top == nullptr)
+		return;
+	
+	QStringList			catList = ui->categoriesEdit->text().split(",", QString::SkipEmptyParts);
+	QJsonArray			catArray;
+	for (const auto cat : catList)	{
+		catArray.append( QJsonValue( cat.trimmed() ) );
+	}
+	
+	QJsonObject			&isfDict = _top->isfDict();
+	if (catArray.size() < 1)
+		isfDict.remove("CATEGORIES");
+	else
+		isfDict["CATEGORIES"] = QJsonValue(catArray);
+	
+	//	tell the global scroll widget that it has to recreate the JSON and export
+	RecreateJSONAndExport();
+}
+void JSONGUIBasicInfoWidget::vsnFieldUsed()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	if (_top == nullptr)
+		return;
+	QJsonObject			&isfDict = _top->isfDict();
+	isfDict["VSN"] = ui->vsnEdit->text();
+	
+	//	tell the global scroll widget that it has to recreate the JSON and export
+	RecreateJSONAndExport();
+}
+

@@ -2,6 +2,7 @@
 #define JSONGUIGROUPINPUT_H
 
 #include <QWidget>
+#include "JGMTop.h"
 
 
 
@@ -18,11 +19,15 @@ class JSONGUIGroupInputWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIGroupInputWidget(QWidget *parent = nullptr);
+	explicit JSONGUIGroupInputWidget(const JGMTopRef & inTop, QWidget *parent = nullptr);
 	~JSONGUIGroupInputWidget();
+
+public slots:
+	void newInputClicked();
 
 private:
 	Ui::JSONGUIGroupInput *ui;
+	JGMTopRef			_top = nullptr;
 };
 
 

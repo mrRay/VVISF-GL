@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "VVISF.hpp"
+#include "JSONGUIInput.h"
 
 
 
@@ -12,18 +12,19 @@ namespace Ui {
 	class JSONGUIInputBool;
 }
 
-using namespace VVISF;
 
 
 
-
-class JSONGUIInputBoolWidget : public QWidget
+class JSONGUIInputBoolWidget : public QWidget, public JSONGUIInput
 {
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputBoolWidget(const ISFAttrRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputBoolWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
 	~JSONGUIInputBoolWidget();
+	
+	virtual void prepareUIItems() override;
+	virtual void refreshUIItems() override;
 
 private:
 	Ui::JSONGUIInputBool *ui;

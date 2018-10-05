@@ -1,17 +1,43 @@
 #include "JSONGUIInputAudioFFTWidget.h"
-#include "ui_JSONGUIInputAudioFFT.h"
+#include "ui_JSONGUIInputAudioFFTWidget.h"
 
 
 
 
-JSONGUIInputAudioFFTWidget::JSONGUIInputAudioFFTWidget(const ISFAttrRef & inRef, QWidget *parent) :
+JSONGUIInputAudioFFTWidget::JSONGUIInputAudioFFTWidget(const JGMInputRef & inRef, QWidget *parent) :
 	QWidget(parent),
+	JSONGUIInput(inRef),
 	ui(new Ui::JSONGUIInputAudioFFT)
 {
 	ui->setupUi(this);
+	
+	if (_input != nullptr)	{
+		prepareUIItems();
+		refreshUIItems();
+	}
 }
 
 JSONGUIInputAudioFFTWidget::~JSONGUIInputAudioFFTWidget()
 {
 	delete ui;
+}
+
+
+
+
+void JSONGUIInputAudioFFTWidget::prepareUIItems() {
+	//	have my super prepare the UI items common to all of these
+	prepareInputNameEdit( *(ui->inputNameEdit) );
+	prepareLabelField( *(ui->labelField) );
+	prepareTypeCBox( *(ui->typePUB) );
+	
+	//	prepare the UI items specific to this input
+}
+void JSONGUIInputAudioFFTWidget::refreshUIItems() {
+	//	have my super refresh the UI items common to all of these
+	refreshInputNameEdit( *(ui->inputNameEdit) );
+	refreshLabelField( *(ui->labelField) );
+	refreshTypeCBox( *(ui->typePUB) );
+	
+	//	refresh the UI items specific to this input
 }

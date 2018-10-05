@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "VVISF.hpp"
+#include "JSONGUIInput.h"
 
 
 
@@ -12,18 +12,19 @@ namespace Ui {
 	class JSONGUIInputAudio;
 }
 
-using namespace VVISF;
 
 
 
-
-class JSONGUIInputAudioWidget : public QWidget
+class JSONGUIInputAudioWidget : public QWidget, public JSONGUIInput
 {
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputAudioWidget(const ISFAttrRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputAudioWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
 	~JSONGUIInputAudioWidget();
+	
+	virtual void prepareUIItems() override;
+	virtual void refreshUIItems() override;
 
 private:
 	Ui::JSONGUIInputAudio *ui;
