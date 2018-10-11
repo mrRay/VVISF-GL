@@ -250,5 +250,145 @@ select file to view)</string>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>videoSourceComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>videoSourceChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>44</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadSystemISFsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>loadSystemISFsButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>506</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadUserISFsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>loadUserISFsButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>71</x>
+     <y>506</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>renderResWidthWidget</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>renderResWidthWidgetValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>renderResHeightWidget</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>renderResHeightWidgetValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleRenderRes</sender>
+   <signal>clicked()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>doubleRenderResClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>260</x>
+     <y>575</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>halveRenderRes</sender>
+   <signal>clicked()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>halveRenderResClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>575</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveUIValsToDefault</sender>
+   <signal>clicked()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>saveUIValsToDefaultClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>454</x>
+     <y>578</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>loadUserISFsButtonClicked()</slot>
+  <slot>loadSystemISFsButtonClicked()</slot>
+  <slot>halveRenderResClicked()</slot>
+  <slot>doubleRenderResClicked()</slot>
+  <slot>renderResWidthWidgetValueChanged(int)</slot>
+  <slot>renderResHeightWidgetValueChanged(int)</slot>
+  <slot>saveUIValsToDefaultClicked()</slot>
+  <slot>listOfVideoSourcesUpdated(DynamicVideoSource*)</slot>
+  <slot>videoSourceChanged(int)</slot>
+ </slots>
 </ui>

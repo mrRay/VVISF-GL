@@ -9,6 +9,11 @@
 
 
 
+static OutputWindow * globalOutputWindow = nullptr;
+
+
+
+
 OutputWindow::OutputWindow(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::OutputWindow)
@@ -17,8 +22,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	
 	ui->setupUi(this);
 	
+	globalOutputWindow = this;
+	
 	//	we want to know when the widget draws its first frame because we can't create the global shared context/buffer pool until we can get a base ctx from the widget
 	connect(ui->bufferView, SIGNAL(frameSwapped()), this, SLOT(widgetDrewItsFirstFrame()));
+	
 	//	we need to shut stuff down and delete contexts gracefull on quit
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 	
@@ -27,10 +35,20 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	if (settings.contains("OutputWindowGeometry"))	{
 		restoreGeometry(settings.value("OutputWindowGeometry").toByteArray());
 	}
+	
+	//	tell the buffer view to start rendering
+	ui->bufferView->startRendering();
 }
 
 OutputWindow::~OutputWindow()	{
 	delete ui;
+}
+
+GLBufferQWidget * OutputWindow::bufferView()	{
+	return ui->bufferView;
+}
+void OutputWindow::drawBuffer(const VVGL::GLBufferRef & n)	{
+	ui->bufferView->drawBuffer(n);
 }
 
 void OutputWindow::closeEvent(QCloseEvent * event)	{
@@ -88,4 +106,12 @@ void OutputWindow::aboutToQuit()	{
 	VVISF::ISFPassTarget::cleanup();
 	
 	//	...other GL resources owned by other classes will be freed using the same signal
+}
+
+
+
+
+
+OutputWindow * GetOutputWindow()	{
+	return globalOutputWindow;
 }

@@ -13,6 +13,8 @@
 
 #include "LoadingWindow.h"
 #include "DocWindow.h"
+#include "OutputWindow.h"
+#include "DynamicVideoSource.h"
 
 
 
@@ -27,8 +29,18 @@ using namespace VVISF;
 
 
 ISFController::ISFController()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
 	globalISFController = this;
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+	
+	//	the output window has a buffer view which emits a signal every redraw- use that to drive rendering
+	OutputWindow		*ow = GetOutputWindow();
+	GLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
+	if (bufferView == nullptr)
+		qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
+	else
+		connect(bufferView, &GLBufferQWidget::aboutToRedraw, this, &ISFController::widgetRedrawSlot);
 }
 ISFController::~ISFController()	{
 	//	we have to explicitly free the spacer item
@@ -243,6 +255,76 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	
 	//	tell the doc window to update its contents
 	GetDocWindow()->updateContentsFromISFController();
+}
+
+void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	//	get a "source buffer" from the dynamic video source
+	DynamicVideoSource		*dvs = GetDynamicVideoSource();
+	if (dvs == nullptr)
+		return;
+	GLBufferRef				newSrcBuffer = dvs->getBuffer();
+	
+	lock_guard<recursive_mutex>		tmpLock(sceneLock);
+	
+	//	if there's no scene, display the source buffer and bail
+	if (scene == nullptr)	{
+		n->drawBuffer(newSrcBuffer);
+		return;
+	}
+	
+	//	if there's no doc or a null doc, display the source buffer and bail
+	ISFDocRef	tmpDoc = scene->getDoc();
+	if (tmpDoc == nullptr)	{
+		n->drawBuffer(newSrcBuffer);
+		return;
+	}
+	string		scenePath = tmpDoc->getPath();
+	if (scenePath.length() < 1)	{
+		n->drawBuffer(newSrcBuffer);
+		return;
+	}
+	
+	//	apply the source buffer to the scene as "inputImage"
+	scene->setBufferForInputNamed(newSrcBuffer, string("inputImage"));
+	
+	//	run through the UI items, pushing their values to the scene
+	for (const QPointer<ISFUIItem> & itemPtr : sceneItemArray)	{
+		if (itemPtr.isNull())
+			continue;
+		//itemPtr.data()
+		QString		itemName = itemPtr.data()->getName();
+		ISFVal		itemVal = itemPtr.data()->getISFVal();
+		if (itemVal.getType() != ISFValType_None)
+			scene->setValueForInputNamed(itemVal, itemName.toStdString());
+	}
+	
+	//	render the scene!
+	GLBufferRef						newBuffer = nullptr;
+	map<int32_t,GLBufferRef>		tmpPassDict;
+	try	{
+		Size		tmpSize = renderSize;
+		if (sceneIsFilter && newSrcBuffer!=nullptr)
+			tmpSize = newSrcBuffer->srcRect.size;
+		newBuffer = scene->createAndRenderABuffer(tmpSize, &tmpPassDict, GetGlobalBufferPool());
+	}
+	catch (ISFErr & exc)	{
+		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;
+		cout << "\tgen: " << exc.general << endl;
+		cout << "\tspec: " << exc.specific << endl;
+		map<string,string>		&details = exc.details;
+		for (const auto & it : details)	{
+			cout << "\t\t" << it.first << " : " << it.second << endl;
+		}
+	}
+	
+	n->drawBuffer(newBuffer);
+	//cout << "newBuffer is " << *newBuffer << endl;
+	//cout << "tmp pass dict:\n";
+	//for (const auto & it : tmpPassDict)	{
+	//	cout << "\t" << it.first << " : " << *it.second << endl;
+	//}
 }
 
 void ISFController::populateLoadingWindowUI()	{

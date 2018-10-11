@@ -227,6 +227,9 @@ void GLBufferQWidget::paintGL()
 {
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//qDebug() << "\t" << QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
+	
+	emit aboutToRedraw(this);
+	makeCurrent();
 	_renderNow();
 }
 void GLBufferQWidget::initializeGL()
@@ -248,6 +251,7 @@ void GLBufferQWidget::initializeGL()
 		scene->setPerformClear(true);
 		scene->setClearColor(0., 0., 0., 0.);
 		
+		//	set up draw callbacks using lambdas.  looks big and complicated because drawing in GL 2 and GL 4 is different!
 		if (scene != nullptr)	{
 			if (ctx->version==GLVersion_2)	{
 				
@@ -305,6 +309,7 @@ void GLBufferQWidget::initializeGL()
 					//	get the buffer we want to draw
 					GLBufferRef		bufferToDraw = _getBuffer();
 					if (bufferToDraw != nullptr)	{
+						//cout << "\tactually drawing buffer " << *bufferToDraw << endl;
 						//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
 						//NSRect				rawBounds = [(id)selfPtr backingBounds];
 						VVGL::Rect			imgBounds = bufferToDraw->srcRect;

@@ -320,7 +320,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 			inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, createInCurrentContext);
 			break;
 		default:
 			break;

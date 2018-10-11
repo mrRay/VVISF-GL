@@ -14,6 +14,9 @@ namespace Ui {
 	class OutputWindow;
 }
 
+
+
+
 class OutputWindow : public QWidget
 {
 	Q_OBJECT
@@ -21,6 +24,9 @@ class OutputWindow : public QWidget
 public:
 	explicit OutputWindow(QWidget *parent = nullptr);
 	~OutputWindow();
+	
+	GLBufferQWidget * bufferView();
+	void drawBuffer(const VVGL::GLBufferRef & n);
 	
 protected:
 	void closeEvent(QCloseEvent * event);
@@ -35,5 +41,14 @@ private slots:
 private:
 	Ui::OutputWindow *ui;
 };
+
+
+
+
+//	gets the global singleton for this class, which is created in main()
+OutputWindow * GetOutputWindow();
+
+
+
 
 #endif // OUTPUTWINDOW_H

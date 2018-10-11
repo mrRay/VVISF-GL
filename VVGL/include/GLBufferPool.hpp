@@ -15,6 +15,8 @@
 #elif defined(VVGL_SDK_IOS)
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreVideo/CoreVideo.h>
+#elif defined(VVGL_SDK_QT)
+#include <QVideoFrame>
 #endif
 
 
@@ -517,10 +519,17 @@ VVGL_EXPORT GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & creat
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns a CPU-based buffer from the passed QImage.
-\param inImg The QImage that will be represented as a CPU-based buffer.  The returned GLBuffer instance assumes ownership of this image, and will delete it when it is no longer needed by the buffer.
+\param inImg The QImage that will be represented as a CPU-based buffer.  The returned GLBuffer instance makes another QImage instance from inImg which performs a shallow copy of it, so any further modifications to the underlying data of this image will potentially corrupt this GLBufferRef.  This QImage will be retained for the lifetime of the returned GLBufferRef.
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
 VVGL_EXPORT GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+/*!
+\ingroup VVGL_BUFFERCREATE
+\brief Creates and returns a CPU-based buffer from the passed QVideoFrame.
+\param inFrame The QVideoFrame that will be represented as a CPU-based buffer.  The returned GLBuffer instance makes another QVideoFrame instance from inFrame which performs a shallow copy of it, so any further modifications to the underlying data of this image will potentially corrupt this GLBufferRef.  This QVideoFrame will be retained for the lifetime of the returned GLBufferRef.
+\param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
+*/
+VVGL_EXPORT GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 
 ///@}

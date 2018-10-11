@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets opengl
+QT       += core gui widgets opengl multimedia
 
 TARGET = ISFEditor
 TEMPLATE = app
@@ -37,6 +37,7 @@ SOURCES += \
     LoadingWindow.cpp \
     OutputWindow.cpp \
 	../common/GLBufferQWidget.cpp \
+	../common/GLBufferQVideoSurface.cpp \
     DocWindow.cpp \
     SimpleSourceCodeEdit.cpp \
     ISFController.cpp \
@@ -60,13 +61,22 @@ SOURCES += \
     JSONGUI/JGMTop.cpp \
     JSONGUI/JGMCArray.cpp \
     JSONGUI/JGMCDict.cpp \
-    JSONGUI/JSONGUIInput.cpp
+    JSONGUI/JSONGUIInput.cpp \
+    VideoSource/VideoSource.cpp \
+    VideoSource/WebCamVideoSource.cpp \
+    VideoSource/ImgVideoSource.cpp \
+    VideoSource/MovieVideoSource.cpp \
+    VideoSource/InterAppVideoSource.cpp \
+    DynamicVideoSource.cpp \
+    VideoSourceMenuItem.cpp \
+    MediaFile.cpp
 
 HEADERS += \
         MainWindow.h \
     LoadingWindow.h \
     OutputWindow.h \
 	../common/GLBufferQWidget.h \
+	../common/GLBufferQVideoSurface.h \
     DocWindow.h \
     SimpleSourceCodeEdit.h \
     ISFController.h \
@@ -93,7 +103,15 @@ HEADERS += \
     JSONGUI/JGMCDict.h \
     JSONGUI/JGMDefs.h \
     JSONGUI/JSONGUIInput.h \
-    JSONGUI/QLabelClickable.h
+    JSONGUI/QLabelClickable.h \
+    VideoSource/VideoSource.h \
+    VideoSource/WebCamVideoSource.h \
+    VideoSource/ImgVideoSource.h \
+    VideoSource/MovieVideoSource.h \
+    VideoSource/InterAppVideoSource.h \
+    DynamicVideoSource.h \
+    VideoSourceMenuItem.h \
+    MediaFile.h
 
 FORMS += \
         MainWindow.ui \
@@ -135,6 +153,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVISF/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../common
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
+INCLUDEPATH += VideoSource
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF
 INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI

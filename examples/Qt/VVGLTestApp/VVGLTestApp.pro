@@ -1,5 +1,5 @@
 QT += gui
-QT += opengl
+QT += opengl multimedia
 
 TARGET = VVGLTestApp
 TEMPLATE = app

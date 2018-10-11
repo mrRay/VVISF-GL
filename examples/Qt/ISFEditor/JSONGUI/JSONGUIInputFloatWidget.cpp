@@ -155,7 +155,14 @@ void JSONGUIInputFloatWidget::refreshUIItems() {
 	
 	
 	
-	
+	ui->defaultSBox->blockSignals(true);
+	ui->defaultCBox->blockSignals(true);
+	ui->identitySBox->blockSignals(true);
+	ui->identityCBox->blockSignals(true);
+	ui->minSBox->blockSignals(true);
+	ui->minCBox->blockSignals(true);
+	ui->maxSBox->blockSignals(true);
+	ui->maxCBox->blockSignals(true);
 	
 	//	default UI items
 	ui->defaultSBox->setMinimum(minPossibleFloat);
@@ -187,5 +194,12 @@ void JSONGUIInputFloatWidget::refreshUIItems() {
 	ui->maxSBox->setDisabled(!hasMax);
 	ui->maxCBox->setChecked(hasMax);
 	
-	
+	ui->defaultSBox->blockSignals(false);
+	ui->defaultCBox->blockSignals(false);
+	ui->identitySBox->blockSignals(false);
+	ui->identityCBox->blockSignals(false);
+	ui->minSBox->blockSignals(false);
+	ui->minCBox->blockSignals(false);
+	ui->maxSBox->blockSignals(false);
+	ui->maxCBox->blockSignals(false);
 }

@@ -30,6 +30,9 @@ public slots:
 	Q_SLOT void stopRenderingSlot();
 	Q_SLOT void aboutToQuit();
 	
+signals:
+	Q_SIGNAL void aboutToRedraw(GLBufferQWidget * n);
+	
 protected:
 	//bool event(QEvent * inEvent) Q_DECL_OVERRIDE;
 	void paintGL() Q_DECL_OVERRIDE;

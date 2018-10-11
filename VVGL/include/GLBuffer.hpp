@@ -103,6 +103,8 @@ class VVGL_EXPORT GLBuffer	{
 			BackingID_GenericExternalCPU,
 			//!	The CPU backing was a QImage, which will be deleted when the buffer's resources are no longer needed
 			BackingID_QImage,
+			//!	The CPU backing was a QVideoFrame, which will be deleted when the buffer's resources are no longer needed
+			BackingID_QVideoFrame,
 		};
 		
 		

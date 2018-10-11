@@ -71,6 +71,9 @@ void JSONScrollWidget::loadDocFromISFController()	{
 	ISFController		*isfc = GetISFController();
 	ISFSceneRef			scene = (isfc==nullptr) ? nullptr : isfc->getScene();
 	doc = (scene==nullptr) ? nullptr : scene->getDoc();
+
+	if (doc == nullptr)
+		return;
 	
 	QJsonObject			isfDict = QJsonObject();
 	string				*jsonStr = doc->getJSONString();

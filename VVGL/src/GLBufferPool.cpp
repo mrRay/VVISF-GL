@@ -2160,6 +2160,147 @@ GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inP
 	
 	return returnMe;
 }
+GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferPoolRef & inPoolRef)	{
+	if (inFrame==nullptr || inPoolRef==nullptr)
+		return nullptr;
+	/*
+	if (!inFrame->isReadable())	{
+		cout << "ERR: " << __PRETTY_FUNCTION__ << ", bailing, frame isn't readable\n";
+		return nullptr;
+	}
+	*/
+	//	make a new frame- this will be retained by the VVBuffer as its backing, and released in its backing release callback
+	QVideoFrame		*newFrame = new QVideoFrame(*inFrame);
+	
+	switch (newFrame->handleType())	{
+	case QAbstractVideoBuffer::GLTextureHandle:
+	case QAbstractVideoBuffer::XvShmImageHandle:
+	case QAbstractVideoBuffer::CoreImageHandle:
+	case QAbstractVideoBuffer::EGLImageHandle:
+	case QAbstractVideoBuffer::UserHandle:
+		//	not okay- bail and return nil, we can't work with these
+		cout << "ERR: " << __PRETTY_FUNCTION__ << ", bailing, incompatible handle type (" << newFrame->handleType() << ")\n";
+		delete newFrame;
+		return nullptr;
+		break;
+	case QAbstractVideoBuffer::NoHandle:
+	case QAbstractVideoBuffer::QPixmapHandle:
+		//	okay- we can make a CPU-backed GLBuffer from these...
+		newFrame->map(QAbstractVideoBuffer::ReadOnly);
+		break;
+	}
+	
+	//	if there's >1 plane, unmap delete & bail
+	if (newFrame->planeCount() > 1)	{
+		newFrame->unmap();
+		delete newFrame;
+		return nullptr;
+	}
+	
+	QSize			rawImgSize = newFrame->size();
+	VVGL::Size		imgSize(rawImgSize.width(), rawImgSize.height());
+	VVGL::Size		repSize(newFrame->bytesPerLine()*8/32, rawImgSize.height());
+	
+	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
+	GLBuffer::Descriptor		&desc = returnMe->desc;
+	
+	desc.type = GLBuffer::Type_CPU;
+	desc.target = GLBuffer::Target_None;
+	//desc.internalFormat = GLBuffer::IF_RGBA;
+	//desc.pixelFormat = GLBuffer::PF_BGRA;
+	desc.pixelType = GLBuffer::PT_UByte;
+	desc.cpuBackingType = GLBuffer::Backing_External;
+	desc.gpuBackingType = GLBuffer::Backing_None;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = false;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	switch (newFrame->pixelFormat())	{
+	case QVideoFrame::Format_Invalid:
+		break;
+	case QVideoFrame::Format_ARGB32:
+	case QVideoFrame::Format_ARGB32_Premultiplied:
+		desc.internalFormat = GLBuffer::IF_RGBA8;
+		desc.pixelFormat = GLBuffer::PF_RGBA;
+		break;
+	case QVideoFrame::Format_BGRA32:
+	case QVideoFrame::Format_BGRA32_Premultiplied:
+		desc.internalFormat = GLBuffer::IF_RGBA8;
+		desc.pixelFormat = GLBuffer::PF_BGRA;
+		break;
+	case QVideoFrame::Format_UYVY:
+	case QVideoFrame::Format_YUYV:
+		desc.internalFormat = GLBuffer::IF_RGB;
+		desc.pixelFormat = GLBuffer::PF_YCbCr_422;
+		desc.pixelType = GLBuffer::PT_UShort88;
+		break;
+	
+	case QVideoFrame::Format_RGB32:
+	case QVideoFrame::Format_RGB24:
+	case QVideoFrame::Format_RGB565:
+	case QVideoFrame::Format_RGB555:
+	case QVideoFrame::Format_ARGB8565_Premultiplied:
+	case QVideoFrame::Format_BGR32:
+	case QVideoFrame::Format_BGR24:
+	case QVideoFrame::Format_BGR565:
+	case QVideoFrame::Format_BGR555:
+	case QVideoFrame::Format_BGRA5658_Premultiplied:
+	case QVideoFrame::Format_AYUV444:
+	case QVideoFrame::Format_AYUV444_Premultiplied:
+	case QVideoFrame::Format_YUV444:
+	case QVideoFrame::Format_YUV420P:
+	case QVideoFrame::Format_YV12:
+	case QVideoFrame::Format_NV12:
+	case QVideoFrame::Format_NV21:
+	case QVideoFrame::Format_IMC1:
+	case QVideoFrame::Format_IMC2:
+	case QVideoFrame::Format_IMC3:
+	case QVideoFrame::Format_IMC4:
+	case QVideoFrame::Format_Y8:
+	case QVideoFrame::Format_Y16:
+	case QVideoFrame::Format_Jpeg:
+	case QVideoFrame::Format_CameraRaw:
+	case QVideoFrame::Format_AdobeDng:
+	case QVideoFrame::NPixelFormats:
+	case QVideoFrame::Format_User:
+		//	we can't work with these pixel formats- unmap, delete, and bail
+		cout << "\tERR: unsupported pixel format (" << newFrame->pixelFormat() << ")\n";
+		newFrame->unmap();
+		delete newFrame;
+		return nullptr;
+		break;
+	}
+	
+	returnMe->name = 0;
+	returnMe->preferDeletion = true;
+	returnMe->size = repSize;
+	returnMe->srcRect = { 0, 0, imgSize.width, imgSize.height };
+	returnMe->flipped = true;
+	returnMe->backingSize = repSize;
+	
+	inPoolRef->timestampThisBuffer(returnMe);
+	
+	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+		QVideoFrame			*tmpFrame = static_cast<QVideoFrame*>(inReleaseContext);
+		if (tmpFrame != nullptr)	{
+			tmpFrame->unmap();
+			delete tmpFrame;
+		}
+	};
+	returnMe->backingContext = static_cast<void*>(newFrame);
+	returnMe->backingID = GLBuffer::BackingID_QVideoFrame;
+	//returnMe->cpuBackingPtr = static_cast<void*>(XXXXX);
+	returnMe->cpuBackingPtr = static_cast<void*>(newFrame->bits());
+	
+	
+	return returnMe;
+	
+	
+	
+	
+	
+}
 #endif
 
 

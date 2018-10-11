@@ -4,6 +4,8 @@
 #include "LoadingWindow.h"
 #include "OutputWindow.h"
 #include "DocWindow.h"
+#include "DynamicVideoSource.h"
+#include "ISFController.h"
 
 
 
@@ -22,12 +24,17 @@ int main(int argc, char *argv[])
 	
 	QApplication a(argc, argv);
 	
+	DynamicVideoSource		dvs;
+	
 	MainWindow w;
 	w.show();
 	w.hide();
 	
 	OutputWindow		ow;
 	ow.show();
+	
+	//	ISF controller has to be created after OutputWindow (it connects to a signal from the window)
+	GetISFController();
 	
 	LoadingWindow		lw;
 	lw.show();

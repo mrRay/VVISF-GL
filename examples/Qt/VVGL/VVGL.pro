@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += opengl
+QT       += opengl multimedia
 
 TARGET = VVGL
 TEMPLATE = lib

@@ -5,6 +5,7 @@
 #include <QSpinBox>
 class QItemSelection;
 class QScrollArea;
+class DynamicVideoSource;
 
 
 
@@ -36,17 +37,19 @@ public:
 protected:
 	void closeEvent(QCloseEvent * event);
 
-private slots:
-	void on_loadUserISFsButton_clicked();
-	void on_loadSystemISFsButton_clicked();
-	void on_halveRenderRes_clicked();
-	void on_doubleRenderRes_clicked();
-	void on_renderResWidthWidget_valueChanged(int arg1);
-	void on_renderResHeightWidget_valueChanged(int arg1);
-	void on_saveUIValsToDefault_clicked();
+public slots:
+	void loadUserISFsButtonClicked();
+	void loadSystemISFsButtonClicked();
+	void halveRenderResClicked();
+	void doubleRenderResClicked();
+	void renderResWidthWidgetValueChanged(int arg1);
+	void renderResHeightWidgetValueChanged(int arg1);
+	void saveUIValsToDefaultClicked();
 	/*
 	void newFileSelected(const QItemSelection &selected, const QItemSelection &deselected);
 	*/
+	void listOfVideoSourcesUpdated(DynamicVideoSource * inSrc);
+	void videoSourceChanged(int arg1);
 	
 private:
 	//static LoadingWindow	*globalIvar;

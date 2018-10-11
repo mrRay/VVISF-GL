@@ -218,6 +218,43 @@ void ISFUIItem::audioCBUsed(int newIndex)	{
 
 
 ISFVal ISFUIItem::getISFVal()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
+	//return ISFNullVal();
+	
+	
+	switch (type)	{
+	case ISFValType_None:
+		return ISFNullVal();
+	case ISFValType_Event:
+		if (eventNeedsSending)	{
+			eventNeedsSending = false;
+			return ISFEventVal(true);
+		}
+		return ISFEventVal();
+	case ISFValType_Bool:
+		if (boolWidget == nullptr)
+			return ISFBoolVal(false);
+		return ISFBoolVal(boolWidget->isChecked());
+	case ISFValType_Long:
+		if (longCBWidget == nullptr)
+			return ISFLongVal(0);
+		return ISFLongVal( longCBWidget->currentData().toLongLong() );
+	case ISFValType_Float:
+		if (sliderWidget == nullptr)
+			return ISFFloatVal(0.0);
+		return ISFFloatVal( sliderWidget->doubleValue() );
+	case ISFValType_Point2D:
+		if (xFieldWidget==nullptr || yFieldWidget==nullptr)
+			return ISFPoint2DVal(0.0, 0.0);
+		return ISFPoint2DVal( xFieldWidget->value(), yFieldWidget->value() );
+	case ISFValType_Color:
+		return ISFColorVal(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+	case ISFValType_Cube:
+	case ISFValType_Image:
+	case ISFValType_Audio:
+	case ISFValType_AudioFFT:
+		break;
+	}
+	
 	return ISFNullVal();
 }

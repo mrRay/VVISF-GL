@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets opengl
+QT       += core gui widgets opengl multimedia
 
 TARGET = TexDownloadBenchmark
 TEMPLATE = app

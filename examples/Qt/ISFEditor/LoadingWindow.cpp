@@ -15,6 +15,7 @@
 #include "DocWindow.h"
 #include "ISFController.h"
 #include "JGMTop.h"
+#include "DynamicVideoSource.h"
 
 
 
@@ -41,6 +42,13 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	ui->renderResWidthWidget->setMaximum(16384);
 	ui->renderResHeightWidget->setMinimum(1);
 	ui->renderResHeightWidget->setMaximum(16384);
+	
+	//	the DynamicVideoSource class has a signal which is emitted when its list of sources change
+	//connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
+	connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
+	//connect(GetDynamicVideoSource(), SIGNAL(listOfStaticSourcesUpdated), this, SLOT(listOfVideoSourcesUpdated));
+	//	bump the slot to populate the pop-up button with the list of sources
+	listOfVideoSourcesUpdated(GetDynamicVideoSource());
 	
 	//	figure out what directory's contents we want to display, and use it to set the base directory
 	QString			defaultDirToLoad;
@@ -151,25 +159,25 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 
 
 
-void LoadingWindow::on_loadUserISFsButton_clicked()	{
+void LoadingWindow::loadUserISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_loadSystemISFsButton_clicked()	{
+void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_halveRenderRes_clicked()	{
+void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_doubleRenderRes_clicked()	{
+void LoadingWindow::doubleRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_renderResWidthWidget_valueChanged(int arg1)	{
+void LoadingWindow::renderResWidthWidgetValueChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_renderResHeightWidget_valueChanged(int arg1)	{
+void LoadingWindow::renderResHeightWidgetValueChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
-void LoadingWindow::on_saveUIValsToDefault_clicked()	{
+void LoadingWindow::saveUIValsToDefaultClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
 /*
@@ -188,6 +196,49 @@ void LoadingWindow::newFileSelected(const QItemSelection &selected, const QItemS
 	GetISFController()->loadFile(selectedPath.toString());
 }
 */
+void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	ui->videoSourceComboBox->blockSignals(true);
+	
+	//	clear the list of video sources
+	ui->videoSourceComboBox->clear();
+	
+	//	get a new list of video source menu items, use them to populate the combo box
+	QList<MediaFile>		newFiles = inSrc->createListOfStaticMediaFiles();
+	for (const MediaFile & newFile : newFiles)	{
+		//qDebug() << "\titem " << newFile.name();
+		ui->videoSourceComboBox->addItem(newFile.name(), QVariant::fromValue(newFile));
+	}
+	
+	//	run through the items in the combo box, select the first item that appears to be playing back
+	bool			foundItem = false;
+	for (int i=0; i<ui->videoSourceComboBox->count(); ++i)	{
+		QString			tmpItemString = ui->videoSourceComboBox->itemText(i);
+		QVariant		tmpItemVariant = ui->videoSourceComboBox->itemData(i);
+		//qDebug() << "\tcomparing against camera " << tmpInfo.description();
+		if (GetDynamicVideoSource()->playingBackItem(tmpItemVariant.value<MediaFile>()))	{
+			foundItem = true;
+			//ui->videoSourceComboBox->blockSignals(true);
+			ui->videoSourceComboBox->setCurrentIndex(i);
+			//ui->videoSourceComboBox->blockSignals(false);
+			break;
+		}
+	}
+	if (!foundItem)	{
+		//ui->videoSourceComboBox->blockSignals(true);
+		ui->videoSourceComboBox->setCurrentIndex(-1);
+		//ui->videoSourceComboBox->blockSignals(false);
+	}
+	
+	ui->videoSourceComboBox->blockSignals(false);
+}
+void LoadingWindow::videoSourceChanged(int arg1)	{
+	qDebug() << __PRETTY_FUNCTION__;
+	//	the combo box stores a QVariant<MediaFile> for each item
+	MediaFile		selectedMediaFile = ui->videoSourceComboBox->currentData().value<MediaFile>();
+	GetDynamicVideoSource()->loadFile(selectedMediaFile);
+}
 
 
 void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{

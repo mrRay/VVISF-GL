@@ -5,9 +5,11 @@
 #include <vector>
 #include <utility>
 
+#include <QSpacerItem>
+
 #include "VVISF.hpp"
 #include "ISFUIItem.h"
-#include <QSpacerItem>
+#include "GLBufferQWidget.h"
 
 
 
@@ -31,6 +33,9 @@ public:
 	ISFSceneRef getScene() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return scene; }
 	vector<pair<int,string>> getSceneVertErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneVertErrors; }
 	vector<pair<int,string>> getSceneFragErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneFragErrors; }
+
+public slots:
+	Q_SLOT void widgetRedrawSlot(GLBufferQWidget * n);
 	
 private:
 	Size			renderSize = Size(640.0,480.0);
