@@ -77,20 +77,29 @@ QString JGMTop::createNewInputName()	{
 }
 
 QJsonObject JGMTop::createJSONExport()	{
+	//	start off with the full-blown ISF dict
 	QJsonObject		returnMe = _isfDict;
 	QJsonArray		tmpArray;
 	
+	//	replace its INPUTS with a value we calculated
 	tmpArray = createJSONForInputs();
 	if (tmpArray.size() < 1)
 		returnMe.remove("INPUTS");
 	else
 		returnMe["INPUTS"] = QJsonValue(tmpArray);
 	
+	//	replace its PASSES with a value we calcualted
 	tmpArray = createJSONForPasses();
 	if (tmpArray.size() < 1)
 		returnMe.remove("PASSES");
 	else
 		returnMe["PASSES"] = QJsonValue(tmpArray);
+	
+	//	clear PERSISTENT_BUFFERS, it's an artifact of ISFv1
+	returnMe.remove("PERSISTENT_BUFFERS");
+	
+	//	make sure we're flagged as ISFVSN 2.0
+	returnMe["ISFVSN"] = QJsonValue(QString("2"));
 	
 	return returnMe;
 }

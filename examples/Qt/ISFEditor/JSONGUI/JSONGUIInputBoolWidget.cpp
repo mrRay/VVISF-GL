@@ -58,7 +58,9 @@ void JSONGUIInputBoolWidget::refreshUIItems() {
 		def = defVal.toBool();
 	else
 		def = (defVal.toInt() > 0) ? true : false;
+	ui->defaultCBox->blockSignals(true);
 	ui->defaultCBox->setChecked(def);
+	ui->defaultCBox->blockSignals(false);
 	
 	
 	QJsonValue		idenVal = (!_input->contains("IDENTITY")) ? QJsonValue(false) : _input->value("DEFAULT");
@@ -67,5 +69,7 @@ void JSONGUIInputBoolWidget::refreshUIItems() {
 		iden = idenVal.toBool();
 	else
 		iden = (idenVal.toInt() > 0) ? true  :false;
+	ui->identityCBox->blockSignals(true);
 	ui->identityCBox->setChecked(iden);
+	ui->identityCBox->blockSignals(false);
 }

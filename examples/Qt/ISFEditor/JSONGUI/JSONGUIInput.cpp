@@ -98,7 +98,7 @@ void JSONGUIInput::prepareTypeCBox(QComboBox & typeCB)	{
 
 
 void JSONGUIInput::refreshInputNameEdit(QLineEdit & inputNameEdit)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	QString		tmpString = (_input==nullptr) ? "" : _input->value("NAME").toString();
 	inputNameEdit.setText(tmpString);
 }

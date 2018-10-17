@@ -7,6 +7,7 @@
 
 bool GLBufferQVideoSurface::isFormatSupported(const QVideoSurfaceFormat & inFmt) const	{
 	qDebug() << __PRETTY_FUNCTION__ << "... " << inFmt;
+	
 	//	check the handle type
 	switch (inFmt.handleType())	{
 	case QAbstractVideoBuffer::GLTextureHandle:
@@ -23,27 +24,28 @@ bool GLBufferQVideoSurface::isFormatSupported(const QVideoSurfaceFormat & inFmt)
 		//	acceptable- continue to check the surface format's pixel format...
 		break;
 	}
+	
 	//	check the pixel format
 	switch (inFmt.pixelFormat())	{
 	case QVideoFrame::Format_Invalid:
 		return false;
 		break;
-	case QVideoFrame::Format_ARGB32:
-	case QVideoFrame::Format_ARGB32_Premultiplied:
 	case QVideoFrame::Format_BGRA32:
-	case QVideoFrame::Format_BGRA32_Premultiplied:
+	case QVideoFrame::Format_BGR32:
+	case QVideoFrame::Format_RGB32:
 	case QVideoFrame::Format_UYVY:
-	case QVideoFrame::Format_YUYV:
 		return true;
 		break;
 	
-	case QVideoFrame::Format_RGB32:
+	case QVideoFrame::Format_ARGB32:
+	case QVideoFrame::Format_BGRA32_Premultiplied:
+	case QVideoFrame::Format_ARGB32_Premultiplied:
+	case QVideoFrame::Format_YUYV:
 	case QVideoFrame::Format_RGB24:
+	case QVideoFrame::Format_BGR24:
 	case QVideoFrame::Format_RGB565:
 	case QVideoFrame::Format_RGB555:
 	case QVideoFrame::Format_ARGB8565_Premultiplied:
-	case QVideoFrame::Format_BGR32:
-	case QVideoFrame::Format_BGR24:
 	case QVideoFrame::Format_BGR565:
 	case QVideoFrame::Format_BGR555:
 	case QVideoFrame::Format_BGRA5658_Premultiplied:
@@ -70,6 +72,7 @@ bool GLBufferQVideoSurface::isFormatSupported(const QVideoSurfaceFormat & inFmt)
 		return false;
 		break;
 	}
+	
 	return false;
 	
 }
@@ -97,7 +100,18 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 	}
 	//cout << "\tcpuBuffer is " << *cpuBuffer << ", pixel format is " << cpuBuffer->desc.pixelFormat << endl;
 	//cout << "\tPF_BGRA is " << GLBuffer::PF_BGRA << ", PF_RGBA is " << GLBuffer::PF_RGBA << ", PF_YCbCr_422 is " << GLBuffer::PF_YCbCr_422 << endl;
-	GLBufferRef		freshTexture = uploader->streamCPUToTex(cpuBuffer);
+	
+	//	BGRA/RGBA images from Qt are little-endian, so we need to swap bytes if that's what we're working with
+	switch(cpuBuffer->desc.pixelFormat)	{
+	case GLBuffer::PF_YCbCr_422:
+		uploader->setSwapBytes(false);
+		break;
+	default:
+		uploader->setSwapBytes(true);
+		break;
+	}
+	
+	GLBufferRef		freshTexture = uploader->streamCPUToTex(cpuBuffer,true);
 	if (freshTexture != nullptr)
 		lastUploadedFrame = freshTexture;
 	
@@ -115,13 +129,17 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 //void stop()	{ }
 QList<QVideoFrame::PixelFormat> GLBufferQVideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType inType) const	{
 	QList<QVideoFrame::PixelFormat>		returnMe;
-	returnMe.append(QVideoFrame::Format_RGB32);
-	returnMe.append(QVideoFrame::Format_BGRA32);
-	returnMe.append(QVideoFrame::Format_ARGB32);
 	returnMe.append(QVideoFrame::Format_UYVY);
-	returnMe.append(QVideoFrame::Format_YUYV);
-	returnMe.append(QVideoFrame::Format_BGRA32_Premultiplied);
-	returnMe.append(QVideoFrame::Format_ARGB32_Premultiplied);
+	returnMe.append(QVideoFrame::Format_BGRA32);
+	returnMe.append(QVideoFrame::Format_BGR32);
+	returnMe.append(QVideoFrame::Format_RGB32);
+	
+	//returnMe.append(QVideoFrame::Format_ARGB32);
+	//returnMe.append(QVideoFrame::Format_RGB24);
+	//returnMe.append(QVideoFrame::Format_YUYV);
+	//returnMe.append(QVideoFrame::Format_RGB32);
+	//returnMe.append(QVideoFrame::Format_BGRA32_Premultiplied);
+	//returnMe.append(QVideoFrame::Format_ARGB32_Premultiplied);
 	return returnMe;
 }
 

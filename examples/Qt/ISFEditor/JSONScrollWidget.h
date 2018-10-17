@@ -38,7 +38,7 @@ public:
 private:
 	std::recursive_mutex	itemLock;
 	ISFDocRef				doc = nullptr;
-	QSharedPointer<JGMTop>	top = nullptr;
+	QSharedPointer<JGMTop>	top = nullptr;	//	JSON GUI model- top
 	//JGMTopRef				top = nullptr;
 	
 	QVector<QPointer<QWidget>>		items;	//	weak refs 'cause the layout owns the widgets...

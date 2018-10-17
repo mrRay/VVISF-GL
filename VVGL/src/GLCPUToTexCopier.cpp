@@ -96,7 +96,7 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		}
 		//	else the CPU buffer and the PBO have the same exact number of bytes per row- we can copy their contents in a single call
 		else	{
-			memcpy(wPtr, rPtr, pboBPR * inPBOBuffer->size.height);
+			memcpy(wPtr, rPtr, pboBPR * round(inPBOBuffer->size.height));
 		}
 		//	unmap the PBO
 		glUnmapBuffer(inPBOBuffer->desc.target);
@@ -143,6 +143,8 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
 	GLERRLOG
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
+	GLERRLOG
+	glPixelStorei(GL_UNPACK_SWAP_BYTES, (swapBytes) ? GL_TRUE : GL_FALSE);
 	GLERRLOG
 	
 	//	start copying the buffer data from the PBO to the texture
@@ -338,7 +340,9 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	return streamCPUToTex(inCPUBuffer, inTexBuffer, createInCurrentContext);
 }
 GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, const GLBufferRef & inTexBuffer, const bool & createInCurrentContext)	{
-	//cout << __FUNCTION__ << endl;
+	if (inCPUBuffer==nullptr || inTexBuffer==nullptr)
+		return nullptr;
+	//cout << __FUNCTION__ << "... " << *inCPUBuffer << " -> " << *inTexBuffer << endl;
 	
 	lock_guard<recursive_mutex>		lock(queueLock);
 	

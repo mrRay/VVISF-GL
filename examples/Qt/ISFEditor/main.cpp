@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("com.yourcompanyname");
 	QCoreApplication::setApplicationName("ISFEditor");
 	
+	QSurfaceFormat::setDefaultFormat(CreateCompatibilityGLSurfaceFormat());
+	//QSurfaceFormat::setDefaultFormat(CreateGL4SurfaceFormat());
+	
 	QApplication a(argc, argv);
 	
 	DynamicVideoSource		dvs;
@@ -41,8 +44,13 @@ int main(int argc, char *argv[])
 	
 	DocWindow			dw;
 	dw.show();
-	
+	/*
 	lw.on_createNewFile();
-
+	*/
+	
+	QTimer::singleShot(750, [&]()	{
+		lw.on_createNewFile();
+	});
+	
 	return a.exec();
 }

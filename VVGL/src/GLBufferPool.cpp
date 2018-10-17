@@ -9,6 +9,7 @@
 
 #if defined(VVGL_SDK_QT)
 #include <QImage>
+#include <QDebug>
 #endif
 
 
@@ -1648,6 +1649,8 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 #else
 	desc.internalFormat = GLBuffer::IF_RGBA;
 	desc.pixelType = GLBuffer::PT_UByte;
+	//desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+	//desc.pixelType = GLBuffer::PT_UInt_8888;
 #endif
 	desc.pixelFormat = GLBuffer::PF_RGBA;
 	desc.cpuBackingType = GLBuffer::Backing_None;
@@ -2117,12 +2120,16 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inPoolRef)	{
 	if (inImg==nullptr || inPoolRef==nullptr)
 		return nullptr;
-	void			*pixelData = inImg->bits();
-	if (pixelData == nullptr)
+	QImage			*imgCopy = new QImage(*inImg);
+	void			*pixelData = imgCopy->bits();
+	if (pixelData == nullptr)	{
+		cout << "\tERR: bailing, bits are nil, " << __PRETTY_FUNCTION__ << endl;
+		delete imgCopy;
 		return nullptr;
-	QSize			rawImgSize = inImg->size();
+	}
+	QSize			rawImgSize = imgCopy->size();
 	VVGL::Size		imgSize(rawImgSize.width(), rawImgSize.height());
-	VVGL::Size		repSize(inImg->bytesPerLine()*8/32, rawImgSize.height());
+	VVGL::Size		repSize(imgCopy->bytesPerLine()*8/32, rawImgSize.height());
 	//VVGL::Size		gpuSize = imgSize;
 	
 	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
@@ -2154,21 +2161,17 @@ GLBufferRef CreateCPUBufferForQImage(QImage * inImg, const GLBufferPoolRef & inP
 		QImage			*tmpImg = static_cast<QImage*>(inReleaseContext);
 		delete tmpImg;
 	};
-	returnMe->backingContext = static_cast<void*>(inImg);
+	returnMe->backingContext = static_cast<void*>(imgCopy);
 	returnMe->backingID = GLBuffer::BackingID_QImage;
-	returnMe->cpuBackingPtr = static_cast<void*>(inImg->bits());
+	returnMe->cpuBackingPtr = static_cast<void*>(imgCopy->bits());
 	
 	return returnMe;
 }
 GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferPoolRef & inPoolRef)	{
+	//cout << __PRETTY_FUNCTION__ << endl;
 	if (inFrame==nullptr || inPoolRef==nullptr)
 		return nullptr;
-	/*
-	if (!inFrame->isReadable())	{
-		cout << "ERR: " << __PRETTY_FUNCTION__ << ", bailing, frame isn't readable\n";
-		return nullptr;
-	}
-	*/
+	
 	//	make a new frame- this will be retained by the VVBuffer as its backing, and released in its backing release callback
 	QVideoFrame		*newFrame = new QVideoFrame(*inFrame);
 	
@@ -2199,7 +2202,8 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	
 	QSize			rawImgSize = newFrame->size();
 	VVGL::Size		imgSize(rawImgSize.width(), rawImgSize.height());
-	VVGL::Size		repSize(newFrame->bytesPerLine()*8/32, rawImgSize.height());
+	VVGL::Size		repSize(newFrame->bytesPerLine()*8/32, rawImgSize.height());	//	only works for 32 bits per pixel!
+	//cout << "\timgSize is " << imgSize << ", repSize is " << repSize << endl;
 	
 	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
 	GLBuffer::Descriptor		&desc = returnMe->desc;
@@ -2209,6 +2213,8 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	//desc.internalFormat = GLBuffer::IF_RGBA;
 	//desc.pixelFormat = GLBuffer::PF_BGRA;
 	desc.pixelType = GLBuffer::PT_UByte;
+	//desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+	//desc.pixelType = GLBuffer::PT_UInt_8888;
 	desc.cpuBackingType = GLBuffer::Backing_External;
 	desc.gpuBackingType = GLBuffer::Backing_None;
 	desc.texRangeFlag = false;
@@ -2219,30 +2225,39 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	switch (newFrame->pixelFormat())	{
 	case QVideoFrame::Format_Invalid:
 		break;
-	case QVideoFrame::Format_ARGB32:
-	case QVideoFrame::Format_ARGB32_Premultiplied:
-		desc.internalFormat = GLBuffer::IF_RGBA8;
-		desc.pixelFormat = GLBuffer::PF_RGBA;
-		break;
+	
+	
 	case QVideoFrame::Format_BGRA32:
-	case QVideoFrame::Format_BGRA32_Premultiplied:
 		desc.internalFormat = GLBuffer::IF_RGBA8;
 		desc.pixelFormat = GLBuffer::PF_BGRA;
 		break;
+	case QVideoFrame::Format_BGR32:
+		desc.internalFormat = GLBuffer::IF_RGB;
+		desc.pixelFormat = GLBuffer::PF_BGRA;
+		break;
+	
+	case QVideoFrame::Format_RGB32:
+		desc.internalFormat = GLBuffer::IF_RGB;
+		desc.pixelFormat = GLBuffer::PF_RGBA;
+		break;
+	
 	case QVideoFrame::Format_UYVY:
-	case QVideoFrame::Format_YUYV:
+		repSize = Size(newFrame->bytesPerLine() * 8 / 16, rawImgSize.height());
 		desc.internalFormat = GLBuffer::IF_RGB;
 		desc.pixelFormat = GLBuffer::PF_YCbCr_422;
 		desc.pixelType = GLBuffer::PT_UShort88;
 		break;
 	
-	case QVideoFrame::Format_RGB32:
+	
+	case QVideoFrame::Format_ARGB32:
+	case QVideoFrame::Format_BGRA32_Premultiplied:
+	case QVideoFrame::Format_ARGB32_Premultiplied:
+	case QVideoFrame::Format_YUYV:
 	case QVideoFrame::Format_RGB24:
+	case QVideoFrame::Format_BGR24:
 	case QVideoFrame::Format_RGB565:
 	case QVideoFrame::Format_RGB555:
 	case QVideoFrame::Format_ARGB8565_Premultiplied:
-	case QVideoFrame::Format_BGR32:
-	case QVideoFrame::Format_BGR24:
 	case QVideoFrame::Format_BGR565:
 	case QVideoFrame::Format_BGR555:
 	case QVideoFrame::Format_BGRA5658_Premultiplied:
@@ -2265,12 +2280,31 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	case QVideoFrame::NPixelFormats:
 	case QVideoFrame::Format_User:
 		//	we can't work with these pixel formats- unmap, delete, and bail
-		cout << "\tERR: unsupported pixel format (" << newFrame->pixelFormat() << ")\n";
+		qDebug() << "\tERR: unsupported pixel format (" << newFrame->pixelFormat() << ")";
 		newFrame->unmap();
 		delete newFrame;
 		return nullptr;
 		break;
 	}
+	
+	//	make sure the frame has at least the min number of bytes required for an image of its type and format
+	if (newFrame->mappedBytes() < desc.backingLengthForSize(imgSize))	{
+		cout << "\tERR: frame does not contain enough bytes for reported format/dimensions\n";
+		cout << "\tdims are " << imgSize << ", target size is " << desc.backingLengthForSize(imgSize) << ", mapped size is " << newFrame->mappedBytes() << endl;
+		newFrame->unmap();
+		delete newFrame;
+		return nullptr;
+	}
+	
+	//	make sure the frame's bits are accessible
+	uint8_t		*tmpBits = newFrame->bits();
+	if (tmpBits == nullptr)	{
+		cout << "\tERR: video frame's bits are null\n";
+		newFrame->unmap();
+		delete newFrame;
+		return nullptr;
+	}
+	//tmpBits += 1;
 	
 	returnMe->name = 0;
 	returnMe->preferDeletion = true;
@@ -2281,7 +2315,8 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	
 	inPoolRef->timestampThisBuffer(returnMe);
 	
-	returnMe->backingReleaseCallback = [](GLBuffer & /*inBuffer*/, void* inReleaseContext)	{
+	returnMe->backingReleaseCallback = [](GLBuffer & inBuffer, void* inReleaseContext)	{
+		Q_UNUSED(inBuffer);
 		QVideoFrame			*tmpFrame = static_cast<QVideoFrame*>(inReleaseContext);
 		if (tmpFrame != nullptr)	{
 			tmpFrame->unmap();
@@ -2291,15 +2326,9 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	returnMe->backingContext = static_cast<void*>(newFrame);
 	returnMe->backingID = GLBuffer::BackingID_QVideoFrame;
 	//returnMe->cpuBackingPtr = static_cast<void*>(XXXXX);
-	returnMe->cpuBackingPtr = static_cast<void*>(newFrame->bits());
-	
+	returnMe->cpuBackingPtr = static_cast<void*>(tmpBits);
 	
 	return returnMe;
-	
-	
-	
-	
-	
 }
 #endif
 

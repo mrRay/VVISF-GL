@@ -5,6 +5,7 @@
 #include <QSettings>
 
 #include "ISFPassTarget.hpp"
+#include "ISFController.h"
 
 
 
@@ -48,8 +49,75 @@ GLBufferQWidget * OutputWindow::bufferView()	{
 	return ui->bufferView;
 }
 void OutputWindow::drawBuffer(const VVGL::GLBufferRef & n)	{
+	if (n == nullptr)
+		return;
 	ui->bufferView->drawBuffer(n);
+	QString			resText = QString("%1 x %2").arg(int(n->srcRect.size.width)).arg(int(n->srcRect.size.height));
+	if (ui->imageResLabel->text() != resText)	{
+		//perform_async([&,resText](){
+			ui->imageResLabel->setText(resText);
+		//}, ui->imageResLabel);
+	}
 }
+void OutputWindow::updateContentsFromISFController()	{
+	//	get the ISFController, and from it retrieve the doc that is currently loaded
+	ISFController		*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
+	//ISFSceneRef			tmpScene = isfc->getScene();
+	//ISFDocRef			tmpDoc = (tmpScene==nullptr) ? nullptr : tmpScene->getDoc();
+	ISFDocRef			tmpDoc = isfc->getCurrentDoc();
+	int					maxPassCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getRenderPasses().size();
+	int					imageInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getImageInputs().size();
+	int					audioInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getAudioInputs().size();
+	
+	//	update the pop-up button with the list of rendering passes
+	QComboBox		*cb = ui->renderPassComboBox;
+	if (cb == nullptr)
+		return;
+	
+	cb->blockSignals(true);
+	
+	//	'main output' menu item has a variant of -1
+	cb->clear();
+	cb->addItem(QString("Main Output"), QVariant(-1));
+	
+	//	pass menu items have variants starting at 0
+	if (maxPassCount > 1)	{
+		cb->insertSeparator(cb->count());
+		
+		for (int i=0; i<maxPassCount; ++ i)	{
+			QString		passName = QString::fromStdString(tmpDoc->getRenderPasses().at(i));
+			cb->addItem(passName, QVariant(i));
+		}
+	}
+	//	image input menu items have variants starting at 100
+	if (imageInputsCount > 1)	{
+		cb->insertSeparator(cb->count());
+		
+		for (int i=0; i<imageInputsCount; ++i)	{
+			ISFAttrRef	inputRef = tmpDoc->getImageInputs().at(i);
+			QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+			cb->addItem(inputName, QVariant(100+i));
+		}
+	}
+	//	image input menu items have variants starting at 200
+	if (audioInputsCount > 1)	{
+		cb->insertSeparator(cb->count());
+		
+		for (int i=0; i<audioInputsCount; ++i)	{
+			ISFAttrRef	inputRef = tmpDoc->getAudioInputs().at(i);
+			QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+			cb->addItem(inputName, QVariant(200+i));
+		}
+	}
+	
+	cb->blockSignals(false);
+}
+int OutputWindow::selectedIndexToDisplay()	{
+	return ui->renderPassComboBox->currentData().toInt();
+}
+
 
 void OutputWindow::closeEvent(QCloseEvent * event)	{
 	QSettings		settings;
@@ -71,7 +139,7 @@ void OutputWindow::on_displayAlphaToggle_stateChanged(int arg1)	{
 }
 
 void OutputWindow::widgetDrewItsFirstFrame()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	/*
 	if (QThread::currentThread() == qApp->thread())
 		qDebug() << "\tcurrent thread in widget draw first frame is main thread";

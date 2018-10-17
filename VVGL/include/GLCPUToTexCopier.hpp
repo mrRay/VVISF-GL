@@ -41,6 +41,7 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		queue<GLBufferRef>		cpuQueue;	//	queue of CPU-based images
 		queue<GLBufferRef>		pboQueue;	//	queue of PBOs
 		queue<GLBufferRef>		texQueue;	//	queue of textures
+		bool					swapBytes = false;
 	
 	private:
 		//	before calling either of these functions, queueLock should be locked and a GL context needs to be made current on this thread.
@@ -59,6 +60,9 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
 		inline int getQueueSize() { lock_guard<recursive_mutex> lock(queueLock); return queueSize; };
+		
+		void setSwapBytes(const bool & n) { lock_guard<recursive_mutex> lock(queueLock); swapBytes=n; }
+		bool getSwapBytes() { lock_guard<recursive_mutex> lock(queueLock); return swapBytes; }
 		
 		//!	Immediately uploads the passed CPU-based buffer to a GL texture- doesn't use the queues.  Less efficient.  Good for quick single-shot texture uploads.
 		GLBufferRef uploadCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext=false);

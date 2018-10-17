@@ -38,10 +38,14 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	ui->setupUi(this);
 	
 	//	the spinboxes for setting rendering res need sane min/maxes
+	ui->renderResWidthWidget->blockSignals(true);
+	ui->renderResHeightWidget->blockSignals(true);
 	ui->renderResWidthWidget->setMinimum(1);
 	ui->renderResWidthWidget->setMaximum(16384);
 	ui->renderResHeightWidget->setMinimum(1);
 	ui->renderResHeightWidget->setMaximum(16384);
+	ui->renderResWidthWidget->blockSignals(false);
+	ui->renderResHeightWidget->blockSignals(false);
 	
 	//	the DynamicVideoSource class has a signal which is emitted when its list of sources change
 	//connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
@@ -102,6 +106,13 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 			on_loadFile(selectedPathString);
 		});
 	}
+	
+	/*
+	//	load a new file after a half-second
+	QTimer::singleShot(500, [&]()	{
+		on_createNewFile();
+	});
+	*/
 }
 
 LoadingWindow::~LoadingWindow()
@@ -115,6 +126,7 @@ QScrollArea * LoadingWindow::getScrollArea()	{
 QSpinBox * LoadingWindow::getWidthSB() { return ui->renderResWidthWidget; }
 QSpinBox * LoadingWindow::getHeightSB() { return ui->renderResHeightWidget; }
 void LoadingWindow::on_createNewFile()	{
+	qDebug() << __PRETTY_FUNCTION__;
 	//	make new tmp file, populate its contents
 	QString			tmpFilePath = QString();
 	QFile			tmpFragShaderFile( QString("%1/ISFTesterTmpFile.fs").arg(QDir::tempPath()) );
@@ -167,15 +179,40 @@ void LoadingWindow::loadSystemISFsButtonClicked()	{
 }
 void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
+	ISFController		*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
+	Size			origSize = isfc->getRenderSize();
+	Size			newSize(origSize.width/2., origSize.height/2.);
+	ui->renderResWidthWidget->blockSignals(true);
+	ui->renderResHeightWidget->blockSignals(true);
+	
+	ui->renderResWidthWidget->setValue(newSize.width);
+	ui->renderResHeightWidget->setValue(newSize.height);
+	
+	ui->renderResWidthWidget->blockSignals(false);
+	ui->renderResHeightWidget->blockSignals(false);
+	
+	isfc->setRenderSize(newSize);
 }
 void LoadingWindow::doubleRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 }
 void LoadingWindow::renderResWidthWidgetValueChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	ISFController		*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
+	Size			tmpSize(ui->renderResWidthWidget->value(), ui->renderResHeightWidget->value());
+	isfc->setRenderSize(tmpSize);
 }
 void LoadingWindow::renderResHeightWidgetValueChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	ISFController		*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
+	Size			tmpSize(ui->renderResWidthWidget->value(), ui->renderResHeightWidget->value());
+	isfc->setRenderSize(tmpSize);
 }
 void LoadingWindow::saveUIValsToDefaultClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;

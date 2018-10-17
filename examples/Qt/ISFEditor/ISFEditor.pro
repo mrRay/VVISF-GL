@@ -32,86 +32,86 @@ DEFINES += VVGL_SDK_QT
 
 
 SOURCES += \
-        main.cpp \
-        MainWindow.cpp \
-    LoadingWindow.cpp \
-    OutputWindow.cpp \
-	../common/GLBufferQWidget.cpp \
 	../common/GLBufferQVideoSurface.cpp \
-    DocWindow.cpp \
-    SimpleSourceCodeEdit.cpp \
-    ISFController.cpp \
-    ISFUIItem.cpp \
-    ISFRemoteImageClient.cpp \
-    JSONScrollWidget.cpp \
-    JSONGUI/JSONGUIBasicInfoWidget.cpp \
-    JSONGUI/JSONGUIGroupInputWidget.cpp \
-    JSONGUI/JSONGUIGroupPassWidget.cpp \
-    JSONGUI/JSONGUIInputAudioWidget.cpp \
-    JSONGUI/JSONGUIInputAudioFFTWidget.cpp \
-    JSONGUI/JSONGUIInputBoolWidget.cpp \
-    JSONGUI/JSONGUIInputColorWidget.cpp \
-    JSONGUI/JSONGUIInputEventWidget.cpp \
-    JSONGUI/JSONGUIInputFloatWidget.cpp \
-    JSONGUI/JSONGUIInputImageWidget.cpp \
-    JSONGUI/JSONGUIInputLongWidget.cpp \
-    JSONGUI/JSONGUIInputPoint2DWidget.cpp \
-    JSONGUI/JSONGUIPassWidget.cpp \
-    JGMObject.cpp \
-    JSONGUI/JGMTop.cpp \
-    JSONGUI/JGMCArray.cpp \
-    JSONGUI/JGMCDict.cpp \
-    JSONGUI/JSONGUIInput.cpp \
-    VideoSource/VideoSource.cpp \
-    VideoSource/WebCamVideoSource.cpp \
-    VideoSource/ImgVideoSource.cpp \
-    VideoSource/MovieVideoSource.cpp \
-    VideoSource/InterAppVideoSource.cpp \
-    DynamicVideoSource.cpp \
-    VideoSourceMenuItem.cpp \
-    MediaFile.cpp
+	../common/GLBufferQWidget.cpp \
+	DocWindow.cpp \
+	ISFController.cpp \
+	JSONGUI/JGMCArray.cpp \
+	JSONGUI/JGMCDict.cpp \
+	JSONGUI/JGMObject.cpp \
+	JSONGUI/JGMTop.cpp \
+	JSONGUI/JSONGUIBasicInfoWidget.cpp \
+	JSONGUI/JSONGUIGroupInputWidget.cpp \
+	JSONGUI/JSONGUIGroupPassWidget.cpp \
+	JSONGUI/JSONGUIInput.cpp \
+	JSONGUI/JSONGUIInputAudioFFTWidget.cpp \
+	JSONGUI/JSONGUIInputAudioWidget.cpp \
+	JSONGUI/JSONGUIInputBoolWidget.cpp \
+	JSONGUI/JSONGUIInputColorWidget.cpp \
+	JSONGUI/JSONGUIInputEventWidget.cpp \
+	JSONGUI/JSONGUIInputFloatWidget.cpp \
+	JSONGUI/JSONGUIInputImageWidget.cpp \
+	JSONGUI/JSONGUIInputLongWidget.cpp \
+	JSONGUI/JSONGUIInputPoint2DWidget.cpp \
+	JSONGUI/JSONGUIPassWidget.cpp \
+	JSONScrollWidget.cpp \
+	LoadingWindow.cpp \
+	main.cpp \
+	MainWindow.cpp \
+	misc_classes/ISFRemoteImageClient.cpp \
+	misc_classes/MediaFile.cpp \
+	misc_classes/VideoSourceMenuItem.cpp \
+	misc_ui/ISFUIItem.cpp \
+	misc_ui/SimpleSourceCodeEdit.cpp \
+	OutputWindow.cpp \
+	VideoSource/DynamicVideoSource.cpp \
+	VideoSource/ImgVideoSource.cpp \
+	VideoSource/InterAppVideoSource.cpp \
+	VideoSource/MovieVideoSource.cpp \
+	VideoSource/VideoSource.cpp \
+	VideoSource/WebCamVideoSource.cpp
 
 HEADERS += \
-        MainWindow.h \
-    LoadingWindow.h \
-    OutputWindow.h \
-	../common/GLBufferQWidget.h \
 	../common/GLBufferQVideoSurface.h \
-    DocWindow.h \
-    SimpleSourceCodeEdit.h \
-    ISFController.h \
-    ISFUIItem.h \
-    ISFRemoteImageClient.h \
-	QDoubleSlider.h \
-    JSONScrollWidget.h \
-    JSONGUI/JSONGUIBasicInfoWidget.h \
-    JSONGUI/JSONGUIGroupInputWidget.h \
-    JSONGUI/JSONGUIGroupPassWidget.h \
-    JSONGUI/JSONGUIInputAudioWidget.h \
-    JSONGUI/JSONGUIInputAudioFFTWidget.h \
-    JSONGUI/JSONGUIInputBoolWidget.h \
-    JSONGUI/JSONGUIInputColorWidget.h \
-    JSONGUI/JSONGUIInputEventWidget.h \
-    JSONGUI/JSONGUIInputFloatWidget.h \
-    JSONGUI/JSONGUIInputImageWidget.h \
-    JSONGUI/JSONGUIInputLongWidget.h \
-    JSONGUI/JSONGUIInputPoint2DWidget.h \
-    JSONGUI/JSONGUIPassWidget.h \
-    JGMObject.h \
-    JSONGUI/JGMTop.h \
-    JSONGUI/JGMCArray.h \
-    JSONGUI/JGMCDict.h \
-    JSONGUI/JGMDefs.h \
-    JSONGUI/JSONGUIInput.h \
-    JSONGUI/QLabelClickable.h \
-    VideoSource/VideoSource.h \
-    VideoSource/WebCamVideoSource.h \
-    VideoSource/ImgVideoSource.h \
-    VideoSource/MovieVideoSource.h \
-    VideoSource/InterAppVideoSource.h \
-    DynamicVideoSource.h \
-    VideoSourceMenuItem.h \
-    MediaFile.h
+	../common/GLBufferQWidget.h \
+	DocWindow.h \
+	ISFController.h \
+	JSONGUI/JGMCArray.h \
+	JSONGUI/JGMCDict.h \
+	JSONGUI/JGMDefs.h \
+	JSONGUI/JGMObject.h \
+	JSONGUI/JGMTop.h \
+	JSONGUI/JSONGUIBasicInfoWidget.h \
+	JSONGUI/JSONGUIGroupInputWidget.h \
+	JSONGUI/JSONGUIGroupPassWidget.h \
+	JSONGUI/JSONGUIInput.h \
+	JSONGUI/JSONGUIInputAudioFFTWidget.h \
+	JSONGUI/JSONGUIInputAudioWidget.h \
+	JSONGUI/JSONGUIInputBoolWidget.h \
+	JSONGUI/JSONGUIInputColorWidget.h \
+	JSONGUI/JSONGUIInputEventWidget.h \
+	JSONGUI/JSONGUIInputFloatWidget.h \
+	JSONGUI/JSONGUIInputImageWidget.h \
+	JSONGUI/JSONGUIInputLongWidget.h \
+	JSONGUI/JSONGUIInputPoint2DWidget.h \
+	JSONGUI/JSONGUIPassWidget.h \
+	JSONGUI/QLabelClickable.h \
+	JSONScrollWidget.h \
+	LoadingWindow.h \
+	MainWindow.h \
+	misc_classes/ISFRemoteImageClient.h \
+	misc_classes/MediaFile.h \
+	misc_classes/VideoSourceMenuItem.h \
+	misc_ui/ISFUIItem.h \
+	misc_ui/SimpleSourceCodeEdit.h \
+	OutputWindow.h \
+	misc_ui/QDoubleSlider.h \
+	VideoSource/DynamicVideoSource.h \
+	VideoSource/ImgVideoSource.h \
+	VideoSource/InterAppVideoSource.h \
+	VideoSource/MovieVideoSource.h \
+	VideoSource/VideoSource.h \
+	VideoSource/WebCamVideoSource.h
 
 FORMS += \
         MainWindow.ui \
@@ -133,7 +133,7 @@ FORMS += \
     JSONGUI/JSONGUIPassWidget.ui
 
 RESOURCES += \
-    shaderLanguagefiles.qrc \
+    misc_ui/shaderLanguagefiles.qrc \
     resources.qrc
 
 
@@ -157,6 +157,8 @@ INCLUDEPATH += VideoSource
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF
 INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
+INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
+INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
 
 
 

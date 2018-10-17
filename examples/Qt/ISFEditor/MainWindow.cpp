@@ -31,6 +31,6 @@ void MainWindow::on_actionOpen_triggered()	{
 }
 
 void MainWindow::on_actionSave_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	GetDocWindow()->saveOpenFile();
 }

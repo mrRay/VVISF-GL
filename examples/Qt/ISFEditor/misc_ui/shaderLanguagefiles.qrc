@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/shader language files">
+        <file>shader language files/ISF_GLSL_1_5.json</file>
+    </qresource>
+</RCC>

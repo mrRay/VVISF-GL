@@ -219,7 +219,9 @@ void JSONGUIInputColorWidget::refreshUIItems() {
 	tmpPalette = ui->defaultLabel->palette();
 	tmpPalette.setColor(ui->defaultLabel->backgroundRole(), tmpColor);
 	ui->defaultLabel->setPalette(tmpPalette);
+	ui->defaultCBox->blockSignals(true);
 	ui->defaultCBox->setChecked(tmpBool);
+	ui->defaultCBox->blockSignals(false);
 	//	identity UI items (color & checkbox)
 	if (_input->contains("IDENTITY"))	{
 		tmpColor = ConvertArrayJSONToColor(_input->value("IDENTITY"));
@@ -232,7 +234,9 @@ void JSONGUIInputColorWidget::refreshUIItems() {
 	tmpPalette = ui->identityLabel->palette();
 	tmpPalette.setColor(ui->identityLabel->backgroundRole(), tmpColor);
 	ui->identityLabel->setPalette(tmpPalette);
+	ui->identityCBox->blockSignals(true);
 	ui->identityCBox->setChecked(tmpBool);
+	ui->identityCBox->blockSignals(false);
 	//	minimum UI items (color & checkbox)
 	if (_input->contains("MIN"))	{
 		tmpColor = ConvertArrayJSONToColor(_input->value("MIN"));
@@ -245,7 +249,9 @@ void JSONGUIInputColorWidget::refreshUIItems() {
 	tmpPalette = ui->minLabel->palette();
 	tmpPalette.setColor(ui->minLabel->backgroundRole(), tmpColor);
 	ui->minLabel->setPalette(tmpPalette);
+	ui->minCBox->blockSignals(true);
 	ui->minCBox->setChecked(tmpBool);
+	ui->minCBox->blockSignals(false);
 	//	maximum UI items (color & checkbox)
 	if (_input->contains("MAX"))	{
 		tmpColor = ConvertArrayJSONToColor(_input->value("MAX"));
@@ -258,6 +264,7 @@ void JSONGUIInputColorWidget::refreshUIItems() {
 	tmpPalette = ui->maxLabel->palette();
 	tmpPalette.setColor(ui->maxLabel->backgroundRole(), tmpColor);
 	ui->maxLabel->setPalette(tmpPalette);
+	ui->maxCBox->blockSignals(true);
 	ui->maxCBox->setChecked(tmpBool);
-	
+	ui->maxCBox->blockSignals(false);
 }

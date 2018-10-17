@@ -27,6 +27,8 @@ public:
 	
 	GLBufferQWidget * bufferView();
 	void drawBuffer(const VVGL::GLBufferRef & n);
+	void updateContentsFromISFController();
+	int selectedIndexToDisplay();
 	
 protected:
 	void closeEvent(QCloseEvent * event);

@@ -147,8 +147,10 @@ DocWindow::~DocWindow()	{
 void DocWindow::updateContentsFromISFController()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
-	ISFSceneRef		scene = GetISFController()->getScene();
-	ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+	//ISFSceneRef		scene = GetISFController()->getScene();
+	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+	ISFController	*isfc = GetISFController();
+	ISFDocRef		doc = isfc->getCurrentDoc();
 	
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -158,6 +160,7 @@ void DocWindow::updateContentsFromISFController()	{
 		delete _tmpFileSaveTimer;
 		_tmpFileSaveTimer = nullptr;
 	}
+	
 	//	clear out the old paths and file contents
 	VVDELETE(_fragFilePath);
 	VVDELETE(_fragFilePathContentsOnOpen);
@@ -169,14 +172,14 @@ void DocWindow::updateContentsFromISFController()	{
 		_fragFilePath = new QString( QString::fromStdString(doc->getPath()) );
 		//	check for a vert file by using the common recognized extensions for vert shaders
 		QFileInfo		fragFileInfo(*_fragFilePath);
-		QString			tmpPath = QString("%1/%2.vs").arg( fragFileInfo.dir().absolutePath(), fragFileInfo.completeBaseName() );
+		QString			tmpPath = QString("%1/%2.vs").arg(fragFileInfo.dir().absolutePath()).arg(fragFileInfo.completeBaseName());
 		//qDebug() << "\tchecking for vert file at " << tmpPath;
 		if (QFileInfo::exists(tmpPath))	{
 			//qDebug() << "\tfound the file!";
 			_vertFilePath = new QString(tmpPath);
 		}
 		else	{
-			tmpPath = QString("%1/%2.vert").arg( fragFileInfo.dir().absolutePath(), fragFileInfo.completeBaseName() );
+			tmpPath = QString("%1/%2.vert").arg(fragFileInfo.dir().absolutePath()).arg(fragFileInfo.completeBaseName());
 			//qDebug() << "\tchecking for vert file at " << tmpPath;
 			if (QFileInfo::exists(tmpPath))	{
 				//qDebug() << "\tfound the file!";
@@ -202,7 +205,8 @@ void DocWindow::updateContentsFromISFController()	{
 		}
 		else	{
 			//	set the contents of the frag shader editor
-			ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
+			if (ui->fragShaderEditor->toPlainText() != *_fragFilePathContentsOnOpen)
+				ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
 			auto				fragErrs = GetISFController()->getSceneFragErrors();
@@ -234,7 +238,8 @@ void DocWindow::updateContentsFromISFController()	{
 		}
 		else	{
 			//	set the contents of the vert shader editor
-			ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
+			if (ui->vertShaderEditor->toPlainText() != *_vertFilePathContentsOnOpen)
+				ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
 			auto				vertErrs = GetISFController()->getSceneVertErrors();
@@ -254,8 +259,10 @@ void DocWindow::updateContentsFromISFController()	{
 		
 		
 		ui->compilerErrorsTextWidget->setPlainText( errString );
-		ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
-		ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
+		//ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
+		//ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
+		ui->compiledFragShader->setPlainText(isfc->getCompiledFragmentShaderString());
+		ui->compiledVertShader->setPlainText(isfc->getCompiledVertexShaderString());
 		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->getJSONString()) );
 		
 		ui->jsonGUIWidget->loadDocFromISFController();
@@ -320,7 +327,7 @@ void DocWindow::saveOpenFile()	{
 				tr("Text (*.fs)"));
 			//qDebug() << "\tdestPath is " << pathToSave;
 			QFileInfo		saveFileInfo(pathToSave);
-			QString			noExtPathToSave = QString("%1/%2").arg( saveFileInfo.dir().absolutePath(), saveFileInfo.completeBaseName() );
+			QString			noExtPathToSave = QString("%1/%2").arg(saveFileInfo.dir().absolutePath()).arg(saveFileInfo.completeBaseName());
 			//qDebug() << "\tnoExtPathToSave is " << noExtPathToSave;
 			
 			

@@ -69,8 +69,9 @@ void JSONScrollWidget::loadDocFromISFController()	{
 	
 	//	update the ISFDocRef from the ISF controller
 	ISFController		*isfc = GetISFController();
-	ISFSceneRef			scene = (isfc==nullptr) ? nullptr : isfc->getScene();
-	doc = (scene==nullptr) ? nullptr : scene->getDoc();
+	//ISFSceneRef			scene = (isfc==nullptr) ? nullptr : isfc->getScene();
+	//doc = (scene==nullptr) ? nullptr : scene->getDoc();
+	doc = (isfc==nullptr) ? nullptr : isfc->getCurrentDoc();
 
 	if (doc == nullptr)
 		return;
@@ -103,12 +104,37 @@ void JSONScrollWidget::recreateJSONAndExport()	{
 		return;
 	
 	QJsonObject		exportObj = top->createJSONExport();
-	QJsonDocument	exportDoc(exportObj);
-	QFile			tmpFile("/Users/testadmin/Desktop/tmpFile.txt");
-	tmpFile.open(QFile::WriteOnly);
-	tmpFile.write(exportDoc.toJson());
+	QJsonDocument	exportJSONDoc(exportObj);
+	
+	string			tmpPath = doc->getPath();
+	QFile			tmpFile(QString::fromStdString(tmpPath));
+	if (!tmpFile.open(QFile::WriteOnly))	{
+		qDebug() << "ERR: cannot open file to write (" << QString::fromStdString(tmpPath) << ")";
+		return;
+	}
+	
+	QString			jsonString = QString(exportJSONDoc.toJson());
+	
+	string			*fsStringPtr = doc->getFragShaderSource();
+	QString			fsString = (fsStringPtr==nullptr) ? QString() : QString::fromStdString(*fsStringPtr);
+	QString			exportString;
+	if (fsStringPtr == nullptr)
+		exportString = QString("/*\n%1\n*/").arg(jsonString);
+	else
+		exportString = QString("/*\n%1\n*/%2").arg(jsonString).arg(fsString);
+	
+	tmpFile.write(exportString.toUtf8());
 	tmpFile.close();
 	
+	
+	/*
+	QJsonObject		exportObj = top->createJSONExport();
+	QJsonDocument	exportJSONDoc(exportObj);
+	QFile			tmpFile("/Users/testadmin/Desktop/tmpFile.txt");
+	tmpFile.open(QFile::WriteOnly);
+	tmpFile.write(exportJSONDoc.toJson());
+	tmpFile.close();
+	*/
 }
 
 

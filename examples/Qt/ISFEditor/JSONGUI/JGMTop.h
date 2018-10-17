@@ -18,6 +18,7 @@ class JGMTop : public QObject
 {
 	Q_OBJECT
 public:
+	//	inISFObj is the full-blown ISF dict from the file
 	explicit JGMTop(const QJsonObject & inISFObj, QObject *parent = nullptr) :
 		QObject(parent),
 		_isfDict(inISFObj),
@@ -41,6 +42,7 @@ public:
 	int indexOfPass(const JGMPass & n);
 	QString createNewInputName();
 	
+	//	creates the JSON object that can be written to disk
 	QJsonObject createJSONExport();
 
 private:

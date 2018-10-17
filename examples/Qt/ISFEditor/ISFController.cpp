@@ -64,7 +64,7 @@ void ISFController::aboutToQuit()	{
 	scene = nullptr;
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
 	
 	if (GetGlobalBufferPool() == nullptr)
 		return;
@@ -78,14 +78,22 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	
 	sceneVertErrors.clear();
 	sceneFragErrors.clear();
-
+	
+	//	start watching the file- reload the file if it changes...
+	if (sceneFileWatcher != nullptr)
+		delete sceneFileWatcher;
+	sceneFileWatcher = new QFileSystemWatcher(QStringList(inPathToLoad));
+	connect(sceneFileWatcher, &QFileSystemWatcher::fileChanged, [&](const QString & filepath)	{
+		loadFile(filepath);
+	});
+	
 	scene->setThrowExceptions(true);
 	//	tell the scene to load the file, catch exceptions so we can throw stuff
 	try	{
 		scene->useFile(inPathToLoad.toStdString());
 	}
 	catch (ISFErr & exc)	{
-		QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general), QString::fromStdString(exc.specific));
+		QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));
 		QMessageBox::warning(GetLoadingWindow(), "", errString, QMessageBox::Ok);
 	}
 	catch (...)	{
@@ -104,7 +112,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		scene->createAndRenderABuffer();
 	}
 	catch (ISFErr & exc)	{
-		//QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general), QString::fromStdString(exc.specific));
+		//QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));
 		//QMessageBox::warning(GetLoadingWindow(), "", errString, QMessageBox::Ok);
 		//qDebug() << "\tERR: caught exception rendering first frame, " << __PRETTY_FUNCTION__;
 		
@@ -255,10 +263,17 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	
 	//	tell the doc window to update its contents
 	GetDocWindow()->updateContentsFromISFController();
+	
+	//	tell the output window to update its contents
+	GetOutputWindow()->updateContentsFromISFController();
 }
 
 void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	OutputWindow		*ow = GetOutputWindow();
+	if (ow == nullptr)
+		return;
 	
 	//	get a "source buffer" from the dynamic video source
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();
@@ -270,19 +285,19 @@ void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 	
 	//	if there's no scene, display the source buffer and bail
 	if (scene == nullptr)	{
-		n->drawBuffer(newSrcBuffer);
+		ow->drawBuffer(newSrcBuffer);
 		return;
 	}
 	
 	//	if there's no doc or a null doc, display the source buffer and bail
 	ISFDocRef	tmpDoc = scene->getDoc();
 	if (tmpDoc == nullptr)	{
-		n->drawBuffer(newSrcBuffer);
+		ow->drawBuffer(newSrcBuffer);
 		return;
 	}
 	string		scenePath = tmpDoc->getPath();
 	if (scenePath.length() < 1)	{
-		n->drawBuffer(newSrcBuffer);
+		ow->drawBuffer(newSrcBuffer);
 		return;
 	}
 	
@@ -307,6 +322,8 @@ void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 		Size		tmpSize = renderSize;
 		if (sceneIsFilter && newSrcBuffer!=nullptr)
 			tmpSize = newSrcBuffer->srcRect.size;
+		//if (newSrcBuffer != nullptr)
+		//	cout << "newSrcBuffer size is " << newSrcBuffer->srcRect.size << ", rendering at size " << tmpSize << endl;
 		newBuffer = scene->createAndRenderABuffer(tmpSize, &tmpPassDict, GetGlobalBufferPool());
 	}
 	catch (ISFErr & exc)	{
@@ -319,15 +336,31 @@ void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 		}
 	}
 	
-	n->drawBuffer(newBuffer);
-	//cout << "newBuffer is " << *newBuffer << endl;
-	//cout << "tmp pass dict:\n";
-	//for (const auto & it : tmpPassDict)	{
-	//	cout << "\t" << it.first << " : " << *it.second << endl;
-	//}
+	
+	int					indexToDisplay = (ow==nullptr) ? -1 : ow->selectedIndexToDisplay();
+	if (indexToDisplay == -1)
+		ow->drawBuffer(newBuffer);
+	else	{
+		auto		found = tmpPassDict.find(indexToDisplay);
+		if (found == tmpPassDict.end())
+			ow->drawBuffer(newBuffer);
+		else
+			ow->drawBuffer(found->second);
+	}
+	
+	/*
+	//n->drawBuffer(newBuffer);
+	cout << "newBuffer is " << *newBuffer << endl;
+	cout << "tmp pass dict:\n";
+	for (const auto & it : tmpPassDict)	{
+		cout << "\t" << it.first << " : " << *it.second << endl;
+	}
+	*/
 }
 
 void ISFController::populateLoadingWindowUI()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
 	//	get the loading window, bail if we can't
 	LoadingWindow			*lw = GetLoadingWindow();
 	if (lw == nullptr)
@@ -392,16 +425,22 @@ void ISFController::populateLoadingWindowUI()	{
 	}
 	
 	//	populate the render res spinboxes!
-	Size			renderSize(1,1);
-	if (scene != nullptr)
-		renderSize = scene->getOrthoSize();
+	//Size			renderSize(1280,720);
+	//if (scene != nullptr)
+	//	renderSize = scene->getOrthoSize();
 	QSpinBox		*tmpWidget = nullptr;
 	tmpWidget = lw->getWidthSB();
-	if (tmpWidget != nullptr)
+	if (tmpWidget != nullptr)	{
+		tmpWidget->blockSignals(true);
 		tmpWidget->setValue(renderSize.width);
+		tmpWidget->blockSignals(false);
+	}
 	tmpWidget = lw->getHeightSB();
-	if (tmpWidget != nullptr)
+	if (tmpWidget != nullptr)	{
+		tmpWidget->blockSignals(true);
 		tmpWidget->setValue(renderSize.height);
+		tmpWidget->blockSignals(false);
+	}
 }
 void ISFController::pushNormalizedMouseClickToPoints(const Size & inSize)	{
 }
