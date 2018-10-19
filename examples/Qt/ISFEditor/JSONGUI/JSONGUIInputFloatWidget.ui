@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
+    <width>332</width>
     <height>160</height>
    </rect>
   </property>
@@ -31,16 +31,13 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="2">
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="inputNameEdit">
+       <property name="styleSheet">
+        <string notr="true">background: rgba(0,0,0,0); border-radius: 0px;</string>
        </property>
        <property name="text">
-        <string/>
+        <string>INPUTNAME</string>
        </property>
       </widget>
      </item>
@@ -57,13 +54,34 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="inputNameEdit">
-       <property name="styleSheet">
-        <string notr="true">background: rgba(0,0,0,0); border-radius: 0px;</string>
+     <item row="0" column="2">
+      <widget class="QLabelClickable" name="deleteLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
        </property>
        <property name="text">
-        <string>INPUTNAME</string>
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../resources.qrc">:/resources/JSONDeleteButtonImage.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -146,6 +164,18 @@
      </property>
      <item row="0" column="2">
       <widget class="QCheckBox" name="defaultCBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -161,7 +191,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>50</width>
          <height>0</height>
         </size>
        </property>
@@ -181,6 +211,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Identity:</string>
        </property>
@@ -191,6 +227,18 @@
      </item>
      <item row="0" column="5">
       <widget class="QCheckBox" name="identityCBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -206,7 +254,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>50</width>
          <height>0</height>
         </size>
        </property>
@@ -220,6 +268,18 @@
      </item>
      <item row="1" column="2">
       <widget class="QCheckBox" name="minCBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -233,6 +293,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Max:</string>
        </property>
@@ -243,6 +309,18 @@
      </item>
      <item row="1" column="5">
       <widget class="QCheckBox" name="maxCBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -250,6 +328,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QDoubleSpinBox" name="defaultSBox">
+       <property name="minimumSize">
+        <size>
+         <width>62</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -257,6 +341,12 @@
      </item>
      <item row="1" column="1">
       <widget class="QDoubleSpinBox" name="minSBox">
+       <property name="minimumSize">
+        <size>
+         <width>62</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -264,6 +354,12 @@
      </item>
      <item row="0" column="4">
       <widget class="QDoubleSpinBox" name="identitySBox">
+       <property name="minimumSize">
+        <size>
+         <width>62</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -271,6 +367,12 @@
      </item>
      <item row="1" column="4">
       <widget class="QDoubleSpinBox" name="maxSBox">
+       <property name="minimumSize">
+        <size>
+         <width>62</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -280,6 +382,15 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>QLabelClickable</class>
+   <extends>QLabel</extends>
+   <header>QLabelClickable.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

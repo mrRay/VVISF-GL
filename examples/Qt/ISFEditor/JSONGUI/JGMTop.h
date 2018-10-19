@@ -23,8 +23,8 @@ public:
 		QObject(parent),
 		_isfDict(inISFObj),
 		_inputs(this),
-		_passes(this),
-		_buffers(this)
+		_passes(this)
+		//_buffers(this)
 	{
 	}
 	
@@ -33,14 +33,18 @@ public:
 	QJsonObject & isfDict() { return _isfDict; }
 	JGMCInputArray & inputsContainer() { return _inputs; }
 	JGMCPassArray & passesContainer() { return _passes; }
-	JGMCPBufferDict & buffersContainer() { return _buffers; }
+	//JGMCPBufferDict & buffersContainer() { return _buffers; }
 	
 	JGMInputRef getInputNamed(const QString & n);
 	QVector<JGMPassRef> getPassesRenderingToBufferNamed(const QString & n);
-	JGMPBufferRef getPersistentBuferNamed(const QString & n);
+	//JGMPBufferRef getPersistentBufferNamed(const QString & n);
+	JGMPassRef getPersistentPassNamed(const QString & n);
 	int indexOfInput(const JGMInput & n);
 	int indexOfPass(const JGMPass & n);
 	QString createNewInputName();
+	
+	bool deleteInput(const JGMInputRef & n);
+	bool deletePass(const JGMPassRef & n);
 	
 	//	creates the JSON object that can be written to disk
 	QJsonObject createJSONExport();
@@ -50,7 +54,7 @@ private:
 	
 	JGMCInputArray		_inputs;
 	JGMCPassArray		_passes;
-	JGMCPBufferDict		_buffers;
+	//JGMCPBufferDict		_buffers;
 	
 	QJsonArray createJSONForInputs();
 	QJsonArray createJSONForPasses();

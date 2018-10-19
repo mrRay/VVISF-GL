@@ -32,6 +32,7 @@ void JSONGUIInputBoolWidget::prepareUIItems() {
 	prepareInputNameEdit( *(ui->inputNameEdit) );
 	prepareLabelField( *(ui->labelField) );
 	prepareTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	prepare the UI items specific to this input
 	QObject::disconnect(ui->defaultCBox, 0, 0, 0);
@@ -50,6 +51,7 @@ void JSONGUIInputBoolWidget::refreshUIItems() {
 	refreshInputNameEdit( *(ui->inputNameEdit) );
 	refreshLabelField( *(ui->labelField) );
 	refreshTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	refresh the UI items specific to this input
 	QJsonValue		defVal = (!_input->contains("DEFAULT")) ? QJsonValue(false) : _input->value("DEFAULT");
@@ -57,7 +59,7 @@ void JSONGUIInputBoolWidget::refreshUIItems() {
 	if (defVal.isBool())
 		def = defVal.toBool();
 	else
-		def = (defVal.toInt() > 0) ? true : false;
+		def = ((defVal.isBool()&&defVal.toBool()) || (defVal.isDouble()&&defVal.toDouble()>0.0)) ? true : false;
 	ui->defaultCBox->blockSignals(true);
 	ui->defaultCBox->setChecked(def);
 	ui->defaultCBox->blockSignals(false);
@@ -68,7 +70,7 @@ void JSONGUIInputBoolWidget::refreshUIItems() {
 	if (idenVal.isBool())
 		iden = idenVal.toBool();
 	else
-		iden = (idenVal.toInt() > 0) ? true  :false;
+		iden = ((idenVal.isBool()&&idenVal.toBool()) || (idenVal.isDouble()&&idenVal.toDouble()>0.0)) ? true  :false;
 	ui->identityCBox->blockSignals(true);
 	ui->identityCBox->setChecked(iden);
 	ui->identityCBox->blockSignals(false);

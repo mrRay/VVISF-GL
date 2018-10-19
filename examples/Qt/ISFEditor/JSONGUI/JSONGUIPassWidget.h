@@ -1,31 +1,36 @@
-#ifndef JSONGUIPASS_H
-#define JSONGUIPASS_H
+#ifndef JSONGUIPASSWIDGET_H
+#define JSONGUIPASSWIDGET_H
 
 #include <QWidget>
+
+#include "JSONGUIPass.h"
 
 
 
 
 namespace Ui {
-	class JSONGUIPass;
+	class JSONGUIPassWidget;
 }
 
 
 
 
-class JSONGUIPassWidget : public QWidget
+class JSONGUIPassWidget : public QWidget, public JSONGUIPass
 {
 	Q_OBJECT
 
 public:
-	explicit JSONGUIPassWidget(QWidget *parent = nullptr);
+	explicit JSONGUIPassWidget(const JGMPassRef & inRef, QWidget *parent = nullptr);
 	~JSONGUIPassWidget();
+	
+	virtual void prepareUIItems() override;
+	virtual void refreshUIItems() override;
 
 private:
-	Ui::JSONGUIPass *ui;
+	Ui::JSONGUIPassWidget *ui;
 };
 
 
 
 
-#endif // JSONGUIPASS_H
+#endif // JSONGUIPASSWIDGET_H

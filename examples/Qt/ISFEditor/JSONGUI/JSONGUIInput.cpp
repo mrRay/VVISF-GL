@@ -8,15 +8,14 @@
 
 #include "JSONScrollWidget.h"
 #include "JGMTop.h"
+#include "QLabelClickable.h"
 
 
 
 
 JSONGUIInput::JSONGUIInput(const JGMInputRef & inInput) : _input(inInput)	{
-	//qDebug() << __PRETTY_FUNCTION__;
 }
 JSONGUIInput::~JSONGUIInput()	{
-	//qDebug() << __PRETTY_FUNCTION__;
 }
 void JSONGUIInput::prepareInputNameEdit(QLineEdit & inputNameEdit)	{
 	QObject::disconnect(&inputNameEdit, 0, 0, 0);
@@ -91,6 +90,17 @@ void JSONGUIInput::prepareTypeCBox(QComboBox & typeCB)	{
 			return;
 		_input->setValue("TYPE", inText);
 		RecreateJSONAndExport();
+	});
+}
+void JSONGUIInput::prepareDeleteLabel(QLabelClickable & deleteLabel)	{
+	QObject::disconnect(&deleteLabel, 0, 0, 0);
+	
+	QObject::connect(&deleteLabel, &QLabelClickable::clicked, [&]()	{
+		if (!_input.isNull())	{
+			if (_input->top()->deleteInput(_input))	{
+				RecreateJSONAndExport();
+			}
+		}
 	});
 }
 

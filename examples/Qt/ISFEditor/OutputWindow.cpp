@@ -73,46 +73,48 @@ void OutputWindow::updateContentsFromISFController()	{
 	
 	//	update the pop-up button with the list of rendering passes
 	QComboBox		*cb = ui->renderPassComboBox;
-	if (cb == nullptr)
-		return;
+	if (cb != nullptr)	{
+		cb->blockSignals(true);
 	
-	cb->blockSignals(true);
+		//	'main output' menu item has a variant of -1
+		cb->clear();
+		cb->addItem(QString("Main Output"), QVariant(-1));
 	
-	//	'main output' menu item has a variant of -1
-	cb->clear();
-	cb->addItem(QString("Main Output"), QVariant(-1));
-	
-	//	pass menu items have variants starting at 0
-	if (maxPassCount > 1)	{
-		cb->insertSeparator(cb->count());
+		//	pass menu items have variants starting at 0
+		if (maxPassCount > 1)	{
+			cb->insertSeparator(cb->count());
 		
-		for (int i=0; i<maxPassCount; ++ i)	{
-			QString		passName = QString::fromStdString(tmpDoc->getRenderPasses().at(i));
-			cb->addItem(passName, QVariant(i));
+			for (int i=0; i<maxPassCount; ++ i)	{
+				QString		passName = QString::fromStdString(tmpDoc->getRenderPasses().at(i));
+				if (passName.size() == 0)
+					passName = QString("PASSINDEX %1").arg(i);
+				cb->addItem(passName, QVariant(i));
+			}
 		}
-	}
-	//	image input menu items have variants starting at 100
-	if (imageInputsCount > 1)	{
-		cb->insertSeparator(cb->count());
+		//	image input menu items have variants starting at 100
+		if (imageInputsCount > 0)	{
+			cb->insertSeparator(cb->count());
 		
-		for (int i=0; i<imageInputsCount; ++i)	{
-			ISFAttrRef	inputRef = tmpDoc->getImageInputs().at(i);
-			QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
-			cb->addItem(inputName, QVariant(100+i));
+			for (int i=0; i<imageInputsCount; ++i)	{
+				ISFAttrRef	inputRef = tmpDoc->getImageInputs().at(i);
+				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+				cb->addItem(inputName, QVariant(100+i));
+			}
 		}
-	}
-	//	image input menu items have variants starting at 200
-	if (audioInputsCount > 1)	{
-		cb->insertSeparator(cb->count());
+		//	image input menu items have variants starting at 200
+		if (audioInputsCount > 0)	{
+			cb->insertSeparator(cb->count());
 		
-		for (int i=0; i<audioInputsCount; ++i)	{
-			ISFAttrRef	inputRef = tmpDoc->getAudioInputs().at(i);
-			QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
-			cb->addItem(inputName, QVariant(200+i));
+			for (int i=0; i<audioInputsCount; ++i)	{
+				ISFAttrRef	inputRef = tmpDoc->getAudioInputs().at(i);
+				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+				cb->addItem(inputName, QVariant(200+i));
+			}
 		}
+	
+		cb->blockSignals(false);
 	}
 	
-	cb->blockSignals(false);
 }
 int OutputWindow::selectedIndexToDisplay()	{
 	return ui->renderPassComboBox->currentData().toInt();

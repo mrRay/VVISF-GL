@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>124</height>
+    <width>340</width>
+    <height>128</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,16 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="inputNameEdit">
+       <property name="styleSheet">
+        <string notr="true">background: rgba(0,0,0,0); border-radius: 0px;</string>
+       </property>
+       <property name="text">
+        <string>INPUTNAME</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="pushButton">
        <property name="sizePolicy">
@@ -45,25 +55,33 @@
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QLabelClickable" name="deleteLabel">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="inputNameEdit">
-       <property name="styleSheet">
-        <string notr="true">background: rgba(0,0,0,0); border-radius: 0px;</string>
+       <property name="pixmap">
+        <pixmap resource="../resources.qrc">:/resources/JSONDeleteButtonImage.png</pixmap>
        </property>
-       <property name="text">
-        <string>INPUTNAME</string>
+       <property name="scaledContents">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -199,6 +217,15 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>QLabelClickable</class>
+   <extends>QLabel</extends>
+   <header>QLabelClickable.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

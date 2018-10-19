@@ -30,6 +30,7 @@ void JSONGUIInputAudioWidget::prepareUIItems() {
 	prepareInputNameEdit( *(ui->inputNameEdit) );
 	prepareLabelField( *(ui->labelField) );
 	prepareTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	prepare the UI items specific to this input
 }
@@ -38,6 +39,7 @@ void JSONGUIInputAudioWidget::refreshUIItems() {
 	refreshInputNameEdit( *(ui->inputNameEdit) );
 	refreshLabelField( *(ui->labelField) );
 	refreshTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	refresh the UI items specific to this input
 }

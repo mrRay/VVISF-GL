@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/NewFileTemplate.txt</file>
+        <file>resources/JSONDeleteButtonImage.png</file>
+        <file>resources/JSONRearrangeButtonImg.png</file>
     </qresource>
 </RCC>

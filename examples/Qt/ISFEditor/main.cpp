@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <QApplication>
+#include <QDebug>
 
 #include "LoadingWindow.h"
 #include "OutputWindow.h"
@@ -34,22 +35,31 @@ int main(int argc, char *argv[])
 	w.hide();
 	
 	OutputWindow		ow;
-	ow.show();
+	//ow.show();
 	
 	//	ISF controller has to be created after OutputWindow (it connects to a signal from the window)
 	GetISFController();
 	
 	LoadingWindow		lw;
-	lw.show();
+	//lw.show();
 	
 	DocWindow			dw;
-	dw.show();
+	//dw.show();
 	/*
 	lw.on_createNewFile();
 	*/
 	
-	QTimer::singleShot(750, [&]()	{
-		lw.on_createNewFile();
+	QTimer::singleShot(100, [&]()	{
+		qDebug() << "...opening windows";
+		ow.show();
+		lw.show();
+		dw.show();
+		
+		QTimer::singleShot(100, [&]()	{
+			qDebug() << "...creating new file";
+			lw.on_createNewFile();
+		});
+		
 	});
 	
 	return a.exec();

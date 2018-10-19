@@ -5,6 +5,7 @@
 class QLabel;
 class QComboBox;
 class QLineEdit;
+class QLabelClickable;
 
 #include "JGMObject.h"
 
@@ -20,6 +21,7 @@ public:
 	void prepareInputNameEdit(QLineEdit & inputNameEdit);
 	void prepareLabelField(QLineEdit & labelField);
 	void prepareTypeCBox(QComboBox & typeCB);
+	void prepareDeleteLabel(QLabelClickable & deleteLabel);
 	
 	void refreshInputNameEdit(QLineEdit & inputNameEdit);
 	void refreshLabelField(QLineEdit & labelField);

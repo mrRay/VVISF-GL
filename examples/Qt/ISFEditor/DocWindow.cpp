@@ -13,6 +13,7 @@
 #include "SimpleSourceCodeEdit.h"
 #include "LoadingWindow.h"
 #include "ISFController.h"
+#include "LevenshteinCalc.h"
 
 
 
@@ -56,7 +57,7 @@ DocWindow::DocWindow(QWidget *parent) :
 	ui->splitter->setCollapsible(2, false);
 	QWidget		*jsonTableWidget = ui->splitter->widget(2);
 	if (jsonTableWidget != nullptr)	{
-		jsonTableWidget->setMinimumSize(QSize(350,350));
+		jsonTableWidget->setMinimumSize(QSize(335,335));
 	}
 	
 	QList<int>		tmpSizes;
@@ -77,6 +78,12 @@ DocWindow::DocWindow(QWidget *parent) :
 	ui->compiledVertShader->setReadOnly(true);
 	ui->compiledFragShader->setReadOnly(true);
 	ui->parsedJSON->setReadOnly(true);
+	
+	//	configure the error splitter
+	tmpSizes.clear();
+	tmpSizes.append(9999999);
+	tmpSizes.append(0);
+	ui->errSplitter->setSizes(tmpSizes);
 	
 	//	set up the frag shader editor so tmp files are auto-saved
 	connect(ui->fragShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
@@ -145,7 +152,7 @@ DocWindow::~DocWindow()	{
 
 
 void DocWindow::updateContentsFromISFController()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//ISFSceneRef		scene = GetISFController()->getScene();
 	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
@@ -204,9 +211,25 @@ void DocWindow::updateContentsFromISFController()	{
 			ui->fragShaderEditor->setErrorLineNumbers(nullptr);
 		}
 		else	{
-			//	set the contents of the frag shader editor
-			if (ui->fragShaderEditor->toPlainText() != *_fragFilePathContentsOnOpen)
+			//	set the contents of the frag shader editor if the text changed
+			const QString			&origFragShaderTxt = ui->fragShaderEditor->toPlainText();
+			if (origFragShaderTxt != *_fragFilePathContentsOnOpen)	{
+				//	preserve the cursor location if the text hasn't changed significantly
+				bool					preserveCursor = false;
+				int						origCursorLineNumber = 0;
+				if (CalculateLevenshtein(origFragShaderTxt, *_fragFilePathContentsOnOpen) < 0.25)	{
+					preserveCursor = true;
+					origCursorLineNumber = ui->fragShaderEditor->textCursor().blockNumber();
+				}
 				ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
+				if (preserveCursor)	{
+					QTextCursor				newCursor = ui->fragShaderEditor->textCursor();
+					newCursor.setPosition(0);
+					for (int i=0; i<origCursorLineNumber; ++i)
+						newCursor.movePosition(QTextCursor::Down);
+					ui->fragShaderEditor->setTextCursor(newCursor);
+				}
+			}
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
 			auto				fragErrs = GetISFController()->getSceneFragErrors();
@@ -238,8 +261,24 @@ void DocWindow::updateContentsFromISFController()	{
 		}
 		else	{
 			//	set the contents of the vert shader editor
-			if (ui->vertShaderEditor->toPlainText() != *_vertFilePathContentsOnOpen)
+			const QString			&origVertShaderTxt = ui->vertShaderEditor->toPlainText();
+			if (origVertShaderTxt != *_vertFilePathContentsOnOpen)	{
+				//	preserve the cursor location if the text hasn't changed significantly
+				bool					preserveCursor = false;
+				int						origCursorLineNumber = 0;
+				if (CalculateLevenshtein(origVertShaderTxt, *_vertFilePathContentsOnOpen) < 0.25)	{
+					preserveCursor = true;
+					origCursorLineNumber = ui->vertShaderEditor->textCursor().blockNumber();
+				}
 				ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
+				if (preserveCursor)	{
+					QTextCursor				newCursor = ui->vertShaderEditor->textCursor();
+					newCursor.setPosition(0);
+					for (int i=0; i<origCursorLineNumber; ++i)
+						newCursor.movePosition(QTextCursor::Down);
+					ui->vertShaderEditor->setTextCursor(newCursor);
+				}
+			}
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
 			auto				vertErrs = GetISFController()->getSceneVertErrors();
@@ -255,16 +294,27 @@ void DocWindow::updateContentsFromISFController()	{
 		
 		
 		if (errString.length() < 1)
-			errString.append("No compiler errors!  Hooray!");
-		
-		
-		ui->compilerErrorsTextWidget->setPlainText( errString );
+			ui->compilerErrorsTextWidget->setPlainText( QString("No compiler errors!  Yay!") );
+		else
+			ui->compilerErrorsTextWidget->setPlainText( errString );
 		//ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
 		//ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
 		ui->compiledFragShader->setPlainText(isfc->getCompiledFragmentShaderString());
 		ui->compiledVertShader->setPlainText(isfc->getCompiledVertexShaderString());
 		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->getJSONString()) );
 		
+		//	if there's an error string...
+		if (errString.length() > 0)	{
+			//	if the error side of the splitter is collapsed, open it up halfway
+			QList<int>		sizes = ui->errSplitter->sizes();
+			if (sizes.size()>1 && sizes[1]<1)	{
+				sizes[1] = sizes[0]/2;
+				sizes[0] = sizes[1];
+				ui->errSplitter->setSizes(sizes);
+			}
+		}
+		
+		//	tell the json GUI widget to load its state from the ISF controller
 		ui->jsonGUIWidget->loadDocFromISFController();
 	}
 	else	{

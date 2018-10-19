@@ -30,6 +30,7 @@ void JSONGUIInputPoint2DWidget::prepareUIItems() {
 	prepareInputNameEdit( *(ui->inputNameEdit) );
 	prepareLabelField( *(ui->labelField) );
 	prepareTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	prepare the UI items specific to this input
 }
@@ -38,6 +39,7 @@ void JSONGUIInputPoint2DWidget::refreshUIItems() {
 	refreshInputNameEdit( *(ui->inputNameEdit) );
 	refreshLabelField( *(ui->labelField) );
 	refreshTypeCBox( *(ui->typePUB) );
+	prepareDeleteLabel( *(ui->deleteLabel) );
 	
 	//	refresh the UI items specific to this input
 }

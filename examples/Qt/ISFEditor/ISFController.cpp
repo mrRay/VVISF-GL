@@ -64,7 +64,7 @@ void ISFController::aboutToQuit()	{
 	scene = nullptr;
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
-	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
+	//qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
 	
 	if (GetGlobalBufferPool() == nullptr)
 		return;
@@ -359,7 +359,7 @@ void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 }
 
 void ISFController::populateLoadingWindowUI()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//	get the loading window, bail if we can't
 	LoadingWindow			*lw = GetLoadingWindow();

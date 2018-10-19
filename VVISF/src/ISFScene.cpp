@@ -1230,10 +1230,10 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 				
 #if defined(VVGL_SDK_MAC)
 				if (shouldBeIOSurface)
-					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
+					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->getFloatFlag())) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
 #endif
-					tmpRenderTarget.color = (shouldBeFloat || targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
+					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->getFloatFlag())) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
 				
 				//context->makeCurrentIfNotCurrent();
 			}

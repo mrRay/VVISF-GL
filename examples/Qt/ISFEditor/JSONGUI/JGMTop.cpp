@@ -2,6 +2,7 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDebug>
 
 
 
@@ -29,8 +30,28 @@ QVector<JGMPassRef> JGMTop::getPassesRenderingToBufferNamed(const QString & n)	{
 	return returnMe;
 }
 
-JGMPBufferRef JGMTop::getPersistentBuferNamed(const QString & n)	{
+/*
+JGMPBufferRef JGMTop::getPersistentBufferNamed(const QString & n)	{
+	qDebug() << __PRETTY_FUNCTION__ << "... " << n;
+	qDebug() << "\t_buffers are " << _buffers.contents();
 	return _buffers.value(n);
+}
+*/
+JGMPassRef JGMTop::getPersistentPassNamed(const QString & n)	{
+	auto			tmpPasses = getPassesRenderingToBufferNamed(n);
+	for (const auto & tmpPass : tmpPasses)	{
+		if (tmpPass->value("TARGET").toString() != n)	{
+			continue;
+		}
+		QJsonValue		tmpVal = tmpPass->value("PERSISTENT");
+		if (tmpVal.isUndefined())	{
+			continue;
+		}
+		if ((tmpVal.isBool()&&tmpVal.toBool()) || (tmpVal.isDouble()&&tmpVal.toDouble()>0.0))	{
+			return tmpPass;
+		}
+	}
+	return nullptr;
 }
 
 int JGMTop::indexOfInput(const JGMInput & n)	{
@@ -74,6 +95,43 @@ QString JGMTop::createNewInputName()	{
 		++count;
 	} while (returnMe.length()<1);
 	return returnMe;
+}
+
+bool JGMTop::deleteInput(const JGMInputRef & n)	{
+	qDebug() << __PRETTY_FUNCTION__ << "... " << this;
+	
+	if (n.isNull())
+		return false;
+	JGMInput		*tmpInput = n.data();
+	
+	QVector<JGMInputRef>	&inputsArray = _inputs.contents();
+	bool					foundInput = false;
+	for (auto it = inputsArray.begin(); it!=inputsArray.end(); ++it)	{
+		if (it->data() == tmpInput)	{
+			foundInput = true;
+			inputsArray.erase(it);
+			break;
+		}
+	}
+	
+	return foundInput;
+}
+bool JGMTop::deletePass(const JGMPassRef & n)	{
+	if (n.isNull())
+		return false;
+	JGMPass		*tmpPass = n.data();
+	
+	QVector<JGMPassRef>		&passArray = _passes.contents();
+	bool					foundPass = false;
+	for (auto it = passArray.begin(); it!=passArray.end(); ++it)	{
+		if (it->data() == tmpPass)	{
+			foundPass = true;
+			passArray.erase(it);
+			break;
+		}
+	}
+	
+	return foundPass;
 }
 
 QJsonObject JGMTop::createJSONExport()	{

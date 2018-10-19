@@ -69,7 +69,9 @@ SOURCES += \
 	VideoSource/InterAppVideoSource.cpp \
 	VideoSource/MovieVideoSource.cpp \
 	VideoSource/VideoSource.cpp \
-	VideoSource/WebCamVideoSource.cpp
+	VideoSource/WebCamVideoSource.cpp \
+    misc_classes/LevenshteinCalc.cpp \
+    JSONGUI/JSONGUIPass.cpp
 
 HEADERS += \
 	../common/GLBufferQVideoSurface.h \
@@ -111,7 +113,9 @@ HEADERS += \
 	VideoSource/InterAppVideoSource.h \
 	VideoSource/MovieVideoSource.h \
 	VideoSource/VideoSource.h \
-	VideoSource/WebCamVideoSource.h
+	VideoSource/WebCamVideoSource.h \
+    misc_classes/LevenshteinCalc.h \
+    JSONGUI/JSONGUIPass.h
 
 FORMS += \
         MainWindow.ui \

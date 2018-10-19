@@ -63,7 +63,7 @@ JSONScrollWidget::~JSONScrollWidget()	{
 
 
 void JSONScrollWidget::loadDocFromISFController()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	//	clear the items
 	clearItems();
 	
@@ -119,9 +119,11 @@ void JSONScrollWidget::recreateJSONAndExport()	{
 	QString			fsString = (fsStringPtr==nullptr) ? QString() : QString::fromStdString(*fsStringPtr);
 	QString			exportString;
 	if (fsStringPtr == nullptr)
-		exportString = QString("/*\n%1\n*/").arg(jsonString);
+		exportString = QString("/*%1*/").arg(jsonString);
 	else
-		exportString = QString("/*\n%1\n*/%2").arg(jsonString).arg(fsString);
+		exportString = QString("/*%1*/\n%2").arg(jsonString).arg(fsString);
+	
+	//qDebug().noquote() << "*****************\n" << exportString << "\n*****************";
 	
 	tmpFile.write(exportString.toUtf8());
 	tmpFile.close();
@@ -237,12 +239,24 @@ void JSONScrollWidget::repopulateUI()	{
 	}
 	
 	//	make the passes widget
-	JSONGUIGroupPassWidget		*passesWidget = new JSONGUIGroupPassWidget();
+	JSONGUIGroupPassWidget		*passesWidget = new JSONGUIGroupPassWidget(top);
 	QPointer<QWidget>		passesWidgetPtr(passesWidget);
 	items.append(passesWidgetPtr);
 	scrollLayout->addWidget(passesWidget);
 	
 	//	make objects for each of the passes
+	JGMCPassArray			&passesContainer = top->passesContainer();
+	QVector<JGMPassRef>		&passes = passesContainer.contents();
+	for (const JGMPassRef & pass : passes)	{
+		if (pass == nullptr)
+			continue;
+		QWidget				*newWidget = new JSONGUIPassWidget(pass);
+		if (newWidget == nullptr)
+			continue;
+		QPointer<QWidget>	newWidgetPtr(newWidget);
+		items.append(newWidgetPtr);
+		scrollLayout->addWidget(newWidget);
+	}
 	
 	//	add the spacer at the bottom so the UI items are pushed to the top of the scroll area
 	if (spacerItem == nullptr)
