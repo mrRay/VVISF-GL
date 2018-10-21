@@ -64,17 +64,21 @@ void ISFController::aboutToQuit()	{
 	scene = nullptr;
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
-	//qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
+	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
 	
-	if (GetGlobalBufferPool() == nullptr)
+	if (GetGlobalBufferPool() == nullptr)	{
+		qDebug() << "\terr: no global buffer pool, " << __PRETTY_FUNCTION__;
 		return;
+	}
 	
 	std::lock_guard<std::recursive_mutex>		tmpLock(sceneLock);
 	
 	if (scene == nullptr)
 		scene = CreateISFSceneRef();
-	if (scene == nullptr)
+	if (scene == nullptr)	{
+		qDebug() << "\terr: couldn't create scene, " << __PRETTY_FUNCTION__;
 		return;
+	}
 	
 	sceneVertErrors.clear();
 	sceneFragErrors.clear();

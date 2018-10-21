@@ -51,8 +51,12 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	//connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
 	connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
 	//connect(GetDynamicVideoSource(), SIGNAL(listOfStaticSourcesUpdated), this, SLOT(listOfVideoSourcesUpdated));
+	
+	//	we do this later, on an even that fires when the window opens, because i think it's screwing things up
+	/*
 	//	bump the slot to populate the pop-up button with the list of sources
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
+	*/
 	
 	//	figure out what directory's contents we want to display, and use it to set the base directory
 	QString			defaultDirToLoad;
@@ -113,6 +117,8 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 		on_createNewFile();
 	});
 	*/
+	
+	qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 }
 
 LoadingWindow::~LoadingWindow()
@@ -127,6 +133,10 @@ QSpinBox * LoadingWindow::getWidthSB() { return ui->renderResWidthWidget; }
 QSpinBox * LoadingWindow::getHeightSB() { return ui->renderResHeightWidget; }
 void LoadingWindow::on_createNewFile()	{
 	qDebug() << __PRETTY_FUNCTION__;
+	
+	//QThread		*mainThread = QApplication::instance()->thread();
+	//qDebug() << "main thread is currently " << mainThread;
+	
 	//	make new tmp file, populate its contents
 	QString			tmpFilePath = QString();
 	QFile			tmpFragShaderFile( QString("%1/ISFTesterTmpFile.fs").arg(QDir::tempPath()) );
@@ -151,6 +161,11 @@ void LoadingWindow::on_createNewFile()	{
 	on_loadFile(tmpFilePath);
 }
 void LoadingWindow::on_loadFile(const QString & n)	{
+	
+	//	make sure the window's visible
+	if (!isVisible())
+		show();
+	
 	//	tell the ISF controller to load the passed file- the ISF controller will tell the doc window (and myself) to load when it's ready
 	GetISFController()->loadFile(n);
 }
@@ -166,6 +181,14 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 	settings.setValue("LoadingWindowGeometry", saveGeometry());
 	
 	QWidget::closeEvent(event);
+}
+void LoadingWindow::showEvent(QShowEvent * event)	{
+	QWidget::showEvent(event);
+	
+	QTimer::singleShot(100, [&]()	{
+		//	bump the slot to populate the pop-up button with the list of sources.  pretty sure this screws things up unless you do it dead last!
+		listOfVideoSourcesUpdated(GetDynamicVideoSource());
+	});
 }
 
 
@@ -184,6 +207,7 @@ void LoadingWindow::halveRenderResClicked()	{
 		return;
 	Size			origSize = isfc->getRenderSize();
 	Size			newSize(origSize.width/2., origSize.height/2.);
+	
 	ui->renderResWidthWidget->blockSignals(true);
 	ui->renderResHeightWidget->blockSignals(true);
 	
@@ -193,12 +217,34 @@ void LoadingWindow::halveRenderResClicked()	{
 	ui->renderResWidthWidget->blockSignals(false);
 	ui->renderResHeightWidget->blockSignals(false);
 	
+	ui->renderResWidthWidget->update();
+	ui->renderResHeightWidget->update();
+	
 	isfc->setRenderSize(newSize);
 }
 void LoadingWindow::doubleRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
+	ISFController		*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
+	Size			origSize = isfc->getRenderSize();
+	Size			newSize(origSize.width*2., origSize.height*2.);
+	
+	ui->renderResWidthWidget->blockSignals(true);
+	ui->renderResHeightWidget->blockSignals(true);
+	
+	ui->renderResWidthWidget->setValue(newSize.width);
+	ui->renderResHeightWidget->setValue(newSize.height);
+	
+	ui->renderResWidthWidget->blockSignals(false);
+	ui->renderResHeightWidget->blockSignals(false);
+	
+	ui->renderResWidthWidget->update();
+	ui->renderResHeightWidget->update();
+	
+	isfc->setRenderSize(newSize);
 }
-void LoadingWindow::renderResWidthWidgetValueChanged(int arg1)	{
+void LoadingWindow::renderResWidthWidgetValueChanged()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
 	if (isfc == nullptr)
@@ -206,7 +252,7 @@ void LoadingWindow::renderResWidthWidgetValueChanged(int arg1)	{
 	Size			tmpSize(ui->renderResWidthWidget->value(), ui->renderResHeightWidget->value());
 	isfc->setRenderSize(tmpSize);
 }
-void LoadingWindow::renderResHeightWidgetValueChanged(int arg1)	{
+void LoadingWindow::renderResHeightWidgetValueChanged()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
 	if (isfc == nullptr)

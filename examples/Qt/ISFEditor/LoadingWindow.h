@@ -35,16 +35,17 @@ public:
 	void on_saveFile();
 	
 protected:
-	void closeEvent(QCloseEvent * event);
+	void closeEvent(QCloseEvent * event) override;
+	void showEvent(QShowEvent * event) override;
 
 public slots:
-	void loadUserISFsButtonClicked();
-	void loadSystemISFsButtonClicked();
-	void halveRenderResClicked();
-	void doubleRenderResClicked();
-	void renderResWidthWidgetValueChanged(int arg1);
-	void renderResHeightWidgetValueChanged(int arg1);
-	void saveUIValsToDefaultClicked();
+	Q_SLOT void loadUserISFsButtonClicked();
+	Q_SLOT void loadSystemISFsButtonClicked();
+	Q_SLOT void halveRenderResClicked();
+	Q_SLOT void doubleRenderResClicked();
+	Q_SLOT void renderResWidthWidgetValueChanged();
+	Q_SLOT void renderResHeightWidgetValueChanged();
+	Q_SLOT void saveUIValsToDefaultClicked();
 	/*
 	void newFileSelected(const QItemSelection &selected, const QItemSelection &deselected);
 	*/

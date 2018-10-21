@@ -37,7 +37,6 @@ SOURCES += \
 	DocWindow.cpp \
 	ISFController.cpp \
 	JSONGUI/JGMCArray.cpp \
-	JSONGUI/JGMCDict.cpp \
 	JSONGUI/JGMObject.cpp \
 	JSONGUI/JGMTop.cpp \
 	JSONGUI/JSONGUIBasicInfoWidget.cpp \
@@ -79,7 +78,6 @@ HEADERS += \
 	DocWindow.h \
 	ISFController.h \
 	JSONGUI/JGMCArray.h \
-	JSONGUI/JGMCDict.h \
 	JSONGUI/JGMDefs.h \
 	JSONGUI/JGMObject.h \
 	JSONGUI/JGMTop.h \

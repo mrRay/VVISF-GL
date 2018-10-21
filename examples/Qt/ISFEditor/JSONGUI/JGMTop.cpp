@@ -30,13 +30,6 @@ QVector<JGMPassRef> JGMTop::getPassesRenderingToBufferNamed(const QString & n)	{
 	return returnMe;
 }
 
-/*
-JGMPBufferRef JGMTop::getPersistentBufferNamed(const QString & n)	{
-	qDebug() << __PRETTY_FUNCTION__ << "... " << n;
-	qDebug() << "\t_buffers are " << _buffers.contents();
-	return _buffers.value(n);
-}
-*/
 JGMPassRef JGMTop::getPersistentPassNamed(const QString & n)	{
 	auto			tmpPasses = getPassesRenderingToBufferNamed(n);
 	for (const auto & tmpPass : tmpPasses)	{

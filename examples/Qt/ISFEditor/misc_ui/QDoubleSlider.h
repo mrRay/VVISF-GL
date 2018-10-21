@@ -2,6 +2,9 @@
 #define QDOUBLESLIDER_H
 
 #include <QSlider>
+#include <QDebug>
+
+#include <algorithm>
 
 
 
@@ -51,6 +54,15 @@ public:
 		
 		double			newDoubleVal = (tmpNormVal * (_doubleMaxValue - _doubleMinValue)) + _doubleMinValue;
 		return newDoubleVal;
+	}
+	void setDoubleValue(const double & n)	{
+		qDebug() << __PRETTY_FUNCTION__ << "... " << n;
+		double			tmpDoubleVal = std::max<double>( std::min<double>( _doubleMaxValue,n ), _doubleMinValue );
+		double			tmpNormVal = ((tmpDoubleVal-_doubleMinValue)/(_doubleMaxValue-_doubleMinValue));
+		double			tmpMin = static_cast<double>(INT_MIN);
+		double			tmpMax = static_cast<double>(INT_MAX);
+		int				tmpVal = static_cast<int>( (tmpNormVal * (tmpMax-tmpMin)) + tmpMin );
+		setValue(tmpVal);
 	}
 
 signals:

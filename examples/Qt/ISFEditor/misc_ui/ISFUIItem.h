@@ -37,7 +37,7 @@ public:
 	ISFVal getISFVal();
 
 private slots:
-	void pointWidgetUsed(double newVal);
+	void pointWidgetUsed();
 	void audioCBUsed(int newIndex);
 	
 private:

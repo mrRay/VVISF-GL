@@ -99,6 +99,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	case ISFValType_Float:
 		sliderWidget = new QDoubleSlider(this);
 		sliderWidget->setOrientation(Qt::Horizontal);
+		sliderWidget->setDoubleValue( inAttr->getCurrentVal().getDoubleVal() );
 		myLayout->addWidget(sliderWidget);
 		break;
 	case ISFValType_Point2D:
@@ -126,8 +127,8 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			myLayout->addWidget(xFieldWidget);
 			myLayout->addWidget(yFieldWidget);
 		
-			connect( xFieldWidget, SIGNAL(valueChanged(double)), this, SLOT(pointWidgetUsed(double)) );
-			connect( yFieldWidget, SIGNAL(valueChanged(double)), this, SLOT(pointWidgetUsed(double)) );
+			connect( xFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
+			connect( yFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
 		}
 		break;
 	case ISFValType_Color:
@@ -200,14 +201,20 @@ ISFUIItem::~ISFUIItem()	{
 
 
 
-void ISFUIItem::pointWidgetUsed(double newVal)	{
+void ISFUIItem::pointWidgetUsed()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	QObject		*tmpSender = sender();
+	QObject		*rawSender = sender();
+	if (rawSender == nullptr)
+		return;
+	QDoubleSpinBox		*tmpSender = qobject_cast<QDoubleSpinBox*>(rawSender);
+	
 	if (tmpSender == xFieldWidget)	{
-		pointVal.x = newVal;
+		//pointVal.x = newVal;
+		pointVal.x = tmpSender->value();
 	}
 	else if (tmpSender == yFieldWidget)	{
-		pointVal.y = newVal;
+		//pointVal.y = newVal;
+		pointVal.y = tmpSender->value();
 	}
 }
 void ISFUIItem::audioCBUsed(int newIndex)	{

@@ -300,38 +300,6 @@ select file to view)</string>
    </hints>
   </connection>
   <connection>
-   <sender>renderResWidthWidget</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>LoadingWindow</receiver>
-   <slot>renderResWidthWidgetValueChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>40</x>
-     <y>574</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>renderResHeightWidget</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>LoadingWindow</receiver>
-   <slot>renderResHeightWidgetValueChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>136</x>
-     <y>574</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>doubleRenderRes</sender>
    <signal>clicked()</signal>
    <receiver>LoadingWindow</receiver>
@@ -379,14 +347,46 @@ select file to view)</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>renderResWidthWidget</sender>
+   <signal>editingFinished()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>renderResWidthWidgetValueChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>renderResHeightWidget</sender>
+   <signal>editingFinished()</signal>
+   <receiver>LoadingWindow</receiver>
+   <slot>renderResHeightWidgetValueChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadUserISFsButtonClicked()</slot>
   <slot>loadSystemISFsButtonClicked()</slot>
   <slot>halveRenderResClicked()</slot>
   <slot>doubleRenderResClicked()</slot>
-  <slot>renderResWidthWidgetValueChanged(int)</slot>
-  <slot>renderResHeightWidgetValueChanged(int)</slot>
+  <slot>renderResWidthWidgetValueChanged()</slot>
+  <slot>renderResHeightWidgetValueChanged()</slot>
   <slot>saveUIValsToDefaultClicked()</slot>
   <slot>listOfVideoSourcesUpdated(DynamicVideoSource*)</slot>
   <slot>videoSourceChanged(int)</slot>

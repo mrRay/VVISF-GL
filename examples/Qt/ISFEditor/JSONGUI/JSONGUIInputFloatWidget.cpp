@@ -42,7 +42,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	
 	//	default UI items
 	QObject::disconnect(ui->defaultSBox, 0, 0, 0);
-	QObject::connect(ui->defaultSBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double n)	{
+	QObject::connect(ui->defaultSBox, &QAbstractSpinBox::editingFinished, [&]()	{
 		_input->setValue("DEFAULT", QJsonValue(ui->defaultSBox->value()));
 		RecreateJSONAndExport();
 	});
@@ -53,7 +53,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	});
 	//	identity UI items
 	QObject::disconnect(ui->identitySBox, 0, 0, 0);
-	QObject::connect(ui->identitySBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double n)	{
+	QObject::connect(ui->identitySBox,  &QAbstractSpinBox::editingFinished, [&]()	{
 		_input->setValue("IDENTITY", QJsonValue(ui->identitySBox->value()));
 		RecreateJSONAndExport();
 	});
@@ -64,7 +64,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	});
 	//	minimum UI items
 	QObject::disconnect(ui->minSBox, 0, 0, 0);
-	QObject::connect(ui->minSBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double n)	{
+	QObject::connect(ui->minSBox, &QAbstractSpinBox::editingFinished, [&]()	{
 		_input->setValue("MIN", QJsonValue(ui->minSBox->value()));
 		RecreateJSONAndExport();
 	});
@@ -75,7 +75,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	});
 	//	maximum UI items
 	QObject::disconnect(ui->maxSBox, 0, 0, 0);
-	QObject::connect(ui->maxSBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double n)	{
+	QObject::connect(ui->maxSBox, &QAbstractSpinBox::editingFinished, [&]()	{
 		_input->setValue("MAX", QJsonValue(ui->maxSBox->value()));
 		RecreateJSONAndExport();
 	});

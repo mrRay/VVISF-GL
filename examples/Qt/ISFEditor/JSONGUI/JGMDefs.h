@@ -15,9 +15,6 @@ using JGMInputRef = QSharedPointer<JGMInput>;
 class JGMPass;
 using JGMPassRef = QSharedPointer<JGMPass>;
 
-class JGMPBuffer;
-using JGMPBufferRef = QSharedPointer<JGMPBuffer>;
-
 
 
 

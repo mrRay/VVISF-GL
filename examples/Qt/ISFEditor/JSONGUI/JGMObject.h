@@ -59,24 +59,4 @@ using JGMPassRef = QSharedPointer<JGMPass>;
 
 
 
-//	JSON GUI Model- PBuffer
-//	represents a single persistent buffer from the JSON portion of an ISF file
-class JGMPBuffer : public JGMObject	{
-	Q_OBJECT
-public:
-	explicit JGMPBuffer(const QString & inName, JGMTop * inTop, QObject *parent=nullptr);
-	//virtual QJsonObject createExportObject() override;
-private:
-	QString				_name;
-};
-
-using JGMPBufferRef = QSharedPointer<JGMPBuffer>;
-
-
-
-
-
-
-
-
 #endif // JSONGUIGROUP_H

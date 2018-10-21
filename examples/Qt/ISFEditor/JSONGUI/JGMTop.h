@@ -6,7 +6,6 @@
 #include <QSharedPointer>
 
 #include "JGMCArray.h"
-#include "JGMCDict.h"
 #include "JGMObject.h"
 
 
@@ -33,11 +32,9 @@ public:
 	QJsonObject & isfDict() { return _isfDict; }
 	JGMCInputArray & inputsContainer() { return _inputs; }
 	JGMCPassArray & passesContainer() { return _passes; }
-	//JGMCPBufferDict & buffersContainer() { return _buffers; }
 	
 	JGMInputRef getInputNamed(const QString & n);
 	QVector<JGMPassRef> getPassesRenderingToBufferNamed(const QString & n);
-	//JGMPBufferRef getPersistentBufferNamed(const QString & n);
 	JGMPassRef getPersistentPassNamed(const QString & n);
 	int indexOfInput(const JGMInput & n);
 	int indexOfPass(const JGMPass & n);
@@ -54,7 +51,6 @@ private:
 	
 	JGMCInputArray		_inputs;
 	JGMCPassArray		_passes;
-	//JGMCPBufferDict		_buffers;
 	
 	QJsonArray createJSONForInputs();
 	QJsonArray createJSONForPasses();
