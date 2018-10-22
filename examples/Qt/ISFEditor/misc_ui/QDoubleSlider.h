@@ -56,7 +56,6 @@ public:
 		return newDoubleVal;
 	}
 	void setDoubleValue(const double & n)	{
-		qDebug() << __PRETTY_FUNCTION__ << "... " << n;
 		double			tmpDoubleVal = std::max<double>( std::min<double>( _doubleMaxValue,n ), _doubleMinValue );
 		double			tmpNormVal = ((tmpDoubleVal-_doubleMinValue)/(_doubleMaxValue-_doubleMinValue));
 		double			tmpMin = static_cast<double>(INT_MIN);

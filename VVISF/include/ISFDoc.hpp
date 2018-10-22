@@ -233,7 +233,7 @@ inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene
 \param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
 Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 */
-inline ISFDocRef CreateISFDocRef(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene); }
+inline ISFDocRef CreateISFDocRefWith(const string & inFSContents, const string & inVSContents=string(ISFVertPassthru_GL2), ISFScene * inParentScene=nullptr) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene); }
 
 
 

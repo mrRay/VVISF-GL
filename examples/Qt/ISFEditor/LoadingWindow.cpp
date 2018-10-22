@@ -196,9 +196,16 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 
 void LoadingWindow::loadUserISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
+	
+	QString			dirToLoad("~/Library/Graphics/ISF");
+	dirToLoad.replace("~", QDir::homePath());
+	setBaseDirectory(dirToLoad);
 }
 void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
+	
+	QString			dirToLoad("/Library/Graphics/ISF");
+	setBaseDirectory(dirToLoad);
 }
 void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;

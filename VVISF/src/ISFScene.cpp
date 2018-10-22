@@ -150,7 +150,7 @@ void ISFScene::setFilterInputBuffer(const GLBufferRef & inBuffer)	{
 	if (filterInput == nullptr)
 		return;
 	filterInput->setCurrentImageBuffer(inBuffer);
-	GLBufferRef		checkBuffer = filterInput->getCurrentImageBuffer();
+	//GLBufferRef		checkBuffer = filterInput->getCurrentImageBuffer();
 	//cout << "\tcheck buffer is " << checkBuffer;
 	//if (checkBuffer==nullptr) cout << "/null" << endl; else cout << "/" << *checkBuffer << endl;
 }

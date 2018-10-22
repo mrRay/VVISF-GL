@@ -217,7 +217,15 @@ void DocWindow::updateContentsFromISFController()	{
 				//	preserve the cursor location if the text hasn't changed significantly
 				bool					preserveCursor = false;
 				int						origCursorLineNumber = 0;
-				if (CalculateLevenshtein(origFragShaderTxt, *_fragFilePathContentsOnOpen) < 0.25)	{
+				
+				int						maxLen = std::max(origFragShaderTxt.length(), _fragFilePathContentsOnOpen->length());
+				int						minLen = std::min(origFragShaderTxt.length(), _fragFilePathContentsOnOpen->length());
+				//	if there's more than a 15% change in the total # of chars
+				if (double(maxLen)/double(minLen) > 1.15)	{
+					//	do nothing (we do not want to preserve the cursor, the change is too great)
+				}
+				//	else if the levenshtein difference is < 0.25
+				else if (CalculateLevenshtein(origFragShaderTxt, *_fragFilePathContentsOnOpen) < 0.25)	{
 					preserveCursor = true;
 					origCursorLineNumber = ui->fragShaderEditor->textCursor().blockNumber();
 				}
@@ -266,7 +274,15 @@ void DocWindow::updateContentsFromISFController()	{
 				//	preserve the cursor location if the text hasn't changed significantly
 				bool					preserveCursor = false;
 				int						origCursorLineNumber = 0;
-				if (CalculateLevenshtein(origVertShaderTxt, *_vertFilePathContentsOnOpen) < 0.25)	{
+				
+				int						maxLen = std::max(origVertShaderTxt.length(), _vertFilePathContentsOnOpen->length());
+				int						minLen = std::min(origVertShaderTxt.length(), _vertFilePathContentsOnOpen->length());
+				//	if there's more than a 15% change in the total # of chars
+				if (double(maxLen)/double(minLen) > 1.15)	{
+					//	do nothing (we do not want to preserve the cursor, the change is too great)
+				}
+				//	else if the levenshtein difference is < 0.25
+				else if (CalculateLevenshtein(origVertShaderTxt, *_vertFilePathContentsOnOpen) < 0.25)	{
 					preserveCursor = true;
 					origCursorLineNumber = ui->vertShaderEditor->textCursor().blockNumber();
 				}

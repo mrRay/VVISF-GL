@@ -10,7 +10,7 @@
 
 #include "VVISF.hpp"
 #include "ISFUIItem.h"
-#include "GLBufferQWidget.h"
+#include "ISFGLBufferQWidget.h"
 
 
 
@@ -40,7 +40,7 @@ public:
 
 public slots:
 	//	the widget sends a signal to this slot every time it's about to redraw
-	Q_SLOT void widgetRedrawSlot(GLBufferQWidget * n);
+	Q_SLOT void widgetRedrawSlot(ISFGLBufferQWidget * n);
 	
 private:
 	Size			renderSize = Size(640.0,480.0);

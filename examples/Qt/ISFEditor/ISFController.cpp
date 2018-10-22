@@ -36,11 +36,11 @@ ISFController::ISFController()	{
 	
 	//	the output window has a buffer view which emits a signal every redraw- use that to drive rendering
 	OutputWindow		*ow = GetOutputWindow();
-	GLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
+	ISFGLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
 	if (bufferView == nullptr)
 		qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
 	else
-		connect(bufferView, &GLBufferQWidget::aboutToRedraw, this, &ISFController::widgetRedrawSlot);
+		connect(bufferView, &ISFGLBufferQWidget::aboutToRedraw, this, &ISFController::widgetRedrawSlot);
 }
 ISFController::~ISFController()	{
 	//	we have to explicitly free the spacer item
@@ -272,7 +272,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	GetOutputWindow()->updateContentsFromISFController();
 }
 
-void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
+void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
 	OutputWindow		*ow = GetOutputWindow();
@@ -302,6 +302,11 @@ void ISFController::widgetRedrawSlot(GLBufferQWidget * n)	{
 	string		scenePath = tmpDoc->getPath();
 	if (scenePath.length() < 1)	{
 		ow->drawBuffer(newSrcBuffer);
+		return;
+	}
+	
+	//	if the user has chosen to freeze the output via the toggle in the output window, we can bail now
+	if (ow->getFreezeOutputFlag())	{
 		return;
 	}
 	

@@ -85,6 +85,9 @@
         <property name="text">
          <string>Display Alpha</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -107,7 +110,7 @@
     </widget>
    </item>
    <item>
-    <widget class="GLBufferQWidget" name="bufferView">
+    <widget class="ISFGLBufferQWidget" name="bufferView">
      <property name="minimumSize">
       <size>
        <width>611</width>
@@ -120,9 +123,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GLBufferQWidget</class>
+   <class>ISFGLBufferQWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>GLBufferQWidget.h</header>
+   <header>ISFGLBufferQWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

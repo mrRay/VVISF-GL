@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "GLBufferQWidget.h"
+#include "ISFGLBufferQWidget.h"
 #include <VVGL.hpp>
 #include <VVISF.hpp>
 
@@ -25,23 +25,24 @@ public:
 	explicit OutputWindow(QWidget *parent = nullptr);
 	~OutputWindow();
 	
-	GLBufferQWidget * bufferView();
+	ISFGLBufferQWidget * bufferView();
 	void drawBuffer(const VVGL::GLBufferRef & n);
 	void updateContentsFromISFController();
 	int selectedIndexToDisplay();
+	bool getFreezeOutputFlag() { return freezeOutputFlag; }
 	
 protected:
 	void closeEvent(QCloseEvent * event);
 
 private slots:
-	void on_renderPassComboBox_currentIndexChanged(int index);
 	void on_freezeOutputToggle_stateChanged(int arg1);
 	void on_displayAlphaToggle_stateChanged(int arg1);
 	void widgetDrewItsFirstFrame();
 	void aboutToQuit();
 
 private:
-	Ui::OutputWindow *ui;
+	Ui::OutputWindow			*ui;
+	bool			freezeOutputFlag = false;
 };
 
 

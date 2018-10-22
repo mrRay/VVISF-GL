@@ -34,6 +34,7 @@ DEFINES += VVGL_SDK_QT
 SOURCES += \
 	../common/GLBufferQVideoSurface.cpp \
 	../common/GLBufferQWidget.cpp \
+	../common/ISFGLBufferQWidget.cpp \
 	DocWindow.cpp \
 	ISFController.cpp \
 	JSONGUI/JGMCArray.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
 HEADERS += \
 	../common/GLBufferQVideoSurface.h \
 	../common/GLBufferQWidget.h \
+	../common/ISFGLBufferQWidget.h \
 	DocWindow.h \
 	ISFController.h \
 	JSONGUI/JGMCArray.h \

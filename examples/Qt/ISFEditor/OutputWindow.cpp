@@ -19,7 +19,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::OutputWindow)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	ui->setupUi(this);
 	
@@ -45,7 +45,7 @@ OutputWindow::~OutputWindow()	{
 	delete ui;
 }
 
-GLBufferQWidget * OutputWindow::bufferView()	{
+ISFGLBufferQWidget * OutputWindow::bufferView()	{
 	return ui->bufferView;
 }
 void OutputWindow::drawBuffer(const VVGL::GLBufferRef & n)	{
@@ -128,16 +128,22 @@ void OutputWindow::closeEvent(QCloseEvent * event)	{
 	QWidget::closeEvent(event);
 }
 
-void OutputWindow::on_renderPassComboBox_currentIndexChanged(int index)	{
-
-}
-
 void OutputWindow::on_freezeOutputToggle_stateChanged(int arg1)	{
-
+	freezeOutputFlag = ui->freezeOutputToggle->isChecked();
 }
 
 void OutputWindow::on_displayAlphaToggle_stateChanged(int arg1)	{
-
+	bool			newVal = ui->displayAlphaToggle->isChecked();
+	
+	ISFSceneRef		viewScene = ui->bufferView->getScene();
+	if (viewScene != nullptr)	{
+		ISFDocRef		viewDoc = viewScene->getDoc();
+		if (viewDoc != nullptr)	{
+			ISFAttrRef		alphaAttr = viewDoc->getInput(std::string("viewAlpha"));
+			if (alphaAttr != nullptr)
+				alphaAttr->setCurrentVal(ISFBoolVal(newVal));
+		}
+	}
 }
 
 void OutputWindow::widgetDrewItsFirstFrame()	{

@@ -5,6 +5,7 @@
 //#include <QSurface>
 #include <QDateTime>
 #include <QDebug>
+#include <QWindow>
 
 
 
@@ -520,9 +521,15 @@ void GLBufferQWidget::initializeGL()
 }
 void GLBufferQWidget::resizeGL(int w, int h)
 {
-	//cout << __PRETTY_FUNCTION__ << endl;
+	QWidget				*winWidget = window();
+	QWindow				*myWin = (winWidget==nullptr) ? nullptr : winWidget->windowHandle();
+	qreal				devicePixelRatio = 1.0;
+	
+	if (myWin != nullptr)
+		devicePixelRatio = myWin->devicePixelRatio();
+	
 	lock_guard<recursive_mutex>		lock(ctxLock);
 	if (scene != nullptr)	{
-		scene->setOrthoSize(Size(w,h));
+		scene->setOrthoSize(Size(w*devicePixelRatio, h*devicePixelRatio));
 	}
 }

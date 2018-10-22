@@ -3,5 +3,6 @@
         <file>resources/NewFileTemplate.txt</file>
         <file>resources/JSONDeleteButtonImage.png</file>
         <file>resources/JSONRearrangeButtonImg.png</file>
+        <file>resources/AlphaOverCheckerboard.fs</file>
     </qresource>
 </RCC>
