@@ -25,7 +25,7 @@ CONFIG += c++14 console
 
 
 
-# these libs require an ISF_SDK define
+# these libs require a VVGL_SDK define
 DEFINES += VVGL_SDK_QT
 
 
@@ -71,7 +71,8 @@ SOURCES += \
 	VideoSource/VideoSource.cpp \
 	VideoSource/WebCamVideoSource.cpp \
     misc_classes/LevenshteinCalc.cpp \
-    JSONGUI/JSONGUIPass.cpp
+	JSONGUI/JSONGUIPass.cpp
+
 
 HEADERS += \
 	../common/GLBufferQVideoSurface.h \
@@ -115,7 +116,16 @@ HEADERS += \
 	VideoSource/VideoSource.h \
 	VideoSource/WebCamVideoSource.h \
     misc_classes/LevenshteinCalc.h \
-    JSONGUI/JSONGUIPass.h
+	JSONGUI/JSONGUIPass.h
+
+# platform-specific classes
+mac	{
+	SOURCES += ../common/SyphonVVBufferPoolAdditions.mm \
+		VideoSource/InterAppVideoSource_Mac.mm
+	HEADERS += ../common/SyphonVVBufferPoolAdditions.h \
+		VideoSource/InterAppVideoSource_Mac.h
+}
+
 
 FORMS += \
         MainWindow.ui \
@@ -157,12 +167,13 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVGL/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../../../VVISF/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/../common
 INCLUDEPATH += $$_PRO_FILE_PWD_/../
-INCLUDEPATH += VideoSource
+INCLUDEPATH += $$_PRO_FILE_PWD_/VideoSource
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF
 INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
+INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
 
 
 
@@ -185,6 +196,37 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
 DEPENDPATH += $$_PRO_FILE_PWD_/../../../external/GLEW/include
 unix: PRE_TARGETDEPS += $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW.dylib
 win32: PRE_TARGETDEPS += $$_PRO_FILE_PWD_/../../../external/GLEW/win_x64/glew32.dll
+
+
+
+
+# mac-only additions for syphon
+mac	{
+	LIBS += -framework Foundation -framework Cocoa -framework AppKit
+
+	SYPHON_FRAMEWORK_PATH=$$_PRO_FILE_PWD_/Syphon
+	QMAKE_CXXFLAGS += -F $$SYPHON_FRAMEWORK_PATH
+	QMAKE_LFLAGS += -F $$SYPHON_FRAMEWORK_PATH
+	LIBS += -framework Syphon
+
+	# syphon needs a CGLContextObj, which means we need to get an NSOpenGLContext from a QOpenGLContext, the headers for which are only accessible by manually including this path so the QtPlatformHeaders directory is picked up.
+	INCLUDEPATH += $$QMAKESPEC/../../include/
+}
+
+
+
+
+# this logs every qmake var when qmake is run
+#for(var, $$list($$enumerate_vars())) {
+#	message($$var)
+#	message($$eval($$var))
+#}
+
+
+
+
+# this enables ARC.  it's commented out because ARC is a PITA to use with c++
+#QMAKE_CXXFLAGS += -fobjc-arc
 
 
 
@@ -212,6 +254,11 @@ mac	{
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../VVGL/libVVGL*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../VVISF/libVVISF*.dylib $$framework_dir;
+		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}
 }
+
+
+
+

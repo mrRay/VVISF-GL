@@ -94,6 +94,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	scene->setThrowExceptions(true);
 	//	tell the scene to load the file, catch exceptions so we can throw stuff
 	try	{
+		sceneIsFilter = false;
 		scene->useFile(inPathToLoad.toStdString());
 	}
 	catch (ISFErr & exc)	{
@@ -114,6 +115,9 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	//	tell the scene to render a frame, so the ISFController can pull its compiled shaders and populate its UI items
 	try	{
 		scene->createAndRenderABuffer();
+		ISFDocRef		tmpDoc = scene->getDoc();
+		if (tmpDoc != nullptr)
+			sceneIsFilter = ((tmpDoc->getType() & ISFFileType_Filter)!=0) ? true : false;
 	}
 	catch (ISFErr & exc)	{
 		//QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));

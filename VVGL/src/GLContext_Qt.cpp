@@ -154,6 +154,11 @@ QOpenGLContext * GLContext::getContext()	{
 	}
 	return returnMe;
 }
+QVariant GLContext::getNativeHandle()	{
+	if (ctx != nullptr)
+		return ctx->getNativeHandle();
+	return QVariant();
+}
 void GLContext::makeCurrent()	{
 	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
 	if (ctx != nullptr)	{

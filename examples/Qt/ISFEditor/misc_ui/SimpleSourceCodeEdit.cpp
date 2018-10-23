@@ -44,8 +44,10 @@ SimpleSourceCodeEdit::SimpleSourceCodeEdit(QWidget * inParent) :
 	tmpFont.setPointSize(12);
 	setFont(tmpFont);
 	
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	int			tmpDist = fontMetrics().horizontalAdvance(QLatin1Char('9')) * 4;
 	setTabStopDistance(tmpDist);
+#endif
 	
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();
@@ -487,8 +489,12 @@ int SimpleSourceCodeEdit::lineNumberAreaWidth()
 		++digits;
 	}
 	
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	int			space = fontMetrics().horizontalAdvance(QLatin1Char('9')) * (digits + 1);
 	return space;
+#else
+	return fontMetrics().boundingRect(QLatin1Char('9')).width() * (digits + 1);
+#endif
 }
 
 

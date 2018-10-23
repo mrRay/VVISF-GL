@@ -19,7 +19,7 @@ public:
 	explicit VideoSource(QObject *parent = nullptr) : QObject(parent)	{
 	}
 	
-	virtual VVGL::GLBufferRef getBuffer() = 0;
+	//virtual VVGL::GLBufferRef getBuffer() = 0;
 	virtual QList<MediaFile> createListOfStaticMediaFiles() { return QList<MediaFile>(); }
 	virtual void start() { std::lock_guard<std::recursive_mutex> tmpLock(_lock); _running=true; }
 	//	must be called on eject- sets _running to false and sets _file to a null file

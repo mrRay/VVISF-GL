@@ -8,7 +8,12 @@
 #include "WebCamVideoSource.h"
 #include "MovieVideoSource.h"
 #include "ImgVideoSource.h"
+#if defined(Q_OS_MAC)
+#include "InterAppVideoSource_Mac.h"
+//#elif defined(Q_OS_WIN)
+#else
 #include "InterAppVideoSource.h"
+#endif
 #include "MediaFile.h"
 
 #include "VVGL.hpp"
@@ -53,7 +58,12 @@ private:
 	WebCamVideoSource		camSrc;
 	MovieVideoSource		movSrc;
 	ImgVideoSource			imgSrc;
+#if defined(Q_OS_MAC)
+	InterAppVideoSource_Mac		appSrc;
+//#elif defined(Q_OS_WIN)
+#else
 	InterAppVideoSource		appSrc;
+#endif
 	
 	//	the last-rendered buffer and a mutex to lock it
 	std::recursive_mutex	lastBufferLock;

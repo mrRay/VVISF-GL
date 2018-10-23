@@ -17,7 +17,7 @@ void LaunchingBufferPoolCheck()	{
 	if (GetGlobalBufferPool() == nullptr)	{
 		QThread		*mainThread = QApplication::instance()->thread();
 		QTimer		*tmpTimer = new QTimer();
-		tmpTimer->setInterval(50);
+		tmpTimer->setInterval(100);
 		tmpTimer->setSingleShot(true);
 		tmpTimer->moveToThread(mainThread);
 		QObject::connect(tmpTimer, &QTimer::timeout, [&]()	{

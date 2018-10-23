@@ -176,6 +176,7 @@ class VVGL_EXPORT GLContext	{
 		void swap();
 		void moveToThread(QThread * inThread);
 		QOpenGLContext * getContext();
+		QVariant getNativeHandle();
 		
 		/*
 		//	this function doesn't create anything- it just obtains a weak ref to the passed var

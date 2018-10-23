@@ -16,7 +16,7 @@ public:
 	InterAppVideoSource(QObject *parent = nullptr);
 	~InterAppVideoSource();
 	
-	virtual VVGL::GLBufferRef getBuffer() override;
+	//virtual VVGL::GLBufferRef getBuffer() override;
 	virtual void start() override;
 	virtual void stop() override;
 	virtual bool playingBackItem(const MediaFile & n) override;

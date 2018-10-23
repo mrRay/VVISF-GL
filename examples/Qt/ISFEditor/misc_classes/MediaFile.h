@@ -19,18 +19,21 @@ public:
 	};
 	
 	MediaFile() {}
+	MediaFile(const Type & inType, const QString & inName, const QString & inOtherString);
 	MediaFile(const Type & inType, const QString & inPath);
 	MediaFile(const QCameraInfo & inCameraInfo);
 	
 	inline Type type() const { return _type; };
 	QString name() const;
 	QString path() const;
+	QString syphonUUID() const;
 	QCameraInfo cameraInfo() const;
 	
 	bool operator==(const MediaFile & n);
 	
 private:
 	Type		_type = Type_None;
+	QString		_name;
 	QVariant	resourceLocator;	//	QCameraInfo if it's Type_Cam, string if it's mov or img
 };
 

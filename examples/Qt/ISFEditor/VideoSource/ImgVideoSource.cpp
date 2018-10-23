@@ -10,9 +10,9 @@ ImgVideoSource::~ImgVideoSource()	{
 
 
 
-VVGL::GLBufferRef ImgVideoSource::getBuffer()	{
-	return nullptr;
-}
+//VVGL::GLBufferRef ImgVideoSource::getBuffer()	{
+//	return nullptr;
+//}
 void ImgVideoSource::start()	{
 	VideoSource::start();
 }

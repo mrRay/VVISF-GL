@@ -52,6 +52,7 @@ public:
 	//	accessors
 	void setShareContext(QOpenGLContext * inCtx);
 	QOpenGLContext * getContext();
+	QVariant getNativeHandle();
 	QSurfaceFormat format();
 	bool isSharingWith(QOpenGLContext * inCtx);
 	void setSurface(const QSurface * inTargetSurface);
@@ -207,6 +208,13 @@ QOpenGLContext * GLQtCtxHidden::getContext()	{
 	if (strongCtx != nullptr)
 		return &(*strongCtx);
 	return nullptr;
+}
+QVariant GLQtCtxHidden::getNativeHandle()	{
+	if (weakCtx != nullptr)
+		return weakCtx->nativeHandle();
+	if (strongCtx != nullptr)
+		return strongCtx->nativeHandle();
+	return QVariant();
 }
 QSurfaceFormat GLQtCtxHidden::format()	{
 	if (weakCtx != nullptr)
@@ -480,6 +488,11 @@ QOpenGLContext * GLQtCtxWrapper::getContext()	{
 	if (hidden==nullptr)
 		return nullptr;
 	return hidden->getContext();
+}
+QVariant GLQtCtxWrapper::getNativeHandle()	{
+	if (hidden == nullptr)
+		return QVariant();
+	return hidden->getNativeHandle();
 }
 bool GLQtCtxWrapper::isSharingWith(QOpenGLContext * inCtx)	{
 	if (hidden==nullptr)

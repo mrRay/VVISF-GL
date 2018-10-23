@@ -20,9 +20,9 @@ void WebCamVideoSource::loadCamera(const QCameraInfo & n)	{
 
 
 
-VVGL::GLBufferRef WebCamVideoSource::getBuffer()	{
-	return nullptr;
-}
+//VVGL::GLBufferRef WebCamVideoSource::getBuffer()	{
+//	return nullptr;
+//}
 QList<MediaFile> WebCamVideoSource::createListOfStaticMediaFiles()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	QList<MediaFile>		returnMe;

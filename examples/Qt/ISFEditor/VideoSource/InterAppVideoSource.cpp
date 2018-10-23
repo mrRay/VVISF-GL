@@ -10,9 +10,9 @@ InterAppVideoSource::~InterAppVideoSource()	{
 
 
 
-VVGL::GLBufferRef InterAppVideoSource::getBuffer()	{
-	return nullptr;
-}
+//VVGL::GLBufferRef InterAppVideoSource::getBuffer()	{
+//	return nullptr;
+//}
 void InterAppVideoSource::start()	{
 	VideoSource::start();
 }
