@@ -58,7 +58,6 @@ SOURCES += \
 	LoadingWindow.cpp \
 	main.cpp \
 	MainWindow.cpp \
-	misc_classes/ISFRemoteImageClient.cpp \
 	misc_classes/MediaFile.cpp \
 	misc_classes/VideoSourceMenuItem.cpp \
 	misc_ui/ISFUIItem.cpp \
@@ -71,7 +70,11 @@ SOURCES += \
 	VideoSource/VideoSource.cpp \
 	VideoSource/WebCamVideoSource.cpp \
     misc_classes/LevenshteinCalc.cpp \
-	JSONGUI/JSONGUIPass.cpp
+	JSONGUI/JSONGUIPass.cpp \
+    misc_classes/RemoteImageClient.cpp \
+    misc_classes/RemoteImageClient_Mac.cpp \
+    misc_ui/ISFFileListView.cpp \
+    misc_classes/LoadingWindowFileListModel.cpp
 
 
 HEADERS += \
@@ -102,7 +105,6 @@ HEADERS += \
 	JSONScrollWidget.h \
 	LoadingWindow.h \
 	MainWindow.h \
-	misc_classes/ISFRemoteImageClient.h \
 	misc_classes/MediaFile.h \
 	misc_classes/VideoSourceMenuItem.h \
 	misc_ui/ISFUIItem.h \
@@ -116,7 +118,11 @@ HEADERS += \
 	VideoSource/VideoSource.h \
 	VideoSource/WebCamVideoSource.h \
     misc_classes/LevenshteinCalc.h \
-	JSONGUI/JSONGUIPass.h
+	JSONGUI/JSONGUIPass.h \
+    misc_classes/RemoteImageClient.h \
+    misc_classes/RemoteImageClient_Mac.h \
+    misc_ui/ISFFileListView.h \
+    misc_classes/LoadingWindowFileListModel.h
 
 # platform-specific classes
 mac	{
@@ -208,6 +214,8 @@ mac	{
 	QMAKE_CXXFLAGS += -F $$SYPHON_FRAMEWORK_PATH
 	QMAKE_LFLAGS += -F $$SYPHON_FRAMEWORK_PATH
 	LIBS += -framework Syphon
+	#LIBS += -F$$SYPHON_FRAMEWORK_PATH
+	LIBS += -L$$SYPHON_FRAMEWORK_PATH
 
 	# syphon needs a CGLContextObj, which means we need to get an NSOpenGLContext from a QOpenGLContext, the headers for which are only accessible by manually including this path so the QtPlatformHeaders directory is picked up.
 	INCLUDEPATH += $$QMAKESPEC/../../include/

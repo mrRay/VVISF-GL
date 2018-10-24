@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDir>
-#include <QFileSystemModel>
+//#include <QFileSystemModel>
 //#include <QTimer>
 #include <QSettings>
 #include <QItemSelection>
@@ -16,6 +16,7 @@
 #include "ISFController.h"
 #include "JGMTop.h"
 #include "DynamicVideoSource.h"
+#include "LoadingWindowFileListModel.h"
 
 
 
@@ -31,7 +32,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::LoadingWindow)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	globalLoadingWindow = this;
 	
@@ -68,14 +69,14 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	QSettings		settings;
 	QVariant		lastUsedPath = settings.value("baseDir");
 	if (!lastUsedPath.isNull())	{
-		qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
+		//qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
 		QString			tmpStr = lastUsedPath.toString();
 		tmpStr.replace("~", QDir::homePath());
 		if (QDir(tmpStr).exists())	{
 			setBaseDirectory(tmpStr);
 		}
 		else	{
-			qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
+			//qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
 			setBaseDirectory(defaultDirToLoad);
 		}
 	}
@@ -111,14 +112,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 		});
 	}
 	
-	/*
-	//	load a new file after a half-second
-	QTimer::singleShot(500, [&]()	{
-		on_createNewFile();
-	});
-	*/
-	
-	qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
+	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 }
 
 LoadingWindow::~LoadingWindow()
@@ -167,7 +161,9 @@ void LoadingWindow::on_loadFile(const QString & n)	{
 		show();
 	
 	//	tell the ISF controller to load the passed file- the ISF controller will tell the doc window (and myself) to load when it's ready
-	GetISFController()->loadFile(n);
+	ISFController		*isfc = GetISFController();
+	if (isfc != nullptr)
+		isfc->loadFile(n);
 }
 void LoadingWindow::on_saveFile()	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -185,10 +181,10 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 void LoadingWindow::showEvent(QShowEvent * event)	{
 	QWidget::showEvent(event);
 	
-	QTimer::singleShot(100, [&]()	{
+	//QTimer::singleShot(100, [&]()	{
 		//	bump the slot to populate the pop-up button with the list of sources.  pretty sure this screws things up unless you do it dead last!
 		listOfVideoSourcesUpdated(GetDynamicVideoSource());
-	});
+	//});
 }
 
 
@@ -287,8 +283,10 @@ void LoadingWindow::newFileSelected(const QItemSelection &selected, const QItemS
 }
 */
 void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
+	if (inSrc == nullptr)
+		return;
 	ui->videoSourceComboBox->blockSignals(true);
 	
 	//	clear the list of video sources
@@ -325,9 +323,12 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 }
 void LoadingWindow::videoSourceChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	DynamicVideoSource		*dvs = GetDynamicVideoSource();
+	if (dvs == nullptr)
+		return;
 	//	the combo box stores a QVariant<MediaFile> for each item
 	MediaFile		selectedMediaFile = ui->videoSourceComboBox->currentData().value<MediaFile>();
-	GetDynamicVideoSource()->loadFile(selectedMediaFile);
+	dvs->loadFile(selectedMediaFile);
 }
 
 
@@ -363,7 +364,7 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	QAbstractItemModel		*oldModel = ui->filterListView->model();
 	
 	//	make a new model, pass it to the list view (or pass null if we couldn't make a model)
-	QFileSystemModel		*newModel = new QFileSystemModel(this);
+	LoadingWindowFileListModel		*newModel = new LoadingWindowFileListModel(this);
 	newModel->setReadOnly(true);
 	//newModel->setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
 	newModel->setNameFilters(QStringList(QString("*.fs")));

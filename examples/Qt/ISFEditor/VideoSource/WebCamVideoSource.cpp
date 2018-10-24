@@ -31,7 +31,7 @@ QList<MediaFile> WebCamVideoSource::createListOfStaticMediaFiles()	{
 	for (const QCameraInfo & cameraInfo : cameraInfos)	{
 		returnMe.append( MediaFile(cameraInfo) );
 	}
-	
+	qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 	return returnMe;
 }
 void WebCamVideoSource::start()	{

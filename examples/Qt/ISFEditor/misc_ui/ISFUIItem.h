@@ -14,7 +14,7 @@
 #include <QLabel>
 
 #include "VVISF.hpp"
-#include "ISFRemoteImageClient.h"
+#include "InterAppVideoSource.h"
 #include "QDoubleSlider.h"
 
 
@@ -38,6 +38,7 @@ public:
 
 private slots:
 	void pointWidgetUsed();
+	void interAppVideoCBUsed(int newIndex);
 	void audioCBUsed(int newIndex);
 	
 private:
@@ -58,12 +59,16 @@ private:
 	QPushButton		*colorButton = nullptr;
 	QLabel			*colorLabel = nullptr;
 	QColor			color = QColor(0, 0, 0, 0);
+	QComboBox		*interAppVideoCB = nullptr;
 	QComboBox		*audioSourceCB = nullptr;
 	
 	QHash<QString, QVariant>	userInfoDict;	//	used to store float flag and max val for audio-type inputs
 	
-	ISFRemoteImageClient	*remoteImageClient = nullptr;
-	QString					*remoteImageClientLastSelectedName = nullptr;
+	InterAppVideoSource		*interAppSrc = nullptr;
+	GLBufferRef				interAppBuffer = nullptr;
+	
+	void refreshInterAppVideoCB();
+	void refreshAudioSourceCB();
 };
 
 

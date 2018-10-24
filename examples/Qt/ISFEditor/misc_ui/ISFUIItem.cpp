@@ -180,6 +180,75 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	case ISFValType_Cube:
 		break;
 	case ISFValType_Image:
+		{
+			//	make a combo box
+			interAppVideoCB = new QComboBox(this);
+			
+			//	make the video source
+			interAppSrc = new InterAppVideoSource(this);
+			
+			//	configure the video source to update my buffer every time there's a new frame
+			connect(interAppSrc, &VideoSource::frameProduced, [&](VVGL::GLBufferRef n)	{
+				interAppBuffer = n;
+			});
+			
+			//	configure the video source to repopulate the combo box when its list of static sources gets udpated
+			connect(interAppSrc, &VideoSource::staticSourceUpdated, [&](VideoSource * n)	{
+				if (interAppVideoCB == nullptr)
+					return;
+				
+				//	store the index and MediaFile that was originally selected
+				int			origIndex = interAppVideoCB->currentIndex();
+				MediaFile	origMediaFile = (origIndex<0) ? MediaFile() : interAppVideoCB->currentData().value<MediaFile>();
+				//	we're going to try to find the original index again after we repopulate the menu...
+				int			newIndex = -1;
+				
+				interAppVideoCB->blockSignals(true);
+				
+				interAppVideoCB->clear();
+				//	each menu item has a name (the video source name) and a value (a QVariant<MediaFile> that can be loaded by interAppSrc)
+				QList<MediaFile>		vidSrcs = interAppSrc->createListOfStaticMediaFiles();
+				for (const MediaFile & n : vidSrcs)	{
+					interAppVideoCB->addItem(n.name(), QVariant::fromValue(n));
+				}
+				
+				//	if there was something originally selected, select it again
+				if (origIndex >= 0)	{
+					//	find the index corresponding to the originally-selected  media file
+					newIndex = interAppVideoCB->findData(QVariant::fromValue(origMediaFile));
+					//	select the new index
+					if (newIndex < 0)	{
+						qDebug() << "ERR: couldn't find index for file " << origMediaFile << ", has it disappeared?";
+						//if (interAppVideoCB->maxCount() > 0)
+						//	interAppVideoCB->setCurrentIndex(0);
+					}
+					else
+						interAppVideoCB->setCurrentIndex(newIndex);
+				}
+				
+				interAppVideoCB->blockSignals(false);
+				
+				//	if there was something originally selected but we couldn't select it again, select somethign else
+				//	we're doing this here because we want the signal to fire...
+				if (origIndex >= 0 && newIndex < 0)	{
+					if (interAppVideoCB->maxCount() > 0)
+						interAppVideoCB->setCurrentIndex(0);
+				}
+			});
+			
+			//	configure the combo box to tell the video source to load a new file when its selection changes
+			connect(interAppVideoCB, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int newIndex)	{
+				MediaFile		selectedMediaFile = interAppVideoCB->currentData().value<MediaFile>();
+				interAppSrc->loadFile(selectedMediaFile);
+			});
+			
+			//	make the video source emit a signal that its sources have been updated
+			emit interAppSrc->staticSourceUpdated(interAppSrc);
+			
+			//	add the widget to the layout
+			myLayout->addWidget(interAppVideoCB);
+			
+		}
 		break;
 	case ISFValType_Audio:
 		break;
@@ -195,6 +264,12 @@ ISFUIItem::~ISFUIItem()	{
 	QLayout		*myLayout = layout();
 	if (myLayout != nullptr)	{
 		delete myLayout;
+	}
+	
+	if (interAppSrc != nullptr)	{
+		interAppSrc->stop();
+		delete interAppSrc;
+		interAppSrc = nullptr;
 	}
 }
 
@@ -216,6 +291,8 @@ void ISFUIItem::pointWidgetUsed()	{
 		//pointVal.y = newVal;
 		pointVal.y = tmpSender->value();
 	}
+}
+void ISFUIItem::interAppVideoCBUsed(int newIndex)	{
 }
 void ISFUIItem::audioCBUsed(int newIndex)	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -256,8 +333,9 @@ ISFVal ISFUIItem::getISFVal()	{
 		return ISFPoint2DVal( xFieldWidget->value(), yFieldWidget->value() );
 	case ISFValType_Color:
 		return ISFColorVal(color.redF(), color.greenF(), color.blueF(), color.alphaF());
-	case ISFValType_Cube:
 	case ISFValType_Image:
+		break;
+	case ISFValType_Cube:
 	case ISFValType_Audio:
 	case ISFValType_AudioFFT:
 		break;
@@ -265,3 +343,16 @@ ISFVal ISFUIItem::getISFVal()	{
 	
 	return ISFNullVal();
 }
+
+
+
+
+
+
+
+void ISFUIItem::refreshInterAppVideoCB()	{
+	
+}
+void ISFUIItem::refreshAudioSourceCB()	{
+}
+

@@ -60,6 +60,20 @@ MediaFile::MediaFile(const QCameraInfo & inCameraInfo) : _type(Type_Cam), resour
 
 
 
+QString MediaFile::StringForType(const MediaFile::Type & n)	{
+	switch (n)	{
+	case Type_None:		return QString("X");
+	case Type_App:		return QString("A");
+	case Type_Mov:		return QString("M");
+	case Type_Img:		return QString("I");
+	case Type_Cam:		return QString("C");
+	}
+	return QString("?");
+}
+
+
+
+
 QString MediaFile::name() const	{
 	return _name;
 }

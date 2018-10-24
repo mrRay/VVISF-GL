@@ -149,7 +149,7 @@ void JSONScrollWidget::clearItems()	{
 		return;
 	
 	lock_guard<recursive_mutex>		tmpLock(itemLock);
-	for (const QPointer<QWidget> itemPtr : items)	{
+	for (const QPointer<QWidget> & itemPtr : items)	{
 		if (itemPtr.isNull())
 			continue;
 		//	remove the widget from the layout and hide it

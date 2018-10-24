@@ -3,24 +3,43 @@
 
 
 
-InterAppVideoSource::InterAppVideoSource(QObject *parent) : VideoSource(parent)	{
+InterAppVideoSource::InterAppVideoSource(QObject *parent) :
+	src()
+{
+	QObject::connect(&src, &VideoSource::staticSourceUpdated, [&](VideoSource * n)	{
+		emit staticSourceUpdated(n);
+	});
+	QObject::connect(&src, &VideoSource::frameProduced, [&](VVGL::GLBufferRef n)	{
+		emit frameProduced(n);
+	});
 }
 InterAppVideoSource::~InterAppVideoSource()	{
 }
 
 
 
+
 //VVGL::GLBufferRef InterAppVideoSource::getBuffer()	{
 //	return nullptr;
 //}
+QList<MediaFile> InterAppVideoSource::createListOfStaticMediaFiles()	{
+	return src.createListOfStaticMediaFiles();
+}
 void InterAppVideoSource::start()	{
-	VideoSource::start();
+	src.start();
 }
 void InterAppVideoSource::stop()	{
-	VideoSource::stop();
+	src.stop();
 }
 bool InterAppVideoSource::playingBackItem(const MediaFile & n)	{
-	return false;
+	return src.playingBackItem(n);
 }
 void InterAppVideoSource::loadFile(const MediaFile & n)	{
+	src.loadFile(n);
+}
+
+
+
+bool InterAppVideoSource::running()	{
+	return src.running();
 }

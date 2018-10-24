@@ -37,7 +37,7 @@ protected:
 private slots:
 	void on_freezeOutputToggle_stateChanged(int arg1);
 	void on_displayAlphaToggle_stateChanged(int arg1);
-	void widgetDrewItsFirstFrame();
+	//void widgetDrewItsFirstFrame();
 	void aboutToQuit();
 
 private:

@@ -80,7 +80,7 @@ select file to view)</string>
         </widget>
        </item>
        <item>
-        <widget class="QListView" name="filterListView"/>
+        <widget class="ISFFileListView" name="filterListView"/>
        </item>
       </layout>
      </item>
@@ -249,6 +249,13 @@ select file to view)</string>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ISFFileListView</class>
+   <extends>QListView</extends>
+   <header>ISFFileListView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

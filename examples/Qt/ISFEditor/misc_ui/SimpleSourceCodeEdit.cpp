@@ -46,8 +46,10 @@ SimpleSourceCodeEdit::SimpleSourceCodeEdit(QWidget * inParent) :
 	
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	int			tmpDist = fontMetrics().horizontalAdvance(QLatin1Char('9')) * 4;
-	setTabStopDistance(tmpDist);
+#else
+	int			tmpDist = fontMetrics().boundingRect(QLatin1Char('9')).width() * 4;
 #endif
+	setTabStopDistance(tmpDist);
 	
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();

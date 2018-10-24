@@ -29,6 +29,7 @@ public:
 	QSpinBox * getWidthSB();
 	QSpinBox * getHeightSB();
 	inline QString getBaseDirectory() { return baseDirectory; }
+	void setBaseDirectory(const QString & inBaseDir);
 	
 	void on_createNewFile();
 	void on_loadFile(const QString & n);
@@ -57,7 +58,6 @@ private:
 	Ui::LoadingWindow		*ui;
 	QString					baseDirectory = QString("");
 	
-	void setBaseDirectory(const QString & inBaseDir);
 };
 
 

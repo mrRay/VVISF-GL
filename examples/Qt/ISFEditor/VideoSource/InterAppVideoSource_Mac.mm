@@ -92,7 +92,7 @@ InterAppVideoSource_Mac::~InterAppVideoSource_Mac()	{
 //	return nullptr;
 //}
 QList<MediaFile> InterAppVideoSource_Mac::createListOfStaticMediaFiles()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	QList<MediaFile>		returnMe;
 	
 	@autoreleasepool	{

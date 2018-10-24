@@ -29,7 +29,7 @@ using namespace VVISF;
 
 
 ISFController::ISFController()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	globalISFController = this;
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
@@ -464,7 +464,9 @@ void ISFController::reloadTargetFile()	{
 
 
 ISFController * GetISFController()	{
-	if (globalISFController == nullptr)
+	if (globalISFController == nullptr)	{
+		//qDebug() << "should be creating global ISF controller here...";
 		globalISFController = new ISFController();
+	}
 	return globalISFController;
 }

@@ -18,10 +18,12 @@ public:
 		Type_App
 	};
 	
-	MediaFile() {}
+	MediaFile() : _name(""), resourceLocator() {}
 	MediaFile(const Type & inType, const QString & inName, const QString & inOtherString);
 	MediaFile(const Type & inType, const QString & inPath);
 	MediaFile(const QCameraInfo & inCameraInfo);
+	
+	static QString StringForType(const MediaFile::Type & n);
 	
 	inline Type type() const { return _type; };
 	QString name() const;
@@ -30,6 +32,20 @@ public:
 	QCameraInfo cameraInfo() const;
 	
 	bool operator==(const MediaFile & n);
+	
+	
+	operator QString() const	{
+		switch (_type)	{
+		case Type_None:
+			return QString("<MediaFile %1>").arg(MediaFile::StringForType(_type));
+		case Type_App:
+		case Type_Mov:
+		case Type_Img:
+		case Type_Cam:
+			return QString("<MediaFile %1 %2>").arg(MediaFile::StringForType(_type)).arg(name());
+		}
+	}
+	
 	
 private:
 	Type		_type = Type_None;

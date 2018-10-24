@@ -16,8 +16,7 @@ class VideoSource : public QObject
 	Q_OBJECT
 	
 public:
-	explicit VideoSource(QObject *parent = nullptr) : QObject(parent)	{
-	}
+	explicit VideoSource(QObject *parent = nullptr) : QObject(parent)	{}
 	
 	//virtual VVGL::GLBufferRef getBuffer() = 0;
 	virtual QList<MediaFile> createListOfStaticMediaFiles() { return QList<MediaFile>(); }
@@ -27,7 +26,7 @@ public:
 	virtual bool playingBackItem(const MediaFile & n) { Q_UNUSED(n); return false; }
 	virtual void loadFile(const MediaFile & n) = 0;
 	
-	bool running() { std::lock_guard<std::recursive_mutex> tmpLock(_lock); return _running; }
+	virtual bool running() { std::lock_guard<std::recursive_mutex> tmpLock(_lock); return _running; }
 	
 signals:
 	void staticSourceUpdated(VideoSource * n);

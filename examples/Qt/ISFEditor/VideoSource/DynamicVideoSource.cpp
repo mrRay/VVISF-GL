@@ -23,9 +23,12 @@ DynamicVideoSource::DynamicVideoSource(QObject *parent) : QObject(parent)	{
 	connect(&movSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	connect(&imgSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	connect(&appSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
+	
+	//	when the app is about to quit we want to stop the sources
+	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 }
 DynamicVideoSource::~DynamicVideoSource()	{
-	stopSources();
+	//stopSources();
 }
 
 
@@ -119,6 +122,9 @@ void DynamicVideoSource::stopSources()	{
 
 void DynamicVideoSource::staticSourceUpdated(VideoSource * inSrc)	{
 	emit listOfStaticSourcesUpdated(this);
+}
+void DynamicVideoSource::aboutToQuit()	{
+	stopSources();
 }
 
 

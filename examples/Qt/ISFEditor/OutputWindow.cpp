@@ -26,7 +26,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	globalOutputWindow = this;
 	
 	//	we want to know when the widget draws its first frame because we can't create the global shared context/buffer pool until we can get a base ctx from the widget
-	connect(ui->bufferView, SIGNAL(frameSwapped()), this, SLOT(widgetDrewItsFirstFrame()));
+	//connect(ui->bufferView, SIGNAL(frameSwapped()), this, SLOT(widgetDrewItsFirstFrame()));
 	
 	//	we need to shut stuff down and delete contexts gracefull on quit
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
@@ -37,6 +37,8 @@ OutputWindow::OutputWindow(QWidget *parent) :
 		restoreGeometry(settings.value("OutputWindowGeometry").toByteArray());
 	}
 	
+	//	tell the widget to draw a single frame.  for some reason, GL widgets on os x don't have their internal sizes set properly when they draw their first frame.
+	//ui->bufferView->drawBuffer(nullptr);
 	//	tell the buffer view to start rendering
 	ui->bufferView->startRendering();
 }
@@ -145,15 +147,15 @@ void OutputWindow::on_displayAlphaToggle_stateChanged(int arg1)	{
 		}
 	}
 }
-
+/*
 void OutputWindow::widgetDrewItsFirstFrame()	{
 	//qDebug() << __PRETTY_FUNCTION__;
-	/*
-	if (QThread::currentThread() == qApp->thread())
-		qDebug() << "\tcurrent thread in widget draw first frame is main thread";
-	else
-		qDebug() << "\tcurrent thread in widget draw first frame is NOT main thread!";
-	*/
+	
+	//if (QThread::currentThread() == qApp->thread())
+	//	qDebug() << "\tcurrent thread in widget draw first frame is main thread";
+	//else
+	//	qDebug() << "\tcurrent thread in widget draw first frame is NOT main thread!";
+	
 	//	get the widget's context- if it's null, the widget's context doesn't exist yet and this method shouldn't have been called!
 	GLContextRef		widgetCtx = ui->bufferView->getContext();
 	if (widgetCtx == nullptr)
@@ -173,6 +175,7 @@ void OutputWindow::widgetDrewItsFirstFrame()	{
 	//	tell the widget to draw a single frame.  for some reason, GL widgets on os x don't have their internal sizes set properly when they draw their first frame.
 	ui->bufferView->drawBuffer(nullptr);
 }
+*/
 void OutputWindow::aboutToQuit()	{
 	//	we want to clear all the rendering resources- if we don't, Qt will crash on quit, which is harmless but tacky and should be avoided
 	

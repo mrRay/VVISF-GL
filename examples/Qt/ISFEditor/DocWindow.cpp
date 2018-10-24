@@ -32,6 +32,8 @@ DocWindow::DocWindow(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::DocWindow)
 {
+	//qDebug() << __PRETTY_FUNCTION__;
+	
 	globalDocWindow = this;
 	
 	ui->setupUi(this);
@@ -157,6 +159,8 @@ void DocWindow::updateContentsFromISFController()	{
 	//ISFSceneRef		scene = GetISFController()->getScene();
 	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
 	ISFController	*isfc = GetISFController();
+	if (isfc == nullptr)
+		return;
 	ISFDocRef		doc = isfc->getCurrentDoc();
 	
 	lock_guard<recursive_mutex>		lock(propLock);
@@ -387,10 +391,16 @@ void DocWindow::saveOpenFile()	{
 		//	if the file path is nil or this is a tmp file, open an alert so the user can supply a name and save location for the file
 		if (_fragFilePath==nullptr || _fragFilePath->contains(QDir::tempPath()))	{
 			qDebug() << "\tpresently-viewed file is a tmp file...";
-			QString			pathToSave = QFileDialog::getSaveFileName(GetLoadingWindow(),
-				tr("Save shader as:"),
-				GetLoadingWindow()->getBaseDirectory(),
-				tr("Text (*.fs)"));
+			LoadingWindow	*lw = GetLoadingWindow();
+			QString			pathToSave;
+			if (lw == nullptr)
+				pathToSave = QString("");
+			else	{
+				pathToSave = QFileDialog::getSaveFileName(lw,
+					tr("Save shader as:"),
+					lw->getBaseDirectory(),
+					tr("Text (*.fs)"));
+			}
 			//qDebug() << "\tdestPath is " << pathToSave;
 			QFileInfo		saveFileInfo(pathToSave);
 			QString			noExtPathToSave = QString("%1/%2").arg(saveFileInfo.dir().absolutePath()).arg(saveFileInfo.completeBaseName());
@@ -428,8 +438,10 @@ void DocWindow::saveOpenFile()	{
 				}
 			}
 			
-			if (fragContentsChanged || vertContentsChanged)
-				GetLoadingWindow()->on_loadFile(pathToSave);
+			if (fragContentsChanged || vertContentsChanged)	{
+				if (lw != nullptr)
+					lw->on_loadFile(pathToSave);
+			}
 			
 		}
 		//	else the file path is non-nil and not in tmp, so just save it to disk
