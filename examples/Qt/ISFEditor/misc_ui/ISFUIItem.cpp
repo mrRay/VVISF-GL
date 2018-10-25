@@ -212,6 +212,9 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 				if (interAppVideoCB == nullptr)
 					return;
 				
+				//	stop the inter-app source
+				interAppSrc->stop();
+				
 				//	store the index and MediaFile that was originally selected
 				int			origIndex = interAppVideoCB->currentIndex();
 				MediaFile	origMediaFile = (origIndex<0) ? MediaFile() : interAppVideoCB->currentData().value<MediaFile>();
@@ -221,7 +224,13 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 				interAppVideoCB->blockSignals(true);
 				
 				interAppVideoCB->clear();
+				
 				//	each menu item has a name (the video source name) and a value (a QVariant<MediaFile> that can be loaded by interAppSrc)
+				
+				//	make a menu item with a null item that will simply use the input image frame
+				interAppVideoCB->addItem(QString("<Use main video input>"), QVariant::fromValue(MediaFile()));
+				
+				//	now make menu items for the inter-app video sources
 				QList<MediaFile>		vidSrcs = interAppSrc->createListOfStaticMediaFiles();
 				for (const MediaFile & n : vidSrcs)	{
 					interAppVideoCB->addItem(n.name(), QVariant::fromValue(n));
@@ -233,9 +242,8 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 					newIndex = interAppVideoCB->findData(QVariant::fromValue(origMediaFile));
 					//	select the new index
 					if (newIndex < 0)	{
-						qDebug() << "ERR: couldn't find index for file " << origMediaFile << ", has it disappeared?";
-						//if (interAppVideoCB->maxCount() > 0)
-						//	interAppVideoCB->setCurrentIndex(0);
+						//qDebug() << "ERR: couldn't find index for file " << origMediaFile << ", has it disappeared?";
+						interAppVideoCB->setCurrentIndex(-1);
 					}
 					else
 						interAppVideoCB->setCurrentIndex(newIndex);
@@ -255,6 +263,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			connect(interAppVideoCB, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int newIndex)	{
 				MediaFile		selectedMediaFile = interAppVideoCB->currentData().value<MediaFile>();
 				interAppSrc->loadFile(selectedMediaFile);
+				interAppBuffer = nullptr;
 			});
 			
 			//	make the video source emit a signal that its sources have been updated
@@ -349,6 +358,9 @@ ISFVal ISFUIItem::getISFVal()	{
 	case ISFValType_Color:
 		return ISFColorVal(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 	case ISFValType_Image:
+		{
+			return ISFVal(ISFValType_Image, interAppBuffer);
+		}
 		break;
 	case ISFValType_Cube:
 	case ISFValType_Audio:

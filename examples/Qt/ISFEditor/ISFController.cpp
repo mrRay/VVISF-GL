@@ -327,7 +327,11 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 		ISFVal		itemVal = itemPtr.data()->getISFVal();
 		if (itemVal.getType() != ISFValType_None)	{
 			//cout << itemName.toStdString() << " -> " << itemVal << endl;
-			scene->setValueForInputNamed(itemVal, itemName.toStdString());
+			if (itemVal.getType() == ISFValType_Image && itemVal.getImageBuffer() == nullptr)
+				scene->setValueForInputNamed(ISFImageVal(newSrcBuffer), itemName.toStdString());
+			else
+				scene->setValueForInputNamed(itemVal, itemName.toStdString());
+			
 		}
 	}
 	
@@ -376,6 +380,8 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 
 void ISFController::populateLoadingWindowUI()	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	if (qApp->thread() != QThread::currentThread()) qDebug() << "ERR: thread is not main! " << __PRETTY_FUNCTION__;
 	
 	//	get the loading window, bail if we can't
 	LoadingWindow			*lw = GetLoadingWindow();

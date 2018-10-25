@@ -315,6 +315,8 @@ void LoadingWindow::videoSourceChanged(int arg1)	{
 void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	qDebug() << __PRETTY_FUNCTION__ << ", " << inBaseDir;
 	
+	if (qApp->thread() != QThread::currentThread()) qDebug() << "ERR: thread is not main! " << __PRETTY_FUNCTION__;
+	
 	if (baseDirectory == inBaseDir)
 		return;
 	

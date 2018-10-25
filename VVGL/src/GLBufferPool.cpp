@@ -1602,8 +1602,15 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 //	these functions are defined in the VVGLBufferPool_CocoaAdditions source file
 #else
-GLBufferRef CreateTexFromImage(const string & /*inPath*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
-	return nullptr;
+GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	QImage			*newImg = new QImage( inPath.c_str() );
+	GLBufferRef		returnMe = nullptr;
+	if (newImg != nullptr)	{
+		returnMe = CreateBufferForQImage(newImg, inCreateInCurrentContext, inPoolRef);
+		//delete newImg;
+		//newImg = nullptr;
+	}
+	return returnMe;
 }
 GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
 	return nullptr;

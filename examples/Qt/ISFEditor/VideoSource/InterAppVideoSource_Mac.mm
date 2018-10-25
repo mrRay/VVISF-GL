@@ -191,8 +191,8 @@ bool InterAppVideoSource_Mac::playingBackItem(const MediaFile & n)	{
 	return (_file == n);
 }
 void InterAppVideoSource_Mac::loadFile(const MediaFile & n)	{
-	if (n.type() != MediaFile::Type_App)
-		return;
+	//if (n.type() != MediaFile::Type_App)	//	if it's not the right kind of file we'll still accept it- but we won't actually start
+	//	return;
 	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	if (_file == n)

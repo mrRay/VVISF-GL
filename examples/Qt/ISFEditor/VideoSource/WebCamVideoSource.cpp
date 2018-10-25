@@ -24,7 +24,7 @@ void WebCamVideoSource::loadCamera(const QCameraInfo & n)	{
 //	return nullptr;
 //}
 QList<MediaFile> WebCamVideoSource::createListOfStaticMediaFiles()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	QList<MediaFile>		returnMe;
 	
 	QList<QCameraInfo>		cameraInfos = QCameraInfo::availableCameras();

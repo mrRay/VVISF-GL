@@ -25,6 +25,18 @@ CONFIG += c++14 console
 
 
 
+# let's try a precompiled header to reduce compilation time
+PRECOMPILED_HEADER = $$_PRO_FILE_PWD_/precompiled.pch
+CONFIG += precompile_header
+
+# theoretically, this should enable some degree of multiprocessing in MSVC, but i need to test it...
+*msvc* {
+	QMAKE_CXXFLAGS += -MP
+}
+
+
+
+
 # these libs require a VVGL_SDK define
 DEFINES += VVGL_SDK_QT
 
