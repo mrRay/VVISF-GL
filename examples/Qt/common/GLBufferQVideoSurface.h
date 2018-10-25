@@ -23,7 +23,7 @@ class GLBufferQVideoSurface : public QAbstractVideoSurface
 	Q_OBJECT
 	
 public:
-	GLBufferQVideoSurface(QObject * parent=nullptr) : QAbstractVideoSurface(parent), uploader(CreateGLCPUToTexCopierRef()) {}
+	GLBufferQVideoSurface(QObject * parent=nullptr) : QAbstractVideoSurface(parent), uploader(CreateGLCPUToTexCopierRef()) { if (uploader!=nullptr) uploader->setQueueSize(1); }
 	GLBufferQVideoSurface(const GLContextRef & inCtx, QObject * parent=nullptr) : QAbstractVideoSurface(parent), uploader(CreateGLCPUToTexCopierRefUsing(inCtx)) {}
 	~GLBufferQVideoSurface() {
 		uploader = nullptr;

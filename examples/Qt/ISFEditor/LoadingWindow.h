@@ -57,7 +57,6 @@ private:
 	//static LoadingWindow	*globalIvar;
 	Ui::LoadingWindow		*ui;
 	QString					baseDirectory = QString("");
-	
 };
 
 

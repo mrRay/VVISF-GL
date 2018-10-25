@@ -229,10 +229,10 @@ void DocWindow::updateContentsFromISFController()	{
 					//	do nothing (we do not want to preserve the cursor, the change is too great)
 				}
 				//	else if the levenshtein difference is < 0.25
-				else if (CalculateLevenshtein(origFragShaderTxt, *_fragFilePathContentsOnOpen) < 0.25)	{
+				//else if (CalculateLevenshtein(origFragShaderTxt, *_fragFilePathContentsOnOpen) < 0.25)	{
 					preserveCursor = true;
 					origCursorLineNumber = ui->fragShaderEditor->textCursor().blockNumber();
-				}
+				//}
 				ui->fragShaderEditor->setPlainText(*_fragFilePathContentsOnOpen);
 				if (preserveCursor)	{
 					QTextCursor				newCursor = ui->fragShaderEditor->textCursor();
@@ -286,10 +286,10 @@ void DocWindow::updateContentsFromISFController()	{
 					//	do nothing (we do not want to preserve the cursor, the change is too great)
 				}
 				//	else if the levenshtein difference is < 0.25
-				else if (CalculateLevenshtein(origVertShaderTxt, *_vertFilePathContentsOnOpen) < 0.25)	{
+				//else if (CalculateLevenshtein(origVertShaderTxt, *_vertFilePathContentsOnOpen) < 0.25)	{
 					preserveCursor = true;
 					origCursorLineNumber = ui->vertShaderEditor->textCursor().blockNumber();
-				}
+				//}
 				ui->vertShaderEditor->setPlainText(*_vertFilePathContentsOnOpen);
 				if (preserveCursor)	{
 					QTextCursor				newCursor = ui->vertShaderEditor->textCursor();

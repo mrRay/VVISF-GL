@@ -318,14 +318,17 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	scene->setBufferForInputNamed(newSrcBuffer, string("inputImage"));
 	
 	//	run through the UI items, pushing their values to the scene
+	//qDebug() << "*************";
 	for (const QPointer<ISFUIItem> & itemPtr : sceneItemArray)	{
 		if (itemPtr.isNull())
 			continue;
 		//itemPtr.data()
 		QString		itemName = itemPtr.data()->getName();
 		ISFVal		itemVal = itemPtr.data()->getISFVal();
-		if (itemVal.getType() != ISFValType_None)
+		if (itemVal.getType() != ISFValType_None)	{
+			//cout << itemName.toStdString() << " -> " << itemVal << endl;
 			scene->setValueForInputNamed(itemVal, itemName.toStdString());
+		}
 	}
 	
 	//	render the scene!

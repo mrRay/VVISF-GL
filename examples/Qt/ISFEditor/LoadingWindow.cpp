@@ -88,29 +88,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
 	}
 	
-	//	we need to load a new file as the selection changes
-	QItemSelectionModel		*selModel = ui->filterListView->selectionModel();
-	if (selModel != nullptr)	{
-		//connect(selModel, &QItemSelectionModel::selectionChanged, this, &LoadingWindow::newFileSelected);
-		connect(selModel, &QItemSelectionModel::selectionChanged, [&](const QItemSelection &selected, const QItemSelection &deselected)	{
-			QList<QModelIndex>		selectedIndexes = selected.indexes();
-			if (selectedIndexes.count() < 1)
-				return;
-			QModelIndex		firstIndex = selectedIndexes.first();
-			if (!firstIndex.isValid())
-				return;
-			QVariant		selectedPath = firstIndex.data(QFileSystemModel::FilePathRole);
-			if (selectedPath.isNull())
-				return;
-			//qDebug() << "\tshould be loading file " << selectedPath.toString();
-			
-			QString			selectedPathString = selectedPath.toString();
-			//GetISFController()->loadFile(selectedPathString);
-			//GetDocWindow()->loadFile(selectedPathString);
-			
-			on_loadFile(selectedPathString);
-		});
-	}
+	
 	
 	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 }
@@ -332,6 +310,8 @@ void LoadingWindow::videoSourceChanged(int arg1)	{
 }
 
 
+
+
 void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	qDebug() << __PRETTY_FUNCTION__ << ", " << inBaseDir;
 	
@@ -375,6 +355,32 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	//	delete the old model
 	if (oldModel != nullptr)
 		delete oldModel;
+	
+	//	set a new selection model
+	//	we need to load a new file as the selection changes
+	QItemSelectionModel		*selModel = ui->filterListView->selectionModel();
+	if (selModel != nullptr)	{
+		//connect(selModel, &QItemSelectionModel::selectionChanged, this, &LoadingWindow::newFileSelected);
+		connect(selModel, &QItemSelectionModel::selectionChanged, [&](const QItemSelection &selected, const QItemSelection &deselected)	{
+			qDebug() << __FUNCTION__ << "->&QItemSelectionModel::selectionChanged";
+			QList<QModelIndex>		selectedIndexes = selected.indexes();
+			if (selectedIndexes.count() < 1)
+				return;
+			QModelIndex		firstIndex = selectedIndexes.first();
+			if (!firstIndex.isValid())
+				return;
+			QVariant		selectedPath = firstIndex.data(QFileSystemModel::FilePathRole);
+			if (selectedPath.isNull())
+				return;
+			qDebug() << "\tshould be loading file " << selectedPath.toString();
+			
+			QString			selectedPathString = selectedPath.toString();
+			//GetISFController()->loadFile(selectedPathString);
+			//GetDocWindow()->loadFile(selectedPathString);
+			
+			on_loadFile(selectedPathString);
+		});
+	}
 }
 
 

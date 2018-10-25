@@ -97,10 +97,25 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 		}
 		break;
 	case ISFValType_Float:
-		sliderWidget = new QDoubleSlider(this);
-		sliderWidget->setOrientation(Qt::Horizontal);
-		sliderWidget->setDoubleValue( inAttr->getCurrentVal().getDoubleVal() );
-		myLayout->addWidget(sliderWidget);
+		{
+			sliderWidget = new QDoubleSlider(this);
+			
+			sliderWidget->setOrientation(Qt::Horizontal);
+			
+			ISFVal			&tmpVal = inAttr->getMinVal();
+			if (tmpVal.isFloatVal())
+				sliderWidget->setDoubleMinValue( tmpVal.getDoubleVal() );
+			
+			tmpVal = inAttr->getMaxVal();
+			if (tmpVal.isFloatVal())
+				sliderWidget->setDoubleMaxValue( tmpVal.getDoubleVal() );
+			
+			tmpVal = inAttr->getDefaultVal();
+			if (tmpVal.isFloatVal())
+				sliderWidget->setDoubleValue( tmpVal.getDoubleVal() );
+			
+			myLayout->addWidget(sliderWidget);
+		}
 		break;
 	case ISFValType_Point2D:
 		{
