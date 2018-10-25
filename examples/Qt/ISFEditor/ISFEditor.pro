@@ -55,7 +55,6 @@ SOURCES += \
 	JSONGUI/JSONGUIBasicInfoWidget.cpp \
 	JSONGUI/JSONGUIGroupInputWidget.cpp \
 	JSONGUI/JSONGUIGroupPassWidget.cpp \
-	JSONGUI/JSONGUIInput.cpp \
 	JSONGUI/JSONGUIInputAudioFFTWidget.cpp \
 	JSONGUI/JSONGUIInputAudioWidget.cpp \
 	JSONGUI/JSONGUIInputBoolWidget.cpp \
@@ -82,11 +81,11 @@ SOURCES += \
 	VideoSource/VideoSource.cpp \
 	VideoSource/WebCamVideoSource.cpp \
     misc_classes/LevenshteinCalc.cpp \
-	JSONGUI/JSONGUIPass.cpp \
     misc_classes/RemoteImageClient.cpp \
     misc_classes/RemoteImageClient_Mac.cpp \
     misc_ui/ISFFileListView.cpp \
-    misc_classes/LoadingWindowFileListModel.cpp
+    misc_classes/LoadingWindowFileListModel.cpp \
+    JSONGUI/JSONGUIInputWidget.cpp
 
 
 HEADERS += \
@@ -102,7 +101,6 @@ HEADERS += \
 	JSONGUI/JSONGUIBasicInfoWidget.h \
 	JSONGUI/JSONGUIGroupInputWidget.h \
 	JSONGUI/JSONGUIGroupPassWidget.h \
-	JSONGUI/JSONGUIInput.h \
 	JSONGUI/JSONGUIInputAudioFFTWidget.h \
 	JSONGUI/JSONGUIInputAudioWidget.h \
 	JSONGUI/JSONGUIInputBoolWidget.h \
@@ -130,11 +128,12 @@ HEADERS += \
 	VideoSource/VideoSource.h \
 	VideoSource/WebCamVideoSource.h \
     misc_classes/LevenshteinCalc.h \
-	JSONGUI/JSONGUIPass.h \
     misc_classes/RemoteImageClient.h \
     misc_classes/RemoteImageClient_Mac.h \
     misc_ui/ISFFileListView.h \
-    misc_classes/LoadingWindowFileListModel.h
+    misc_classes/LoadingWindowFileListModel.h \
+    JSONGUI/JSONGUIInputWidget.h \
+    JSONGUI/QLabelDrag.h
 
 # platform-specific classes
 mac	{

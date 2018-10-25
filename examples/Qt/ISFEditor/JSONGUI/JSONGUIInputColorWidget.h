@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTCOLOR_H
 #define JSONGUIINPUTCOLOR_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputColorWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputColorWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

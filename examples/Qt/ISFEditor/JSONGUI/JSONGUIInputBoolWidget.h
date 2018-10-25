@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTBOOL_H
 #define JSONGUIINPUTBOOL_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputBoolWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputBoolWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

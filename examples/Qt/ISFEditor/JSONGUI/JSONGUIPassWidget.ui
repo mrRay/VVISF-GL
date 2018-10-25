@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>335</width>
-    <height>170</height>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,26 +31,6 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="pushButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="titleLabel">
-       <property name="text">
-        <string>PASSINDEX</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2">
       <widget class="QLabelClickable" name="deleteLabel">
        <property name="sizePolicy">
@@ -76,6 +56,38 @@
        </property>
        <property name="pixmap">
         <pixmap resource="../resources.qrc">:/resources/JSONDeleteButtonImage.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="titleLabel">
+       <property name="text">
+        <string>PASSINDEX</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabelDrag" name="dragLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../resources.qrc">:/resources/JSONRearrangeButtonImg.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -217,6 +229,11 @@
    <class>QLabelClickable</class>
    <extends>QLabel</extends>
    <header>QLabelClickable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QLabelDrag</class>
+   <extends>QLabel</extends>
+   <header>QLabelDrag.h</header>
   </customwidget>
  </customwidgets>
  <resources>

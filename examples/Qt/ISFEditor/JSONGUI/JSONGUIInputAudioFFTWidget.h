@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTAUDIOFFT_H
 #define JSONGUIINPUTAUDIOFFT_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputAudioFFTWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputAudioFFTWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTLONG_H
 #define JSONGUIINPUTLONG_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputLongWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputLongWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

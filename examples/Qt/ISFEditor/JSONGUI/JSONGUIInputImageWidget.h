@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTIMAGE_H
 #define JSONGUIINPUTIMAGE_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputImageWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputImageWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

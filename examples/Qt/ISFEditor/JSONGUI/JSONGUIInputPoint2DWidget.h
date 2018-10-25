@@ -1,9 +1,7 @@
 #ifndef JSONGUIINPUTPOINT2D_H
 #define JSONGUIINPUTPOINT2D_H
 
-#include <QWidget>
-
-#include "JSONGUIInput.h"
+#include "JSONGUIInputWidget.h"
 
 
 
@@ -15,7 +13,7 @@ namespace Ui {
 
 
 
-class JSONGUIInputPoint2DWidget : public QWidget, public JSONGUIInput
+class JSONGUIInputPoint2DWidget : public JSONGUIInputWidget
 {
 	Q_OBJECT
 

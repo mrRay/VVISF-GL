@@ -2,8 +2,7 @@
 #include "ui_JSONGUIInputEventWidget.h"
 
 JSONGUIInputEventWidget::JSONGUIInputEventWidget(const JGMInputRef & inRef, QWidget *parent) :
-	QWidget(parent),
-	JSONGUIInput(inRef),
+	JSONGUIInputWidget(inRef, parent),
 	ui(new Ui::JSONGUIInputEvent)
 {
 	ui->setupUi(this);
@@ -24,19 +23,20 @@ JSONGUIInputEventWidget::~JSONGUIInputEventWidget()
 
 void JSONGUIInputEventWidget::prepareUIItems() {
 	//	have my super prepare the UI items common to all of these
-	prepareInputNameEdit( *(ui->inputNameEdit) );
-	prepareLabelField( *(ui->labelField) );
-	prepareTypeCBox( *(ui->typePUB) );
-	prepareDeleteLabel( *(ui->deleteLabel) );
+	prepareDragLabel( (ui->dragLabel) );
+	prepareInputNameEdit( (ui->inputNameEdit) );
+	prepareLabelField( (ui->labelField) );
+	prepareTypeCBox( (ui->typePUB) );
+	prepareDeleteLabel( (ui->deleteLabel) );
 	
 	//	prepare the UI items specific to this input
 }
 void JSONGUIInputEventWidget::refreshUIItems() {
 	//	have my super refresh the UI items common to all of these
-	refreshInputNameEdit( *(ui->inputNameEdit) );
-	refreshLabelField( *(ui->labelField) );
-	refreshTypeCBox( *(ui->typePUB) );
-	prepareDeleteLabel( *(ui->deleteLabel) );
+	refreshInputNameEdit( (ui->inputNameEdit) );
+	refreshLabelField( (ui->labelField) );
+	refreshTypeCBox( (ui->typePUB) );
+	prepareDeleteLabel( (ui->deleteLabel) );
 	
 	//	refresh the UI items specific to this input
 }
