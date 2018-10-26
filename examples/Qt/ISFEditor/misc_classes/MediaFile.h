@@ -31,7 +31,8 @@ public:
 	QString syphonUUID() const;
 	QCameraInfo cameraInfo() const;
 	
-	bool operator==(const MediaFile & n);
+	bool operator==(const MediaFile & n) const;
+	bool operator<(const MediaFile & n) const;
 	
 	
 	operator QString() const	{

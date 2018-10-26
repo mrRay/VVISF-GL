@@ -65,6 +65,7 @@ MediaFile::Type DynamicVideoSource::srcType()	{
 
 
 void DynamicVideoSource::loadFile(const MediaFile & n)	{
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	lock_guard<recursive_mutex>		tmpLock(srcLock);
 	
@@ -73,11 +74,20 @@ void DynamicVideoSource::loadFile(const MediaFile & n)	{
 	
 	if (origType != newType)	{
 		switch (origType)	{
-		case MediaFile::Type_None:		break;
-		case MediaFile::Type_Cam:		camSrc.stop();		break;
-		case MediaFile::Type_Mov:		movSrc.stop();		break;
-		case MediaFile::Type_Img:		imgSrc.stop();		break;
-		case MediaFile::Type_App:		appSrc.stop();		break;
+		case MediaFile::Type_None:
+			break;
+		case MediaFile::Type_Cam:
+			camSrc.stop();
+			break;
+		case MediaFile::Type_Mov:
+			movSrc.stop();
+			break;
+		case MediaFile::Type_Img:
+			imgSrc.stop();
+			break;
+		case MediaFile::Type_App:
+			appSrc.stop();
+			break;
 		}
 	}
 	
@@ -86,7 +96,7 @@ void DynamicVideoSource::loadFile(const MediaFile & n)	{
 	case MediaFile::Type_Cam:		camSrc.loadFile(n);		break;
 	case MediaFile::Type_Mov:		movSrc.loadFile(n);		break;
 	case MediaFile::Type_Img:		imgSrc.loadFile(n);		break;
-	case MediaFile::Type_App:		appSrc.loadFile(n);		return;
+	case MediaFile::Type_App:		appSrc.loadFile(n);		break;
 	}
 	
 	srcFile = n;

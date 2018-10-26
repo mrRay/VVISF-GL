@@ -21,8 +21,6 @@ public:
 	WebCamVideoSource(QObject *parent = nullptr);
 	~WebCamVideoSource();
 	
-	void loadCamera(const QCameraInfo & n);
-	
 	//virtual VVGL::GLBufferRef getBuffer() override;
 	virtual QList<MediaFile> createListOfStaticMediaFiles() override;
 	virtual void start() override;

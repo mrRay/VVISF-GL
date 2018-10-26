@@ -13,9 +13,12 @@ int QVariantMediaFileUserType = -1;
 void RegisterVariantTypes()	{
 	if (QVariantMediaFileUserType < 0)	{
 		QVariantMediaFileUserType = qRegisterMetaType<MediaFile>();
+		//QMetaType::registerComparators<MediaFile>();
+		//QMetaType::registerEqualsComparator<MediaFile>();
 	}
 	if (QVariant_videoSourceMenuItem_userType < 0)	{
 		QVariant_videoSourceMenuItem_userType = qRegisterMetaType<QCameraInfo>();
+		//QMetaType::registerComparators<QCameraInfo>();
 	}
 }
 
@@ -96,7 +99,7 @@ QCameraInfo MediaFile::cameraInfo() const	{
 
 
 
-bool MediaFile::operator==(const MediaFile & n)	{
+bool MediaFile::operator==(const MediaFile & n) const	{
 	if (_type!=n.type())
 		return false;
 	
@@ -112,6 +115,25 @@ bool MediaFile::operator==(const MediaFile & n)	{
 		return (syphonUUID() == n.syphonUUID());
 	}
 	
+	return false;
+}
+bool MediaFile::operator<(const MediaFile & n) const	{
+	Type		compType = n.type();
+	if (_type != compType)	{
+		return (static_cast<int>(_type) < static_cast<int>(compType));
+	}
+	
+	switch (_type)	{
+	case Type_None:
+		return false;
+	case Type_Cam:
+		return (name() < n.name());
+	case Type_Mov:
+	case Type_Img:
+		return (path() < n.path());
+	case Type_App:
+		return (name() < n.name());
+	}
 	return false;
 }
 

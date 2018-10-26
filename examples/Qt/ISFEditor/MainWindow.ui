@@ -41,6 +41,8 @@
     <addaction name="actionNew"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -75,6 +77,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>

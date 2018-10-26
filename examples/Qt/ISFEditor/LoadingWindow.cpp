@@ -17,6 +17,7 @@
 #include "JGMTop.h"
 #include "DynamicVideoSource.h"
 #include "LoadingWindowFileListModel.h"
+#include "MediaFile.h"
 
 
 
@@ -52,6 +53,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	//connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
 	connect(GetDynamicVideoSource(), &DynamicVideoSource::listOfStaticSourcesUpdated, this, &LoadingWindow::listOfVideoSourcesUpdated);
 	//connect(GetDynamicVideoSource(), SIGNAL(listOfStaticSourcesUpdated), this, SLOT(listOfVideoSourcesUpdated));
+	connect(ui->videoSourceComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &LoadingWindow::videoSourceChanged);
 	
 	//	we do this later, on an even that fires when the window opens, because i think it's screwing things up
 	/*
@@ -159,10 +161,8 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 void LoadingWindow::showEvent(QShowEvent * event)	{
 	QWidget::showEvent(event);
 	
-	//QTimer::singleShot(100, [&]()	{
-		//	bump the slot to populate the pop-up button with the list of sources.  pretty sure this screws things up unless you do it dead last!
-		listOfVideoSourcesUpdated(GetDynamicVideoSource());
-	//});
+	//	bump the slot to populate the pop-up button with the list of sources.
+	listOfVideoSourcesUpdated(GetDynamicVideoSource());
 }
 
 
@@ -261,11 +261,20 @@ void LoadingWindow::newFileSelected(const QItemSelection &selected, const QItemS
 }
 */
 void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__;
 	
 	if (inSrc == nullptr)
 		return;
+	
+	//if (qApp->thread() == QThread::currentThread())
+	//	qDebug() << "reloading list of sources on main thread";
+	//else
+	//	qDebug() << "ERR: reloading list of sources on NON-MAIN thread!";
+	
+	
+	
 	ui->videoSourceComboBox->blockSignals(true);
+	//QObject::disconnect(ui->videoSourceComboBox, 0, 0, 0);
 	
 	//	clear the list of video sources
 	ui->videoSourceComboBox->clear();
@@ -278,35 +287,33 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	}
 	
 	//	run through the items in the combo box, select the first item that appears to be playing back
-	bool			foundItem = false;
+	int				foundIndex = -1;
 	for (int i=0; i<ui->videoSourceComboBox->count(); ++i)	{
 		QString			tmpItemString = ui->videoSourceComboBox->itemText(i);
 		QVariant		tmpItemVariant = ui->videoSourceComboBox->itemData(i);
 		//qDebug() << "\tcomparing against camera " << tmpInfo.description();
 		if (GetDynamicVideoSource()->playingBackItem(tmpItemVariant.value<MediaFile>()))	{
-			foundItem = true;
-			//ui->videoSourceComboBox->blockSignals(true);
-			ui->videoSourceComboBox->setCurrentIndex(i);
-			//ui->videoSourceComboBox->blockSignals(false);
+			foundIndex = i;
 			break;
 		}
 	}
-	if (!foundItem)	{
-		//ui->videoSourceComboBox->blockSignals(true);
-		ui->videoSourceComboBox->setCurrentIndex(-1);
-		//ui->videoSourceComboBox->blockSignals(false);
-	}
 	
+	ui->videoSourceComboBox->setCurrentIndex(foundIndex);
 	ui->videoSourceComboBox->blockSignals(false);
+	
 }
 void LoadingWindow::videoSourceChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();
-	if (dvs == nullptr)
-		return;
-	//	the combo box stores a QVariant<MediaFile> for each item
-	MediaFile		selectedMediaFile = ui->videoSourceComboBox->currentData().value<MediaFile>();
-	dvs->loadFile(selectedMediaFile);
+	if (dvs != nullptr)	{
+		//	the combo box stores a QVariant<MediaFile> for each item
+		QVariant		selectedData = ui->videoSourceComboBox->currentData();
+		if (selectedData.isValid())	{
+			MediaFile		selectedMediaFile = selectedData.value<MediaFile>();
+			dvs->loadFile(selectedMediaFile);
+		}
+	}
 }
 
 

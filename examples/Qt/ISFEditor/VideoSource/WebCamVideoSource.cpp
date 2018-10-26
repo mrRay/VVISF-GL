@@ -14,12 +14,6 @@ WebCamVideoSource::~WebCamVideoSource()	{
 
 
 
-void WebCamVideoSource::loadCamera(const QCameraInfo & n)	{
-}
-
-
-
-
 //VVGL::GLBufferRef WebCamVideoSource::getBuffer()	{
 //	return nullptr;
 //}
@@ -31,11 +25,11 @@ QList<MediaFile> WebCamVideoSource::createListOfStaticMediaFiles()	{
 	for (const QCameraInfo & cameraInfo : cameraInfos)	{
 		returnMe.append( MediaFile(cameraInfo) );
 	}
-	qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
+	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 	return returnMe;
 }
 void WebCamVideoSource::start()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	if (_running)
@@ -80,7 +74,8 @@ void WebCamVideoSource::start()	{
 	
 }
 void WebCamVideoSource::stop()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
+	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	
 	VideoSource::stop();
@@ -107,7 +102,7 @@ bool WebCamVideoSource::playingBackItem(const MediaFile & n)	{
 	return false;
 }
 void WebCamVideoSource::loadFile(const MediaFile & n)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	if (n.type() != MediaFile::Type_Cam)
 		return;

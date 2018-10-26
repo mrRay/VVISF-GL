@@ -259,22 +259,6 @@ select file to view)</string>
  <resources/>
  <connections>
   <connection>
-   <sender>videoSourceComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>LoadingWindow</receiver>
-   <slot>videoSourceChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>147</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>loadSystemISFsButton</sender>
    <signal>clicked()</signal>
    <receiver>LoadingWindow</receiver>

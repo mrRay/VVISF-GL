@@ -28,6 +28,8 @@ private slots:
 
 	void on_actionSave_triggered();
 	
+	void on_actionQuit_triggered();
+	
 	void widgetDrewItsFirstFrame();
 
 private:
