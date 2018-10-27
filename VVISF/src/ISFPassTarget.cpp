@@ -41,32 +41,32 @@ void ISFPassTarget::cleanup()	{
 
 ISFPassTarget::ISFPassTarget(const string & inName, const ISFDoc * inParentDoc)	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
-	name = string(inName);
-	parentDoc = (ISFDoc *)inParentDoc;
-	cachedUnis[0] = make_shared<GLCachedUni>(name);
-	cachedUnis[1] = make_shared<GLCachedUni>(FmtString("_%s_imgRect",name.c_str()));
-	cachedUnis[2] = make_shared<GLCachedUni>(FmtString("_%s_imgSize",name.c_str()));
-	cachedUnis[3] = make_shared<GLCachedUni>(FmtString("_%s_flip",name.c_str()));
+	_name = string(inName);
+	_parentDoc = (ISFDoc *)inParentDoc;
+	_cachedUnis[0] = make_shared<GLCachedUni>(_name);
+	_cachedUnis[1] = make_shared<GLCachedUni>(FmtString("_%s_imgRect",_name.c_str()));
+	_cachedUnis[2] = make_shared<GLCachedUni>(FmtString("_%s_imgSize",_name.c_str()));
+	_cachedUnis[3] = make_shared<GLCachedUni>(FmtString("_%s_flip",_name.c_str()));
 }
 ISFPassTarget::~ISFPassTarget()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
 	
-	lock_guard<mutex>		lock(targetLock);
-	if (targetWidthString != nullptr)	{
-		delete targetWidthString;
-		targetWidthString = nullptr;
+	lock_guard<mutex>		lock(_targetLock);
+	if (_targetWidthString != nullptr)	{
+		delete _targetWidthString;
+		_targetWidthString = nullptr;
 	}
-	if (targetWidthExpression != nullptr)	{
-		delete targetWidthExpression;
-		targetWidthExpression = nullptr;
+	if (_targetWidthExpression != nullptr)	{
+		delete _targetWidthExpression;
+		_targetWidthExpression = nullptr;
 	}
-	if (targetHeightString != nullptr)	{
-		delete targetHeightString;
-		targetHeightString = nullptr;
+	if (_targetHeightString != nullptr)	{
+		delete _targetHeightString;
+		_targetHeightString = nullptr;
 	}
-	if (targetHeightExpression != nullptr)	{
-		delete targetHeightExpression;
-		targetHeightExpression = nullptr;
+	if (_targetHeightExpression != nullptr)	{
+		delete _targetHeightExpression;
+		_targetHeightExpression = nullptr;
 	}
 }
 
@@ -77,8 +77,8 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	//using namespace VVISF;
 	using namespace std;
 	
-	targetWidth = inSize.width;
-	targetHeight = inSize.height;
+	_targetWidth = inSize.width;
+	_targetHeight = inSize.height;
 	
 	
 	//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
@@ -86,8 +86,8 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	GLTexToTexCopierRef		copier = nullptr;
 	bool					shouldBeFloat = false;
 	bool					shouldBeIOSurface = false;
-	if (parentDoc != nullptr)	{
-		ISFScene		*parentScene = parentDoc->getParentScene();
+	if (_parentDoc != nullptr)	{
+		ISFScene		*parentScene = _parentDoc->getParentScene();
 		if (parentScene != nullptr)	{
 			bp = parentScene->getPrivatePool();
 			copier = parentScene->getPrivateCopier();
@@ -116,29 +116,29 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	}
 	
 	//	if the buffer's currently nil
-	if (buffer == nullptr)	{
+	if (_buffer == nullptr)	{
 		if (inCreateNewBuffer)	{
-			//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
-			//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+			//_buffer = (_floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+			//_buffer = (_floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 			
 #if defined(VVGL_SDK_MAC)
 			if (shouldBeIOSurface)
-				buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
+				_buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 			else
 #endif
-				buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
+				_buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 			
-			copier->copyBlackFrameTo(buffer);
+			copier->copyBlackFrameTo(_buffer);
 		}
 	}
 	//	else there's a buffer...
 	else	{
 		//	if the buffer size is wrong...
-		if (inSize != buffer->srcRect.size)	{
+		if (inSize != _buffer->srcRect.size)	{
 			//	if i'm supposed to resize, do so
 			if (inResize)	{
-				//GLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
-				//GLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+				//GLBufferRef		newBuffer = (_floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+				//GLBufferRef		newBuffer = (_floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 				GLBufferRef		newBuffer;
 				
 #if defined(VVGL_SDK_MAC)
@@ -148,26 +148,26 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 #endif
 					newBuffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 				
-				copier->sizeVariantCopy(buffer, newBuffer);
-				buffer = newBuffer;
+				copier->sizeVariantCopy(_buffer, newBuffer);
+				_buffer = newBuffer;
 			}
 			//	else i'm not supposed to resize
 			else	{
 				//	if i'm supposed to create a new buffer
 				if (inCreateNewBuffer)	{
-					//buffer = (floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
-					//buffer = (floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
+					//_buffer = (_floatFlag) ? CreateBGRAFloatTex(inSize, bp) : CreateBGRATex(inSize, bp);
+					//_buffer = (_floatFlag) ? CreateRGBAFloatTex(inSize, bp) : CreateRGBATex(inSize, bp);
 					
 #if defined(VVGL_SDK_MAC)
 					if (shouldBeIOSurface)
-						buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
+						_buffer = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, true, bp) : CreateRGBATexIOSurface(inSize, true, bp);
 					else
 #endif
-						buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
+						_buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 				}
 				//	else i'm not supposed to create a new buffer
 				else	{
-					buffer = nullptr;
+					_buffer = nullptr;
 				}
 			}
 		}
@@ -178,66 +178,66 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 void ISFPassTarget::setTargetWidthString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	lock_guard<mutex>		lock(targetLock);
+	lock_guard<mutex>		lock(_targetLock);
 	
-	if (targetWidthString != nullptr)	{
-		delete targetWidthString;
-		targetWidthString = nullptr;
+	if (_targetWidthString != nullptr)	{
+		delete _targetWidthString;
+		_targetWidthString = nullptr;
 	}
-	if (targetWidthExpression != nullptr)	{
-		delete targetWidthExpression;
-		targetWidthExpression = nullptr;
+	if (_targetWidthExpression != nullptr)	{
+		delete _targetWidthExpression;
+		_targetWidthExpression = nullptr;
 	}
 	
 	if (n.length() < 1)
 		return;
 	
-	targetWidthString = new string(n);
+	_targetWidthString = new string(n);
 	//	leave the expression nil- it'll be instantiated (and compiled) when we evaluate (we need to provide a symbol table with variables)
 }
 const string ISFPassTarget::getTargetWidthString()	{
-	lock_guard<mutex>		lock(targetLock);
-	return (targetWidthString==nullptr) ? string("") : string(*targetWidthString);
+	lock_guard<mutex>		lock(_targetLock);
+	return (_targetWidthString==nullptr) ? string("") : string(*_targetWidthString);
 }
 void ISFPassTarget::setTargetHeightString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	lock_guard<mutex>		lock(targetLock);
+	lock_guard<mutex>		lock(_targetLock);
 	
-	if (targetHeightString != nullptr)	{
-		delete targetHeightString;
-		targetHeightString = nullptr;
+	if (_targetHeightString != nullptr)	{
+		delete _targetHeightString;
+		_targetHeightString = nullptr;
 	}
-	if (targetHeightExpression != nullptr)	{
-		delete targetHeightExpression;
-		targetHeightExpression = nullptr;
+	if (_targetHeightExpression != nullptr)	{
+		delete _targetHeightExpression;
+		_targetHeightExpression = nullptr;
 	}
 	
 	if (n.length() < 1)
 		return;
 	
-	targetHeightString = new string(n);
+	_targetHeightString = new string(n);
 	//	leave the expression nil- it'll be instantiated (and compiled) when we evaluate (we need to provide a symbol table with variables)
 }
 const string ISFPassTarget::getTargetHeightString()	{
-	lock_guard<mutex>		lock(targetLock);
-	return (targetHeightString==nullptr) ? string("") : string(*targetHeightString);
+	lock_guard<mutex>		lock(_targetLock);
+	return (_targetHeightString==nullptr) ? string("") : string(*_targetHeightString);
 }
 void ISFPassTarget::setFloatFlag(const bool & n)	{
 	using namespace std;
 	
-	bool		changed = (floatFlag==n) ? false : true;
+	bool		changed = (_floatFlag==n) ? false : true;
 	if (!changed)
 		return;
-	floatFlag = n;
-	if (buffer != nullptr)	{
+	_floatFlag = n;
+	if (_buffer != nullptr)	{
 		//	figure out what pool/copier to use to do stuff- try to use the resources associated with my parent doc's parent scene (if there is one)
 		GLBufferPoolRef		bp = nullptr;
 		GLTexToTexCopierRef		copier = nullptr;
 		bool					shouldBeFloat = false;
 		bool					shouldBeIOSurface = false;
-		if (parentDoc != nullptr)	{
-			ISFScene		*parentScene = parentDoc->getParentScene();
+		if (_parentDoc != nullptr)	{
+			ISFScene		*parentScene = _parentDoc->getParentScene();
 			if (parentScene != nullptr)	{
 				bp = parentScene->getPrivatePool();
 				copier = parentScene->getPrivateCopier();
@@ -265,8 +265,8 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 			return;
 		}
 		
-		//GLBufferRef		newBuffer = (floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
-		//GLBufferRef		newBuffer = (floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
+		//GLBufferRef		newBuffer = (_floatFlag) ? CreateBGRAFloatTex(targetSize(), bp) : CreateBGRATex(targetSize(), bp);
+		//GLBufferRef		newBuffer = (_floatFlag) ? CreateRGBAFloatTex(targetSize(), bp) : CreateRGBATex(targetSize(), bp);
 		GLBufferRef		newBuffer;
 		
 #if defined(VVGL_SDK_MAC)
@@ -278,8 +278,8 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		
 		if (newBuffer != nullptr)	{
 			if (copier != nullptr)
-				copier->ignoreSizeCopy(buffer, newBuffer);
-			buffer = newBuffer;
+				copier->ignoreSizeCopy(_buffer, newBuffer);
+			_buffer = newBuffer;
 		}
 	}
 }
@@ -288,39 +288,39 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 #pragma mark --------------------- methods
 
 void ISFPassTarget::clearBuffer()	{
-	buffer = nullptr;
+	_buffer = nullptr;
 }
 void ISFPassTarget::evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer)	{
 	using namespace exprtk;
 	
 	//cout << __FUNCTION__ << endl;
-	//cout << "\tbefore, target size was " << targetWidth << " x " << targetHeight << endl;
+	//cout << "\tbefore, target size was " << _targetWidth << " x " << _targetHeight << endl;
 	VVGL::Size			newSize(1., 1.);
 	{
-		lock_guard<mutex>		lock(targetLock);
+		lock_guard<mutex>		lock(_targetLock);
 		
 		//	update my local size vars
-		widthExpressionVar = inSize.width;
-		heightExpressionVar = inSize.height;
+		_widthExpressionVar = inSize.width;
+		_heightExpressionVar = inSize.height;
 		//	update the passed dict with the address of my local size vars
 		inSymbols.erase(string("WIDTH"));
-		inSymbols.insert(make_pair(string("WIDTH"), &widthExpressionVar));
+		inSymbols.insert(make_pair(string("WIDTH"), &_widthExpressionVar));
 		inSymbols.erase(string("HEIGHT"));
-		inSymbols.insert(make_pair(string("HEIGHT"), &heightExpressionVar));
+		inSymbols.insert(make_pair(string("HEIGHT"), &_heightExpressionVar));
 		
 		//	evaluate the width/height expressions, outputting to a new size struct
-		if (targetWidthString == nullptr)
+		if (_targetWidthString == nullptr)
 			newSize.width = *(inSymbols[string("WIDTH")]);
 		else	{
-			//cout << "\tevaluating width string " << *targetWidthString << endl;
-			ExpressionUpdater(&targetWidthString, &targetWidthExpression, inSymbols, &(newSize.width));
+			//cout << "\tevaluating width string " << *_targetWidthString << endl;
+			ExpressionUpdater(&_targetWidthString, &_targetWidthExpression, inSymbols, &(newSize.width));
 		}
 	
-		if (targetHeightString == nullptr)
+		if (_targetHeightString == nullptr)
 			newSize.height = *(inSymbols[string("HEIGHT")]);
 		else	{
-			//cout << "\tevaluating height string " << *targetHeightString << endl;
-			ExpressionUpdater(&targetHeightString, &targetHeightExpression, inSymbols, &(newSize.height));
+			//cout << "\tevaluating height string " << *_targetHeightString << endl;
+			ExpressionUpdater(&_targetHeightString, &_targetHeightExpression, inSymbols, &(newSize.height));
 		}
 	}
 	if (std::isnan(newSize.width))

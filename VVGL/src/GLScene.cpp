@@ -20,13 +20,13 @@ GLScene::GLScene()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)	{
-		context = bp->getContext()->newContextSharingMe();
-		//cout << "\tcontext is " << *context << endl;
+		_context = bp->getContext()->newContextSharingMe();
+		//cout << "\tcontext is " << *_context << endl;
 	}
 }
 GLScene::GLScene(const GLContextRef & inCtx)	{
-	//context = new GLContext(inCtx);
-	context = inCtx;
+	//_context = new GLContext(inCtx);
+	_context = inCtx;
 }
 
 void GLScene::prepareToBeDeleted()	{
@@ -34,54 +34,54 @@ void GLScene::prepareToBeDeleted()	{
 	
 	//	lock, delete the program and shaders if they exist
 	{
-		lock_guard<recursive_mutex>		lock(renderLock);
-		if (context != nullptr)	{
-			context->makeCurrentIfNotCurrent();
-			if (program > 0)	{
-				glDeleteProgram(program);
+		lock_guard<recursive_mutex>		lock(_renderLock);
+		if (_context != nullptr)	{
+			_context->makeCurrentIfNotCurrent();
+			if (_program > 0)	{
+				glDeleteProgram(_program);
 				GLERRLOG
 			}
-			if (vs > 0)	{
-				glDeleteShader(vs);
+			if (_vs > 0)	{
+				glDeleteShader(_vs);
 				GLERRLOG
 			}
-			if (gs > 0)	{
-				glDeleteShader(gs);
+			if (_gs > 0)	{
+				glDeleteShader(_gs);
 				GLERRLOG
 			}
-			if (fs > 0)	{
-				glDeleteShader(fs);
+			if (_fs > 0)	{
+				glDeleteShader(_fs);
 				GLERRLOG
 			}
 		}
-		vsString = string("");
-		gsString = string("");
-		fsString = string("");
-		vsStringUpdated = true;
-		gsStringUpdated = true;
-		fsStringUpdated = true;
+		_vsString = string("");
+		_gsString = string("");
+		_fsString = string("");
+		_vsStringUpdated = true;
+		_gsStringUpdated = true;
+		_fsStringUpdated = true;
 	}
 	//	lock, delete the error dict
 	{
-		lock_guard<mutex>		lock(errDictLock);
-		errDict.clear();
+		lock_guard<mutex>		lock(_errDictLock);
+		_errDict.clear();
 	}
 	
-	renderPrepCallback = nullptr;
-	renderCallback = nullptr;
-	renderCleanupCallback = nullptr;
+	_renderPrepCallback = nullptr;
+	_renderCallback = nullptr;
+	_renderCleanupCallback = nullptr;
 	
-	deleted = true;
+	_deleted = true;
 }
 
 GLScene::~GLScene()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
-	if (!deleted)
+	if (!_deleted)
 		prepareToBeDeleted();
 	
-	if (context != nullptr)	{
-		//delete context;
-		context = nullptr;
+	if (_context != nullptr)	{
+		//delete _context;
+		_context = nullptr;
 	}
 }
 
@@ -101,9 +101,9 @@ GLBufferRef GLScene::createAndRenderABuffer(const Size & inSize, const GLBufferP
 	setOrthoSize(inSize);
 	//	make the buffers i'll be rendering into
 #if defined(VVGL_SDK_RPI)
-	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), nullptr);
+	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(_orthoSize, false, inPool), nullptr);
 #else
-	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(orthoSize, false, inPool), CreateDepthBuffer(orthoSize, false, inPool));
+	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(_orthoSize, false, inPool), CreateDepthBuffer(_orthoSize, false, inPool));
 #endif
 	//	render
 	render(tmpTarget);
@@ -119,7 +119,7 @@ void GLScene::renderToBuffer(const GLBufferRef & inBuffer)	{
 #if defined(VVGL_SDK_RPI)
 	RenderTarget		tmpTarget(CreateFBO(), inBuffer, nullptr);
 #else
-	RenderTarget		tmpTarget(CreateFBO(), inBuffer, CreateDepthBuffer(orthoSize));
+	RenderTarget		tmpTarget(CreateFBO(), inBuffer, CreateDepthBuffer(_orthoSize));
 #endif
 	//	render
 	render(tmpTarget);
@@ -130,45 +130,45 @@ void GLScene::render(const RenderTarget & inRenderTarget)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\trender target is " << inRenderTarget.fboName() << ", " << inRenderTarget.colorName() << ", " << inRenderTarget.depthName() << endl;
 	//	get a lock, set the current GL context
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	//	update the member var for the fbo attachments
-	renderTarget = inRenderTarget;
+	_renderTarget = inRenderTarget;
 	//	prep for render
 	_renderPrep();
 	
 	//	if there isn't a valid program then we shouldn't execute the client-provided render callback
-	bool		looksLikeItShouldHaveAProgram = (vsString.size()>0 || gsString.size()>0 || fsString.size()>0);
-	if ((program==0 && !looksLikeItShouldHaveAProgram) ||	(program!=0 && looksLikeItShouldHaveAProgram))	{
+	bool		looksLikeItShouldHaveAProgram = (_vsString.size()>0 || _gsString.size()>0 || _fsString.size()>0);
+	if ((_program==0 && !looksLikeItShouldHaveAProgram) ||	(_program!=0 && looksLikeItShouldHaveAProgram))	{
 		//	execute the render callback
-		if (renderCallback != nullptr)
-			renderCallback(*this);
+		if (_renderCallback != nullptr)
+			_renderCallback(*this);
 	}
 	
 	//	cleanup after render
 	_renderCleanup();
 	
 	//	update the member vars for the fbo attachments
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 }
 
 
 void GLScene::renderBlackFrame(const RenderTarget & inRenderTarget)	{
 	//	get a lock, set the current GL context
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	//	update the member var for the fbo attachments
-	renderTarget = inRenderTarget;
+	_renderTarget = inRenderTarget;
 	//	prep for render
 	_renderPrep();
 	
@@ -181,25 +181,25 @@ void GLScene::renderBlackFrame(const RenderTarget & inRenderTarget)	{
 #endif
 	glClear(mask);
 	GLERRLOG
-	clearColorUpdated = true;
+	_clearColorUpdated = true;
 	
 	//	cleanup after render
 	_renderCleanup();
 	
 	//	update the member vars for the fbo attachments
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 }
 void GLScene::renderOpaqueBlackFrame(const RenderTarget & inRenderTarget)	{
 	//	get a lock, set the current GL context
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	//	update the member var for the fbo attachments
-	renderTarget = inRenderTarget;
+	_renderTarget = inRenderTarget;
 	//	prep for render
 	_renderPrep();
 	
@@ -212,25 +212,25 @@ void GLScene::renderOpaqueBlackFrame(const RenderTarget & inRenderTarget)	{
 #endif
 	glClear(mask);
 	GLERRLOG
-	clearColorUpdated = true;
+	_clearColorUpdated = true;
 	
 	//	cleanup after render
 	_renderCleanup();
 	
 	//	update the member vars for the fbo attachments
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 }
 void GLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 	//	get a lock, set the current GL context
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	//	update the member var for the fbo attachments
-	renderTarget = inRenderTarget;
+	_renderTarget = inRenderTarget;
 	//	prep for render
 	_renderPrep();
 	
@@ -245,13 +245,13 @@ void GLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 #endif
 	glClear(mask);
 	GLERRLOG
-	clearColorUpdated = true;
+	_clearColorUpdated = true;
 	
 	//	cleanup after render
 	_renderCleanup();
 	
 	//	update the member vars for the fbo attachments
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 }
 
 
@@ -260,46 +260,46 @@ void GLScene::renderRedFrame(const RenderTarget & inRenderTarget)	{
 
 
 void GLScene::setRenderPrepCallback(const RenderPrepCallback & n)	{
-	renderPrepCallback = n;
+	_renderPrepCallback = n;
 }
 void GLScene::setRenderPreLinkCallback(const RenderCallback & n)	{
-	renderPreLinkCallback = n;
+	_renderPreLinkCallback = n;
 }
 void GLScene::setRenderCallback(const RenderCallback & n)	{
-	renderCallback = n;
+	_renderCallback = n;
 }
 void GLScene::setRenderCleanupCallback(const RenderCallback & n)	{
-	renderCleanupCallback = n;
+	_renderCleanupCallback = n;
 }
 
 
 void GLScene::setAlwaysNeedsReshape(const bool & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	alwaysNeedsReshape = n;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_alwaysNeedsReshape = n;
 }
 void GLScene::setOrthoSize(const Size & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	orthoSize = n;
-	needsReshape = true;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_orthoSize = n;
+	_needsReshape = true;
 }
 Size GLScene::getOrthoSize() const	{
-	return orthoSize;
+	return _orthoSize;
 }
 void GLScene::setOrthoFlipped(const bool & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	orthoFlipped = n;
-	needsReshape = true;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_orthoFlipped = n;
+	_needsReshape = true;
 }
 bool GLScene::getOrthoFlipped() const	{
-	return orthoFlipped;
+	return _orthoFlipped;
 }
 
 
 void GLScene::setClearColor(const GLColor & n)	{
-	if (clearColor == n)
+	if (_clearColor == n)
 		return;
-	clearColorUpdated = true;
-	clearColor = n;
+	_clearColorUpdated = true;
+	_clearColor = n;
 }
 void GLScene::setClearColor(const float & r, const float & g, const float & b, const float & a)	{
 	setClearColor(GLColor(r,g,b,a));
@@ -308,7 +308,7 @@ void GLScene::setClearColor(float * n)	{
 	setClearColor(GLColor(*(n+0), *(n+1), *(n+2), *(n+3)));
 }
 void GLScene::setPerformClear(const bool & n)	{
-	performClear = n;
+	_performClear = n;
 }
 void GLScene::setVertexShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -319,16 +319,16 @@ void GLScene::setVertexShaderString(const string & n)	{
 		return;
 	}
 	
-	lock_guard<recursive_mutex>		lock(renderLock);
+	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	vsString = string(n);
-	vsStringUpdated = true;
-	needsReshape = true;
-	orthoUni.purgeCache();
+	_vsString = string(n);
+	_vsStringUpdated = true;
+	_needsReshape = true;
+	_orthoUni.purgeCache();
 }
 string GLScene::getVertexShaderString()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return vsString;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _vsString;
 }
 void GLScene::setGeometryShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -339,16 +339,16 @@ void GLScene::setGeometryShaderString(const string & n)	{
 		return;
 	}
 	
-	lock_guard<recursive_mutex>		lock(renderLock);
+	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	gsString = string(n);
-	gsStringUpdated = true;
-	needsReshape = true;
-	orthoUni.purgeCache();
+	_gsString = string(n);
+	_gsStringUpdated = true;
+	_needsReshape = true;
+	_orthoUni.purgeCache();
 }
 string GLScene::getGeometryShaderString()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return gsString;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _gsString;
 }
 void GLScene::setFragmentShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -359,16 +359,16 @@ void GLScene::setFragmentShaderString(const string & n)	{
 		return;
 	}
 	
-	lock_guard<recursive_mutex>		lock(renderLock);
+	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	fsString = string(n);
-	fsStringUpdated = true;
-	needsReshape = true;
-	orthoUni.purgeCache();
+	_fsString = string(n);
+	_fsStringUpdated = true;
+	_needsReshape = true;
+	_orthoUni.purgeCache();
 }
 string GLScene::getFragmentShaderString()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return fsString;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _fsString;
 }
 
 
@@ -379,7 +379,7 @@ string GLScene::getFragmentShaderString()	{
 void GLScene::_renderPrep()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tthis is " << this << endl;
-	if (deleted)	{
+	if (_deleted)	{
 		//cout << "\t" << __PRETTY_FUNCTION__ << "- FINISHED" << endl;
 		return;
 	}
@@ -388,240 +388,240 @@ void GLScene::_renderPrep()	{
 	bool			pgmChangedFlag = false;
 	
 	//	initialize
-	if (!initialized)
+	if (!_initialized)
 		_initialize();
 	
 	//	if the vert/frag shader strings have been updated, they need to be recompiled & the program needs to be relinked
-	if (vsStringUpdated || gsStringUpdated || fsStringUpdated)	{
+	if (_vsStringUpdated || _gsStringUpdated || _fsStringUpdated)	{
 		pgmChangedFlag = true;
 		
 		glUseProgram(0);
 		GLERRLOG
 		
-		if (program > 0)	{
-			glDeleteProgram(program);
+		if (_program > 0)	{
+			glDeleteProgram(_program);
 			GLERRLOG
-			program = 0;
+			_program = 0;
 		}
-		if (vs > 0)	{
-			glDeleteShader(vs);
+		if (_vs > 0)	{
+			glDeleteShader(_vs);
 			GLERRLOG
-			vs = 0;
+			_vs = 0;
 		}
-		if (gs > 0)	{
-			glDeleteShader(gs);
+		if (_gs > 0)	{
+			glDeleteShader(_gs);
 			GLERRLOG
-			gs = 0;
+			_gs = 0;
 		}
-		if (fs > 0)	{
-			glDeleteShader(fs);
+		if (_fs > 0)	{
+			glDeleteShader(_fs);
 			GLERRLOG
-			fs = 0;
+			_fs = 0;
 		}
 		
 		
 		{
-			lock_guard<mutex>		lock(errDictLock);
-			errDict.clear();
+			lock_guard<mutex>		lock(_errDictLock);
+			_errDict.clear();
 		}
 		
 		bool			encounteredError = false;
-		if (vsString.size() > 0)	{
-			vs = glCreateShader(GL_VERTEX_SHADER);
+		if (_vsString.size() > 0)	{
+			_vs = glCreateShader(GL_VERTEX_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = vsString.c_str();
-			glShaderSource(vs, 1, &shaderSrc, NULL);
+			const char		*shaderSrc = _vsString.c_str();
+			glShaderSource(_vs, 1, &shaderSrc, NULL);
 			GLERRLOG
-			glCompileShader(vs);
+			glCompileShader(_vs);
 			GLERRLOG
 			int32_t			compiled;
-			glGetShaderiv(vs, GL_COMPILE_STATUS, &compiled);
+			glGetShaderiv(_vs, GL_COMPILE_STATUS, &compiled);
 			GLERRLOG
 			if (!compiled)	{
 				int32_t			length;
 				char			*log;
-				glGetShaderiv(vs, GL_INFO_LOG_LENGTH, &length);
+				glGetShaderiv(_vs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
-				glGetShaderInfoLog(vs, length, &length, log);
+				glGetShaderInfoLog(_vs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling vertex shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << vsString << endl;
+				//cout << "\traw shader is:\n" << _vsString << endl;
 				encounteredError = true;
 				
 				{
-					lock_guard<mutex>		lock(errDictLock);
-					errDict.insert(pair<string,string>(string("vertErrLog"), string(log)));
-					errDict.insert(pair<string,string>(string("vertSrc"), string(vsString)));
+					lock_guard<mutex>		lock(_errDictLock);
+					_errDict.insert(pair<string,string>(string("vertErrLog"), string(log)));
+					_errDict.insert(pair<string,string>(string("vertSrc"), string(_vsString)));
 				}
 				
 				delete [] log;
-				glDeleteShader(vs);
+				glDeleteShader(_vs);
 				GLERRLOG
-				vs = 0;
+				_vs = 0;
 			}
 		}
-		if (gsString.size() > 0)	{
+		if (_gsString.size() > 0)	{
 #if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
-			gs = glCreateShader(GL_GEOMETRY_SHADER);
+			_gs = glCreateShader(GL_GEOMETRY_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = gsString.c_str();
-			glShaderSource(gs, 1, &shaderSrc, NULL);
+			const char		*shaderSrc = _gsString.c_str();
+			glShaderSource(_gs, 1, &shaderSrc, NULL);
 			GLERRLOG
-			glCompileShader(gs);
+			glCompileShader(_gs);
 			GLERRLOG
 			int32_t			compiled;
-			glGetShaderiv(gs, GL_COMPILE_STATUS, &compiled);
+			glGetShaderiv(_gs, GL_COMPILE_STATUS, &compiled);
 			GLERRLOG
 			if (!compiled)	{
 				int32_t			length;
 				char			*log;
-				glGetShaderiv(gs, GL_INFO_LOG_LENGTH, &length);
+				glGetShaderiv(_gs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
-				glGetShaderInfoLog(gs, length, &length, log);
+				glGetShaderInfoLog(_gs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling geo shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << gsString << endl;
+				//cout << "\traw shader is:\n" << _gsString << endl;
 				encounteredError = true;
 				
 				{
-					lock_guard<mutex>		lock(errDictLock);
-					errDict.insert(pair<string,string>(string("geoErrLog"), string(log)));
-					errDict.insert(pair<string,string>(string("geoSrc"), string(gsString)));
+					lock_guard<mutex>		lock(_errDictLock);
+					_errDict.insert(pair<string,string>(string("geoErrLog"), string(log)));
+					_errDict.insert(pair<string,string>(string("geoSrc"), string(_gsString)));
 				}
 				
 				delete [] log;
-				glDeleteShader(gs);
+				glDeleteShader(_gs);
 				GLERRLOG
-				gs = 0;
+				_gs = 0;
 			}
 #endif
 		}
-		if (fsString.size() > 0)	{
-			fs = glCreateShader(GL_FRAGMENT_SHADER);
+		if (_fsString.size() > 0)	{
+			_fs = glCreateShader(GL_FRAGMENT_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = fsString.c_str();
-			glShaderSource(fs, 1, &shaderSrc, NULL);
+			const char		*shaderSrc = _fsString.c_str();
+			glShaderSource(_fs, 1, &shaderSrc, NULL);
 			GLERRLOG
-			glCompileShader(fs);
+			glCompileShader(_fs);
 			GLERRLOG
 			int32_t			compiled;
-			glGetShaderiv(fs, GL_COMPILE_STATUS, &compiled);
+			glGetShaderiv(_fs, GL_COMPILE_STATUS, &compiled);
 			GLERRLOG
 			if (!compiled)	{
 				int32_t			length;
 				char			*log;
-				glGetShaderiv(fs, GL_INFO_LOG_LENGTH, &length);
+				glGetShaderiv(_fs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
-				glGetShaderInfoLog(fs, length, &length, log);
+				glGetShaderInfoLog(_fs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling fragment shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << fsString << endl;
+				//cout << "\traw shader is:\n" << _fsString << endl;
 				encounteredError = true;
 				
 				{
-					lock_guard<mutex>		lock(errDictLock);
-					errDict.insert(pair<string,string>(string("fragErrLog"), string(log)));
-					errDict.insert(pair<string,string>(string("fragSrc"), string(fsString)));
+					lock_guard<mutex>		lock(_errDictLock);
+					_errDict.insert(pair<string,string>(string("fragErrLog"), string(log)));
+					_errDict.insert(pair<string,string>(string("fragSrc"), string(_fsString)));
 				}
 				
 				delete [] log;
-				glDeleteShader(fs);
+				glDeleteShader(_fs);
 				GLERRLOG
-				fs = 0;
+				_fs = 0;
 			}
 		}
-		if ((vs>0 || gs>0 || fs>0) && !encounteredError)	{
-			program = glCreateProgram();
+		if ((_vs>0 || _gs>0 || _fs>0) && !encounteredError)	{
+			_program = glCreateProgram();
 			GLERRLOG
-			if (vs > 0)	{
-				glAttachShader(program, vs);
+			if (_vs > 0)	{
+				glAttachShader(_program, _vs);
 				GLERRLOG
 			}
-			if (gs > 0)	{
-				glAttachShader(program, gs);
+			if (_gs > 0)	{
+				glAttachShader(_program, _gs);
 				GLERRLOG
 			}
-			if (fs > 0)	{
-				glAttachShader(program, fs);
+			if (_fs > 0)	{
+				glAttachShader(_program, _fs);
 				GLERRLOG
 			}
-			if (renderPreLinkCallback != nullptr)
-				renderPreLinkCallback(*this);
-			glLinkProgram(program);
+			if (_renderPreLinkCallback != nullptr)
+				_renderPreLinkCallback(*this);
+			glLinkProgram(_program);
 			GLERRLOG
 			
 			int32_t			linked;
-			glGetProgramiv(program, GL_LINK_STATUS, &linked);
+			glGetProgramiv(_program, GL_LINK_STATUS, &linked);
 			GLERRLOG
 			if (!linked)	{
 				int32_t			length;
 				char			*log;
-				glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+				glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char(length);
-				glGetProgramInfoLog(program, length, &length, log);
+				glGetProgramInfoLog(_program, length, &length, log);
 				GLERRLOG
 				cout << "********************\n";
-				cout << "\terr linking program in " << __PRETTY_FUNCTION__ << endl;
+				cout << "\terr linking _program in " << __PRETTY_FUNCTION__ << endl;
 				cout << "\terr: " << log << endl;
 				cout << "********************\n";
-				cout << "\traw vert shader is:\n" << vsString << endl;
+				cout << "\traw vert shader is:\n" << _vsString << endl;
 				cout << "********************\n";
-				cout << "\traw geo shader is:\n" << gsString << endl;
+				cout << "\traw geo shader is:\n" << _gsString << endl;
 				cout << "********************\n";
-				cout << "\traw frag shader is:\n" << fsString << endl;
+				cout << "\traw frag shader is:\n" << _fsString << endl;
 				cout << "********************\n";
 				encounteredError = true;
 				
 				{
-					lock_guard<mutex>		lock(errDictLock);
-					errDict.insert(pair<string,string>(string("linkErrLog"), string(log)));
+					lock_guard<mutex>		lock(_errDictLock);
+					_errDict.insert(pair<string,string>(string("linkErrLog"), string(log)));
 				}
 				
 				delete log;
-				glDeleteProgram(program);
+				glDeleteProgram(_program);
 				GLERRLOG
-				program = 0;
+				_program = 0;
 			}
 			else	{
-				orthoUni.cacheTheLoc(program);
+				_orthoUni.cacheTheLoc(_program);
 			}
 		}
 		
-		vsStringUpdated = false;
-		gsStringUpdated = false;
-		fsStringUpdated = false;
-		needsReshape = true;
+		_vsStringUpdated = false;
+		_gsStringUpdated = false;
+		_fsStringUpdated = false;
+		_needsReshape = true;
 	}
 	
 	//	bind the attachments in the render target to the FBO (also in the render target)
-	if (renderTarget.fboName() > 0)	{
-		glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.fboName());
+	if (_renderTarget.fboName() > 0)	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _renderTarget.fboName());
 		GLERRLOG
 		
 		//	attach the depth buffer
-		if (renderTarget.depthName() > 0)	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, renderTarget.depthTarget(), renderTarget.depthName(), 0);
+		if (_renderTarget.depthName() > 0)	{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _renderTarget.depthTarget(), _renderTarget.depthName(), 0);
 			GLERRLOG
 		}
 		else	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, renderTarget.depthTarget(), 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _renderTarget.depthTarget(), 0, 0);
 			GLERRLOG
 		}
 		
 		//	attach the color buffer
-		if (renderTarget.colorName() > 0)	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.colorTarget(), renderTarget.colorName(), 0);
+		if (_renderTarget.colorName() > 0)	{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderTarget.colorTarget(), _renderTarget.colorName(), 0);
 			GLERRLOG
 		}
 		else	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.colorTarget(), 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderTarget.colorTarget(), 0, 0);
 			GLERRLOG
 		}
 		
@@ -645,12 +645,12 @@ void GLScene::_renderPrep()	{
 	}
 	
 	//	clear
-	if (clearColorUpdated)	{
-		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	if (_clearColorUpdated)	{
+		glClearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a);
 		GLERRLOG
-		clearColorUpdated = false;
+		_clearColorUpdated = false;
 	}
-	if (performClear)	{
+	if (_performClear)	{
 		uint32_t		mask = GL_COLOR_BUFFER_BIT;
 #if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
 		mask |= GL_DEPTH_BUFFER_BIT;
@@ -660,28 +660,28 @@ void GLScene::_renderPrep()	{
 	}
 	
 	//	if there's a program, use it
-	if (program > 0)	{
-		glUseProgram(program);
+	if (_program > 0)	{
+		glUseProgram(_program);
 		GLERRLOG
 	}
 	
 	//	reshape as needed (must do this after compiling the program, which caches the ortho uniform location)
-	if (alwaysNeedsReshape || needsReshape)	{
+	if (_alwaysNeedsReshape || _needsReshape)	{
 		needsReshapeFlag = true;
 		_reshape();
 	}
 	
 	//	if there's a render prep callback, call it now- pass in flags indicating whether or not the scene has been reshaped (render size changed) and whether or not the program has been recompiled
-	if (renderPrepCallback != nullptr)
-		renderPrepCallback(*this, needsReshapeFlag, pgmChangedFlag);
+	if (_renderPrepCallback != nullptr)
+		_renderPrepCallback(*this, needsReshapeFlag, pgmChangedFlag);
 	//cout << "\t" << __PRETTY_FUNCTION__ << "- FINISHED" << endl;
 }
 
 void GLScene::_initialize()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	if (deleted)
+	if (_deleted)
 		return;
-	if (context == nullptr)
+	if (_context == nullptr)
 		return;
 	
 	//glEnable(GL_TEXTURE_RECTANGLE);
@@ -714,8 +714,8 @@ void GLScene::_initialize()	{
 	//glDisable(GL_BLEND);
 	//GLERRLOG
 	
-	initialized = true;
-	clearColorUpdated = true;
+	_initialized = true;
+	_clearColorUpdated = true;
 	
 }
 
@@ -723,7 +723,7 @@ void GLScene::_reshape()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tthis is " << this << endl;
 	
-	if (orthoSize.width>0. && orthoSize.height>0.)	{
+	if (_orthoSize.width>0. && _orthoSize.height>0.)	{
 		if (getGLVersion() == GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glMatrixMode(GL_MODELVIEW);
@@ -734,13 +734,13 @@ void GLScene::_reshape()	{
 			GLERRLOG
 			glLoadIdentity();
 			GLERRLOG
-			if (orthoSize.width>0 && orthoSize.height>0)	{
-				if (!orthoFlipped)	{
-					glOrtho(0, orthoSize.width, 0, orthoSize.height, 1.0, -1.0);
+			if (_orthoSize.width>0 && _orthoSize.height>0)	{
+				if (!_orthoFlipped)	{
+					glOrtho(0, _orthoSize.width, 0, _orthoSize.height, 1.0, -1.0);
 					GLERRLOG
 				}
 				else	{
-					glOrtho(0, orthoSize.width, orthoSize.height, 0, 1.0, -1.0);
+					glOrtho(0, _orthoSize.width, _orthoSize.height, 0, 1.0, -1.0);
 					GLERRLOG
 				}
 			}
@@ -748,11 +748,11 @@ void GLScene::_reshape()	{
 		}
 		else	{
 #if defined(VVGL_TARGETENV_GLES) || defined(VVGL_TARGETENV_GLES3) || defined(VVGL_TARGETENV_GL3PLUS)
-			if (program > 0)	{
-				GLint			orthoUniLoc = orthoUni.location(program);
+			if (_program > 0)	{
+				GLint			orthoUniLoc = _orthoUni.location(_program);
 				if (orthoUniLoc >= 0)	{
 					//	calculate the orthographic projection transform for a viewport with the given size
-					Rect		tmpRect(0., 0., orthoSize.width, orthoSize.height);
+					Rect		tmpRect(0., 0., _orthoSize.width, _orthoSize.height);
 					//cout << "\treshaping with orthogonal rect " << tmpRect << endl;
 					float		right = tmpRect.maxX();
 					float		left = tmpRect.minX();
@@ -772,7 +772,7 @@ void GLScene::_reshape()	{
 				}
 				else	{
 					//cout << "\tERR: need to reshape, but no orthogonal uniform! " << __PRETTY_FUNCTION__ << endl;
-					//cout << "************* vsString is:\n" << vsString << endl;
+					//cout << "************* _vsString is:\n" << _vsString << endl;
 				}
 			}
 			else	{
@@ -781,15 +781,15 @@ void GLScene::_reshape()	{
 #endif
 		}
 		
-		glViewport(0,0,orthoSize.width,orthoSize.height);
+		glViewport(0,0,_orthoSize.width,_orthoSize.height);
 		GLERRLOG
 	}
 	
-	needsReshape = false;
+	_needsReshape = false;
 }
 
 void GLScene::_renderCleanup()	{
-	if (context != nullptr)	{
+	if (_context != nullptr)	{
 		glUseProgram(0);
 		GLERRLOG
 	}
@@ -797,12 +797,12 @@ void GLScene::_renderCleanup()	{
 	glFlush();
 	GLERRLOG
 	//	unbind the render target's attachments
-	if (renderTarget.fboName() > 0)	{
-		if (renderTarget.depthName() > 0)	{
+	if (_renderTarget.fboName() > 0)	{
+		if (_renderTarget.depthName() > 0)	{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0, 0);
 			GLERRLOG
 		}
-		if (renderTarget.colorName() > 0)	{
+		if (_renderTarget.colorName() > 0)	{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0, 0);
 			GLERRLOG
 		}
@@ -812,8 +812,8 @@ void GLScene::_renderCleanup()	{
 	}
 	
 	//	if there's a render cleanup callback, call it now
-	if (renderCleanupCallback != nullptr)
-		renderCleanupCallback(*this);
+	if (_renderCleanupCallback != nullptr)
+		_renderCleanupCallback(*this);
 }
 
 

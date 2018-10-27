@@ -45,17 +45,17 @@ class VVGL_EXPORT GLBufferPool	{
 	
 	//	vars
 	protected:
-		bool				deleted = false;
-		mutex				freeBuffersLock;
-		vector<GLBufferRef>		freeBuffers;
+		bool				_deleted = false;
+		mutex				_freeBuffersLock;
+		vector<GLBufferRef>		_freeBuffers;
 		
-		recursive_mutex		contextLock;
-		GLContextRef		context = nullptr;	//	this is the context that the buffer pool will use to create/destroy GL resources
+		recursive_mutex		_contextLock;
+		GLContextRef		_context = nullptr;	//	this is the context that the buffer pool will use to create/destroy GL resources
 		
-		Timestamp			baseTime;
+		Timestamp			_baseTime;
 		
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
-		CGColorSpaceRef		colorSpace = nullptr;
+		CGColorSpaceRef		_colorSpace = nullptr;
 #endif
 		
 	//	methods
@@ -64,7 +64,7 @@ class VVGL_EXPORT GLBufferPool	{
 		GLBufferPool(const GLContextRef & inCtx=nullptr);
 		virtual ~GLBufferPool();
 		//	call this method to prep a pool for deletion- this will cause it to purge its contents, refuse to dispense more buffers, and automatically release any buffers that are returned to it
-		inline void prepareToBeDeleted() { deleted=true; purge(); }
+		inline void prepareToBeDeleted() { _deleted=true; purge(); }
 		
 		//!	This member function is how the pool creates buffers.  You probably shouldn't call this function directly- instead use one of the functions in (\ref VVGL_BUFFERCREATE) directly or as a prototype.  They're in %GLBufferPool.hpp/GLBufferPool.cpp.
 		GLBufferRef createBufferRef(const GLBuffer::Descriptor & desc, const Size & size={640,480}, const void * backingPtr=nullptr, const Size & backingSize={640,480}, const bool & createInCurrentContext=false);
@@ -75,14 +75,14 @@ class VVGL_EXPORT GLBufferPool	{
 		//!	If needed you can call this to release all inactive buffers in the pool.
 		void purge();
 		//!	Returns a timestamp generated for the current time
-		inline Timestamp getTimestamp() const { return Timestamp()-baseTime; }
+		inline Timestamp getTimestamp() const { return Timestamp()-_baseTime; }
 		//!	Timestamps the passed buffer with the current time
 		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=getTimestamp(); }
 		//!	Returns the GLContextRef used by the buffer pool to create and destroy its GL resources.
-		inline GLContextRef & getContext() { return context; }
-		inline recursive_mutex & getContextLock() { return contextLock; }
+		inline GLContextRef & getContext() { return _context; }
+		inline recursive_mutex & getContextLock() { return _contextLock; }
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
-		inline CGColorSpaceRef getColorSpace() const { return colorSpace; }
+		inline CGColorSpaceRef getColorSpace() const { return _colorSpace; }
 #endif
 		
 		friend ostream & operator<<(ostream & os, const GLBufferPool & n);

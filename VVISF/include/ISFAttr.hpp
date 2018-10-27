@@ -25,23 +25,23 @@ using namespace std;
 */
 class VVISF_EXPORT ISFAttr	{
 	protected:
-		string			name;
-		string			description;
-		string			label;
+		string			_name;
+		string			_description;
+		string			_label;
 		
-		ISFValType			type = ISFValType_None;
-		ISFVal				currentVal = ISFNullVal();
-		ISFVal				minVal = ISFNullVal();	//	if it's an audio/audiofft, it's a long-type val.  otherwise, null or an ISFVal subclass of the appropriate type
-		ISFVal				maxVal = ISFNullVal();	//	if it's an audio/audiofft, it's a long-type val.  otherwise, null or an ISFVal subclass of the appropriate type
-		ISFVal				defaultVal = ISFNullVal();
-		ISFVal				identityVal = ISFNullVal();
-		vector<string>		labelArray;	//	only used if it's a LONG. vector containing strings that correspond to the values in "valArray"
-		vector<int32_t>		valArray;	//	only used if it's a LONG. vector containing ints with the values that correspond to the accompanying labels
+		ISFValType			_type = ISFValType_None;
+		ISFVal				_currentVal = ISFNullVal();
+		ISFVal				_minVal = ISFNullVal();	//	if it's an audio/audiofft, it's a long-type val.  otherwise, null or an ISFVal subclass of the appropriate type
+		ISFVal				_maxVal = ISFNullVal();	//	if it's an audio/audiofft, it's a long-type val.  otherwise, null or an ISFVal subclass of the appropriate type
+		ISFVal				_defaultVal = ISFNullVal();
+		ISFVal				_identityVal = ISFNullVal();
+		vector<string>		_labelArray;	//	only used if it's a LONG. vector containing strings that correspond to the values in "_valArray"
+		vector<int32_t>		_valArray;	//	only used if it's a LONG. vector containing ints with the values that correspond to the accompanying labels
 		
-		bool				isFilterInputImage = false;	//	if true, this is an image-type input and is the main input for an image filter
-		int32_t				uniformLocation[4] = { -1, -1, -1, -1 };	//	the location of this attribute in the compiled GLSL program. cached here because lookup times are costly when performed every frame.  there are 4 because images require four uniforms (one of the texture name, one for the size, one for the img rect, and one for the flippedness)
+		bool				_isFilterInputImage = false;	//	if true, this is an image-type input and is the main input for an image filter
+		int32_t				_uniformLocation[4] = { -1, -1, -1, -1 };	//	the location of this attribute in the compiled GLSL program. cached here because lookup times are costly when performed every frame.  there are 4 because images require four uniforms (one of the texture name, one for the size, one for the img rect, and one for the flippedness)
 		
-		double				evalVariable = 1.0;	//	attribute values are available in expression evaluation- to support this, each attribute needs to maintain a double which it populates with its current value
+		double				_evalVariable = 1.0;	//	attribute values are available in expression evaluation- to support this, each attribute needs to maintain a double which it populates with its current value
 	public:
 		
 		/*
@@ -70,44 +70,44 @@ class VVISF_EXPORT ISFAttr	{
 		~ISFAttr();
 		
 		//!	Returns the attribute's name, or null
-		inline string & getName() const { return const_cast<string&>(name); }
+		inline string & getName() const { return const_cast<string&>(_name); }
 		//!	Returns the attribute's description, or null
-		inline string & getDescription() const { return const_cast<string&>(description); }
+		inline string & getDescription() const { return const_cast<string&>(_description); }
 		//!	Returns the attribute's label, or null
-		inline string & getLabel() const { return const_cast<string&>(label); }
+		inline string & getLabel() const { return const_cast<string&>(_label); }
 		//!	Returns the attribute's value type.
-		inline ISFValType & getType() const { return const_cast<ISFValType&>(type); }
+		inline ISFValType & getType() const { return const_cast<ISFValType&>(_type); }
 		//!	Returns the attribute's current value.
-		inline ISFVal & getCurrentVal() { return currentVal; }
+		inline ISFVal & getCurrentVal() { return _currentVal; }
 		//!	Sets the attribute's current value.
-		inline void setCurrentVal(const ISFVal & n) { currentVal=n; }
-		//	updates this attribute's eval variable with the double val of "currentVal", and returns a ptr to the eval variable
+		inline void setCurrentVal(const ISFVal & n) { _currentVal=n; }
+		//	updates this attribute's eval variable with the double val of "_currentVal", and returns a ptr to the eval variable
 		double * updateAndGetEvalVariable();
 		//!	Returns a true if this attribute's value is expressed with an image buffer
-		inline bool shouldHaveImageBuffer() const { return ISFValTypeUsesImage(type); }
+		inline bool shouldHaveImageBuffer() const { return ISFValTypeUsesImage(_type); }
 		//!	Returns the receiver's image buffer
-		inline GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return currentVal.getImageBuffer(); }
+		inline GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return _currentVal.getImageBuffer(); }
 		//!	Sets the receiver's current value with the passed image buffer
-		inline void setCurrentImageBuffer(const GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << name << ")\n"; /*cout<<"\tcurrentVal is now "<<currentVal<<endl;*/ }
+		inline void setCurrentImageBuffer(const GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) _currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << _name << ")\n"; /*cout<<"\tcurrentVal is now "<<_currentVal<<endl;*/ }
 		//!	Gets the attribute's min val
-		inline ISFVal & getMinVal() { return minVal; }
+		inline ISFVal & getMinVal() { return _minVal; }
 		//!	Gets the attribute's max val
-		inline ISFVal & getMaxVal() { return maxVal; }
+		inline ISFVal & getMaxVal() { return _maxVal; }
 		//!	Gets the attribute's default val (the value which will be assigned to the attribute when it is first created and used for rendering)
-		inline ISFVal & getDefaultVal() { return defaultVal; }
+		inline ISFVal & getDefaultVal() { return _defaultVal; }
 		//!	Gets the attribute's identity val (the value at which this attribute's effects are indistinguishable from its raw input).
-		inline ISFVal & getIdentityVal() { return identityVal; }
+		inline ISFVal & getIdentityVal() { return _identityVal; }
 		//!	Gets the attribute's labels as a vector of string values.  Only used if the attribute is a 'long'.
-		inline vector<string> & getLabelArray() { return labelArray; }
+		inline vector<string> & getLabelArray() { return _labelArray; }
 		//!	Gets the attribute's values as a vector of int values.  Only used if the attribute is a 'long'.
-		inline vector<int32_t> & getValArray() { return valArray; }
+		inline vector<int32_t> & getValArray() { return _valArray; }
 		//!	Returns a true if this attribute is used to send the input image to the filter.
-		inline bool getIsFilterInputImage() { return isFilterInputImage; }
-		inline void setIsFilterInputImage(const bool & n) { isFilterInputImage=n; }
-		inline void clearUniformLocations() { for (int i=0; i<4; ++i) uniformLocation[i]=0; }
-		inline void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0 || inIndex>3) return; uniformLocation[inIndex] = inNewVal; }
-		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return uniformLocation[inIndex]; }
-		//inline bool isNullVal() { return (type==ISFValType_None); }
+		inline bool getIsFilterInputImage() { return _isFilterInputImage; }
+		inline void setIsFilterInputImage(const bool & n) { _isFilterInputImage=n; }
+		inline void clearUniformLocations() { for (int i=0; i<4; ++i) _uniformLocation[i]=0; }
+		inline void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0 || inIndex>3) return; _uniformLocation[inIndex] = inNewVal; }
+		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return _uniformLocation[inIndex]; }
+		//inline bool isNullVal() { return (_type==ISFValType_None); }
 		
 		VVISF_EXPORT friend ostream & operator<<(ostream & os, const ISFAttr & n);
 		void lengthyDescription();

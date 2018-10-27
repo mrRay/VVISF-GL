@@ -35,22 +35,22 @@ Offers both immediate download and n-buffered texture downloads for double-/trip
 
 class VVGL_EXPORT GLTexToCPUCopier	{
 	private:
-		recursive_mutex			queueLock;	//	this should be used to serialize access to all member vars
-		GLContextRef			queueCtx = nullptr;	//	this is the context used to perform all GL action
-		int						queueSize = 1;	//	the number of buffers that should be in 'queue' before popping a new buffer off of it (double-buffering is 1)
-		queue<GLBufferRef>		cpuQueue;	//	queue of CPU-based images
-		queue<GLBufferRef>		pboQueue;	//	queue of PBOs
-		queue<GLBufferRef>		texQueue;	//	queue of textures
-		queue<GLBufferRef>		fboQueue;	//	queue of FBOs.  the fastest texture download pipeline involves attaching the texture to an FBO so we can use glReadPixels() instead of glGetTexImage().
+		recursive_mutex			_queueLock;	//	this should be used to serialize access to all member vars
+		GLContextRef			_queueCtx = nullptr;	//	this is the context used to perform all GL action
+		int						_queueSize = 1;	//	the number of buffers that should be in 'queue' before popping a new buffer off of it (double-buffering is 1)
+		queue<GLBufferRef>		_cpuQueue;	//	queue of CPU-based images
+		queue<GLBufferRef>		_pboQueue;	//	queue of PBOs
+		queue<GLBufferRef>		_texQueue;	//	queue of textures
+		queue<GLBufferRef>		_fboQueue;	//	queue of FBOs.  the fastest texture download pipeline involves attaching the texture to an FBO so we can use glReadPixels() instead of glGetTexImage().
 		
 	private:
-		//	before calling either of these functions, queueLock should be locked and a GL context needs to be made current on this thread.
+		//	before calling either of these functions, _queueLock should be locked and a GL context needs to be made current on this thread.
 		void _beginProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer);
 		void _finishProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer);
 	
 	public:
 		GLTexToCPUCopier();
-		GLTexToCPUCopier(const GLContextRef & inCtx) : queueCtx(inCtx) {};
+		GLTexToCPUCopier(const GLContextRef & inCtx) : _queueCtx(inCtx) {};
 		~GLTexToCPUCopier();
 		
 		//!	Clears all the queues, called when freed.
@@ -59,7 +59,7 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 		//!	Sets the size of the queue used for streaming.  Effectively, this is the number of calls it takes for the texture data to "finish downloading" and get returned as a pointer to non-GPU memory.
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
-		inline int getQueueSize() { lock_guard<recursive_mutex> lock(queueLock); return queueSize; };
+		inline int getQueueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
 		
 		//! Immediately downloads the passed texture into CPU memory- doesn't use the queues.  Less efficient.  Good for quick single-shot texture downloads.
 		/*!

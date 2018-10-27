@@ -49,51 +49,51 @@ string ISFValTypeString(const ISFValType & n)	{
 
 ISFVal::ISFVal()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = ISFValType_None;
-	val.boolVal = false;
+	_type = ISFValType_None;
+	_val.boolVal = false;
 }
-ISFVal::ISFVal(const ISFValType & inType, const bool & inBool) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const bool & inBool) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	val.boolVal = inBool;
+	//_type = inType;
+	_val.boolVal = inBool;
 }
-ISFVal::ISFVal(const ISFValType & inType, const int32_t & inLong) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const int32_t & inLong) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	val.longVal = inLong;
+	//_type = inType;
+	_val.longVal = inLong;
 }
-ISFVal::ISFVal(const ISFValType & inType, const double & inFloat) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const double & inFloat) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	val.floatVal = inFloat;
+	//_type = inType;
+	_val.floatVal = inFloat;
 }
-ISFVal::ISFVal(const ISFValType & inType, const double & inX, const double & inY) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const double & inX, const double & inY) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	val.pointVal[0] = inX;
-	val.pointVal[1] = inY;
+	//_type = inType;
+	_val.pointVal[0] = inX;
+	_val.pointVal[1] = inY;
 }
-ISFVal::ISFVal(const ISFValType & inType, const double * inBuffer, const size_t inSizeToCopy) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const double * inBuffer, const size_t inSizeToCopy) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
+	//_type = inType;
 	double		*rPtr = const_cast<double*>(inBuffer);
 	for (size_t i=0; i<inSizeToCopy; ++i)	{
-		val.pointVal[i] = *rPtr;
+		_val.pointVal[i] = *rPtr;
 		++rPtr;
 	}
 }
-ISFVal::ISFVal(const ISFValType & inType, const double & inR, const double & inG, const double & inB, const double & inA) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const double & inR, const double & inG, const double & inB, const double & inA) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	val.colorVal[0] = inR;
-	val.colorVal[1] = inG;
-	val.colorVal[2] = inB;
-	val.colorVal[3] = inA;
+	//_type = inType;
+	_val.colorVal[0] = inR;
+	_val.colorVal[1] = inG;
+	_val.colorVal[2] = inB;
+	_val.colorVal[3] = inA;
 }
-ISFVal::ISFVal(const ISFValType & inType, const GLBufferRef & inImage) : type(inType)	{
+ISFVal::ISFVal(const ISFValType & inType, const GLBufferRef & inImage) : _type(inType)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	type = inType;
-	imageVal = inImage;
+	//_type = inType;
+	_imageVal = inImage;
 }
 
 
@@ -103,18 +103,18 @@ ISFVal::ISFVal(const ISFValType & inType, const GLBufferRef & inImage) : type(in
 
 double ISFVal::getDoubleVal() const	{
 	double		returnMe = 0.;
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		break;
 	case ISFValType_Event:
 	case ISFValType_Bool:
-		returnMe = (val.boolVal) ? 1. : 0.;
+		returnMe = (_val.boolVal) ? 1. : 0.;
 		break;
 	case ISFValType_Long:
-		returnMe = (double)val.longVal;
+		returnMe = (double)_val.longVal;
 		break;
 	case ISFValType_Float:
-		returnMe = (double)val.floatVal;
+		returnMe = (double)_val.floatVal;
 		break;
 	case ISFValType_Point2D:
 	case ISFValType_Color:
@@ -128,21 +128,21 @@ double ISFVal::getDoubleVal() const	{
 }
 bool ISFVal::getBoolVal() const	{
 	bool		returnMe = false;
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		returnMe = false;
 		break;
 	case ISFValType_Event:
-		returnMe = val.boolVal;
+		returnMe = _val.boolVal;
 		break;
 	case ISFValType_Bool:
-		returnMe = val.boolVal;
+		returnMe = _val.boolVal;
 		break;
 	case ISFValType_Long:
-		returnMe = (val.longVal>0) ? true : false;
+		returnMe = (_val.longVal>0) ? true : false;
 		break;
 	case ISFValType_Float:
-		returnMe = (val.floatVal>0.) ? true : false;
+		returnMe = (_val.floatVal>0.) ? true : false;
 		break;
 	case ISFValType_Point2D:
 	case ISFValType_Color:
@@ -156,19 +156,19 @@ bool ISFVal::getBoolVal() const	{
 }
 int32_t ISFVal::getLongVal() const	{
 	int32_t		returnMe = 0;
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		returnMe = 0;
 		break;
 	case ISFValType_Event:
 	case ISFValType_Bool:
-		returnMe = (val.boolVal) ? 1 : 0;
+		returnMe = (_val.boolVal) ? 1 : 0;
 		break;
 	case ISFValType_Long:
-		returnMe = val.longVal;
+		returnMe = _val.longVal;
 		break;
 	case ISFValType_Float:
-		returnMe = (int32_t)val.floatVal;
+		returnMe = (int32_t)_val.floatVal;
 		break;
 	case ISFValType_Point2D:
 	case ISFValType_Color:
@@ -182,7 +182,7 @@ int32_t ISFVal::getLongVal() const	{
 }
 GLBufferRef ISFVal::getImageBuffer() const	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		break;
 	case ISFValType_Event:
@@ -197,15 +197,15 @@ GLBufferRef ISFVal::getImageBuffer() const	{
 	case ISFValType_Image:
 	case ISFValType_Audio:
 	case ISFValType_AudioFFT:
-		//cout << "\timageVal was " << imageVal << endl;
-		return imageVal;
+		//cout << "\timageVal was " << _imageVal << endl;
+		return _imageVal;
 		break;
 	}
 	return nullptr;
 }
 void ISFVal::setImageBuffer(const GLBufferRef & n)	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 	case ISFValType_Event:
 	case ISFValType_Bool:
@@ -218,43 +218,43 @@ void ISFVal::setImageBuffer(const GLBufferRef & n)	{
 	case ISFValType_Image:
 	case ISFValType_Audio:
 	case ISFValType_AudioFFT:
-		//cout << "\timageVal was " << imageVal << endl;
-		imageVal=n;
+		//cout << "\timageVal was " << _imageVal << endl;
+		_imageVal=n;
 		break;
 	}
-	//cout << "\timageVal is now " << imageVal << endl;
+	//cout << "\timageVal is now " << _imageVal << endl;
 }
 
 string ISFVal::getTypeString() const	{
-	return ISFValTypeString(type);
+	return ISFValTypeString(_type);
 }
 string ISFVal::getValString() const	{
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		return string("None");
 	case ISFValType_Event:
 		return string("Event/None");
 	case ISFValType_Bool:	{
-		return (val.boolVal) ? string("true") : string("false");
+		return (_val.boolVal) ? string("true") : string("false");
 	}
 	case ISFValType_Long:	{
-		return FmtString("%d",val.longVal);
+		return FmtString("%d",_val.longVal);
 	}
 	case ISFValType_Float:	{
-		return FmtString("%f",val.floatVal);
+		return FmtString("%f",_val.floatVal);
 	}
 	case ISFValType_Point2D:	{
-		return FmtString("(%0.2f, %0.2f)",val.pointVal[0],val.pointVal[1]);
+		return FmtString("(%0.2f, %0.2f)",_val.pointVal[0],_val.pointVal[1]);
 	}
 	case ISFValType_Color:	{
-		return FmtString("{%0.2f, %0.2f, %0.2f, %0.2f}",val.colorVal[0],val.colorVal[1],val.colorVal[2],val.colorVal[3]);
+		return FmtString("{%0.2f, %0.2f, %0.2f, %0.2f}",_val.colorVal[0],_val.colorVal[1],_val.colorVal[2],_val.colorVal[3]);
 	}
 	case ISFValType_Cube:
 	case ISFValType_Image:
 	case ISFValType_Audio:
 	case ISFValType_AudioFFT:	{
-		if (imageVal != nullptr)
-			return imageVal->getDescriptionString();
+		if (_imageVal != nullptr)
+			return _imageVal->getDescriptionString();
 	}
 	}
 	return string("");

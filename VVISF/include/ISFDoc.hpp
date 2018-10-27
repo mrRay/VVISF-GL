@@ -34,32 +34,32 @@ Notes on use:
 */
 class VVISF_EXPORT ISFDoc	{
 	private:
-		recursive_mutex		propLock;
+		recursive_mutex		_propLock;
 		
-		string			*path = nullptr;	//	full path to the loaded file
-		string			*name = nullptr;	//	just the file name (including its extension)
-		string			*description = nullptr;	//	description of whatever the file does
-		string			*credit = nullptr;	//	credit
-		string			*vsn = nullptr;
-		ISFFileType		type = ISFFileType_Source;
+		string			*_path = nullptr;	//	full path to the loaded file
+		string			*_name = nullptr;	//	just the file name (including its extension)
+		string			*_description = nullptr;	//	description of whatever the file does
+		string			*_credit = nullptr;	//	credit
+		string			*_vsn = nullptr;
+		ISFFileType		_type = ISFFileType_Source;
 		
-		vector<string>			categories;	//	array of strings of the category names this doc should be listed under
-		vector<ISFAttrRef>	inputs;	//	array of ISFAttrRef instances for the various inputs
-		vector<ISFAttrRef>	imageInputs;	//	array of ISFAttrRef instances for the image inputs (the image inputs are stored in two arrays).
-		vector<ISFAttrRef>	audioInputs;	//	array of ISFAttrRef instances for the audio inputs
-		vector<ISFAttrRef>	imageImports;	//	array of ISFAttrRef instances that describe imported images. attrib's 'attribName' is the name of the sampler, attrib's 'description' is the path to the file.
+		vector<string>			_categories;	//	array of strings of the category names this doc should be listed under
+		vector<ISFAttrRef>		_inputs;	//	array of ISFAttrRef instances for the various inputs
+		vector<ISFAttrRef>		_imageInputs;	//	array of ISFAttrRef instances for the image inputs (the image inputs are stored in two arrays).
+		vector<ISFAttrRef>		_audioInputs;	//	array of ISFAttrRef instances for the audio inputs
+		vector<ISFAttrRef>		_imageImports;	//	array of ISFAttrRef instances that describe imported images. attrib's 'attribName' is the name of the sampler, attrib's 'description' is the path to the file.
 		
 		//bool					bufferRequiresEval = false;	//	NO by default, set to YES during file open if any of the buffers require evaluation (faster than checking every single buffer every pass)
-		vector<ISFPassTargetRef>	persistentBuffers;
-		vector<ISFPassTargetRef>	tempBuffers;
-		vector<string>			renderPasses;
+		vector<ISFPassTargetRef>	_persistentBuffers;
+		vector<ISFPassTargetRef>	_tempBuffers;
+		vector<string>			_renderPasses;
 		
-		string			*jsonSourceString = nullptr;	//	the JSON string from the source *including the comments and any linebreaks before/after it*
-		string			*jsonString = nullptr;	//	the JSON string copied from the source- doesn't include any comments before/after it
-		string			*vertShaderSource = nullptr;	//	the raw vert shader source before being find-and-replaced
-		string			*fragShaderSource = nullptr;	//	the raw frag shader source before being find-and-replaced
+		string			*_jsonSourceString = nullptr;	//	the JSON string from the source *including the comments and any linebreaks before/after it*
+		string			*_jsonString = nullptr;	//	the JSON string copied from the source- doesn't include any comments before/after it
+		string			*_vertShaderSource = nullptr;	//	the raw vert shader source before being find-and-replaced
+		string			*_fragShaderSource = nullptr;	//	the raw frag shader source before being find-and-replaced
 		
-		ISFScene		*parentScene = nullptr;	//	nil by default, weak ref to the scene that "owns" me.  only non-nil when an ISFScene is using the doc to render.
+		ISFScene		*_parentScene = nullptr;	//	nil by default, weak ref to the scene that "owns" me.  only non-nil when an ISFScene is using the doc to render.
 		
 	public:
 		
@@ -97,19 +97,19 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns the path of the ISF file for the receiver.  This is probably the path to the frag shader.
-		string getPath() const { return (path==nullptr) ? string("") : string(*path); }
+		string getPath() const { return (_path==nullptr) ? string("") : string(*_path); }
 		//!	Returns the name of the receiver's ISF file (the file name, minus the extension).
-		string getName() const { return (name==nullptr) ? string("") : string(*name); }
+		string getName() const { return (_name==nullptr) ? string("") : string(*_name); }
 		//!	Returns the receiver's "description" string, as defined in its JSON blob ("DESCRIPTION").
-		string getDescription() const { return (description==nullptr) ? string("") : string(*description); }
+		string getDescription() const { return (_description==nullptr) ? string("") : string(*_description); }
 		//!	Returns the receiver's "credit" string, as defined in its JSON blob ("CREDIT").
-		string getCredit() const { return (credit==nullptr) ? string("") : string(*credit); }
+		string getCredit() const { return (_credit==nullptr) ? string("") : string(*_credit); }
 		//!	Returns the receiver's "vsn" string, as defined in its JSON blob ("VSN")
-		string getVsn() const { return (vsn==nullptr) ? string("") : string(*vsn); }
+		string getVsn() const { return (_vsn==nullptr) ? string("") : string(*_vsn); }
 		//!	Returns the receiver's file type.
-		ISFFileType getType() const { return type; }
+		ISFFileType getType() const { return _type; }
 		//!	Returns a vector containing strings listing the receiver's categories.
-		vector<string> & getCategories() { return categories; }
+		vector<string> & getCategories() { return _categories; }
 		
 		///@}
 		
@@ -120,13 +120,13 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns a vector of ISFAttrRef instances describing all of the receiver's inputs.
-		vector<ISFAttrRef> & getInputs() { return inputs; }
+		vector<ISFAttrRef> & getInputs() { return _inputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's image inputs.
-		vector<ISFAttrRef> & getImageInputs() { return imageInputs; }
+		vector<ISFAttrRef> & getImageInputs() { return _imageInputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's audio inputs.
-		vector<ISFAttrRef> & getAudioInputs() { return audioInputs; }
+		vector<ISFAttrRef> & getAudioInputs() { return _audioInputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's audioFFT inputs.
-		vector<ISFAttrRef> & getImageImports() { return imageImports; }
+		vector<ISFAttrRef> & getImageImports() { return _imageImports; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's inputs that match the passed type.
 		vector<ISFAttrRef> getInputsOfType(const ISFValType & inInputType);
 		//!	Returns the ISFAttrRef for the input with the passed name
@@ -141,11 +141,11 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns a vector of ISFPassTargetRef instances describing every pass that has a persistent buffer.
-		vector<ISFPassTargetRef> getPersistentBuffers() const { return persistentBuffers; }
+		vector<ISFPassTargetRef> getPersistentBuffers() const { return _persistentBuffers; }
 		//!	Returns a vector of ISFPassTargetRef instances describing every pass that doesn't have a persistent buffer.
-		vector<ISFPassTargetRef> getTempBuffers() const { return tempBuffers; }
+		vector<ISFPassTargetRef> getTempBuffers() const { return _tempBuffers; }
 		//!	Returns a vector of std::string instances describing the names of the render passes, in order.  If the names were not specified properly in the JSON blob, this array will be incomplete or inaccurate and rendering won't work!
-		vector<string> & getRenderPasses() { return renderPasses; }
+		vector<string> & getRenderPasses() { return _renderPasses; }
 		//!	Returns the GLBufferRef for the passed key.  Checks all attributes/inputs as well as persistent and temp buffers.
 		const GLBufferRef getBufferForKey(const string & n);
 		//!	Returns the persistent buffer for the render pass with the passed key.
@@ -168,13 +168,13 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//! Returns the JSON string from the source *including the comments and any linebreaks before/after it*
-		string * getJSONSourceString() const { return jsonSourceString; }
+		string * getJSONSourceString() const { return _jsonSourceString; }
 		//!	Returns the JSON string copied from the source- doesn't include any comments before/after it
-		string * getJSONString() const { return jsonString; }
+		string * getJSONString() const { return _jsonString; }
 		//!	Returns the raw vert shader source before being find-and-replaced
-		string * getVertShaderSource() const { return vertShaderSource; }
+		string * getVertShaderSource() const { return _vertShaderSource; }
 		//!	Returns the raw frag shader source before being find-and-replaced
-		string * getFragShaderSource() const { return fragShaderSource; }
+		string * getFragShaderSource() const { return _fragShaderSource; }
 		//!	Populates the passed var with the JSON string from the source *including the comments and any linebreaks before/after it*
 		void getJSONSourceString(string & outStr);
 		//!	Populates the passed var with the JSON string copied from the source- doesn't include any comments before/after it
@@ -186,8 +186,8 @@ class VVISF_EXPORT ISFDoc	{
 		
 		///@}
 		
-		void setParentScene(ISFScene * n) { parentScene=n; }
-		ISFScene * getParentScene() { return parentScene; }
+		void setParentScene(ISFScene * n) { _parentScene=n; }
+		ISFScene * getParentScene() { return _parentScene; }
 		
 		//	returns a string describing the type of the expected texture samplers ("2" for 2D, "R" for Rect, "C" for Cube).  save this, if it changes in a later pass the shader source must be generated again.
 		string generateTextureTypeString();

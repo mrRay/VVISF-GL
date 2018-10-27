@@ -74,48 +74,48 @@ class VVGL_EXPORT GLScene	{
 	
 	//	instance variables
 	protected:
-		recursive_mutex		renderLock;
-		GLContextRef		context = nullptr;
+		recursive_mutex		_renderLock;
+		GLContextRef		_context = nullptr;
 		
-		bool				deleted = false;
-		bool				initialized = false;
-		bool				needsReshape = true;
-		bool				alwaysNeedsReshape = false;
+		bool				_deleted = false;
+		bool				_initialized = false;
+		bool				_needsReshape = true;
+		bool				_alwaysNeedsReshape = false;
 		
 		//	every time the scene is doing its render prep, this lambda is executed.  drawing setup code goes here.
-		RenderPrepCallback		renderPrepCallback = nullptr;
+		RenderPrepCallback		_renderPrepCallback = nullptr;
 		//	this callback gets hit immediately before the program is linked (after the shaders have been compiled & attached to the program, but before the program was linked).
-		RenderCallback		renderPreLinkCallback = nullptr;
+		RenderCallback		_renderPreLinkCallback = nullptr;
 		//	every time the scene renders, this lambda is executed.  drawing code goes here.
-		RenderCallback		renderCallback = nullptr;
-		RenderCallback		renderCleanupCallback = nullptr;
+		RenderCallback		_renderCallback = nullptr;
+		RenderCallback		_renderCleanupCallback = nullptr;
 		//	the render target contains the GL framebuffer and relevant attachments (render to texture/buffer/depth buffer/etc)
-		RenderTarget		renderTarget;
+		RenderTarget		_renderTarget;
 		
 		//	these vars pertain to optional default orthogonal sizing, which i use a lot for compositing/drawing 2D UIs with GL- if 'orthoUniId' is >= 0 then the vertex shader will create an orthogonal projection matrix of size 'orthoSize' and incorporating 'orthoFlipped'
-		Size				orthoSize = { 0., 0. };
-		bool				orthoFlipped = false;
-		GLCachedUni			orthoUni = GLCachedUni("vvglOrthoProj");
+		Size				_orthoSize = { 0., 0. };
+		bool				_orthoFlipped = false;
+		GLCachedUni			_orthoUni = GLCachedUni("vvglOrthoProj");
 		
 		//	these vars pertain to whether or not the scene clears the attached framebuffer before drawing (and what color is used to clear)
-		bool				performClear = true;
-		GLColor				clearColor = GLColor(0., 0., 0., 0.);
-		bool				clearColorUpdated = false;
+		bool				_performClear = true;
+		GLColor				_clearColor = GLColor(0., 0., 0., 0.);
+		bool				_clearColorUpdated = false;
 		
 		//	these vars pertain to the program being used by the GL context
-		string				vsString = string("");
-		string				gsString = string("");
-		string				fsString = string("");
-		bool				vsStringUpdated = false;
-		bool				gsStringUpdated = false;
-		bool				fsStringUpdated = false;
-		uint32_t			program = 0;	//	0, or the compiled program
-		uint32_t			vs = 0;
-		uint32_t			gs = 0;
-		uint32_t			fs = 0;
-		mutex				errLock;
-		mutex				errDictLock;
-		map<string,string>		errDict;
+		string				_vsString = string("");
+		string				_gsString = string("");
+		string				_fsString = string("");
+		bool				_vsStringUpdated = false;
+		bool				_gsStringUpdated = false;
+		bool				_fsStringUpdated = false;
+		uint32_t			_program = 0;	//	0, or the compiled program
+		uint32_t			_vs = 0;
+		uint32_t			_gs = 0;
+		uint32_t			_fs = 0;
+		mutex				_errLock;
+		mutex				_errDictLock;
+		map<string,string>		_errDict;
 	
 	
 	//	functions
@@ -152,7 +152,7 @@ class VVGL_EXPORT GLScene	{
 		
 		
 		//!	Returns the context used by this scene.
-		inline GLContextRef getContext() const { return context; }
+		inline GLContextRef getContext() const { return _context; }
 		
 		
 		/*!
@@ -185,9 +185,9 @@ class VVGL_EXPORT GLScene	{
 		virtual void setOrthoSize(const Size & n);
 		//!	Gets the orthogonal render size.  If the size is 0x0 then orthogonal rendering is disabled.
 		Size getOrthoSize() const;
-		//!	The orthoFlipped member variable defaults to false- if it's set to true, the orthographic projection or equivalent will be flipped vertically.
+		//!	The _orthoFlipped member variable defaults to false- if it's set to true, the orthographic projection or equivalent will be flipped vertically.
 		void setOrthoFlipped(const bool & n);
-		//!	Gets the value of the orthoFlipped member variable.  If this is true, the orthographic projection or equivalent will be flipped vertically.
+		//!	Gets the value of the _orthoFlipped member variable.  If this is true, the orthographic projection or equivalent will be flipped vertically.
 		bool getOrthoFlipped() const;
 		///@}
 		
@@ -204,7 +204,7 @@ class VVGL_EXPORT GLScene	{
 		void setClearColor(const float & r, const float & g, const float & b, const float & a);
 		//!	Sets the clear color using a pointer to enough memory to contain four float values.
 		void setClearColor(float * n);
-		//!	Sets the 'performClear' member variable.  If it's true (the default) the context will clear to its clear color prior to drawing.  The clear is performed before the render prep callback.
+		//!	Sets the '_performClear' member variable.  If it's true (the default) the context will clear to its clear color prior to drawing.  The clear is performed before the render prep callback.
 		void setPerformClear(const bool & n);
 		
 		///@}
@@ -230,13 +230,13 @@ class VVGL_EXPORT GLScene	{
 		//!	Gets the fragment shader string.
 		virtual string getFragmentShaderString();
 		//!	Gets the program ID.
-		inline uint32_t getProgram() const { return program; }
+		inline uint32_t getProgram() const { return _program; }
 		
 		///@}
 		
 		
 		//!	Returns the version of OpenGL currently being used by this scene's GL context.
-		inline GLVersion getGLVersion() const { if (context==nullptr) return GLVersion_Unknown; return context->version; }
+		inline GLVersion getGLVersion() const { if (_context==nullptr) return GLVersion_Unknown; return _context->version; }
 		
 	protected:
 		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.

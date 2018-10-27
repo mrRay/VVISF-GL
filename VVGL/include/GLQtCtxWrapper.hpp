@@ -38,7 +38,7 @@ using GLQtCtxWrapperRef = shared_ptr<GLQtCtxWrapper>;
 class VVGL_EXPORT GLQtCtxWrapper	{
 private:
 	//	this struct will contain the actual implementation of this class
-	GLQtCtxHidden		*hidden = nullptr;
+	GLQtCtxHidden		*_hidden = nullptr;
 
 public:
 	//	class functions that generate QSurfaceFormats

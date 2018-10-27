@@ -21,35 +21,35 @@ using namespace std;
 GLTexToCPUCopier::GLTexToCPUCopier()	{
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)
-		queueCtx = bp->getContext();
+		_queueCtx = bp->getContext();
 }
 GLTexToCPUCopier::~GLTexToCPUCopier()	{
 	clearStream();
 }
 void GLTexToCPUCopier::clearStream()	{
-	lock_guard<recursive_mutex>		lock(queueLock);
-	while (cpuQueue.size() > 0)
-		cpuQueue.pop();
-	while (pboQueue.size() > 0)
-		pboQueue.pop();
-	while (texQueue.size() > 0)
-		texQueue.pop();
-	while (fboQueue.size() > 0)
-		fboQueue.pop();
+	lock_guard<recursive_mutex>		lock(_queueLock);
+	while (_cpuQueue.size() > 0)
+		_cpuQueue.pop();
+	while (_pboQueue.size() > 0)
+		_pboQueue.pop();
+	while (_texQueue.size() > 0)
+		_texQueue.pop();
+	while (_fboQueue.size() > 0)
+		_fboQueue.pop();
 }
 void GLTexToCPUCopier::setQueueSize(const int & inNewQueueSize)	{
-	lock_guard<recursive_mutex>		lock(queueLock);
+	lock_guard<recursive_mutex>		lock(_queueLock);
 	
-	queueSize = inNewQueueSize;
-	if (queueSize < 0)
-		queueSize = 0;
+	_queueSize = inNewQueueSize;
+	if (_queueSize < 0)
+		_queueSize = 0;
 	
-	while (static_cast<int>(cpuQueue.size()) > queueSize)
-		cpuQueue.pop();
-	while (static_cast<int>(pboQueue.size()) > queueSize)
-		pboQueue.pop();
-	while (static_cast<int>(texQueue.size()) > queueSize)
-		texQueue.pop();
+	while (static_cast<int>(_cpuQueue.size()) > _queueSize)
+		_cpuQueue.pop();
+	while (static_cast<int>(_pboQueue.size()) > _queueSize)
+		_pboQueue.pop();
+	while (static_cast<int>(_texQueue.size()) > _queueSize)
+		_texQueue.pop();
 }
 
 
@@ -215,11 +215,11 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 	if (inTexBuffer == nullptr)
 		return nullptr;
 	
-	lock_guard<recursive_mutex>		lock(queueLock);
+	lock_guard<recursive_mutex>		lock(_queueLock);
 	
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
-		queueCtx->makeCurrentIfNotCurrent();
+		_queueCtx->makeCurrentIfNotCurrent();
 	
 	//Size			gpuBufferDims = inTexBuffer->srcRect.size;
 	
@@ -256,15 +256,15 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 	//if (inTexBuffer == nullptr) cout << endl;
 	//else cout << "... " << *inTexBuffer << endl;
 	
-	lock_guard<recursive_mutex>		lock(queueLock);
+	lock_guard<recursive_mutex>		lock(_queueLock);
 	
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
-		queueCtx->makeCurrentIfNotCurrent();
+		_queueCtx->makeCurrentIfNotCurrent();
 	
 	//	make sure the queues have the appropriate and expected number of elements
-	int			tmpQueueSize = static_cast<int>(pboQueue.size());
-	if (tmpQueueSize != static_cast<int>(cpuQueue.size()) || tmpQueueSize != static_cast<int>(texQueue.size()))	{
+	int			tmpQueueSize = static_cast<int>(_pboQueue.size());
+	if (tmpQueueSize != static_cast<int>(_cpuQueue.size()) || tmpQueueSize != static_cast<int>(_texQueue.size()))	{
 		cout << "\tERR: queue size discrepancy, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}
@@ -273,10 +273,10 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 	bool		safeToPush = false;
 	bool		safeToPop = false;
 	//	we're safe to push if the queue isn't too large AND there's a non-null input buffer
-	if (tmpQueueSize<=queueSize && inTexBuffer!=nullptr)
+	if (tmpQueueSize<=_queueSize && inTexBuffer!=nullptr)
 		safeToPush = true;
 	//	we're safe to pop a val if the queue is too large AND if we're safe to push
-	if (tmpQueueSize>=queueSize && safeToPush)
+	if (tmpQueueSize>=_queueSize && safeToPush)
 		safeToPop = true;
 	
 	//	make an FBO- we need to attach the texture we want to download to this.
@@ -309,22 +309,22 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 	
 	//	push the buffer if appropriate
 	if (safeToPush)	{
-		cpuQueue.push(inCPUBuffer);
-		pboQueue.push(inPBOBuffer);
-		texQueue.push(inTexBuffer);
-		fboQueue.push(tmpFBO);
+		_cpuQueue.push(inCPUBuffer);
+		_pboQueue.push(inPBOBuffer);
+		_texQueue.push(inTexBuffer);
+		_fboQueue.push(tmpFBO);
 		_beginProcessing(inCPUBuffer, inPBOBuffer, inTexBuffer, tmpFBO);
 	}
 	//	pop buffers off the queues if appropriate
 	if (safeToPop)	{
-		GLBufferRef		outCPUBuffer = cpuQueue.front();
-		cpuQueue.pop();
-		GLBufferRef		outPBOBuffer = pboQueue.front();
-		pboQueue.pop();
-		GLBufferRef		outTexBuffer = texQueue.front();
-		texQueue.pop();
-		GLBufferRef		outFBO = fboQueue.front();
-		fboQueue.pop();
+		GLBufferRef		outCPUBuffer = _cpuQueue.front();
+		_cpuQueue.pop();
+		GLBufferRef		outPBOBuffer = _pboQueue.front();
+		_pboQueue.pop();
+		GLBufferRef		outTexBuffer = _texQueue.front();
+		_texQueue.pop();
+		GLBufferRef		outFBO = _fboQueue.front();
+		_fboQueue.pop();
 		_finishProcessing(outCPUBuffer, outPBOBuffer, outTexBuffer, outFBO);
 		if (outCPUBuffer != nullptr)
 			return outCPUBuffer;

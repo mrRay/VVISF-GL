@@ -32,19 +32,19 @@ void ISFScene::prepareToBeDeleted()	{
 	GLScene::prepareToBeDeleted();
 }
 ISFScene::~ISFScene()	{
-	if (!deleted)
+	if (!_deleted)
 		prepareToBeDeleted();
 	
-	if (compiledInputTypeString != nullptr)	{
-		delete compiledInputTypeString;
-		compiledInputTypeString = nullptr;
+	if (_compiledInputTypeString != nullptr)	{
+		delete _compiledInputTypeString;
+		_compiledInputTypeString = nullptr;
 	}
 	
 	//geoXYVBO = nullptr;
 #if !defined(VVGL_TARGETENV_GLES)
-	vao = nullptr;
+	_vao = nullptr;
 #endif
-	vbo = nullptr;
+	_vbo = nullptr;
 }
 
 
@@ -53,85 +53,85 @@ ISFScene::~ISFScene()	{
 
 
 void ISFScene::useFile() throw(ISFErr)	{
-	lock_guard<recursive_mutex> rlock(renderLock);
-	lock_guard<mutex>	plock(propertyLock);
-	if (doc != nullptr)
-		doc->setParentScene(nullptr);
-	doc = nullptr;
+	lock_guard<recursive_mutex> rlock(_renderLock);
+	lock_guard<mutex>	plock(_propertyLock);
+	if (_doc != nullptr)
+		_doc->setParentScene(nullptr);
+	_doc = nullptr;
 	
 	//	reset the timestamper and render frame index
 	//timestamper.reset();
-	baseTime = Timestamp();
-	renderTime = 0.;
-	renderTimeDelta = 0.;
-	renderFrameIndex = 0;
-	passIndex = 0;
-	if (compiledInputTypeString!=nullptr)	{
-		delete compiledInputTypeString;
-		compiledInputTypeString=nullptr;
+	_baseTime = Timestamp();
+	_renderTime = 0.;
+	_renderTimeDelta = 0.;
+	_renderFrameIndex = 0;
+	_passIndex = 0;
+	if (_compiledInputTypeString!=nullptr)	{
+		delete _compiledInputTypeString;
+		_compiledInputTypeString=nullptr;
 	}
 }
 void ISFScene::useFile(const string & inPath) throw(ISFErr)	{
 	//cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{
-		lock_guard<recursive_mutex> rlock(renderLock);
-		lock_guard<mutex>	plock(propertyLock);
-		if (doc != nullptr)
-			doc->setParentScene(nullptr);
-		doc = nullptr;
+		lock_guard<recursive_mutex> rlock(_renderLock);
+		lock_guard<mutex>	plock(_propertyLock);
+		if (_doc != nullptr)
+			_doc->setParentScene(nullptr);
+		_doc = nullptr;
 		ISFDocRef			newDoc = make_shared<ISFDoc>(inPath, this);
-		doc = newDoc;
+		_doc = newDoc;
 		
 		//	reset the timestamper and render frame index
 		//timestamper.reset();
-		baseTime = Timestamp();
-		renderTime = 0.;
-		renderTimeDelta = 0.;
-		renderFrameIndex = 0;
-		passIndex = 0;
-		if (compiledInputTypeString!=nullptr)	{
-			delete compiledInputTypeString;
-			compiledInputTypeString=nullptr;
+		_baseTime = Timestamp();
+		_renderTime = 0.;
+		_renderTimeDelta = 0.;
+		_renderFrameIndex = 0;
+		_passIndex = 0;
+		if (_compiledInputTypeString!=nullptr)	{
+			delete _compiledInputTypeString;
+			_compiledInputTypeString=nullptr;
 		}
 	}
 	catch (ISFErr & exc)	{
 		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;
-		doc = nullptr;
+		_doc = nullptr;
 		//	reset the timestamper and render frame index
 		//timestamper.reset();
-		baseTime = Timestamp();
-		renderTime = 0.;
-		renderTimeDelta = 0.;
-		renderFrameIndex = 0;
-		passIndex = 0;
-		if (compiledInputTypeString!=nullptr)	{
-			delete compiledInputTypeString;
-			compiledInputTypeString=nullptr;
+		_baseTime = Timestamp();
+		_renderTime = 0.;
+		_renderTimeDelta = 0.;
+		_renderFrameIndex = 0;
+		_passIndex = 0;
+		if (_compiledInputTypeString!=nullptr)	{
+			delete _compiledInputTypeString;
+			_compiledInputTypeString=nullptr;
 		}
 		
 		//	if i'm supposed to throw the exception then do so now
-		if (throwExceptions)
+		if (_throwExceptions)
 			throw exc;
 	}
 	
 }
 void ISFScene::useDoc(ISFDocRef & inDoc)	{
-	lock_guard<recursive_mutex> rlock(renderLock);
-	lock_guard<mutex>	plock(propertyLock);
+	lock_guard<recursive_mutex> rlock(_renderLock);
+	lock_guard<mutex>	plock(_propertyLock);
 	
-	doc = inDoc;
-	doc->setParentScene(this);
+	_doc = inDoc;
+	_doc->setParentScene(this);
 	
 	//	reset the timestamper and render frame index
 	//timestamper.reset();
-	baseTime = Timestamp();
-	renderTime = 0.;
-	renderTimeDelta = 0.;
-	renderFrameIndex = 0;
-	passIndex = 0;
-	if (compiledInputTypeString!=nullptr)	{
-		delete compiledInputTypeString;
-		compiledInputTypeString=nullptr;
+	_baseTime = Timestamp();
+	_renderTime = 0.;
+	_renderTimeDelta = 0.;
+	_renderFrameIndex = 0;
+	_passIndex = 0;
+	if (_compiledInputTypeString!=nullptr)	{
+		delete _compiledInputTypeString;
+		_compiledInputTypeString=nullptr;
 	}
 }
 
@@ -328,7 +328,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const GL
 }
 */
 GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, map<int32_t,GLBufferRef> * outPassDict, const GLBufferPoolRef & inPoolRef)	{
-	return createAndRenderABuffer(inSize, (Timestamp()-baseTime).getTimeInSeconds(), outPassDict, inPoolRef);
+	return createAndRenderABuffer(inSize, (Timestamp()-_baseTime).getTimeInSeconds(), outPassDict, inPoolRef);
 }
 /*
 GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const GLBufferPoolRef & inPoolRef)	{
@@ -349,8 +349,8 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	}
 	
 	GLBufferPoolRef		bp = inPoolRef;
-	if (bp == nullptr && privatePool!=nullptr)
-		bp = privatePool;
+	if (bp == nullptr && _privatePool!=nullptr)
+		bp = _privatePool;
 	if (bp == nullptr)
 		bp = GetGlobalBufferPool();
 	
@@ -366,9 +366,9 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	//	? CreateRGBAFloatTex(inSize, bp)
 	//	: CreateRGBATex(inSize, bp);
 	
-	bool			shouldBeFloat = alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
+	bool			shouldBeFloat = _alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
 #if defined(VVGL_SDK_MAC)
-	if (persistentToIOSurface)
+	if (_persistentToIOSurface)
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
 	else
 #endif
@@ -390,24 +390,24 @@ void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Si
 	_render(inTargetBuffer, inRenderSize, inRenderTime, nullptr);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,GLBufferRef> * outPassDict)	{
-	_render(inTargetBuffer, inRenderSize, (Timestamp()-baseTime).getTimeInSeconds(), outPassDict);
+	_render(inTargetBuffer, inRenderSize, (Timestamp()-_baseTime).getTimeInSeconds(), outPassDict);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize)	{
-	_render(inTargetBuffer, inRenderSize, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
+	_render(inTargetBuffer, inRenderSize, (Timestamp()-_baseTime).getTimeInSeconds(), nullptr);
 }
 void ISFScene::renderToBuffer(const GLBufferRef & inTargetBuffer)	{
 	if (inTargetBuffer != nullptr)
-		_render(inTargetBuffer, inTargetBuffer->srcRect.size, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
+		_render(inTargetBuffer, inTargetBuffer->srcRect.size, (Timestamp()-_baseTime).getTimeInSeconds(), nullptr);
 	else
-		_render(nullptr, orthoSize, (Timestamp()-baseTime).getTimeInSeconds(), nullptr);
+		_render(nullptr, _orthoSize, (Timestamp()-_baseTime).getTimeInSeconds(), nullptr);
 }
 
 
 void ISFScene::setSize(const VVGL::Size & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", self is " << this << endl;
-	//renderSize = n;	//	do NOT set the renderSize here (if we do then it will be changed every time a pass is rendered)
+	//_renderSize = n;	//	do NOT set the _renderSize here (if we do then it will be changed every time a pass is rendered)
 	GLScene::setOrthoSize(n);
-	//cout << "\tnew size is " << orthoSize << endl;
+	//cout << "\tnew size is " << _orthoSize << endl;
 }
 
 
@@ -420,19 +420,19 @@ void ISFScene::_setUpRenderCallback()	{
 	setRenderCallback([&](const GLScene & s)	{
 		//	make a quad that describes the area we have to draw
 		Quad<VertXY>		targetQuad;
-		targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
+		targetQuad.populateGeo(Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 		//	get the VBO
 		GLBufferRef		myVBO = getVBO();
 		
 		//	if there's no VBO, or the target quad doesn't match the VBO's contents
-		if (myVBO==nullptr || targetQuad!=vboContents)	{
+		if (myVBO==nullptr || targetQuad!=_vboContents)	{
 			//	make the VBO, populate it with vertex data
 			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
 			//	update the instance's copy of the VBO
 			setVBO(myVBO);
 			//	update the contents of the VBO
-			vboContents = targetQuad;
+			_vboContents = targetQuad;
 		}
 		if (myVBO == nullptr)	{
 			cout << "\terr: VBO still null, bailing, " << __PRETTY_FUNCTION__ << endl;
@@ -445,11 +445,11 @@ void ISFScene::_setUpRenderCallback()	{
 			GLERRLOG
 		}
 		//	configure the attribute pointers to work with the VBO
-		if (vertexAttrib.loc >= 0)	{
-			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
-			//glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
+		if (_vertexAttrib.loc >= 0)	{
+			glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
+			//glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
 			GLERRLOG
-			vertexAttrib.enable();
+			_vertexAttrib.enable();
 		}
 		
 		//	draw!
@@ -457,8 +457,8 @@ void ISFScene::_setUpRenderCallback()	{
 		GLERRLOG
 		
 		//	disable the relevant attribute pointers
-		if (vertexAttrib.loc >= 0)	{
-			vertexAttrib.disable();
+		if (_vertexAttrib.loc >= 0)	{
+			_vertexAttrib.disable();
 		}
 		//	un-bind the VBO
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -468,26 +468,26 @@ void ISFScene::_setUpRenderCallback()	{
 	setRenderCallback([&](const GLScene & s)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		//CGLContextObj		orig_ctx = CGLGetCurrentContext();
-		//cout << "\tin render callback, my context is " << *context << ", current context is " << orig_ctx << endl;
+		//cout << "\tin render callback, my context is " << *_context << ", current context is " << orig_ctx << endl;
 		//	if we're in GL 2 then we can't use a VAO
 		if (s.getGLVersion() == GLVersion_2)	{
 			//	make a quad that describes the area we have to draw
 			Quad<VertXY>		targetQuad;
-			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+			targetQuad.populateGeo(VVGL::Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 			//	get the VBO
 			GLBufferRef		myVBO = getVBO();
 		
 			//	if there's no VBO, or the target quad doesn't match the VBO's contents
-			if (myVBO==nullptr || targetQuad!=vboContents)	{
+			if (myVBO==nullptr || targetQuad!=_vboContents)	{
 				//	make the VBO, populate it with vertex data
 				myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
 				//	update the instance's copy of the VBO
 				setVBO(myVBO);
 				//	update the contents of the VBO
-				vboContents = targetQuad;
+				_vboContents = targetQuad;
 				//	if the VBO is deleted & its resources destroyed the buffer pool's ctx will be current!
-				context->makeCurrentIfNotCurrent();
+				_context->makeCurrentIfNotCurrent();
 			}
 		
 			//	bind the VBO
@@ -496,10 +496,10 @@ void ISFScene::_setUpRenderCallback()	{
 				GLERRLOG
 			}
 			//	configure the attribute pointers to work with the VBO
-			if (vertexAttrib.loc >= 0)	{
-				glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
+			if (_vertexAttrib.loc >= 0)	{
+				glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
 				GLERRLOG
-				vertexAttrib.enable();
+				_vertexAttrib.enable();
 			}
 			
 			//	draw!
@@ -507,8 +507,8 @@ void ISFScene::_setUpRenderCallback()	{
 			GLERRLOG
 		
 			//	disable the relevant attribute pointers
-			if (vertexAttrib.loc >= 0)	{
-				vertexAttrib.disable();
+			if (_vertexAttrib.loc >= 0)	{
+				_vertexAttrib.disable();
 			}
 			//	un-bind the VBO
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -518,7 +518,7 @@ void ISFScene::_setUpRenderCallback()	{
 		else	{
 			//	make a quad that describes the area we have to draw
 			Quad<VertXY>		targetQuad;
-			targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
+			targetQuad.populateGeo(VVGL::Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 			//	bind the VAO
 			GLBufferRef		myVAO = getVAO();
@@ -528,7 +528,7 @@ void ISFScene::_setUpRenderCallback()	{
 			GLERRLOG
 		
 			//	if the target quad doesn't match the contents of the vbo in the vao
-			if (targetQuad != vboContents)	{
+			if (targetQuad != _vboContents)	{
 				//cout << "\tvbo contents updated, repopulating\n";
 				//	make a VBO, populate it with vertex data
 				uint32_t		tmpVBO = -1;
@@ -539,10 +539,10 @@ void ISFScene::_setUpRenderCallback()	{
 				glBufferData(GL_ARRAY_BUFFER, sizeof(targetQuad), (void*)&targetQuad, GL_STATIC_DRAW);
 				GLERRLOG
 				//	configure the attribute pointer to work with the VBO
-				if (vertexAttrib.loc >= 0)	{
-					glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
+				if (_vertexAttrib.loc >= 0)	{
+					glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
 					GLERRLOG
-					vertexAttrib.enable();
+					_vertexAttrib.enable();
 				}
 			
 				//	un-bind the VAO, we're done configuring it
@@ -552,7 +552,7 @@ void ISFScene::_setUpRenderCallback()	{
 				glDeleteBuffers(1, &tmpVBO);
 				GLERRLOG
 				//	update my local copy of the vbo contents
-				vboContents = targetQuad;
+				_vboContents = targetQuad;
 				//	re-enable the VAO!
 				glBindVertexArray(myVAO->name);
 				GLERRLOG
@@ -577,7 +577,7 @@ void ISFScene::_setUpRenderCallback()	{
 	setRenderCallback([&](const GLScene & s)	{
 		//cout << __PRETTY_FUNCTION__ << endl;
 		VVGL::Rect				tmpRect(0,0,0,0);
-		tmpRect.size = static_cast<const ISFScene&>(s).orthoSize;
+		tmpRect.size = static_cast<const ISFScene&>(s)._orthoSize;
 		//cout << "\tverts based on rect " << tmpRect << endl;
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_GLFW)
 		glColor4f(1., 1., 1., 1.);
@@ -605,18 +605,18 @@ void ISFScene::_setUpRenderCallback()	{
 			(GLfloat)tmpRect.minX(), (GLfloat)tmpRect.maxY(),
 			(GLfloat)tmpRect.maxX(), (GLfloat)tmpRect.maxY()
 		};
-		if (vertexAttrib.loc >= 0)	{
-			glEnableVertexAttribArray(vertexAttrib.loc);
+		if (_vertexAttrib.loc >= 0)	{
+			glEnableVertexAttribArray(_vertexAttrib.loc);
 			GLERRLOG
-			glVertexAttribPointer(vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, 0, geoCoords);
+			glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, 0, geoCoords);
 			GLERRLOG
 		}
 		
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		GLERRLOG
 		
-		if (vertexAttrib.loc >= 0)	{
-			glDisableVertexAttribArray(vertexAttrib.loc);
+		if (_vertexAttrib.loc >= 0)	{
+			glDisableVertexAttribArray(_vertexAttrib.loc);
 			GLERRLOG
 		}
 		
@@ -626,30 +626,30 @@ void ISFScene::_setUpRenderCallback()	{
 }
 void ISFScene::_renderPrep()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	if (deleted)
+	if (_deleted)
 		return;
-	if (doc == nullptr)
+	if (_doc == nullptr)
 		return;
 	
 	//	check the texture type string- if it's changed, we'll have to recompile the shaders!
-	string		currentTextureTypeString = doc->generateTextureTypeString();
-	if (compiledInputTypeString==nullptr || (currentTextureTypeString!=*compiledInputTypeString))	{
-		if (compiledInputTypeString != nullptr)
-			delete compiledInputTypeString;
-		compiledInputTypeString = new string(currentTextureTypeString);
+	string		currentTextureTypeString = _doc->generateTextureTypeString();
+	if (_compiledInputTypeString==nullptr || (currentTextureTypeString!=*_compiledInputTypeString))	{
+		if (_compiledInputTypeString != nullptr)
+			delete _compiledInputTypeString;
+		_compiledInputTypeString = new string(currentTextureTypeString);
 		
 		//	update the shader strings
 		string		tmpFrag;
 		string		tmpVert;
-		GLVersion	tmpVersion = (context==nullptr) ? GLVersion_2 : context->version;
-		doc->generateShaderSource(&tmpFrag, &tmpVert, tmpVersion);
+		GLVersion	tmpVersion = (_context==nullptr) ? GLVersion_2 : _context->version;
+		_doc->generateShaderSource(&tmpFrag, &tmpVert, tmpVersion);
 		setVertexShaderString(tmpVert);
 		setFragmentShaderString(tmpFrag);
 	}
 	
 	//	store these values, then check them after the super's "_renderPrep"...
-	bool		vShaderUpdatedFlag = vsStringUpdated;
-	bool		fShaderUpdatedFlag = fsStringUpdated;
+	bool		vShaderUpdatedFlag = _vsStringUpdated;
+	bool		fShaderUpdatedFlag = _fsStringUpdated;
 	
 	//	tell the super to do its _renderPrep, which will compile the shader and get it all set up if necessary
 	GLScene::_renderPrep();
@@ -671,18 +671,18 @@ void ISFScene::_renderPrep()	{
 #if !defined(VVGL_TARGETENV_GLES)
 	if (getGLVersion() != GLVersion_2)	{
 		if (getVAO() == nullptr)
-			setVAO(CreateVAO(true, (privatePool!=nullptr) ? privatePool : GetGlobalBufferPool()));
+			setVAO(CreateVAO(true, (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool()));
 	}
 #endif
 	
 	//	...if either of these values have changed, the program has been recompiled and i need to find new uniform locations for all the attributes (the uniforms in the GLSL programs)
 	bool		findNewUniforms = false;
-	if (vShaderUpdatedFlag!=vsStringUpdated || fShaderUpdatedFlag!=fsStringUpdated)
+	if (vShaderUpdatedFlag!=_vsStringUpdated || fShaderUpdatedFlag!=_fsStringUpdated)
 		findNewUniforms = true;
 	
 	//	need a GL context
-	if (context == nullptr)	{
-		cout << "\terr: bailing, context null, " << __PRETTY_FUNCTION__ << endl;
+	if (_context == nullptr)	{
+		cout << "\terr: bailing, _context null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
 	
@@ -697,41 +697,41 @@ void ISFScene::_renderPrep()	{
 	//	this block retrieves and stores the uniform location from the passed attribute for simple val-based attributes
 	auto		setAttrUniformsSimpleValBlock = [&](const ISFAttrRef & inAttr)	{
 		const char *	tmpAttrName = inAttr->getName().c_str();
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpAttrName);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 	};
 	//	this block retrieves and stores the uniform locations from the passed attribute for cube-based attributes
 	auto		setAttrUniformsCubeBlock = [&](const ISFAttrRef & inAttr)	{
 		const char *		tmpAttrName = inAttr->getName().c_str();
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpAttrName);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 		
 		sprintf(tmpCString,"_%s_imgSize",tmpAttrName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(2, samplerLoc);
 	};
 	//	this block retrieves and stores the uniform locations from the passed attribute for all other image-based attributes
 	auto		setAttrUniformsImageBlock = [&](const ISFAttrRef & inAttr)	{
 		const char *		tmpAttrName = inAttr->getName().c_str();
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpAttrName);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 		
 		sprintf(tmpCString,"_%s_imgRect",tmpAttrName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(1, samplerLoc);
 		
 		sprintf(tmpCString,"_%s_imgSize",tmpAttrName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(2, samplerLoc);
 		
 		sprintf(tmpCString,"_%s_flip",tmpAttrName);
-		samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(3, samplerLoc);
 	};
@@ -743,7 +743,7 @@ void ISFScene::_renderPrep()	{
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
 				GLERRLOG
-				if (context->version <= GLVersion_2)	{
+				if (_context->version <= GLVersion_2)	{
 					glEnable(tmpBuffer->desc.target);
 					GLERRLOG
 				}
@@ -773,7 +773,7 @@ void ISFScene::_renderPrep()	{
 			if (tmpBuffer != nullptr)	{
 				glActiveTexture(GL_TEXTURE0 + textureCount);
 				GLERRLOG
-				if (context->version <= GLVersion_2)	{
+				if (_context->version <= GLVersion_2)	{
 					glEnable(tmpBuffer->desc.target);
 					GLERRLOG
 				}
@@ -811,43 +811,43 @@ void ISFScene::_renderPrep()	{
 	/*
 	auto		setTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
 		//const char *		tmpTargetName = inTarget->getName().c_str();
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpTargetName);
 		//GLERRLOG
 		//if (samplerLoc >= 0)
 		//	inTarget->setUniformLocation(0, samplerLoc);
 		//
 		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//if (samplerLoc >= 0)
 		//	inTarget->setUniformLocation(2, samplerLoc);
 		//
 		
-		inTarget->cacheUniformLocations(program);
+		inTarget->cacheUniformLocations(_program);
 	};
 	*/
 	auto		setTargetUniformsImageBlock = [&](const ISFPassTargetRef & inTarget)	{
 		//const char *		tmpTargetName = inTarget->getName().c_str();
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpTargetName);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpTargetName);
 		//GLERRLOG
 		//inTarget->setUniformLocation(0, samplerLoc);
 		//
 		//sprintf(tmpCString,"_%s_imgRect",tmpTargetName);
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(1, samplerLoc);
 		//
 		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(2, samplerLoc);
 		//
 		//sprintf(tmpCString,"_%s_flip",tmpTargetName);
-		//samplerLoc = (program<=0) ? -1 : glGetUniformLocation(program, tmpCString);
+		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(3, samplerLoc);
 		
-		inTarget->cacheUniformLocations(program);
+		inTarget->cacheUniformLocations(_program);
 	};
 	/*
 	auto		pushTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
@@ -856,7 +856,7 @@ void ISFScene::_renderPrep()	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
 			GLERRLOG
-			if (context->version <= GLVersion_2)	{
+			if (_context->version <= GLVersion_2)	{
 				glEnable(tmpBuffer->desc.target);
 				GLERRLOG
 			}
@@ -885,7 +885,7 @@ void ISFScene::_renderPrep()	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
 			GLERRLOG
-			if (context->version <= GLVersion_2)	{
+			if (_context->version <= GLVersion_2)	{
 				glEnable(tmpBuffer->desc.target);
 				GLERRLOG
 			}
@@ -923,7 +923,7 @@ void ISFScene::_renderPrep()	{
 	
 	
 	//	run through the inputs, applying the current values to the program
-	vector<ISFAttrRef> &	inputs = doc->getInputs();
+	vector<ISFAttrRef> &	inputs = _doc->getInputs();
 	for (const auto & attribRef : inputs)	{
 		ISFValType			attribType = attribRef->getType();
 		ISFVal &			currentVal = attribRef->getCurrentVal();
@@ -1039,7 +1039,7 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the imported images, applying the current values to the program
-	vector<ISFAttrRef> &	imageImports = doc->getImageImports();
+	vector<ISFAttrRef> &	imageImports = _doc->getImageImports();
 	for (const auto & attribRef : imageImports)	{
 		if (attribRef->getType() == ISFValType_Cube)	{
 			if (findNewUniforms)
@@ -1054,7 +1054,7 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the persistent buffers, applying the current values to the program
-	const vector<ISFPassTargetRef>	persistentBuffers = doc->getPersistentBuffers();
+	const vector<ISFPassTargetRef>	persistentBuffers = _doc->getPersistentBuffers();
 	for (const auto & targetRef : persistentBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
@@ -1062,7 +1062,7 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the temp buffers, applying the current values to the program
-	const vector<ISFPassTargetRef>	tempBuffers = doc->getTempBuffers();
+	const vector<ISFPassTargetRef>	tempBuffers = _doc->getTempBuffers();
 	for (const auto & targetRef : tempBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
@@ -1071,50 +1071,50 @@ void ISFScene::_renderPrep()	{
 	
 	//	if we're finding new uniforms then we also have to update the uniform locations of some standard inputs
 	if (findNewUniforms)	{
-		vertexAttrib.cacheTheLoc(program);
-		renderSizeUni.cacheTheLoc(program);
-		passIndexUni.cacheTheLoc(program);
-		timeUni.cacheTheLoc(program);
-		timeDeltaUni.cacheTheLoc(program);
-		dateUni.cacheTheLoc(program);
-		renderFrameIndexUni.cacheTheLoc(program);
+		_vertexAttrib.cacheTheLoc(_program);
+		_renderSizeUni.cacheTheLoc(_program);
+		_passIndexUni.cacheTheLoc(_program);
+		_timeUni.cacheTheLoc(_program);
+		_timeDeltaUni.cacheTheLoc(_program);
+		_dateUni.cacheTheLoc(_program);
+		_renderFrameIndexUni.cacheTheLoc(_program);
 	}
 	//	push the standard inputs to the program
-	if (renderSizeUni.loc >= 0)	{
-		glUniform2f(renderSizeUni.loc, orthoSize.width, orthoSize.height);
+	if (_renderSizeUni.loc >= 0)	{
+		glUniform2f(_renderSizeUni.loc, _orthoSize.width, _orthoSize.height);
 		GLERRLOG
 	}
-	if (passIndexUni.loc >= 0)	{
-		glUniform1i(passIndexUni.loc, passIndex-1);
+	if (_passIndexUni.loc >= 0)	{
+		glUniform1i(_passIndexUni.loc, _passIndex-1);
 		GLERRLOG
 	}
-	if (timeUni.loc >= 0)	{
-		glUniform1f(timeUni.loc, (float)renderTime);
+	if (_timeUni.loc >= 0)	{
+		glUniform1f(_timeUni.loc, (float)_renderTime);
 		GLERRLOG
 	}
-	if (timeDeltaUni.loc >= 0)	{
-		glUniform1f(timeDeltaUni.loc, (float)renderTimeDelta);
+	if (_timeDeltaUni.loc >= 0)	{
+		glUniform1f(_timeDeltaUni.loc, (float)_renderTimeDelta);
 		GLERRLOG
 	}
-	if (dateUni.loc >= 0)	{
+	if (_dateUni.loc >= 0)	{
 		time_t		now = time(0);
 		tm			*localTime = localtime(&now);
 		double		timeInSeconds = 0.;
 		timeInSeconds += localTime->tm_sec;
 		timeInSeconds += localTime->tm_min * 60.;
 		timeInSeconds += localTime->tm_hour * 60. * 60.;
-		glUniform4f(dateUni.loc, localTime->tm_year+1900., localTime->tm_mon+1, localTime->tm_mday, timeInSeconds);
+		glUniform4f(_dateUni.loc, localTime->tm_year+1900., localTime->tm_mon+1, localTime->tm_mday, timeInSeconds);
 		GLERRLOG
 	}
-	if (renderFrameIndexUni.loc >= 0)	{
-		glUniform1i(renderFrameIndexUni.loc, renderFrameIndex);
+	if (_renderFrameIndexUni.loc >= 0)	{
+		glUniform1i(_renderFrameIndexUni.loc, _renderFrameIndex);
 		GLERRLOG
 	}
 	
 	//cout << "\t" << __PRETTY_FUNCTION__ << "- FINISHED" << endl;
 }
 void ISFScene::_initialize()	{
-	if (deleted)
+	if (_deleted)
 		return;
 	
 	GLScene::_initialize();
@@ -1122,18 +1122,18 @@ void ISFScene::_initialize()	{
 	glDisable(GL_BLEND);
 	GLERRLOG
 	
-	//if (context == nullptr)	{
+	//if (_context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 	//	return;
 	//}
 }
 void ISFScene::_renderCleanup()	{
-	if (deleted)
+	if (_deleted)
 		return;
 	
 	GLScene::_renderCleanup();
 	
-	//if (context == nullptr)	{
+	//if (_context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 	//	return;
 	//}
@@ -1157,22 +1157,22 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 #endif
 	
 	{
-		lock_guard<recursive_mutex> lock(renderLock);
+		lock_guard<recursive_mutex> lock(_renderLock);
 		
 		//	update the render size and time vars
-		renderSize = inSize;
-		renderTimeDelta = (inTime<=0.) ? 0. : fabs(inTime-renderTime);
-		renderTime = inTime;
+		_renderSize = inSize;
+		_renderTimeDelta = (inTime<=0.) ? 0. : fabs(inTime-_renderTime);
+		_renderTime = inTime;
 		
 		//	tell the doc to evaluate its buffers with the passed render size
-		tmpDoc->evalBufferDimensionsWithRenderSize(renderSize);
+		tmpDoc->evalBufferDimensionsWithRenderSize(_renderSize);
 		
 		//	clear the passed dict of render passes (we'll be placing the rendered content from each pass in it as we progress)
 		if (outPassDict != nullptr)
 			outPassDict->clear();
 		
 		//	get the buffer pool we're going to use to generate the buffers
-		GLBufferPoolRef		bp = privatePool;
+		GLBufferPoolRef		bp = _privatePool;
 		if (bp==nullptr && inTargetBuffer!=nullptr)
 			bp = inTargetBuffer->parentBufferPool;
 		if (bp==nullptr)
@@ -1182,16 +1182,16 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			return;
 		}
 		
-		bool					shouldBeFloat = alwaysRenderToFloat;
+		bool					shouldBeFloat = _alwaysRenderToFloat;
 		bool					shouldBeIOSurface;
-		shouldBeIOSurface = persistentToIOSurface;
+		shouldBeIOSurface = _persistentToIOSurface;
 		
 		GLBufferRef				tmpFBO = CreateFBO(true, bp);
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->getRenderPasses();
-		passIndex = 1;
+		_passIndex = 1;
 		for (const auto & pass : passes)	{
-			//cout << "\trendering pass " << passIndex << endl;
+			//cout << "\trendering pass " << _passIndex << endl;
 			//	get the name of the target buffer for this pass (if there is a name)
 			//string				targetName = passIt.getTargetName();
 			ISFPassTargetRef		targetBuffer = nullptr;
@@ -1201,7 +1201,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			RenderTarget			tmpRenderTarget;
 			//if (inTargetBuffer != nullptr)	{
 				tmpRenderTarget.fbo = tmpFBO;
-				context->makeCurrentIfNotCurrent();
+				_context->makeCurrentIfNotCurrent();
 			//}
 			
 			//	if there's a target buffer name, i need to find the target buffer
@@ -1222,7 +1222,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 				}
 			}
 			VVGL::Size			targetBufferSize = (targetBuffer==nullptr) ? inSize : targetBuffer->targetSize();
-			if (passIndex >= passes.size())
+			if (_passIndex >= passes.size())
 				tmpRenderTarget.color = inTargetBuffer;
 			else	{
 				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
@@ -1235,25 +1235,25 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 #endif
 					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->getFloatFlag())) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
 				
-				//context->makeCurrentIfNotCurrent();
+				//_context->makeCurrentIfNotCurrent();
 			}
 			//cout << "\ttargetBufferSize is " << targetBufferSize << ", and has target color buffer " << *(tmpRenderTarget.color) << endl;
 			
 			setSize(targetBufferSize);
 			
-			//context->makeCurrentIfNotCurrent();
+			//_context->makeCurrentIfNotCurrent();
 			
 			render(tmpRenderTarget);
 			
 			//	if there's an out pass dict, add the frame i just rendered into to it at the appropriate key
 			if (outPassDict!=nullptr && tmpRenderTarget.color!=nullptr)	{
-				//(*outPassDict)[FmtString("%d",passIndex-1)] = tmpRenderTarget.color;
-				(*outPassDict)[passIndex-1] = tmpRenderTarget.color;
-				//cout << "\tstoring " << *tmpRenderTarget.color << " at " << passIndex-1 << endl;
+				//(*outPassDict)[FmtString("%d",_passIndex-1)] = tmpRenderTarget.color;
+				(*outPassDict)[_passIndex-1] = tmpRenderTarget.color;
+				//cout << "\tstoring " << *tmpRenderTarget.color << " at " << _passIndex-1 << endl;
 			}
 			
 			//	increment the pass index for next time
-			++passIndex;
+			++_passIndex;
 			
 			//	if this was a persistent or temp buffer, store the frame i just rendered
 			if (isPersistentBuffer || isTempBuffer)	{
@@ -1279,7 +1279,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		}
 		
 		//	increment the rendered frame index!
-		++renderFrameIndex;
+		++_renderFrameIndex;
 		
 		//	if there's a pass dict...
 		if (outPassDict != nullptr)	{
@@ -1321,10 +1321,10 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 	
 	//	if i'm supposed to throw any exceptions and there was a GLSL error compiling/linking the program, throw an exception now
 	{
-		lock_guard<mutex>		lock(errDictLock);
-		if (throwExceptions && errDict.size()>0)	{
-			ISFErr		tmpErr = ISFErr(ISFErrType_ErrorCompilingGLSL, "Shader Problem", "check error dict for more info", errDict);
-			errDict.clear();
+		lock_guard<mutex>		lock(_errDictLock);
+		if (_throwExceptions && _errDict.size()>0)	{
+			ISFErr		tmpErr = ISFErr(ISFErrType_ErrorCompilingGLSL, "Shader Problem", "check error dict for more info", _errDict);
+			_errDict.clear();
 			throw tmpErr;
 		}
 	}

@@ -31,24 +31,24 @@ Stores the GLBuffer (the GL resource) which this pass will render into, as well 
 */
 class VVISF_EXPORT ISFPassTarget	{
 	private:
-		string			name;
-		GLBufferRef		buffer = nullptr;
-		ISFDoc			*parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
+		string			_name;
+		GLBufferRef		_buffer = nullptr;
+		ISFDoc			*_parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
 		
-		mutex			targetLock;
+		mutex			_targetLock;
 		
-		double			targetWidth = 1.0;	//	the target width for this pass.  the expression evaluates to this value
-		string			*targetWidthString = nullptr;
-		exprtk::expression<double>		*targetWidthExpression = nullptr;
-		double			widthExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
+		double			_targetWidth = 1.0;	//	the target width for this pass.  the expression evaluates to this value
+		string			*_targetWidthString = nullptr;
+		exprtk::expression<double>		*_targetWidthExpression = nullptr;
+		double			_widthExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
 
-		double			targetHeight = 1.0;	//	the target height for this pass.  the expression evaluates to this value
-		string			*targetHeightString = nullptr;
-		exprtk::expression<double>		*targetHeightExpression = nullptr;
-		double			heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
+		double			_targetHeight = 1.0;	//	the target height for this pass.  the expression evaluates to this value
+		string			*_targetHeightString = nullptr;
+		exprtk::expression<double>		*_targetHeightExpression = nullptr;
+		double			_heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
 
-		bool			floatFlag = false;	//	NO by default, if YES makes float texutres
-		GLCachedUniRef	cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
+		bool			_floatFlag = false;	//	NO by default, if YES makes float texutres
+		GLCachedUniRef	_cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
 	public:
 		//	"class method" that creates a buffer ref
 		static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
@@ -73,26 +73,26 @@ class VVISF_EXPORT ISFPassTarget	{
 		//!	Sets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
 		void setFloatFlag(const bool & n);
 		//!	Gets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
-		bool getFloatFlag() const { return floatFlag; }
+		bool getFloatFlag() const { return _floatFlag; }
 		//!	Deletes any GL resources that might presently be cached by this pass.
 		void clearBuffer();
 		
-		bool targetSizeNeedsEval() const { return (targetHeightString!=nullptr || targetHeightString!=nullptr); }
+		bool targetSizeNeedsEval() const { return (_targetHeightString!=nullptr || _targetHeightString!=nullptr); }
 		void evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer);
 		
 		//!	Returns the receiver's name.
-		string & getName() { return name; }
+		string & getName() { return _name; }
 		//!	Returns the GLBuffer currently cached with this pass, or null.
-		GLBufferRef & getBuffer() { return buffer; }
+		GLBufferRef & getBuffer() { return _buffer; }
 		//!	Sets the GLBuffer currently cached with this pass.
-		void setBuffer(const GLBufferRef & n) { buffer=n; }
+		void setBuffer(const GLBufferRef & n) { _buffer=n; }
 		
 		//!	Returns the last-calculated target size for this pass.
-		VVGL::Size targetSize() { return { targetWidth, targetHeight }; }
+		VVGL::Size targetSize() { return { _targetWidth, _targetHeight }; }
 		
-		void cacheUniformLocations(const int & inPgmToCheck) { for (int i=0; i<4; ++i) cachedUnis[i]->cacheTheLoc(inPgmToCheck); }
-		int32_t getUniformLocation(const int & inIndex) const { return (inIndex<0||inIndex>3) ? -1 : cachedUnis[inIndex]->loc; }
-		void clearUniformLocations() { for (int i=0; i<4; ++i) cachedUnis[i]->purgeCache(); }
+		void cacheUniformLocations(const int & inPgmToCheck) { for (int i=0; i<4; ++i) _cachedUnis[i]->cacheTheLoc(inPgmToCheck); }
+		int32_t getUniformLocation(const int & inIndex) const { return (inIndex<0||inIndex>3) ? -1 : _cachedUnis[inIndex]->loc; }
+		void clearUniformLocations() { for (int i=0; i<4; ++i) _cachedUnis[i]->purgeCache(); }
 	
 	private:
 		void setTargetSize(const VVGL::Size & inSize, const bool & inResize=true, const bool & inCreateNewBuffer=true);

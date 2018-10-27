@@ -37,13 +37,13 @@ void GLTexToTexCopier::prepareToBeDeleted()	{
 
 GLTexToTexCopier::~GLTexToTexCopier()	{
 	//cout << __PRETTY_FUNCTION__ << "->" << this << endl;
-	if (!deleted)
+	if (!_deleted)
 		prepareToBeDeleted();
 	
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
-	vao = nullptr;
+	_vao = nullptr;
 #elif defined(VVGL_TARGETENV_GLES)
-	vbo = nullptr;
+	_vbo = nullptr;
 #endif
 }
 void GLTexToTexCopier::generalInit()	{
@@ -144,12 +144,12 @@ void main()	{\r\
 	
 	setRenderPrepCallback([&](const GLScene & /*n*/, const bool /*inReshaped*/, const bool & inPgmChanged) {
 		if (inPgmChanged)	{
-			inputXYZLoc.cacheTheLoc(program);
-			inputSTLoc.cacheTheLoc(program);
-			inputImageLoc.cacheTheLoc(program);
-			inputImageRectLoc.cacheTheLoc(program);
-			isRectTexLoc.cacheTheLoc(program);
-			vboContents = Quad<VertXYZST>();
+			_inputXYZLoc.cacheTheLoc(_program);
+			_inputSTLoc.cacheTheLoc(_program);
+			_inputImageLoc.cacheTheLoc(_program);
+			_inputImageRectLoc.cacheTheLoc(_program);
+			_isRectTexLoc.cacheTheLoc(_program);
+			_vboContents = Quad<VertXYZST>();
 		}
 	});
 }
@@ -169,36 +169,36 @@ void GLTexToTexCopier::_initialize()	{
 
 
 void GLTexToTexCopier::setCopyToIOSurface(const bool & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	copyToIOSurface = n;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_copyToIOSurface = n;
 }
 bool GLTexToTexCopier::getCopyToIOSurface()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return copyToIOSurface;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _copyToIOSurface;
 }
 void GLTexToTexCopier::setCopyAndResize(const bool & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	copyAndResize = n;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_copyAndResize = n;
 }
 bool GLTexToTexCopier::getCopyAndResize()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return copyAndResize;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _copyAndResize;
 }
 void GLTexToTexCopier::setCopySize(const Size & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	copySize = n;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_copySize = n;
 }
 Size GLTexToTexCopier::getCopySize()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return copySize;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _copySize;
 }
 void GLTexToTexCopier::setCopySizingMode(const SizingMode & n)	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	copySizingMode = n;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	_copySizingMode = n;
 }
 SizingMode GLTexToTexCopier::getCopySizingMode()	{
-	lock_guard<recursive_mutex>		lock(renderLock);
-	return copySizingMode;
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	return _copySizingMode;
 }
 
 
@@ -210,34 +210,34 @@ GLBufferRef GLTexToTexCopier::copyToNewBuffer(const GLBufferRef & n)	{
 	if (n == nullptr)
 		return nullptr;
 	
-	if (copyAndResize)
-		setOrthoSize(copySize);
+	if (_copyAndResize)
+		setOrthoSize(_copySize);
 	else
 		setOrthoSize(n->srcRect.size);
 	
 	//	make the buffers i'll be rendering into
 #if defined(VVGL_SDK_MAC)
-	GLBufferRef		color = (copyToIOSurface) ? CreateRGBATexIOSurface(orthoSize) : CreateRGBATex(orthoSize);
+	GLBufferRef		color = (_copyToIOSurface) ? CreateRGBATexIOSurface(_orthoSize) : CreateRGBATex(_orthoSize);
 #else
-	GLBufferRef		color = CreateRGBATex(orthoSize);
+	GLBufferRef		color = CreateRGBATex(_orthoSize);
 #endif
 	//	create a render target using the buffers i'm rendering into
-	renderTarget = RenderTarget(CreateFBO(), color, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(), color, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
 	}
-	context->makeCurrentIfNotCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	//	prep for render
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
 	Quad<VertXYZST>			targetQuad;
-	targetQuad.populateGeo(Rect(0,0,orthoSize.width,orthoSize.height));
+	targetQuad.populateGeo(Rect(0,0,_orthoSize.width,_orthoSize.height));
 	targetQuad.populateTex(n->glReadySrcRect(), n->flipped);
 	
 	//	draw the texture in the target quad
@@ -247,7 +247,7 @@ GLBufferRef GLTexToTexCopier::copyToNewBuffer(const GLBufferRef & n)	{
 	_renderCleanup();
 	
 	//	clear out the render target
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 	
 	return color;
 }
@@ -255,26 +255,26 @@ bool GLTexToTexCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	
 	
 	if (a==nullptr || b==nullptr)
 		return false;
-	if ((a->srcRect.size != b->srcRect.size && !copyAndResize) || (copyAndResize && copySize != b->srcRect.size))	{
+	if ((a->srcRect.size != b->srcRect.size && !_copyAndResize) || (_copyAndResize && _copySize != b->srcRect.size))	{
 		//cout << "\tERR: bailing, size mismatch, " << __PRETTY_FUNCTION__ << endl;
-		//cout << "\ta size is " << a->srcRect.size << ", b size is " << b->srcRect.size << ", copyAndResize is " << copyAndResize << endl;
+		//cout << "\ta size is " << a->srcRect.size << ", b size is " << b->srcRect.size << ", _copyAndResize is " << _copyAndResize << endl;
 		return false;
 	}
 	
-	setOrthoSize(copyAndResize ? copySize : b->srcRect.size);
+	setOrthoSize(_copyAndResize ? _copySize : b->srcRect.size);
 	
 	//	create a render target using the buffers i'm rendering into
-	renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return false;
 	}
-	context->makeCurrentIfNotCurrent();
-	//context->makeCurrent();
-	//context->makeCurrentIfNull();
+	_context->makeCurrentIfNotCurrent();
+	//_context->makeCurrent();
+	//_context->makeCurrentIfNull();
 	
 	//	prep for render
 	_renderPrep();
@@ -291,7 +291,7 @@ bool GLTexToTexCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	
 	_renderCleanup();
 	
 	//	clear out the render target
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 	
 	return true;
 	
@@ -306,24 +306,24 @@ void GLTexToTexCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef 
 	setOrthoSize(b->srcRect.size);
 	
 	//	create a render target using the buffers i'm rendering into
-	renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
-	//context->makeCurrent();
-	//context->makeCurrentIfNull();
+	_context->makeCurrentIfNotCurrent();
+	//_context->makeCurrent();
+	//_context->makeCurrentIfNull();
 	
 	//	prep for render
 	_renderPrep();
 	
 	//	assemble a quad object that describes what we're going to draw
 	Quad<VertXYZST>			targetQuad;
-	Rect					geometryRect = ResizeRect(a->srcRect, Rect(0,0,orthoSize.width,orthoSize.height), copySizingMode);
+	Rect					geometryRect = ResizeRect(a->srcRect, Rect(0,0,_orthoSize.width,_orthoSize.height), _copySizingMode);
 	targetQuad.populateGeo(geometryRect);
 	targetQuad.populateTex(a->glReadySrcRect(), a->flipped);
 	
@@ -334,7 +334,7 @@ void GLTexToTexCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef 
 	_renderCleanup();
 	
 	//	clear out the render target
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 	
 }
 
@@ -346,17 +346,17 @@ void GLTexToTexCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef &
 	setOrthoSize(b->size);
 	
 	//	create a render target using the buffers i'm rendering into
-	renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
-	lock_guard<recursive_mutex>		lock(renderLock);
-	if (context == nullptr)	{
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
 		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
-	context->makeCurrentIfNotCurrent();
-	//context->makeCurrent();
-	//context->makeCurrentIfNull();
+	_context->makeCurrentIfNotCurrent();
+	//_context->makeCurrent();
+	//_context->makeCurrentIfNull();
 	
 	//	prep for render
 	_renderPrep();
@@ -373,7 +373,7 @@ void GLTexToTexCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef &
 	_renderCleanup();
 	
 	//	clear out the render target
-	renderTarget = RenderTarget();
+	_renderTarget = RenderTarget();
 	
 }
 
@@ -424,15 +424,15 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 		//	make the VAO if we don't already have one
-		if (vao == nullptr)
-			vao = CreateVAO(true);
+		if (_vao == nullptr)
+			_vao = CreateVAO(true);
 	
 		//	if the target quad doesn't match what's in the VAO now, we have to update the VAO now
-		if (inVertexStruct != vboContents)	{
+		if (inVertexStruct != _vboContents)	{
 			//cout << "\tvbo contents updated, repopulating\n";
 			//	bind the VAO
-			if (vao != nullptr)	{
-				glBindVertexArray(vao->name);
+			if (_vao != nullptr)	{
+				glBindVertexArray(_vao->name);
 				GLERRLOG
 			}
 			//	make a VBO, populate it with vertex data
@@ -444,14 +444,14 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 			glBufferData(GL_ARRAY_BUFFER, sizeof(inVertexStruct), (void*)&inVertexStruct, GL_STATIC_DRAW);
 			GLERRLOG
 			//	configure the attribute pointers to work with the VBO
-			if (inputXYZLoc.loc >= 0)	{
-				inputXYZLoc.enable();
-				glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.geoOffset()));
+			if (_inputXYZLoc.loc >= 0)	{
+				_inputXYZLoc.enable();
+				glVertexAttribPointer(_inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.geoOffset()));
 				GLERRLOG
 			}
-			if (inputSTLoc.loc >= 0)	{
-				inputSTLoc.enable();
-				glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.texOffset()));
+			if (_inputSTLoc.loc >= 0)	{
+				_inputSTLoc.enable();
+				glVertexAttribPointer(_inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), BUFFER_OFFSET(inVertexStruct.texOffset()));
 				GLERRLOG
 			}
 			//	un-bind the VAO, we're done assembling it
@@ -461,14 +461,14 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 			glDeleteBuffers(1, &tmpVBO);
 			GLERRLOG
 		
-			vboContents = inVertexStruct;
+			_vboContents = inVertexStruct;
 		}
 	
 		//	at this point we've got a VAO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
 	
 		//	bind the VAO
-		if (vao != nullptr)	{
-			glBindVertexArray(vao->name);
+		if (_vao != nullptr)	{
+			glBindVertexArray(_vao->name);
 			GLERRLOG
 		}
 		//	pass the 2D texture to the program (if there is a 2D texture)
@@ -478,8 +478,8 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		GLERRLOG
 		//glBindTexture(GLBuffer::Target_2D, 0);
 		//GLERRLOG
-		if (inputImageLoc.loc >= 0)	{
-			glUniform1i(inputImageLoc.loc, 0);
+		if (_inputImageLoc.loc >= 0)	{
+			glUniform1i(_inputImageLoc.loc, 0);
 			GLERRLOG
 		}
 #if defined(VVGL_SDK_MAC)
@@ -490,31 +490,31 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		//GLERRLOG
 		glBindTexture(GLBuffer::Target_Rect, (inBufferRef!=nullptr && inBufferRef->desc.target==GLBuffer::Target_Rect) ? inBufferRef->name : 0);
 		GLERRLOG
-		if (inputImageRectLoc.loc >= 0)	{
-			glUniform1i(inputImageRectLoc.loc, 1);
+		if (_inputImageRectLoc.loc >= 0)	{
+			glUniform1i(_inputImageRectLoc.loc, 1);
 			GLERRLOG
 		}
 #endif	//	VVGL_SDK_MAC
 		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
-		if (isRectTexLoc.loc >= 0)	{
+		if (_isRectTexLoc.loc >= 0)	{
 			if (inBufferRef == nullptr)	{
-				glUniform1i(isRectTexLoc.loc, 0);
+				glUniform1i(_isRectTexLoc.loc, 0);
 				GLERRLOG
 			}
 			else	{
 				switch (inBufferRef->desc.target)	{
 				case GLBuffer::Target_2D:
-					glUniform1i(isRectTexLoc.loc, 1);
+					glUniform1i(_isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
 #if defined(VVGL_SDK_MAC)
 				case GLBuffer::Target_Rect:
-					glUniform1i(isRectTexLoc.loc, 2);
+					glUniform1i(_isRectTexLoc.loc, 2);
 					GLERRLOG
 					break;
 #endif	//	VVGL_SDK_MAC
 				default:
-					glUniform1i(isRectTexLoc.loc, 0);
+					glUniform1i(_isRectTexLoc.loc, 0);
 					GLERRLOG
 					break;
 				}
@@ -533,11 +533,11 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 	else if (myVers==GLVersion_ES)	{
 #if defined(VVGL_TARGETENV_GLES)
 		//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...
-		//if (vbo==nullptr || inVertexStruct!=vboContents)	{
+		//if (_vbo==nullptr || inVertexStruct!=_vboContents)	{
 			//	create a new VBO with the passed vertex data
-		//	vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true);
+		//	_vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true);
 		
-		//	vboContents = inVertexStruct;
+		//	_vboContents = inVertexStruct;
 		//}
 	
 		//	at this point, we've got a VBO and it's guaranteed to have the correct geometry + texture coords- we just have to draw it
@@ -547,19 +547,19 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		//GLERRLOG
 	
 		//	bind the VBO
-		//if (vbo != nullptr)	{
-		//	glBindBuffer(GL_ARRAY_BUFFER, vbo->name);
+		//if (_vbo != nullptr)	{
+		//	glBindBuffer(GL_ARRAY_BUFFER, _vbo->name);
 		//	GLERRLOG
 		//}
 		//	configure the attribute pointers to work with the VBO
-		if (inputXYZLoc.loc >= 0)	{
-			inputXYZLoc.enable();
-			glVertexAttribPointer(inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.geo.x);
+		if (_inputXYZLoc.loc >= 0)	{
+			_inputXYZLoc.enable();
+			glVertexAttribPointer(_inputXYZLoc.loc, 3, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.geo.x);
 			GLERRLOG
 		}
-		if (inputSTLoc.loc >= 0)	{
-			inputSTLoc.enable();
-			glVertexAttribPointer(inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
+		if (_inputSTLoc.loc >= 0)	{
+			_inputSTLoc.enable();
+			glVertexAttribPointer(_inputSTLoc.loc, 2, GL_FLOAT, GL_FALSE, inVertexStruct.stride(), &inVertexStruct.bl.tex.s);
 			GLERRLOG
 		}
 		//	pass the 2D texture to the program (if there is a 2D texture)
@@ -571,24 +571,24 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		GLERRLOG
 		//glBindTexture(GLBuffer::Target_2D, 0);
 		//GLERRLOG
-		if (inputImageLoc.loc >= 0)	{
-			glUniform1i(inputImageLoc.loc, 0);
+		if (_inputImageLoc.loc >= 0)	{
+			glUniform1i(_inputImageLoc.loc, 0);
 			GLERRLOG
 		}
 		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
-		if (isRectTexLoc.loc >= 0)	{
+		if (_isRectTexLoc.loc >= 0)	{
 			if (inBufferRef == nullptr)	{
-				glUniform1i(isRectTexLoc.loc, 0);
+				glUniform1i(_isRectTexLoc.loc, 0);
 				GLERRLOG
 			}
 			else	{
 				switch (inBufferRef->desc.target)	{
 				case GLBuffer::Target_2D:
-					glUniform1i(isRectTexLoc.loc, 1);
+					glUniform1i(_isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
 				default:
-					glUniform1i(isRectTexLoc.loc, 0);
+					glUniform1i(_isRectTexLoc.loc, 0);
 					GLERRLOG
 					break;
 				}
@@ -600,17 +600,17 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		GLERRLOG
 	
 		//	disable the relevant attrib pointers & textures
-		if (inputXYZLoc.loc >= 0)	{
-			inputXYZLoc.disable();
+		if (_inputXYZLoc.loc >= 0)	{
+			_inputXYZLoc.disable();
 		}
-		if (inputSTLoc.loc >= 0)	{
-			inputSTLoc.disable();
+		if (_inputSTLoc.loc >= 0)	{
+			_inputSTLoc.disable();
 		}
 		glDisable(GL_TEXTURE_2D);
 		GLERRLOG
 	
 		//	un-bind the VBO
-		//if (vbo != nullptr)	{
+		//if (_vbo != nullptr)	{
 		//	glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//	GLERRLOG
 		//}

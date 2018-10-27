@@ -435,107 +435,107 @@ QOpenGLContext * GLQtCtxWrapper::GetCurrentContext()	{
 
 //	creates a new GL context and surface which it "owns", like calling GLQtCtxWrapper(nullptr,nullptr,true);
 GLQtCtxWrapper::GLQtCtxWrapper()	{
-	hidden = new GLQtCtxHidden();
+	_hidden = new GLQtCtxHidden();
 }
 //	if 'inTargetSurface' is null, a QOffscreenSurface will be created as a child of the QOpenGLContext.  if it's non-null (a widget or a window or etc), we just get a weak ref to it.
 //	if 'inCreateCtx' is YES, a new GL context will be created and it will share 'inCtx'.
 //	if 'inCreateCtx' is NO, no GL context will be created and instead a weak ref to 'inCtx' will be established.
 GLQtCtxWrapper::GLQtCtxWrapper(QSurface * inSurface, QOpenGLContext * inCtx, bool inCreateCtx, QSurfaceFormat inSfcFmt)	{
-	hidden = new GLQtCtxHidden(inSurface, inCtx, inCreateCtx, inSfcFmt);
+	_hidden = new GLQtCtxHidden(inSurface, inCtx, inCreateCtx, inSfcFmt);
 }
 GLQtCtxWrapper::GLQtCtxWrapper(QOpenGLContext * inCtx)	{
-	hidden = new GLQtCtxHidden(inCtx);
+	_hidden = new GLQtCtxHidden(inCtx);
 }
 
 
 GLQtCtxWrapper::~GLQtCtxWrapper()	{
-	if (hidden != nullptr)	{
-		delete hidden;
-		hidden = nullptr;
+	if (_hidden != nullptr)	{
+		delete _hidden;
+		_hidden = nullptr;
 	}
 }
 
 
 GLQtCtxWrapper::GLQtCtxWrapper(const GLQtCtxWrapper * n)	{
-	if (hidden != nullptr)
-		delete hidden;
+	if (_hidden != nullptr)
+		delete _hidden;
 	if (n == nullptr)
-		hidden = new GLQtCtxHidden();
+		_hidden = new GLQtCtxHidden();
 	else
-		hidden = new GLQtCtxHidden(n->hidden);
+		_hidden = new GLQtCtxHidden(n->_hidden);
 }
 GLQtCtxWrapper::GLQtCtxWrapper(const GLQtCtxWrapper & n)	{
-	if (hidden != nullptr)
-		delete hidden;
-	hidden = new GLQtCtxHidden(n.hidden);
+	if (_hidden != nullptr)
+		delete _hidden;
+	_hidden = new GLQtCtxHidden(n._hidden);
 }
 GLQtCtxWrapper::GLQtCtxWrapper(const GLQtCtxWrapperRef & n)	{
-	if (hidden != nullptr)
-		delete hidden;
+	if (_hidden != nullptr)
+		delete _hidden;
 	if (n == nullptr)
-		hidden = new GLQtCtxHidden();
+		_hidden = new GLQtCtxHidden();
 	else
-		hidden = new GLQtCtxHidden(n->hidden);
+		_hidden = new GLQtCtxHidden(n->_hidden);
 }
 
 
 void GLQtCtxWrapper::setShareContext(QOpenGLContext * inCtx)	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->setShareContext(inCtx);
+	_hidden->setShareContext(inCtx);
 }
 QOpenGLContext * GLQtCtxWrapper::getContext()	{
-	if (hidden==nullptr)
+	if (_hidden==nullptr)
 		return nullptr;
-	return hidden->getContext();
+	return _hidden->getContext();
 }
 QVariant GLQtCtxWrapper::getNativeHandle()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return QVariant();
-	return hidden->getNativeHandle();
+	return _hidden->getNativeHandle();
 }
 bool GLQtCtxWrapper::isSharingWith(QOpenGLContext * inCtx)	{
-	if (hidden==nullptr)
+	if (_hidden==nullptr)
 		return false;
-	return hidden->isSharingWith(inCtx);
+	return _hidden->isSharingWith(inCtx);
 }
 QSurfaceFormat GLQtCtxWrapper::format()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return GLQtCtxWrapper::CreateDefaultSurfaceFormat();
-	return hidden->format();
+	return _hidden->format();
 }
 
 
 void GLQtCtxWrapper::setSurface(const QSurface * inTargetSurface)	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->setSurface(inTargetSurface);
+	_hidden->setSurface(inTargetSurface);
 }
 void GLQtCtxWrapper::swap()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->swap();
+	_hidden->swap();
 }
 void GLQtCtxWrapper::moveToThread(QThread * inThread)	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->moveToThread(inThread);
+	_hidden->moveToThread(inThread);
 }
 
 void GLQtCtxWrapper::makeCurrent()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->makeCurrent();
+	_hidden->makeCurrent();
 }
 void GLQtCtxWrapper::makeCurrentIfNotCurrent()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->makeCurrentIfNotCurrent();
+	_hidden->makeCurrentIfNotCurrent();
 }
 void GLQtCtxWrapper::makeCurrentIfNull()	{
-	if (hidden == nullptr)
+	if (_hidden == nullptr)
 		return;
-	hidden->makeCurrentIfNull();
+	_hidden->makeCurrentIfNull();
 }
 
 

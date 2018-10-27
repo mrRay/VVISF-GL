@@ -24,26 +24,26 @@ const ISFVal & inMaxVal,
 const ISFVal & inDefVal, 
 const ISFVal & inIdenVal, 
 const vector<string> * inLabels, 
-const vector<int32_t> * inVals) : name(inName), description(inDesc), label(inLabel)	{
+const vector<int32_t> * inVals) : _name(inName), _description(inDesc), _label(inLabel)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	//name = inName;
-	//description = inDesc;
-	//label = inLabel;
-	type = inType;
-	currentVal = inDefVal;
-	minVal = inMinVal;
-	maxVal = inMaxVal;
-	defaultVal = inDefVal;
-	identityVal = inIdenVal;
-	labelArray = (inLabels==nullptr) ? vector<string>() : vector<string>(*inLabels);
-	valArray = (inVals==nullptr) ? vector<int32_t>() : vector<int32_t>(*inVals);
+	//_name = inName;
+	//_description = inDesc;
+	//_label = inLabel;
+	_type = inType;
+	_currentVal = inDefVal;
+	_minVal = inMinVal;
+	_maxVal = inMaxVal;
+	_defaultVal = inDefVal;
+	_identityVal = inIdenVal;
+	_labelArray = (inLabels==nullptr) ? vector<string>() : vector<string>(*inLabels);
+	_valArray = (inVals==nullptr) ? vector<int32_t>() : vector<int32_t>(*inVals);
 }
 ISFAttr::~ISFAttr()	{
 }
 
 
 double * ISFAttr::updateAndGetEvalVariable()	{
-	switch (type)	{
+	switch (_type)	{
 	case ISFValType_None:
 		break;
 	case ISFValType_Event:
@@ -51,9 +51,9 @@ double * ISFAttr::updateAndGetEvalVariable()	{
 	case ISFValType_Long:
 	case ISFValType_Float:
 		//	update the eval variable's value from the current val
-		evalVariable = currentVal.getDoubleVal();
+		_evalVariable = _currentVal.getDoubleVal();
 		//	return the address of the eval variable
-		return &evalVariable;
+		return &_evalVariable;
 		break;
 	case ISFValType_Point2D:
 	case ISFValType_Color:
@@ -76,11 +76,11 @@ ostream & operator<<(ostream & os, const ISFAttr & n)	{
 
 void ISFAttr::lengthyDescription()	{
 	cout << "<ISFAttr " << getName() << ": " << ISFValTypeString(getType());
-	cout << "\tcurrent:\t" << currentVal << endl;
-	cout << "\tmin:\t\t" << minVal << endl;
-	cout << "\tmax:\t\t" << maxVal << endl;
-	cout << "\tdef:\t\t" << defaultVal << endl;
-	cout << "\tiden:\t" << identityVal << ">" << endl;
+	cout << "\tcurrent:\t" << _currentVal << endl;
+	cout << "\tmin:\t\t" << _minVal << endl;
+	cout << "\tmax:\t\t" << _maxVal << endl;
+	cout << "\tdef:\t\t" << _defaultVal << endl;
+	cout << "\tiden:\t" << _identityVal << ">" << endl;
 }
 string ISFAttr::getAttrDescription()	{
 	return FmtString("<ISFAttr %s: %s>", getName().c_str(), ISFValTypeString(getType()).c_str());

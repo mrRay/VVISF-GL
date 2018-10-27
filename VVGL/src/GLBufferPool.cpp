@@ -41,27 +41,27 @@ static GLBufferPoolRef _nullGlobalBufferPool = nullptr;
 GLBufferPool::GLBufferPool(const GLContextRef & inCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tpassed ctx was " << inCtx << endl;
-	//context = (inShareCtx==nullptr) ? new GLContext() : new GLContext(inShareCtx);
-	//context = (inShareCtx==nullptr) ? CreateNewGLContextRef() : inShareCtx->newContextSharingMe();
-	context = (inCtx==nullptr) ? CreateNewGLContextRef() : inCtx;
-	//cout << "\tcontext is " << *context << endl;
-	//cout << "\tmy ctx is " << context << endl;
-	freeBuffers.reserve(50);
+	//_context = (inShareCtx==nullptr) ? new GLContext() : new GLContext(inShareCtx);
+	//_context = (inShareCtx==nullptr) ? CreateNewGLContextRef() : inShareCtx->newContextSharingMe();
+	_context = (inCtx==nullptr) ? CreateNewGLContextRef() : inCtx;
+	//cout << "\tcontext is " << *_context << endl;
+	//cout << "\tmy ctx is " << _context << endl;
+	_freeBuffers.reserve(50);
 	
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
-	colorSpace = CGColorSpaceCreateDeviceRGB();
+	_colorSpace = CGColorSpaceCreateDeviceRGB();
 #endif
 }
 GLBufferPool::~GLBufferPool()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	lock_guard<recursive_mutex>		lock(contextLock);
-	if (context != nullptr)	{
-		//delete context;
-		context = nullptr;
+	lock_guard<recursive_mutex>		lock(_contextLock);
+	if (_context != nullptr)	{
+		//delete _context;
+		_context = nullptr;
 	}
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
-	CGColorSpaceRelease(colorSpace);
+	CGColorSpaceRelease(_colorSpace);
 #endif
 }
 
@@ -72,7 +72,7 @@ GLBufferPool::~GLBufferPool()	{
 
 GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const Size & s, const void * b, const Size & bs, const bool & inCreateInCurrentContext)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	if (deleted)
+	if (_deleted)
 		return nullptr;
 	
 	GLBufferRef		returnMe = nullptr;
@@ -95,17 +95,17 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	newBufferDesc = d;
 	
 	//	grab a context lock so we can do stuff with the GL context
-	lock_guard<recursive_mutex>		lock(contextLock);
+	lock_guard<recursive_mutex>		lock(_contextLock);
 	
 #if defined(VVGL_SDK_MAC)
 	CGLError			err = kCGLNoError;
 #endif
 	if (!inCreateInCurrentContext)	{
-		if (context == nullptr)
+		if (_context == nullptr)
 			return nullptr;
-		//context->makeCurrentIfNull();
-		//context->makeCurrent();
-		context->makeCurrentIfNotCurrent();
+		//_context->makeCurrentIfNull();
+		//_context->makeCurrent();
+		_context->makeCurrentIfNotCurrent();
 	}
 	
 	//	cout << "\terr: " << err << " in " << __PRETTY_FUNCTION__ << endl;
@@ -229,7 +229,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		//	enable the tex target, gen the texture, and bind it
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
-		if (context->version <= GLVersion_2)	{
+		if (_context->version <= GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glEnable(newBufferDesc.target);
 			GLERRLOG
@@ -285,7 +285,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		
 //#if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
 #if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
-		if (context!=nullptr && context->version == GLVersion_2)	{
+		if (_context!=nullptr && _context->version == GLVersion_2)	{
 			if (newBufferDesc.pixelFormat == GLBuffer::PF_Depth)	{
 				glTexParameteri(newBufferDesc.target, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 				GLERRLOG
@@ -380,7 +380,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		//	un-bind the tex and disable the target
 		glBindTexture(newBufferDesc.target, 0);
 		GLERRLOG
-		if (context->version <= GLVersion_2)	{
+		if (_context->version <= GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glDisable(newBufferDesc.target);
 			GLERRLOG
@@ -424,17 +424,17 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 
 GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & desc, const Size & size)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	if (deleted)
+	if (_deleted)
 		return nullptr;
 	
 	//	get a lock on the array of free buffers
-	lock_guard<mutex>		lock(freeBuffersLock);
+	lock_guard<mutex>		lock(_freeBuffersLock);
 	
 	GLBufferRef			returnMe = nullptr;
 	
 	vector<GLBufferRef>::iterator		it;
 	int						tmpIndex = 0;
-	for (it=freeBuffers.begin(); it!=freeBuffers.end(); ++it)	{
+	for (it=_freeBuffers.begin(); it!=_freeBuffers.end(); ++it)	{
 		//	if this buffer is comparable to the passed descriptor and can be used for recycling...
 		GLBuffer			*bufferPtr = (*it).get();
 		if (bufferPtr->isComparableForRecycling(desc))	{
@@ -470,7 +470,7 @@ GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & d
 					//	if i'm here, this buffer is a match and i want to use it
 					returnMe = *it;
 					//	remove the buffer from the array
-					freeBuffers.erase(freeBuffers.begin()+tmpIndex);
+					_freeBuffers.erase(_freeBuffers.begin()+tmpIndex);
 					//	reset the idleCount to 0 so it's "fresh" (so it gets returned to the pool when it's no longer needed)
 					(*returnMe).idleCount = 0;
 					//	break out of the for loop
@@ -494,10 +494,10 @@ void GLBufferPool::housekeeping()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\tthis is " << this << endl;
 	
-	lock_guard<mutex>		lock(freeBuffersLock);
+	lock_guard<mutex>		lock(_freeBuffersLock);
 	
 	bool			needsToClearStuff = false;
-	for_each(freeBuffers.begin(), freeBuffers.end(), [&](const GLBufferRef & n)	{
+	for_each(_freeBuffers.begin(), _freeBuffers.end(), [&](const GLBufferRef & n)	{
 		(*n).idleCount++;
 		if ((*n).idleCount >= IDLEBUFFERCOUNT)
 			needsToClearStuff = true;
@@ -505,14 +505,14 @@ void GLBufferPool::housekeeping()	{
 	
 	//	if there are indices that need to be removed...
 	if (needsToClearStuff)	{
-		auto		removeIt = remove_if(freeBuffers.begin(), freeBuffers.end(), [&](GLBufferRef n){ return (*n).idleCount >= IDLEBUFFERCOUNT; });
-		freeBuffers.erase(removeIt, freeBuffers.end());
+		auto		removeIt = remove_if(_freeBuffers.begin(), _freeBuffers.end(), [&](GLBufferRef n){ return (*n).idleCount >= IDLEBUFFERCOUNT; });
+		_freeBuffers.erase(removeIt, _freeBuffers.end());
 	}
 }
 void GLBufferPool::purge()	{
 	{
-		lock_guard<mutex>		lock(freeBuffersLock);
-		for_each(freeBuffers.begin(), freeBuffers.end(), [&](const GLBufferRef & n)	{
+		lock_guard<mutex>		lock(_freeBuffersLock);
+		for_each(_freeBuffers.begin(), _freeBuffers.end(), [&](const GLBufferRef & n)	{
 			n->idleCount = (IDLEBUFFERCOUNT+1);
 		});
 	}
@@ -524,11 +524,11 @@ ostream & operator<<(ostream & os, const GLBufferPool & n)	{
 }
 
 void GLBufferPool::flush()	{
-	lock_guard<recursive_mutex>		lock(contextLock);
-	if (context != nullptr)	{
-		//context->makeCurrentIfNull();
-		//context->makeCurrent();
-		context->makeCurrentIfNotCurrent();
+	lock_guard<recursive_mutex>		lock(_contextLock);
+	if (_context != nullptr)	{
+		//_context->makeCurrentIfNull();
+		//_context->makeCurrent();
+		_context->makeCurrentIfNotCurrent();
 		glFlush();
 		GLERRLOG
 	}
@@ -547,20 +547,20 @@ void GLBufferPool::returnBufferToPool(GLBuffer * inBuffer)	{
 		return;
 	
 	//	if we've been flagged for deletion we're just waiting for the buffers still "in the wild" to get released, and as such we should just release this regardless.
-	if (deleted)	{
+	if (_deleted)	{
 		releaseBufferResources(inBuffer);
 		return;
 	}
 	
-	//	get a lock for the freeBuffers array
-	lock_guard<mutex>		lock(freeBuffersLock);
+	//	get a lock for the _freeBuffers array
+	lock_guard<mutex>		lock(_freeBuffersLock);
 	
-	//	if 'freeBuffers' is at capacity, increase its capacity
-	if (freeBuffers.size() == freeBuffers.capacity())
-		freeBuffers.reserve(freeBuffers.capacity()+25);
+	//	if '_freeBuffers' is at capacity, increase its capacity
+	if (_freeBuffers.size() == _freeBuffers.capacity())
+		_freeBuffers.reserve(_freeBuffers.capacity()+25);
 	
 	//	make a shared ptr for the passed buffer, stick it in the vector
-	freeBuffers.emplace_back(make_shared<GLBuffer>(*inBuffer));
+	_freeBuffers.emplace_back(make_shared<GLBuffer>(*inBuffer));
 	
 	//	now clear out some vars in the passed buffer- we don't want to release a backing if we're putting it back in the pool
 	inBuffer->backingReleaseCallback = nullptr;
@@ -574,15 +574,15 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 	if (inBuffer == nullptr)
 		return;
 	
-	lock_guard<recursive_mutex>		lock(contextLock);
-	if (context == nullptr)
+	lock_guard<recursive_mutex>		lock(_contextLock);
+	if (_context == nullptr)
 		return;
 	
 	//	Qt has thread-specific contexts: you cannot make them current on any other threads or they crash
 #if defined(VVGL_SDK_QT)
 	//	if we can't make the context current on this thread
 	QThread			*currentThread = QThread::currentThread();
-	QObject			*qCtxAsObj = (QObject*)context->getContext();
+	QObject			*qCtxAsObj = (QObject*)_context->getContext();
 	QThread			*ctxThread = (qCtxAsObj==nullptr) ? nullptr : qCtxAsObj->thread();
 	
 	if (currentThread != ctxThread)	{
@@ -599,9 +599,9 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 	}
 #endif	//	VVGL_SDK_QT
 	
-	//context->makeCurrentIfNull();
-	//context->makeCurrent();
-	context->makeCurrentIfNotCurrent();
+	//_context->makeCurrentIfNull();
+	//_context->makeCurrent();
+	_context->makeCurrentIfNotCurrent();
 	
 	switch (inBuffer->desc.type)	{
 	case GLBuffer::Type_CPU:
@@ -750,8 +750,8 @@ GLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int
 	
 	if (!inCreateInCurrentContext)	{
 		if (inPoolRef->getContext() != nullptr)	{
-			//inPoolRef->context->makeCurrentIfNull();
-			//inPoolRef->context->makeCurrent();
+			//inPoolRef->_context->makeCurrentIfNull();
+			//inPoolRef->_context->makeCurrent();
 			inPoolRef->getContext()->makeCurrentIfNotCurrent();
 		}
 	}
@@ -796,8 +796,8 @@ GLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int
 	
 	if (!inCreateInCurrentContext)	{
 		if (inPoolRef->getContext() != nullptr)	{
-			//inPoolRef->context->makeCurrentIfNull();
-			//inPoolRef->context->makeCurrent();
+			//inPoolRef->_context->makeCurrentIfNull();
+			//inPoolRef->_context->makeCurrent();
 			inPoolRef->getContext()->makeCurrentIfNotCurrent();
 		}
 	}
@@ -845,8 +845,8 @@ GLBufferRef CreateVAO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 	
 	if (!inCreateInCurrentContext)	{
 		if (inPoolRef->getContext() != nullptr)	{
-			//inPoolRef->context->makeCurrentIfNull();
-			//inPoolRef->context->makeCurrent();
+			//inPoolRef->_context->makeCurrentIfNull();
+			//inPoolRef->_context->makeCurrent();
 			inPoolRef->getContext()->makeCurrentIfNotCurrent();
 		}
 	}
@@ -1679,8 +1679,8 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 			GLContextRef		tmpCtx = inPoolRef->getContext();
 			if (tmpCtx == nullptr)
 				return nullptr;
-			//context->makeCurrentIfNull();
-			//context->makeCurrent();
+			//_context->makeCurrentIfNull();
+			//_context->makeCurrent();
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
@@ -1766,8 +1766,8 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 			GLContextRef		tmpCtx = inPoolRef->getContext();
 			if (tmpCtx == nullptr)
 				return nullptr;
-			//context->makeCurrentIfNull();
-			//context->makeCurrent();
+			//_context->makeCurrentIfNull();
+			//_context->makeCurrent();
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
@@ -1851,8 +1851,8 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			GLContextRef		tmpCtx = inPoolRef->getContext();
 			if (tmpCtx == nullptr)
 				return nullptr;
-			//context->makeCurrentIfNull();
-			//context->makeCurrent();
+			//_context->makeCurrentIfNull();
+			//_context->makeCurrent();
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
@@ -1936,8 +1936,8 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 			GLContextRef		tmpCtx = inPoolRef->getContext();
 			if (tmpCtx == nullptr)
 				return nullptr;
-			//context->makeCurrentIfNull();
-			//context->makeCurrent();
+			//_context->makeCurrentIfNull();
+			//_context->makeCurrent();
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
@@ -2021,8 +2021,8 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 			GLContextRef		tmpCtx = inPoolRef->getContext();
 			if (tmpCtx == nullptr)
 				return nullptr;
-			//context->makeCurrentIfNull();
-			//context->makeCurrent();
+			//_context->makeCurrentIfNull();
+			//_context->makeCurrent();
 			tmpCtx->makeCurrentIfNotCurrent();
 		}
 		//	bind the PBO
