@@ -59,10 +59,10 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		//!	Sets the size of the queue used for streaming.  Effectively, this is the number of calls it takes for the CPU data to "finish uploading" and get returned as a texture.
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
-		inline int getQueueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
+		inline int queueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
 		
 		void setSwapBytes(const bool & n) { lock_guard<recursive_mutex> lock(_queueLock); _swapBytes=n; }
-		bool getSwapBytes() { lock_guard<recursive_mutex> lock(_queueLock); return _swapBytes; }
+		bool swapBytes() { lock_guard<recursive_mutex> lock(_queueLock); return _swapBytes; }
 		
 		//!	Immediately uploads the passed CPU-based buffer to a GL texture- doesn't use the queues.  Less efficient.  Good for quick single-shot texture uploads.
 		GLBufferRef uploadCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext=false);

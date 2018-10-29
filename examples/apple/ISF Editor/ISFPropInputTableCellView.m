@@ -66,7 +66,7 @@
 			else	{
 				//	get the top, ask it for any inputs using the new val- only proceed if there's no collision...
 				JSONGUITop		*myTop = [myInput top];
-				JSONGUIInput	*nameCollisionInput = [myTop getInputNamed:newVal];
+				JSONGUIInput	*nameCollisionInput = [myTop inputNamed:newVal];
 				if (nameCollisionInput == nil)	{
 					//	update my name in my dict to the new name!
 					[myInput setObject:newVal forKey:@"NAME"];

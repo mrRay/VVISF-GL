@@ -137,7 +137,7 @@ void main()	{\r\
 //	intentionally blank, no shaders used
 #endif
 	
-	if (getGLVersion() != GLVersion_2)	{
+	if (glVersion() != GLVersion_2)	{
 		setVertexShaderString(vsString);
 		setFragmentShaderString(fsString);
 	}
@@ -172,7 +172,7 @@ void GLTexToTexCopier::setCopyToIOSurface(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	_copyToIOSurface = n;
 }
-bool GLTexToTexCopier::getCopyToIOSurface()	{
+bool GLTexToTexCopier::copyToIOSurface()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _copyToIOSurface;
 }
@@ -180,7 +180,7 @@ void GLTexToTexCopier::setCopyAndResize(const bool & n)	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	_copyAndResize = n;
 }
-bool GLTexToTexCopier::getCopyAndResize()	{
+bool GLTexToTexCopier::copyAndResize()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _copyAndResize;
 }
@@ -188,7 +188,7 @@ void GLTexToTexCopier::setCopySize(const Size & n)	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	_copySize = n;
 }
-Size GLTexToTexCopier::getCopySize()	{
+Size GLTexToTexCopier::copySize()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _copySize;
 }
@@ -196,7 +196,7 @@ void GLTexToTexCopier::setCopySizingMode(const SizingMode & n)	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	_copySizingMode = n;
 }
-SizingMode GLTexToTexCopier::getCopySizingMode()	{
+SizingMode GLTexToTexCopier::copySizingMode()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _copySizingMode;
 }
@@ -420,7 +420,7 @@ void GLTexToTexCopier::copyRedFrameTo(const GLBufferRef & n)	{
 	
 }
 void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
-	GLVersion		myVers = getGLVersion();
+	GLVersion		myVers = glVersion();
 	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 		//	make the VAO if we don't already have one

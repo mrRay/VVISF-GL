@@ -179,8 +179,8 @@
 		}
 		
 		
-		ISFDocRef		sceneDoc = scene->getDoc();
-		sceneIsFilter = (sceneDoc==nullptr || sceneDoc->getType()!=ISFFileType_Filter) ? NO : YES;
+		ISFDocRef		sceneDoc = scene->doc();
+		sceneIsFilter = (sceneDoc==nullptr || sceneDoc->type()!=ISFFileType_Filter) ? NO : YES;
 	}
 	@catch (NSException *err)	{
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -221,10 +221,10 @@
 		//NSLog(@"\t\terr: bailing, scene null, %s",__func__);
 		return n;
 	}
-	ISFDocRef	tmpDoc = scene->getDoc();
+	ISFDocRef	tmpDoc = scene->doc();
 	if (tmpDoc == nullptr)
 		return nil;
-	string		scenePath = tmpDoc->getPath();
+	string		scenePath = tmpDoc->path();
 	if (scenePath.length() < 1)	{
 		//NSLog(@"\t\terr: bailing, scene doesn't have a file, %s",__func__);
 		return n;
@@ -311,10 +311,10 @@
 		return;
 	//if ([scene filePath]==nil)
 	//	return;
-	ISFDocRef	tmpDoc = scene->getDoc();
+	ISFDocRef	tmpDoc = scene->doc();
 	if (tmpDoc == nullptr)
 		return;
-	string		scenePath = tmpDoc->getPath();
+	string		scenePath = tmpDoc->path();
 	if (scenePath.length() < 1)
 		return;
 	//	run through the inputs, getting their values and pushing them to the scene
@@ -349,10 +349,10 @@
 	
 	if (scene == nullptr)
 		return;
-	ISFDocRef	tmpDoc = scene->getDoc();
+	ISFDocRef	tmpDoc = scene->doc();
 	if (tmpDoc == nullptr)
 		return;
-	string		scenePath = tmpDoc->getPath();
+	string		scenePath = tmpDoc->path();
 	if (scenePath.length() < 1)	{
 		//NSLog(@"\t\tbailing, scene hasn't loaded a file, %s",__func__);
 		return;
@@ -362,7 +362,7 @@
 	NSView			*dv = [uiScrollView documentView];
 	//NSRect			docVisRect = [uiScrollView documentVisibleRect];
 	
-	vector<ISFAttrRef>	sceneInputs = scene->getInputs();
+	vector<ISFAttrRef>	sceneInputs = scene->inputs();
 	if (sceneInputs.size()<1)
 		return;
 	//	resize the doc view to hold everything
@@ -384,7 +384,7 @@
 		if (attrib == nullptr)
 			continue;
 		
-		ISFValType		attribType = attrib->getType();
+		ISFValType		attribType = attrib->type();
 		ISFUIItem		*newElement = nil;
 		switch (attribType)	{
 		case ISFValType_None:
@@ -397,7 +397,7 @@
 		case ISFValType_Image:
 		case ISFValType_Audio:
 		case ISFValType_AudioFFT:
-			if (!attrib->getIsFilterInputImage())	{
+			if (!attrib->isFilterInputImage())	{
 				tmpRect.size.height = ISFITEMHEIGHT;
 				newElement = [[ISFUIItem alloc] initWithFrame:tmpRect attrib:attrib];
 				[dv addSubview:newElement];
@@ -425,8 +425,8 @@
 	NSSize				returnMe = NSMakeSize([uiScrollView documentVisibleRect].size.width, 0);
 	if (scene == nullptr)
 		return returnMe;
-	for (const auto & attrib : scene->getInputs())	{
-		ISFValType		attribType = attrib->getType();
+	for (const auto & attrib : scene->inputs())	{
+		ISFValType		attribType = attrib->type();
 		switch (attribType)	{
 		case ISFValType_None:
 			break;
@@ -456,15 +456,15 @@
 	//NSLog(@"%s ... (%0.2f, %0.2f)",__func__,p.x,p.y);
 	if (scene == nullptr)
 		return;
-	for (const auto & attrib : scene->getInputsOfType(ISFValType_Point2D))	{
-		string &		attribNameCPP = attrib->getName();
+	for (const auto & attrib : scene->inputsOfType(ISFValType_Point2D))	{
+		string &		attribNameCPP = attrib->name();
 		NSString		*attribName = [NSString stringWithUTF8String:attribNameCPP.c_str()];
 		
-		ISFVal			minVal = attrib->getMinVal();
-		ISFVal			maxVal = attrib->getMaxVal();
+		ISFVal			minVal = attrib->minVal();
+		ISFVal			maxVal = attrib->maxVal();
 		NSPoint			tmpPoint;
 		if (!minVal.isNullVal() || !maxVal.isNullVal() || (minVal.getPointValByIndex(0)==maxVal.getPointValByIndex(0) && minVal.getPointValByIndex(1)==maxVal.getPointValByIndex(1)))	{
-			VVGL::Size		tmpSize = scene->getOrthoSize();
+			VVGL::Size		tmpSize = scene->orthoSize();
 			NSSize			lastRenderSize = NSMakeSize(tmpSize.width, tmpSize.height);
 			tmpPoint = NSMakePoint(p.x*lastRenderSize.width, p.y*lastRenderSize.height);
 		}

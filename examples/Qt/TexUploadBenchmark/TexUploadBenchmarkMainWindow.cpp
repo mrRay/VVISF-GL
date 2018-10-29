@@ -76,7 +76,7 @@ void TexUploadBenchmarkMainWindow::startTestClicked()
 		if (startTime == nullptr)
 			startTime = make_shared<Timestamp>();
 		
-		GetGlobalBufferPool()->getContext()->makeCurrentIfNotCurrent();
+		GetGlobalBufferPool()->context()->makeCurrentIfNotCurrent();
 		
 		while (testCount < 1000)	{
 			workMethod();
@@ -128,12 +128,12 @@ void TexUploadBenchmarkMainWindow::prepForWork()
 	cpuBuffer = CreateCPUBufferForQImage(tmpImg);
 	
 	//	prime the uploader with a couple frames so when we start streaming we'll be pulling stuff out right away
-	GetGlobalBufferPool()->getContext()->makeCurrentIfNotCurrent();
+	GetGlobalBufferPool()->context()->makeCurrentIfNotCurrent();
 	cpuToTex->clearStream();
-	for (int i=0; i<cpuToTex->getQueueSize()+1; ++i)	{
+	for (int i=0; i<cpuToTex->queueSize()+1; ++i)	{
 		GLBufferRef		targetTex = createTexForWork();
 		GLBufferRef		uploadedTex = cpuToTex->streamCPUToTex(cpuBuffer, targetTex, true);
-		if (i == cpuToTex->getQueueSize())	{
+		if (i == cpuToTex->queueSize())	{
 			if (uploadedTex == nullptr)
 				cout << "\tERR: upload failed for some reason, " << __PRETTY_FUNCTION__ << endl;
 			else
@@ -189,7 +189,7 @@ void TexUploadBenchmarkMainWindow::widgetDrewItsFirstFrame()
 	cout << __PRETTY_FUNCTION__ << endl;
 	
 	//	get the widget's context- if it's null, the widget's context doesn't exist yet and this method shouldn't have been called!
-	GLContextRef		widgetCtx = ui->bufferView->getContext();
+	GLContextRef		widgetCtx = ui->bufferView->glContextRef();
 	if (widgetCtx == nullptr)
 		return;
 	

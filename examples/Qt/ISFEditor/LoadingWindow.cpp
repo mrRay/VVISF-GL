@@ -186,7 +186,7 @@ void LoadingWindow::halveRenderResClicked()	{
 	ISFController		*isfc = GetISFController();
 	if (isfc == nullptr)
 		return;
-	Size			origSize = isfc->getRenderSize();
+	Size			origSize = isfc->renderSize();
 	Size			newSize(origSize.width/2., origSize.height/2.);
 	
 	ui->renderResWidthWidget->blockSignals(true);
@@ -208,7 +208,7 @@ void LoadingWindow::doubleRenderResClicked()	{
 	ISFController		*isfc = GetISFController();
 	if (isfc == nullptr)
 		return;
-	Size			origSize = isfc->getRenderSize();
+	Size			origSize = isfc->renderSize();
 	Size			newSize(origSize.width*2., origSize.height*2.);
 	
 	ui->renderResWidthWidget->blockSignals(true);

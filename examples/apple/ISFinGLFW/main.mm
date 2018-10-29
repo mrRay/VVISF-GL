@@ -36,7 +36,7 @@ void key( GLFWwindow* window, int k, int s, int action, int mods )	{
 		break;
 	case GLFW_KEY_1:
 		cout << "\tabout to render ISF to texture...\n";
-		targetTex = isfScene->createAndRenderABuffer(displayScene->getOrthoSize());
+		targetTex = isfScene->createAndRenderABuffer(displayScene->orthoSize());
 		cout << "\trendered ISF to texture " << *targetTex << endl;
 		break;
 	case GLFW_KEY_2:
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 		VVGL::Rect			tmpRect(0.,0.,0.,0.);
-		tmpRect.size = s.getOrthoSize();
+		tmpRect.size = s.orthoSize();
 		//cout << "\tverts rect is " << tmpRect << endl;
 		float			verts[] = {
 			(float)tmpRect.minX(), (float)tmpRect.minY(), 0.0,
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])	{
 	isfScene = CreateISFSceneRefUsing(ctxRef);
 	NSString		*includedISFPath = [[NSBundle mainBundle] pathForResource:@"CellMod" ofType:@"fs"];
 	isfScene->useFile(string([includedISFPath UTF8String]));
-	//cout << "loaded ISF doc: " << *(isfScene->getDoc()) << endl;
+	//cout << "loaded ISF doc: " << *(isfScene->doc()) << endl;
 	
 	
 	//	set the size of everything
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])	{
 	
 	// Main loop
 	while(!glfwWindowShouldClose(window))	{
-		targetTex = isfScene->createAndRenderABuffer(displayScene->getOrthoSize());
+		targetTex = isfScene->createAndRenderABuffer(displayScene->orthoSize());
 		displayScene->render();
 		// Swap buffers
 		glfwSwapBuffers(window);

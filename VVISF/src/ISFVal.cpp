@@ -14,7 +14,7 @@ namespace VVISF
 #pragma mark --------------------- static functions
 
 
-string ISFValTypeString(const ISFValType & n)	{
+string StringFromISFValType(const ISFValType & n)	{
 	switch (n)	{
 	case ISFValType_None:
 		return string("Null");
@@ -180,7 +180,7 @@ int32_t ISFVal::getLongVal() const	{
 	}
 	return returnMe;
 }
-GLBufferRef ISFVal::getImageBuffer() const	{
+GLBufferRef ISFVal::imageBuffer() const	{
 	//cout << __FUNCTION__ << ", self is " << this << endl;
 	switch (_type)	{
 	case ISFValType_None:
@@ -226,7 +226,7 @@ void ISFVal::setImageBuffer(const GLBufferRef & n)	{
 }
 
 string ISFVal::getTypeString() const	{
-	return ISFValTypeString(_type);
+	return StringFromISFValType(_type);
 }
 string ISFVal::getValString() const	{
 	switch (_type)	{

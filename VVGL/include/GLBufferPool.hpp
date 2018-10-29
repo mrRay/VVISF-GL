@@ -79,10 +79,10 @@ class VVGL_EXPORT GLBufferPool	{
 		//!	Timestamps the passed buffer with the current time
 		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=getTimestamp(); }
 		//!	Returns the GLContextRef used by the buffer pool to create and destroy its GL resources.
-		inline GLContextRef & getContext() { return _context; }
+		inline GLContextRef & context() { return _context; }
 		inline recursive_mutex & getContextLock() { return _contextLock; }
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
-		inline CGColorSpaceRef getColorSpace() const { return _colorSpace; }
+		inline CGColorSpaceRef colorSpace() const { return _colorSpace; }
 #endif
 		
 		friend ostream & operator<<(ostream & os, const GLBufferPool & n);

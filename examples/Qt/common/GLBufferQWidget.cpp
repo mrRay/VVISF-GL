@@ -315,7 +315,7 @@ void GLBufferQWidget::initializeGL()
 						//NSRect				rawBounds = [(id)selfPtr backingBounds];
 						VVGL::Rect			imgBounds = bufferToDraw->srcRect;
 						VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., 0., 0.);
-						viewBoundsRect.size = n.getOrthoSize();
+						viewBoundsRect.size = n.orthoSize();
 						VVGL::Rect			geometryRect = ResizeRect(imgBounds, viewBoundsRect, SizingMode_Fit);
 						Quad<VertXYZST>		targetQuad;
 						targetQuad.populateGeo(geometryRect);
@@ -385,7 +385,7 @@ void GLBufferQWidget::initializeGL()
 					//cout << __PRETTY_FUNCTION__ << " render prep callback" << endl;
 					if (inPgmChanged)	{
 						//	cache all the locations for the vertex attributes & uniform locations
-						GLint				myProgram = n.getProgram();
+						GLint				myProgram = n.program();
 						xyzAttr->cacheTheLoc(myProgram);
 						stAttr->cacheTheLoc(myProgram);
 						inputImageUni->cacheTheLoc(myProgram);
@@ -423,7 +423,7 @@ void GLBufferQWidget::initializeGL()
 					//	make a quad struct that describes XYST geometry, populate it with the coords of the quad we want to draw and the coords of the texture we want to draw on it
 					VVGL::Rect			imgBounds = bufferToDraw->srcRect;
 					VVGL::Rect			viewBoundsRect = VVGL::Rect(0., 0., 0., 0.);
-					viewBoundsRect.size = n.getOrthoSize();
+					viewBoundsRect.size = n.orthoSize();
 					VVGL::Rect			geometryRect = ResizeRect(imgBounds, viewBoundsRect, SizingMode_Fit);
 					Quad<VertXYST>		targetQuad;
 					targetQuad.populateGeo(geometryRect);

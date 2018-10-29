@@ -50,8 +50,8 @@ class VVISF_EXPORT ISFDoc	{
 		vector<ISFAttrRef>		_imageImports;	//	array of ISFAttrRef instances that describe imported images. attrib's 'attribName' is the name of the sampler, attrib's 'description' is the path to the file.
 		
 		//bool					bufferRequiresEval = false;	//	NO by default, set to YES during file open if any of the buffers require evaluation (faster than checking every single buffer every pass)
-		vector<ISFPassTargetRef>	_persistentBuffers;
-		vector<ISFPassTargetRef>	_tempBuffers;
+		vector<ISFPassTargetRef>	_persistentPassTargets;
+		vector<ISFPassTargetRef>	_tempPassTargets;
 		vector<string>			_renderPasses;
 		
 		string			*_jsonSourceString = nullptr;	//	the JSON string from the source *including the comments and any linebreaks before/after it*
@@ -97,19 +97,19 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns the path of the ISF file for the receiver.  This is probably the path to the frag shader.
-		string getPath() const { return (_path==nullptr) ? string("") : string(*_path); }
+		string path() const { return (_path==nullptr) ? string("") : string(*_path); }
 		//!	Returns the name of the receiver's ISF file (the file name, minus the extension).
-		string getName() const { return (_name==nullptr) ? string("") : string(*_name); }
+		string name() const { return (_name==nullptr) ? string("") : string(*_name); }
 		//!	Returns the receiver's "description" string, as defined in its JSON blob ("DESCRIPTION").
-		string getDescription() const { return (_description==nullptr) ? string("") : string(*_description); }
+		string description() const { return (_description==nullptr) ? string("") : string(*_description); }
 		//!	Returns the receiver's "credit" string, as defined in its JSON blob ("CREDIT").
-		string getCredit() const { return (_credit==nullptr) ? string("") : string(*_credit); }
+		string credit() const { return (_credit==nullptr) ? string("") : string(*_credit); }
 		//!	Returns the receiver's "vsn" string, as defined in its JSON blob ("VSN")
-		string getVsn() const { return (_vsn==nullptr) ? string("") : string(*_vsn); }
+		string vsn() const { return (_vsn==nullptr) ? string("") : string(*_vsn); }
 		//!	Returns the receiver's file type.
-		ISFFileType getType() const { return _type; }
+		ISFFileType type() const { return _type; }
 		//!	Returns a vector containing strings listing the receiver's categories.
-		vector<string> & getCategories() { return _categories; }
+		vector<string> & categories() { return _categories; }
 		
 		///@}
 		
@@ -120,17 +120,17 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns a vector of ISFAttrRef instances describing all of the receiver's inputs.
-		vector<ISFAttrRef> & getInputs() { return _inputs; }
+		vector<ISFAttrRef> & inputs() { return _inputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's image inputs.
-		vector<ISFAttrRef> & getImageInputs() { return _imageInputs; }
+		vector<ISFAttrRef> & imageInputs() { return _imageInputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's audio inputs.
-		vector<ISFAttrRef> & getAudioInputs() { return _audioInputs; }
+		vector<ISFAttrRef> & audioInputs() { return _audioInputs; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's audioFFT inputs.
-		vector<ISFAttrRef> & getImageImports() { return _imageImports; }
+		vector<ISFAttrRef> & imageImports() { return _imageImports; }
 		//!	Returns a vector of ISFAttrRef instances describing only the receiver's inputs that match the passed type.
-		vector<ISFAttrRef> getInputsOfType(const ISFValType & inInputType);
+		vector<ISFAttrRef> inputsOfType(const ISFValType & inInputType);
 		//!	Returns the ISFAttrRef for the input with the passed name
-		ISFAttrRef getInput(const string & inAttrName);
+		ISFAttrRef input(const string & inAttrName);
 		
 		///@}
 		
@@ -141,11 +141,11 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//!	Returns a vector of ISFPassTargetRef instances describing every pass that has a persistent buffer.
-		vector<ISFPassTargetRef> getPersistentBuffers() const { return _persistentBuffers; }
+		vector<ISFPassTargetRef> persistentPassTargets() const { return _persistentPassTargets; }
 		//!	Returns a vector of ISFPassTargetRef instances describing every pass that doesn't have a persistent buffer.
-		vector<ISFPassTargetRef> getTempBuffers() const { return _tempBuffers; }
+		vector<ISFPassTargetRef> tempPassTargets() const { return _tempPassTargets; }
 		//!	Returns a vector of std::string instances describing the names of the render passes, in order.  If the names were not specified properly in the JSON blob, this array will be incomplete or inaccurate and rendering won't work!
-		vector<string> & getRenderPasses() { return _renderPasses; }
+		vector<string> & renderPasses() { return _renderPasses; }
 		//!	Returns the GLBufferRef for the passed key.  Checks all attributes/inputs as well as persistent and temp buffers.
 		const GLBufferRef getBufferForKey(const string & n);
 		//!	Returns the persistent buffer for the render pass with the passed key.
@@ -153,11 +153,11 @@ class VVISF_EXPORT ISFDoc	{
 		//!	Returns the temp buffer for the render pass with the passed key.
 		const GLBufferRef getTempBufferForKey(const string & n);
 		//!	Returns the ISFPassTarget that matches the passed key.  Returns null if no pass could be found.
-		const ISFPassTargetRef getPassTargetForKey(const string & n);
+		const ISFPassTargetRef passTargetForKey(const string & n);
 		//!	Returns the ISFPassTarget that matches the passed key.  Returns null if no pass could be found or if the pass found wasn't flagged as requiring a persistent buffer.
-		const ISFPassTargetRef getPersistentPassTargetForKey(const string & n);
+		const ISFPassTargetRef persistentPassTargetForKey(const string & n);
 		//!	Returns the ISFPassTarget that matches the passed key.  Returns null if no pass could be found or if the pass found was flagged as requiring a persistent buffer.
-		const ISFPassTargetRef getTempPassTargetForKey(const string & n);
+		const ISFPassTargetRef tempPassTargetForKey(const string & n);
 		
 		///@}
 		
@@ -168,26 +168,20 @@ class VVISF_EXPORT ISFDoc	{
 		///@{
 		
 		//! Returns the JSON string from the source *including the comments and any linebreaks before/after it*
-		string * getJSONSourceString() const { return _jsonSourceString; }
+		string * jsonSourceString() const { return _jsonSourceString; }
 		//!	Returns the JSON string copied from the source- doesn't include any comments before/after it
-		string * getJSONString() const { return _jsonString; }
+		string * jsonString() const { return _jsonString; }
 		//!	Returns the raw vert shader source before being find-and-replaced
-		string * getVertShaderSource() const { return _vertShaderSource; }
+		string * vertShaderSource() const { return _vertShaderSource; }
 		//!	Returns the raw frag shader source before being find-and-replaced
-		string * getFragShaderSource() const { return _fragShaderSource; }
+		string * fragShaderSource() const { return _fragShaderSource; }
 		//!	Populates the passed var with the JSON string from the source *including the comments and any linebreaks before/after it*
-		void getJSONSourceString(string & outStr);
-		//!	Populates the passed var with the JSON string copied from the source- doesn't include any comments before/after it
-		void getJSONString(string & outStr);
-		//!	Populates the passed var with the raw vert shader source before being find-and-replaced.
-		void getVertShaderSource(string & outStr);
-		//!	Populates the passed var with the raw frag shader source before being find-and-replaced
-		void getFragShaderSource(string & outStr);
+		void jsonSourceString(string & outStr);
 		
 		///@}
 		
 		void setParentScene(ISFScene * n) { _parentScene=n; }
-		ISFScene * getParentScene() { return _parentScene; }
+		ISFScene * parentScene() { return _parentScene; }
 		
 		//	returns a string describing the type of the expected texture samplers ("2" for 2D, "R" for Rect, "C" for Cube).  save this, if it changes in a later pass the shader source must be generated again.
 		string generateTextureTypeString();

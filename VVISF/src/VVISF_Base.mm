@@ -50,7 +50,7 @@ shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath,
 					string			tmpString([fullPath UTF8String]);
 					VVISF::ISFDoc			tmpDoc(tmpString);
 					//ISFDoc			tmpDoc(string([fullPath UTF8String]));
-					ISFFileType		tmpType = tmpDoc.getType();
+					ISFFileType		tmpType = tmpDoc.type();
 					if ((tmpType & func) > 0)
 						[returnMe addObject:fullPath];
 					
@@ -81,7 +81,7 @@ shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath,
 					string			tmpString([fullPath UTF8String]);
 					VVISF::ISFDoc	tmpDoc(tmpString);
 					//ISFDoc			tmpDoc(string([fullPath UTF8String]));
-					ISFFileType		tmpType = tmpDoc.getType();
+					ISFFileType		tmpType = tmpDoc.type();
 					if ((tmpType & func) > 0)
 						[returnMe addObject:fullPath];
 					

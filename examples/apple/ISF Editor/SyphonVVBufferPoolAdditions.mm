@@ -19,7 +19,7 @@ GLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const GLBufferPoolRef 
 	if (inPoolRef==nullptr)
 		return nullptr;
 	
-	GLContextRef		tmpCtx = inPoolRef->getContext();
+	GLContextRef		tmpCtx = inPoolRef->context();
 	if (tmpCtx == nullptr)
 		return nullptr;
 	

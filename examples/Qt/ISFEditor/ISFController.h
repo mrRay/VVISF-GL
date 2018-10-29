@@ -29,12 +29,12 @@ public:
 	~ISFController();
 	
 	void loadFile(const QString & inPathToLoad);
-	void setRenderSize(const Size & inSize) { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); renderSize=inSize; }
-	Size getRenderSize() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return renderSize; }
+	void setRenderSize(const Size & inSize) { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); _renderSize=inSize; }
+	Size renderSize() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return _renderSize; }
 	//ISFSceneRef getScene() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return scene; }
-	ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr)?nullptr:scene->getDoc(); }
-	QString getCompiledVertexShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->getVertexShaderString() ); }
-	QString getCompiledFragmentShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->getFragmentShaderString() ); }
+	ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr)?nullptr:scene->doc(); }
+	QString getCompiledVertexShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->vertexShaderString() ); }
+	QString getCompiledFragmentShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->fragmentShaderString() ); }
 	vector<pair<int,string>> getSceneVertErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneVertErrors; }
 	vector<pair<int,string>> getSceneFragErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneFragErrors; }
 
@@ -43,7 +43,7 @@ public slots:
 	Q_SLOT void widgetRedrawSlot(ISFGLBufferQWidget * n);
 	
 private:
-	Size			renderSize = Size(640.0,480.0);
+	Size			_renderSize = Size(640.0,480.0);
 	
 	std::recursive_mutex	sceneLock;	//	used to lock the 'scene'-related vars below
 	QFileSystemWatcher		*sceneFileWatcher = nullptr;

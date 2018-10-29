@@ -364,10 +364,10 @@ catch (ISFErr & exc)	{
 //	print some basic information about the doc
 if (myDoc != nullptr)	{
 	cout << "successfully loaded ISF doc!\n";
-	cout << "description: " << myDoc->getDescription() << endl;
-	cout << "file type: " << ISFFileTypeString(myDoc->getType()) << endl;
+	cout << "description: " << myDoc->description() << endl;
+	cout << "file type: " << ISFFileTypeString(myDoc->type()) << endl;
 	
-	auto			attrs = myDoc->getInputs();
+	auto			attrs = myDoc->inputs();
 	cout << "file\'s doc has " << attrs.size() << " attributes\n";
 	ISFAttrRef		firstAttr = (attrs.size()<1) ? nullptr : attrs.front();
 	if (firstAttr == nullptr)
@@ -375,7 +375,7 @@ if (myDoc != nullptr)	{
 	else
 		cout << "first attr is " << firstAttr->getAttrDescription() << endl;
 	
-	auto			passes = myDoc->getRenderPasses();
+	auto			passes = myDoc->renderPasses();
 	cout << "the ISF doc has " << passes.size() << " render passes\n";
 }
 else
@@ -462,26 +462,26 @@ Internally, VVISF::ISFScene uses VVISF::ISFDoc to represent the value and state 
 ISFSceneRef			tmpScene = XXX;	//	this is assumed to be non-nil in the real world...
 
 //	get the scene's doc- interacting with the doc affects rendering
-ISFDocRef			tmpDoc = tmpScene->getDoc();
+ISFDocRef			tmpDoc = tmpScene->doc();
 if (tmpDoc == nullptr)
 	return;
 
 //	get the attribute from the doc for the fake float input, make sure it's a float
-ISFAttrRef			floatAttr = tmpDoc->getInput(string("floatInputName"));
-if (floatAttr == nullptr || floatAttr->getType() != ISFValType_Float)
+ISFAttrRef			floatAttr = tmpDoc->input(string("floatInputName"));
+if (floatAttr == nullptr || floatAttr->type() != ISFValType_Float)
 	return;
 
 //	get the float attribute's current, min, and max vals
-ISFVal				currentVal = floatAttr->getCurrentVal();
-ISFVal				minVal = floatAttr->getMinVal();
-ISFVal				maxVal = floatAttr->getMaxVal();
+ISFVal				currentVal = floatAttr->currentVal();
+ISFVal				minVal = floatAttr->minVal();
+ISFVal				maxVal = floatAttr->maxVal();
 double				tmpVal = currentVal.getDoubleVal();
 
 //	add .01 to the current val, looping the value around the min/max
 tmpVal += 0.01;
 if (!maxVal.isNullVal() && tmpVal > maxVal.getDoubleVal())	{
 	if (!minVal.isNullVal())
-		tmpVal = minVal.getDoubleValue();
+		tmpVal = minVal.getDoubleVal();
 	else
 		tmpVal = 0.;
 }
@@ -518,7 +518,7 @@ GLSceneRef			glScene = CreateGLSceneRef();
 glScene->setRenderCallback([](const GLScene & inScene)	{
 	//	populate a tex quad with the geometry, tex, and color vals- this struct is organized in a manner compatible with GL such that it's both easy to work with and can be uploaded directly.
 	Quad<VertXYZRGBA>		texQuad;
-	VVGL::Size				sceneSize = inScene.getOrthoSize();
+	VVGL::Size				sceneSize = inScene.orthoSize();
 	texQuad.populateGeo(VVGL::Rect(0,0,sceneSize.width,sceneSize.height));
 	texQuad.bl.color = GLColor(1., 1., 1., 1.);
 	texQuad.tl.color = GLColor(1., 0., 0., 1.);
@@ -583,7 +583,7 @@ static Quad<VertXYZRGBA>		vboData = Quad<VertXYZRGBA>();
 glScene->setRenderPrepCallback([](const GLScene & inScene, const bool & inReshaped, const bool & inPgmChanged)	{
 	if (inPgmChanged)	{
 		//	cache all the locations for the vertex attributes & uniform locations
-		GLint				myProgram = inScene.getProgram();
+		GLint				myProgram = inScene.program();
 		xyzAttr->cacheTheLoc(myProgram);
 		rgbaAttr->cacheTheLoc(myProgram);
 		
@@ -594,7 +594,7 @@ glScene->setRenderPrepCallback([](const GLScene & inScene, const bool & inReshap
 
 //	configure the scene's render callback to pass the data to the GL program if it's changed (the params to targetQuad were animated, but i took it out because it wasn't x-platform)
 glScene->setRenderCallback([](const GLScene & inScene)	{
-	VVGL::Size			orthoSize = inScene.getOrthoSize();
+	VVGL::Size			orthoSize = inScene.orthoSize();
 	VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 	Quad<VertXYZRGBA>		targetQuad;
 	targetQuad.populateGeo(boundsRect);

@@ -90,7 +90,7 @@
 			
 			GLBufferPoolRef		bp = GetGlobalBufferPool();
 			if (bp != nullptr)	{
-				[self setSharedGLContext:bp->getContext()];
+				[self setSharedGLContext:bp->context()];
 				initialized = YES;
 			}
 		}
@@ -165,7 +165,7 @@
 	if (sceneFilePath != nil)
 		scene->useFile(string([sceneFilePath UTF8String]));
 	//	make an NSOpenGLContext wrapping the CGLContext inside the GLContextRef, make it draw into the view
-	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->getContext()->ctx];
+	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->context()->ctx];
 	if (sceneCtxWrapper != nil)	{
 		[self setOpenGLContext:sceneCtxWrapper];
 		[sceneCtxWrapper setView:self];

@@ -87,7 +87,7 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		//!	Starts using the ISF file represented by the passed ISFDoc.
 		void useDoc(ISFDocRef & inDoc);
 		//!	Returns the ISFDoc currently being used by the scene.  Interacting with this doc by setting the value of its inputs will directly affect rendering.
-		inline ISFDocRef getDoc() { lock_guard<mutex> lock(_propertyLock); return _doc; }
+		inline ISFDocRef doc() { lock_guard<mutex> lock(_propertyLock); return _doc; }
 		
 		///@}
 		
@@ -100,19 +100,19 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		//!	Sets the receiver's _alwaysRenderToFloat flag- if true, all frames will be rendered using high-bit-depth textures (usually 32 bits per channel/128 bits per pixel).  Default is false.
 		void setAlwaysRenderToFloat(const bool & n) { _alwaysRenderToFloat=n; }
 		//!	Gets the receiver's _alwaysRenderToFloat flag.
-		bool getAlwaysRenderToFloat() { return _alwaysRenderToFloat; }
+		bool alwaysRenderToFloat() { return _alwaysRenderToFloat; }
 		//!	Sets the receiver's _persistentToIOSurface flag- if true, all passes that are flagged as persistent will render to IOSurface-backed GL textures (a mac-specific optimization that means the textures can be shared with other processes).  Defaults to false.
 		void setPersistentToIOSurface(const bool & n) { _persistentToIOSurface=n; }
 		//!	Gets the receiver's _persistentToIOSurface flag.
-		bool getPersistentToIOSurface() { return _persistentToIOSurface; }
+		bool persistentToIOSurface() { return _persistentToIOSurface; }
 		//!	Sets the receiver's private buffer pool (which should default to null).  If non-null, this buffer pool will be used to generate any GL resources required by this scene.  Handy if you have a variety of GL contexts that aren't shared and you have to switch between them rapidly on a per-frame basis.
 		void setPrivatePool(const GLBufferPoolRef & n) { _privatePool=n; }
 		//!	Gets the receiver's private buffer pool- null by default, only non-null if something called setPrivatePool().
-		GLBufferPoolRef getPrivatePool() { return _privatePool; }
+		GLBufferPoolRef privatePool() { return _privatePool; }
 		//!	Sets the receiver's private buffer copier (which should default to null).  If non-null, this copier will be used to copy any resources that need to be copied- like setPrivatePool(), handy if you have a variety of GL contexts that aren't shared and you have to switch between them rapidly on a per-frame basis.
 		void setPrivateCopier(const GLTexToTexCopierRef & n) { _privateCopier=n; }
 		//!	Gets the receiver's private buffer copier- null by default, only non-null if something called setPrivateCopier().
-		GLTexToTexCopierRef getPrivateCopier() { return _privateCopier; }
+		GLTexToTexCopierRef privateCopier() { return _privateCopier; }
 		
 		///@}
 		
@@ -181,8 +181,8 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		void renderToBuffer(const GLBufferRef & inTargetBuffer);
 
 		virtual void setSize(const VVGL::Size & n);
-		VVGL::Size getSize() const { return _orthoSize; }
-		VVGL::Size getRenderSize() const { return _renderSize; }
+		VVGL::Size size() const { return _orthoSize; }
+		VVGL::Size renderSize() const { return _renderSize; }
 		//!	Creates a a new Timestamp relative to the scene's built-in _baseTime instance.  This is how the render time is calculated.
 		inline Timestamp getTimestamp() { return Timestamp()-_baseTime; }
 		//!	Sets the "throwExceptions" member var, which is false by default.  If true, the ISFScene will throw an exception using the ISFErr object to describe the nature and type of the problem.  Exceptions may be thrown if the file is missing, if there's a problem reading it or parsing the JSON, if there's a problem compiling the GLSL source code for the shaders, etc.
@@ -197,17 +197,17 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 		///!{
 		
 		//!	Locates and returns the attribute/INPUT matching the passed name.
-		ISFAttrRef getInputNamed(const string & inName);
+		ISFAttrRef inputNamed(const string & inName);
 		//!	Returns a vector of ISFAttrRef instances describing all of the attribute/INPUTS.
-		vector<ISFAttrRef> getInputs();
+		vector<ISFAttrRef> inputs();
 		//!	Returns a vector of ISFAttrRef instances that match the bassed ISFValType.
-		vector<ISFAttrRef> getInputsOfType(const ISFValType & inType);
+		vector<ISFAttrRef> inputsOfType(const ISFValType & inType);
 		//!	Returns a vector of all the image-type INPUTS, represented as ISFAttr instances.
-		vector<ISFAttrRef> getImageInputs();
+		vector<ISFAttrRef> imageInputs();
 		//!	Returns a vector of all the audio- and audioFFT-type INPUTS, represented as ISFAttr instances.
-		vector<ISFAttrRef> getAudioInputs();
+		vector<ISFAttrRef> audioInputs();
 		//!	Returns a vector of all the image-type IMPORTED, represented as ISFAttr instances.
-		vector<ISFAttrRef> getImageImports();
+		vector<ISFAttrRef> imageImports();
 		
 		///@}
 		
@@ -219,10 +219,10 @@ class VVISF_EXPORT ISFScene : public GLScene	{
 
 	protected:
 #if !defined(VVGL_TARGETENV_GLES)
-		inline GLBufferRef getVAO() const { return _vao; }
+		inline GLBufferRef vao() const { return _vao; }
 		inline void setVAO(const GLBufferRef & n) { _vao = n; }
 #endif
-		inline GLBufferRef getVBO() const { return _vbo; }
+		inline GLBufferRef vbo() const { return _vbo; }
 		inline void setVBO(const GLBufferRef & n) { _vbo = n; }
 		void _setUpRenderCallback();
 		virtual void _renderPrep();

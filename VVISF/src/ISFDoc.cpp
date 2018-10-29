@@ -142,24 +142,24 @@ ISFDoc::~ISFDoc()	{
 #pragma mark --------------------- getters
 
 
-vector<ISFAttrRef> ISFDoc::getInputsOfType(const ISFValType & n)	{
+vector<ISFAttrRef> ISFDoc::inputsOfType(const ISFValType & n)	{
 	auto		returnMe = vector<ISFAttrRef>(0);
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
 	for (auto it=_inputs.begin(); it!=_inputs.end(); ++it)	{
 		ISFAttrRef		&tmpAttrib = *it;
-		if ((tmpAttrib->getType() & n) == n)
+		if ((tmpAttrib->type() & n) == n)
 			returnMe.push_back(tmpAttrib);
 	}
 	
 	return returnMe;
 }
-ISFAttrRef ISFDoc::getInput(const string & inAttrName)	{
+ISFAttrRef ISFDoc::input(const string & inAttrName)	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
 	for (auto it=_inputs.begin(); it!=_inputs.end(); ++it)	{
 		ISFAttrRef		&tmpAttrib = *it;
-		if (tmpAttrib->getName() == inAttrName)
+		if (tmpAttrib->name() == inAttrName)
 			return tmpAttrib;
 	}
 	return nullptr;
@@ -168,72 +168,72 @@ const GLBufferRef ISFDoc::getBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
 	for (const auto & attribRefIt : _imageInputs)	{
-		if (attribRefIt->getName() == n)
-			return attribRefIt->getCurrentVal().getImageBuffer();
+		if (attribRefIt->name() == n)
+			return attribRefIt->currentVal().imageBuffer();
 	}
 	for (const auto & attribRefIt : _imageImports)	{
-		if (attribRefIt->getName() == n)
-			return attribRefIt->getCurrentVal().getImageBuffer();
+		if (attribRefIt->name() == n)
+			return attribRefIt->currentVal().imageBuffer();
 	}
 	for (const auto & attribRefIt : _audioInputs)	{
-		if (attribRefIt->getName() == n)
-			return attribRefIt->getCurrentVal().getImageBuffer();
+		if (attribRefIt->name() == n)
+			return attribRefIt->currentVal().imageBuffer();
 	}
 	
-	for (const auto & targetBufIt : _persistentBuffers)	{
-		if (targetBufIt->getName() == n)
-			return targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _persistentPassTargets)	{
+		if (targetBufIt->name() == n)
+			return targetBufIt->buffer();
 	}
-	for (const auto & targetBufIt : _tempBuffers)	{
-		if (targetBufIt->getName() == n)
-			return targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _tempPassTargets)	{
+		if (targetBufIt->name() == n)
+			return targetBufIt->buffer();
 	}
 	return nullptr;
 }
 const GLBufferRef ISFDoc::getPersistentBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
-	for (const auto & targetBufIt : _persistentBuffers)	{
-		if (targetBufIt->getName() == n)
-			return targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _persistentPassTargets)	{
+		if (targetBufIt->name() == n)
+			return targetBufIt->buffer();
 	}
 	return nullptr;
 }
 const GLBufferRef ISFDoc::getTempBufferForKey(const string & n)	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
-	for (const auto & targetBufIt : _tempBuffers)	{
-		if (targetBufIt->getName() == n)
-			return targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _tempPassTargets)	{
+		if (targetBufIt->name() == n)
+			return targetBufIt->buffer();
 	}
 	return nullptr;
 }
-const ISFPassTargetRef ISFDoc::getPassTargetForKey(const string & n)	{
-	ISFPassTargetRef		returnMe = getPersistentPassTargetForKey(n);
+const ISFPassTargetRef ISFDoc::passTargetForKey(const string & n)	{
+	ISFPassTargetRef		returnMe = persistentPassTargetForKey(n);
 	if (returnMe == nullptr)
-		returnMe = getTempPassTargetForKey(n);
+		returnMe = tempPassTargetForKey(n);
 	return returnMe;
 }
-const ISFPassTargetRef ISFDoc::getPersistentPassTargetForKey(const string & n)	{
+const ISFPassTargetRef ISFDoc::persistentPassTargetForKey(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", key is \"" << n << "\"" << endl;
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
-	for (const auto & targetBufIt : _persistentBuffers)	{
-		//cout << "\tchecking persistent buffer named \"" << targetBufIt->getName() << "\"" << endl;
-		if (targetBufIt->getName() == n)	{
+	for (const auto & targetBufIt : _persistentPassTargets)	{
+		//cout << "\tchecking persistent buffer named \"" << targetBufIt->name() << "\"" << endl;
+		if (targetBufIt->name() == n)	{
 			//cout << "\tmatch found! returning " << targetBufIt << endl;
 			return targetBufIt;
 		}
 	}
 	return nullptr;
 }
-const ISFPassTargetRef ISFDoc::getTempPassTargetForKey(const string & n)	{
+const ISFPassTargetRef ISFDoc::tempPassTargetForKey(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << ", key is \"" << n << "\"" << endl;
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
-	for (const auto & targetBufIt : _tempBuffers)	{
-		//cout << "\tchecking temp buffer named \"" << targetBufIt->getName() << "\"" << endl;
-		if (targetBufIt->getName() == n)	{
+	for (const auto & targetBufIt : _tempPassTargets)	{
+		//cout << "\tchecking temp buffer named \"" << targetBufIt->name() << "\"" << endl;
+		if (targetBufIt->name() == n)	{
 			//cout << "\tmatch found! returning " << targetBufIt << endl;
 			return targetBufIt;
 		}
@@ -242,7 +242,7 @@ const ISFPassTargetRef ISFDoc::getTempPassTargetForKey(const string & n)	{
 }
 
 
-void ISFDoc::getJSONSourceString(string & outStr)	{
+void ISFDoc::jsonSourceString(string & outStr)	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	if (_jsonSourceString==nullptr)	{
 		outStr = "";
@@ -252,47 +252,17 @@ void ISFDoc::getJSONSourceString(string & outStr)	{
 	outStr.clear();
 	outStr.append(*_jsonSourceString);
 }
-void ISFDoc::getJSONString(string & outStr)	{
-	lock_guard<recursive_mutex>		lock(_propLock);
-	if (_jsonString==nullptr)	{
-		outStr = "";
-		return;
-	}
-	outStr.reserve(_jsonString->length());
-	outStr.clear();
-	outStr.append(*_jsonString);
-}
-void ISFDoc::getVertShaderSource(string & outStr)	{
-	lock_guard<recursive_mutex>		lock(_propLock);
-	if (_vertShaderSource==nullptr)	{
-		outStr = "";
-		return;
-	}
-	outStr.reserve(_vertShaderSource->length());
-	outStr.clear();
-	outStr.append(*_vertShaderSource);
-}
-void ISFDoc::getFragShaderSource(string & outStr)	{
-	lock_guard<recursive_mutex>		lock(_propLock);
-	if (_fragShaderSource==nullptr)	{
-		outStr = "";
-		return;
-	}
-	outStr.reserve(_fragShaderSource->length());
-	outStr.clear();
-	outStr.append(*_fragShaderSource);
-}
 
 
 
 /*
-vector<ISFAttrRef> ISFDoc::getInputs(const ISFValType & n)	{
+vector<ISFAttrRef> ISFDoc::inputs(const ISFValType & n)	{
 	auto		returnMe = vector<ISFAttrRef>(0);
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
 	for (auto it=_inputs.begin(); it!=_inputs.end(); ++it)	{
 		ISFAttrRef		&tmpAttrib = *it;
-		if ((tmpAttrib->getType() & n) == n)
+		if ((tmpAttrib->type() & n) == n)
 			returnMe.push_back(tmpAttrib);
 	}
 	
@@ -348,8 +318,8 @@ string ISFDoc::generateTextureTypeString()	{
 #endif
 		}
 	}
-	for (const auto & targetBufIt : _persistentBuffers)	{
-		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _persistentPassTargets)	{
+		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
 #if defined(VVGL_SDK_MAC)
@@ -361,8 +331,8 @@ string ISFDoc::generateTextureTypeString()	{
 			returnMe.append("C");
 #endif
 	}
-	for (const auto & targetBufIt : _tempBuffers)	{
-		GLBufferRef		tmpBuffer = targetBufIt->getBuffer();
+	for (const auto & targetBufIt : _tempPassTargets)	{
+		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
 #if defined(VVGL_SDK_MAC)
@@ -1122,11 +1092,11 @@ void ISFDoc::evalBufferDimensionsWithRenderSize(const VVGL::Size & inSize)	{
 	*/
 	
 	//	make sure that the persistent buffers are sized appropriately
-	for (const auto & targetBufIt : _persistentBuffers)	{
+	for (const auto & targetBufIt : _persistentPassTargets)	{
 		targetBufIt->evalTargetSize(inSize, subDict, true, true);
 	}
 	//	make sure that the temp buffers are sized appropriately
-	for (const auto & targetBufIt : _tempBuffers)	{
+	for (const auto & targetBufIt : _tempPassTargets)	{
 		targetBufIt->evalTargetSize(inSize, subDict, true, true);
 	}
 	
@@ -1211,7 +1181,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 			//for (auto const & it : anObj)	{
 			for (auto & it : anObj)	{
 				if (it.type() == json::value_t::string)	{
-					_persistentBuffers.emplace_back(ISFPassTarget::Create(it.get<string>(), this));
+					_persistentPassTargets.emplace_back(ISFPassTarget::Create(it.get<string>(), this));
 				}
 			}
 		}
@@ -1298,7 +1268,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						newTargetBuffer->setFloatFlag(true);
 					}
 					//	add the new persistent buffer (as a render pass) to the array of render passes
-					_persistentBuffers.push_back(newTargetBuffer);
+					_persistentPassTargets.push_back(newTargetBuffer);
 				}
 			}
 		}
@@ -1408,7 +1378,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				//newPass.targetName = tmpBufferName;
 				//newPass.setTargetName(tmpBufferName);
 				//	find the target buffer for this pass- first check the persistent buffers
-				ISFPassTargetRef		targetBuffer = getPersistentPassTargetForKey(tmpBufferName);
+				ISFPassTargetRef		targetBuffer = persistentPassTargetForKey(tmpBufferName);
 				//	if i couldn't find a persistent buffer...
 				if (targetBuffer == nullptr)	{
 					//	create a new target buffer, set its name
@@ -1418,7 +1388,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					ISFVal				persistentVal = ISFNullVal();
 					if (persistentObj.is_string())	{
 						persistentVal = ParseStringAsBool(persistentObj);
-						//if (persistentVal.getType() == ISFValType_None)
+						//if (persistentVal.type() == ISFValType_None)
 							//persistentVal = ISFValByEvaluatingString(persistentObj);
 					}
 					else if (persistentObj.is_boolean())
@@ -1427,10 +1397,10 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						persistentVal = ISFFloatVal(persistentObj.get<double>());
 					//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
 					if (persistentVal.getDoubleVal() > 0.)
-						_persistentBuffers.push_back(targetBuffer);
+						_persistentPassTargets.push_back(targetBuffer);
 					//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
 					else
-						_tempBuffers.push_back(targetBuffer);
+						_tempPassTargets.push_back(targetBuffer);
 				}
 				
 				//	update the width/height stuff for the target buffer
@@ -1511,7 +1481,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				ISFVal		tmpFloatVal = ISFNullVal();
 				if (tmpFloatFlag.is_string())	{
 					tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
-					//if (tmpFloatVal.getType() == ISFValType_None)
+					//if (tmpFloatVal.type() == ISFValType_None)
 						//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
 				}
 				else if (tmpFloatFlag.is_boolean())
@@ -1690,8 +1660,8 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						maxVal = ISFLongVal(tmpObj.get<int32_t>());
 					
 					//	if i'm missing a min or a max val, reset both
-					if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-					(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+					if ((minVal.type()==ISFValType_None && maxVal.type()!=ISFValType_None)	||
+					(minVal.type()!=ISFValType_None && maxVal.type()==ISFValType_None))	{
 						minVal = ISFNullVal();
 						maxVal = ISFNullVal();
 					}
@@ -1741,8 +1711,8 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					}
 				}
 				//	if i'm missing a min or a max val, reset both
-				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+				if ((minVal.type()==ISFValType_None && maxVal.type()!=ISFValType_None)	||
+				(minVal.type()!=ISFValType_None && maxVal.type()==ISFValType_None))	{
 					minVal = ISFNullVal();
 					maxVal = ISFNullVal();
 				}
@@ -1780,8 +1750,8 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				//	if i'm missing a min or a max val, reset both
-				if ((minVal.getType()==ISFValType_None && maxVal.getType()!=ISFValType_None)	||
-				(minVal.getType()!=ISFValType_None && maxVal.getType()==ISFValType_None))	{
+				if ((minVal.type()==ISFValType_None && maxVal.type()!=ISFValType_None)	||
+				(minVal.type()!=ISFValType_None && maxVal.type()==ISFValType_None))	{
 					minVal = ISFNullVal();
 					maxVal = ISFNullVal();
 				}
@@ -1816,14 +1786,14 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 		bool		hasProgress = false;
 		for (const auto & input : _inputs)	{
 			if (input!=nullptr)	{
-				if (input->getType()==ISFValType_Image)	{
-					if (input->getName() == "startImage")
+				if (input->type()==ISFValType_Image)	{
+					if (input->name() == "startImage")
 						hasStartImage = true;
-					if (input->getName() == "endImage")
+					if (input->name() == "endImage")
 						hasEndImage = true;
 				}
-				else if (input->getType() == ISFValType_Float)	{
-					if (input->getName() == "progress")
+				else if (input->type() == ISFValType_Float)	{
+					if (input->name() == "progress")
 						hasProgress = true;
 				}
 			}
@@ -1845,7 +1815,7 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	vector<string>		fsDeclarations;
 	vector<string>		uboDeclarations;
 	
-	vsDeclarations.reserve(_inputs.size()+_imageImports.size()+_persistentBuffers.size()+_tempBuffers.size()+9);
+	vsDeclarations.reserve(_inputs.size()+_imageImports.size()+_persistentPassTargets.size()+_tempPassTargets.size()+9);
 	fsDeclarations.reserve(vsDeclarations.capacity());
 	uboDeclarations.reserve(vsDeclarations.capacity());
 	
@@ -1917,9 +1887,9 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	
 	//	this block will be used to add declarations for a provided ISFAttr
 	auto	attribDecBlock = [&](const ISFAttrRef & inRef)	{
-		const string &		tmpName = inRef->getName();
+		const string &		tmpName = inRef->name();
 		const char *		nameCStr = tmpName.c_str();
-		switch (inRef->getType())	{
+		switch (inRef->type())	{
 		case ISFValType_None:
 			break;
 		case ISFValType_Event:
@@ -1985,8 +1955,8 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 		case ISFValType_Audio:
 		case ISFValType_AudioFFT:
 			{
-				ISFVal			attribVal = inRef->getCurrentVal();
-				GLBufferRef	attribBuffer = attribVal.getImageBuffer();
+				ISFVal			attribVal = inRef->currentVal();
+				GLBufferRef	attribBuffer = attribVal.imageBuffer();
 				if (attribBuffer==nullptr || attribBuffer->desc.target==GLBuffer::Target_2D)	{
 					vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 					fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
@@ -2026,9 +1996,9 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	
 	//	this block will be used to add declarations for a provided ISFPassTarget
 	auto		targetBufferBlock = [&](const ISFPassTargetRef & inRef)	{
-		const string &		tmpName = inRef->getName();
+		const string &		tmpName = inRef->name();
 		const char *		nameCStr = tmpName.c_str();
-		GLBufferRef		bufferRef = inRef->getBuffer();
+		GLBufferRef		bufferRef = inRef->buffer();
 		if (bufferRef==nullptr || bufferRef->desc.target==GLBuffer::Target_2D)	{
 			vsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
 			fsDeclarations.emplace_back(FmtString("uniform sampler2D\t\t%s;\n", nameCStr));
@@ -2059,10 +2029,10 @@ bool ISFDoc::_assembleShaderSource_VarDeclarations(string * outVSString, string 
 	for (const auto & attrIt : _imageImports)
 		attribDecBlock(attrIt);
 	//	add the variables for the persistent buffers
-	for (const auto & tgBufIt : _persistentBuffers)
+	for (const auto & tgBufIt : _persistentPassTargets)
 		targetBufferBlock(tgBufIt);
 	//	add the variables for the temp buffers
-	for (const auto & tgBufIt : _tempBuffers)
+	for (const auto & tgBufIt : _tempPassTargets)
 		targetBufferBlock(tgBufIt);
 	/*
 	cout << "VS declarations are:\n";
@@ -2120,16 +2090,16 @@ bool ISFDoc::_assembleSubstitutionMap(map<string,double*> * outMap)	{
 	
 	for (const auto & attribRefIt : _inputs)	{
 		
-		const string &		tmpName = attribRefIt->getName();
+		const string &		tmpName = attribRefIt->name();
 		
-		switch (attribRefIt->getType())	{
+		switch (attribRefIt->type())	{
 		case ISFValType_None:
 			break;
 		case ISFValType_Event:
 		case ISFValType_Bool:
 		case ISFValType_Long:
 		case ISFValType_Float:
-			//outMapRef[tmpName] = attribRefIt->getCurrentVal().getDoubleVal();
+			//outMapRef[tmpName] = attribRefIt->currentVal().getDoubleVal();
 			outMapRef[tmpName] = attribRefIt->updateAndGetEvalVariable();
 			break;
 		case ISFValType_Point2D:
@@ -2153,105 +2123,105 @@ bool ISFDoc::_assembleSubstitutionMap(map<string,double*> * outMap)	{
 
 ostream & operator<<(ostream & os, const ISFDoc & n)	{
 	os << "doc is \"" << *(n._name) << "\"" << endl;
-	os << "\tdoc is a " << ISFFileTypeString(n.getType()) << endl;
+	os << "\tdoc is a " << ISFFileTypeString(n.type()) << endl;
 	
-	string				tmpDescription = n.getDescription();
+	string				tmpDescription = n.description();
 	os << "\tdescription: " << tmpDescription << endl;
 	
-	string				tmpCredit = n.getCredit();
+	string				tmpCredit = n.credit();
 	os << "\tcredit: " << tmpCredit << endl;
 	
-	vector<ISFAttrRef> &		tmpImports = const_cast<ISFDoc*>(&n)->getImageImports();
+	vector<ISFAttrRef> &		tmpImports = const_cast<ISFDoc*>(&n)->imageImports();
 	if (tmpImports.size() > 0)	{
 		os << "\tdoc has " << tmpImports.size() << " imported images\n";
 		for (auto it=tmpImports.begin(); it!=tmpImports.end(); ++it)	{
-			os << "\t\t" << (*it)->getName() << ": " << ISFValTypeString((*it)->getType());
-			if ((*it)->getIsFilterInputImage())
+			os << "\t\t" << (*it)->name() << ": " << StringFromISFValType((*it)->type());
+			if ((*it)->isFilterInputImage())
 				os << " <- is filter input image";
 			os << endl;
 		}
 	}
 
-	const vector<ISFPassTargetRef> 	tmpPersistent = const_cast<ISFDoc*>(&n)->getPersistentBuffers();
+	const vector<ISFPassTargetRef> 	tmpPersistent = const_cast<ISFDoc*>(&n)->persistentPassTargets();
 	if (tmpPersistent.size() > 0)	{
 		os << "\tdoc has " << tmpPersistent.size() << " persistent buffers\n";
 		for (const auto & it : tmpPersistent)	{
-			const std::string		tmpWidth = it->getTargetWidthString();
-			const std::string		tmpHeight = it->getTargetHeightString();
-			os << "\t\t" << it->getName();
+			const std::string		tmpWidth = it->targetWidthString();
+			const std::string		tmpHeight = it->targetHeightString();
+			os << "\t\t" << it->name();
 			if (tmpWidth.size() > 0)
 				os << ", " << tmpWidth;
 			if (tmpHeight.size() > 0)
 				os << ", " << tmpHeight;
-			if (it->getFloatFlag())
+			if (it->floatFlag())
 				os << ", is a FLOAT tex";
 			os << endl;
 		}
 	}
 	
-	const vector<ISFPassTargetRef> 	tmpTemp = const_cast<ISFDoc*>(&n)->getTempBuffers();
+	const vector<ISFPassTargetRef> 	tmpTemp = const_cast<ISFDoc*>(&n)->tempPassTargets();
 	if (tmpTemp.size() > 0)	{
 		os << "\tdoc has " << tmpTemp.size() << " temp buffers\n";
 		for (const auto & it : tmpTemp)	{
-			const std::string		tmpWidth = it->getTargetWidthString();
-			const std::string		tmpHeight = it->getTargetHeightString();
-			os << "\t\t" << it->getName();
+			const std::string		tmpWidth = it->targetWidthString();
+			const std::string		tmpHeight = it->targetHeightString();
+			os << "\t\t" << it->name();
 			if (tmpWidth.size() > 0)
 				os << ", " << tmpWidth;
 			if (tmpHeight.size() > 0)
 				os << ", " << tmpHeight;
-			if (it->getFloatFlag())
+			if (it->floatFlag())
 				os << ", is a FLOAT tex";
 			os << endl;
 		}
 	}
 	
-	vector<string> &		tmpPasses = const_cast<ISFDoc*>(&n)->getRenderPasses();
+	vector<string> &		tmpPasses = const_cast<ISFDoc*>(&n)->renderPasses();
 	if (tmpPasses.size() > 0)	{
 		os << "\tdoc has " << tmpPasses.size() << " render passes\n";
 		for (auto it=tmpPasses.begin(); it!=tmpPasses.end(); ++it)
 			os << "\t\tpass name: " << *it << endl;
 	}
 
-	vector<ISFAttrRef> &		tmpInputs = const_cast<ISFDoc*>(&n)->getInputs();
+	vector<ISFAttrRef> &		tmpInputs = const_cast<ISFDoc*>(&n)->inputs();
 	if (tmpInputs.size() > 0)	{
 		os << "\tdoc has " << tmpInputs.size() << " inputs\n";
 		for (const auto & it : tmpInputs)	{
-			os << "\t\tinput \"" << it->getName() << "\" is a " << ISFValTypeString(it->getType()) << endl;
-			ISFVal&		currentVal = it->getCurrentVal();
-			ISFVal&		minVal = it->getMinVal();
-			ISFVal&		maxVal = it->getMaxVal();
-			ISFVal&		defaultVal = it->getDefaultVal();
-			ISFVal&		identityVal = it->getIdentityVal();
-			vector<string>&		labels = it->getLabelArray();
-			vector<int32_t>&	vals = it->getValArray();
+			os << "\t\tinput \"" << it->name() << "\" is a " << StringFromISFValType(it->type()) << endl;
+			ISFVal&		currentVal = it->currentVal();
+			ISFVal&		minVal = it->minVal();
+			ISFVal&		maxVal = it->maxVal();
+			ISFVal&		defaultVal = it->defaultVal();
+			ISFVal&		identityVal = it->identityVal();
+			vector<string>&		labels = it->labelArray();
+			vector<int32_t>&	vals = it->valArray();
 			bool			needsAComma = false;
 			bool			needsANewline = false;
-			if (currentVal.getType()!=ISFValType_None || minVal.getType()!=ISFValType_None || maxVal.getType()!=ISFValType_None || defaultVal.getType()!=ISFValType_None || identityVal.getType()!=ISFValType_None || labels.size()>0 || vals.size()>0)	{
+			if (currentVal.type()!=ISFValType_None || minVal.type()!=ISFValType_None || maxVal.type()!=ISFValType_None || defaultVal.type()!=ISFValType_None || identityVal.type()!=ISFValType_None || labels.size()>0 || vals.size()>0)	{
 				os << "\t\t\t";
 				needsANewline = true;
 			}
-			if (currentVal.getType() != ISFValType_None)	{
+			if (currentVal.type() != ISFValType_None)	{
 				if (needsAComma) os << ", ";
 				else needsAComma = true;
 				os << "current val is " <<  currentVal.getValString();
 			}
-			if (minVal.getType() != ISFValType_None)	{
+			if (minVal.type() != ISFValType_None)	{
 				if (needsAComma) os << ", ";
 				else needsAComma = true;
 				os << "min val is " <<  minVal.getValString();
 			}
-			if (maxVal.getType() != ISFValType_None)	{
+			if (maxVal.type() != ISFValType_None)	{
 				if (needsAComma) os << ", ";
 				else needsAComma = true;
 				os << "max val is " <<  maxVal.getValString();
 			}
-			if (defaultVal.getType() != ISFValType_None)	{
+			if (defaultVal.type() != ISFValType_None)	{
 				if (needsAComma) os << ", ";
 				else needsAComma = true;
 				os << "default val is " <<  defaultVal.getValString();
 			}
-			if (identityVal.getType() != ISFValType_None)	{
+			if (identityVal.type() != ISFValType_None)	{
 				if (needsAComma) os << ", ";
 				else needsAComma = true;
 				os << "identity val is " <<  identityVal.getValString();

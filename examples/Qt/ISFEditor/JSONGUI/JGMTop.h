@@ -33,7 +33,7 @@ public:
 	JGMCInputArray & inputsContainer() { return _inputs; }
 	JGMCPassArray & passesContainer() { return _passes; }
 	
-	JGMInputRef getInputNamed(const QString & n);
+	JGMInputRef inputNamed(const QString & n);
 	QVector<JGMPassRef> getPassesRenderingToBufferNamed(const QString & n);
 	JGMPassRef getPersistentPassNamed(const QString & n);
 	int indexOfInput(const JGMInput & n);

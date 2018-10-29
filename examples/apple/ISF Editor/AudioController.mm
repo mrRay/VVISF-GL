@@ -234,7 +234,7 @@ int		fftQuality = 512;
 		}
 		
 		//[VVBufferPool pushTexRangeBufferRAMtoVRAM:audioBuffer usingContext:[_globalVVBufferPool CGLContextObj]];
-		PushTexRangeBufferRAMtoVRAM(audioBuffer, GetGlobalBufferPool()->getContext());
+		PushTexRangeBufferRAMtoVRAM(audioBuffer, GetGlobalBufferPool()->context());
 		//NSLog(@"\t\taudioBuffer is %@",audioBuffer);
 	}
 	
@@ -280,7 +280,7 @@ int		fftQuality = 512;
 		}
 		
 		//[VVBufferPool pushTexRangeBufferRAMtoVRAM:fftBuffer usingContext:[_globalVVBufferPool CGLContextObj]];
-		PushTexRangeBufferRAMtoVRAM(fftBuffer, GetGlobalBufferPool()->getContext());
+		PushTexRangeBufferRAMtoVRAM(fftBuffer, GetGlobalBufferPool()->context());
 		//NSLog(@"\t\tfftBuffer is %@",fftBuffer);
 	}
 		
@@ -363,7 +363,7 @@ int		fftQuality = 512;
 	}
 	
 	//[VVBufferPool pushTexRangeBufferRAMtoVRAM:returnMe usingContext:[_globalVVBufferPool CGLContextObj]];
-	PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->getContext());
+	PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->context());
 	
 	return returnMe;
 	return nil;
@@ -446,7 +446,7 @@ int		fftQuality = 512;
 	}
 	
 	//[VVBufferPool pushTexRangeBufferRAMtoVRAM:returnMe usingContext:[_globalVVBufferPool CGLContextObj]];
-	PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->getContext());
+	PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->context());
 	
 	return returnMe;
 	return nil;

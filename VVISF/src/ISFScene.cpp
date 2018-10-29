@@ -137,16 +137,16 @@ void ISFScene::useDoc(ISFDocRef & inDoc)	{
 
 
 void ISFScene::setBufferForInputNamed(const GLBufferRef & inBuffer, const string & inName)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return;
-	ISFAttrRef		tmpAttr = tmpDoc->getInput(inName);
+	ISFAttrRef		tmpAttr = tmpDoc->input(inName);
 	if (tmpAttr != nullptr)
 		tmpAttr->setCurrentImageBuffer(inBuffer);
 }
 void ISFScene::setFilterInputBuffer(const GLBufferRef & inBuffer)	{
 	//cout << __PRETTY_FUNCTION__ << ", buffer is " << inBuffer << endl;
-	ISFAttrRef	filterInput = getInputNamed(string("inputImage"));
+	ISFAttrRef	filterInput = inputNamed(string("inputImage"));
 	if (filterInput == nullptr)
 		return;
 	filterInput->setCurrentImageBuffer(inBuffer);
@@ -155,67 +155,67 @@ void ISFScene::setFilterInputBuffer(const GLBufferRef & inBuffer)	{
 	//if (checkBuffer==nullptr) cout << "/null" << endl; else cout << "/" << *checkBuffer << endl;
 }
 void ISFScene::setBufferForInputImageKey(const GLBufferRef & inBuffer, const string & inString)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return;
-	for (const auto & attrIt : tmpDoc->getImageInputs())	{
-		if (attrIt->getName() == inString)	{
+	for (const auto & attrIt : tmpDoc->imageInputs())	{
+		if (attrIt->name() == inString)	{
 			attrIt->setCurrentImageBuffer(inBuffer);
 			break;
 		}
 	}
 }
 void ISFScene::setBufferForAudioInputKey(const GLBufferRef & inBuffer, const string & inString)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return;
-	for (const auto & attrIt : tmpDoc->getAudioInputs())	{
-		if (attrIt->getName() == inString)	{
+	for (const auto & attrIt : tmpDoc->audioInputs())	{
+		if (attrIt->name() == inString)	{
 			attrIt->setCurrentImageBuffer(inBuffer);
 			break;
 		}
 	}
 }
 GLBufferRef ISFScene::getBufferForImageInput(const string & inKey)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
-	for (const auto & attrIt : tmpDoc->getImageInputs())	{
-		if (attrIt->getName() == inKey)	{
+	for (const auto & attrIt : tmpDoc->imageInputs())	{
+		if (attrIt->name() == inKey)	{
 			return attrIt->getCurrentImageBuffer();
 		}
 	}
 	return nullptr;
 }
 GLBufferRef ISFScene::getBufferForAudioInput(const string & inKey)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
-	for (const auto & attrIt : tmpDoc->getAudioInputs())	{
-		if (attrIt->getName() == inKey)	{
+	for (const auto & attrIt : tmpDoc->audioInputs())	{
+		if (attrIt->name() == inKey)	{
 			return attrIt->getCurrentImageBuffer();
 		}
 	}
 	return nullptr;
 }
 GLBufferRef ISFScene::getPersistentBufferNamed(const string & inKey)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
-	for (const auto & targetIt : tmpDoc->getPersistentBuffers())	{
-		if (targetIt->getName() == inKey)	{
-			return targetIt->getBuffer();
+	for (const auto & targetIt : tmpDoc->persistentPassTargets())	{
+		if (targetIt->name() == inKey)	{
+			return targetIt->buffer();
 		}
 	}
 	return nullptr;
 }
 GLBufferRef ISFScene::getTempBufferNamed(const string & inKey)	{
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
-	for (const auto & targetIt : tmpDoc->getTempBuffers())	{
-		if (targetIt->getName() == inKey)	{
-			return targetIt->getBuffer();
+	for (const auto & targetIt : tmpDoc->tempPassTargets())	{
+		if (targetIt->name() == inKey)	{
+			return targetIt->buffer();
 		}
 	}
 	return nullptr;
@@ -224,12 +224,12 @@ GLBufferRef ISFScene::getTempBufferNamed(const string & inKey)	{
 
 void ISFScene::setValueForInputNamed(const ISFVal & inVal, const string & inName)	{
 	//cout << __FUNCTION__ << "- " << inVal << ", " << inName << endl;
-	ISFAttrRef		inputRef = getInputNamed(inName);
+	ISFAttrRef		inputRef = inputNamed(inName);
 	if (inputRef == nullptr)
 		return;
 	
-	ISFValType		inValType = inVal.getType();
-	ISFValType		attrType = inputRef->getType();
+	ISFValType		inValType = inVal.type();
+	ISFValType		attrType = inputRef->type();
 	bool			reportFailure = false;
 	if (inValType == attrType)	{
 		inputRef->setCurrentVal(inVal);
@@ -269,52 +269,52 @@ void ISFScene::setValueForInputNamed(const ISFVal & inVal, const string & inName
 	}
 }
 ISFVal ISFScene::valueForInputNamed(const string & inName)	{
-	ISFAttrRef		inputRef = getInputNamed(inName);
+	ISFAttrRef		inputRef = inputNamed(inName);
 	if (inputRef == nullptr)
 		return ISFNullVal();
-	return inputRef->getCurrentVal();
+	return inputRef->currentVal();
 }
 
 
-ISFAttrRef ISFScene::getInputNamed(const string & inName)	{
-	ISFDocRef		tmpDoc = getDoc();
+ISFAttrRef ISFScene::inputNamed(const string & inName)	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
-	for (const auto & attrIt : tmpDoc->getInputs())	{
-		if (attrIt->getName() == inName)
+	for (const auto & attrIt : tmpDoc->inputs())	{
+		if (attrIt->name() == inName)
 			return attrIt;
 	}
 	return nullptr;
 }
-vector<ISFAttrRef> ISFScene::getInputs()	{
-	ISFDocRef		tmpDoc = getDoc();
+vector<ISFAttrRef> ISFScene::inputs()	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getInputs();
+	return tmpDoc->inputs();
 }
-vector<ISFAttrRef> ISFScene::getInputsOfType(const ISFValType & inType)	{
-	ISFDocRef		tmpDoc = getDoc();
+vector<ISFAttrRef> ISFScene::inputsOfType(const ISFValType & inType)	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getInputsOfType(inType);
+	return tmpDoc->inputsOfType(inType);
 }
-vector<ISFAttrRef> ISFScene::getImageInputs()	{
-	ISFDocRef		tmpDoc = getDoc();
+vector<ISFAttrRef> ISFScene::imageInputs()	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getImageInputs();
+	return tmpDoc->imageInputs();
 }
-vector<ISFAttrRef> ISFScene::getAudioInputs()	{
-	ISFDocRef		tmpDoc = getDoc();
+vector<ISFAttrRef> ISFScene::audioInputs()	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getAudioInputs();
+	return tmpDoc->audioInputs();
 }
-vector<ISFAttrRef> ISFScene::getImageImports()	{
-	ISFDocRef		tmpDoc = getDoc();
+vector<ISFAttrRef> ISFScene::imageImports()	{
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return vector<ISFAttrRef>();
-	return tmpDoc->getImageImports();
+	return tmpDoc->imageImports();
 }
 
 
@@ -336,16 +336,16 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 }
 */
 GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,GLBufferRef> * outPassDict, const GLBufferPoolRef & inPoolRef)	{
-	ISFDocRef		tmpDoc = getDoc();
+	ISFDocRef		tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return nullptr;
 	//cout << "\ttmpDoc is " << *tmpDoc << endl;
 	GLBufferRef			returnMe = nullptr;
-	vector<string>			passNames = tmpDoc->getRenderPasses();
+	vector<string>			passNames = tmpDoc->renderPasses();
 	ISFPassTargetRef		lastPass = nullptr;
 	if (passNames.size()>0)	{
 		string					lastPassName = passNames.back();
-		lastPass = tmpDoc->getPassTargetForKey(lastPassName);
+		lastPass = tmpDoc->passTargetForKey(lastPassName);
 	}
 	
 	GLBufferPoolRef		bp = inPoolRef;
@@ -359,14 +359,14 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 		return nullptr;
 	}
 	
-	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
+	//returnMe = (lastPass!=nullptr && lastPass->floatFlag())
 	//	? CreateBGRAFloatTex(inSize, bp)
 	//	: CreateBGRATex(inSize, bp);
-	//returnMe = (lastPass!=nullptr && lastPass->getFloatFlag())
+	//returnMe = (lastPass!=nullptr && lastPass->floatFlag())
 	//	? CreateRGBAFloatTex(inSize, bp)
 	//	: CreateRGBATex(inSize, bp);
 	
-	bool			shouldBeFloat = _alwaysRenderToFloat || (lastPass!=nullptr && lastPass->getFloatFlag());
+	bool			shouldBeFloat = _alwaysRenderToFloat || (lastPass!=nullptr && lastPass->floatFlag());
 #if defined(VVGL_SDK_MAC)
 	if (_persistentToIOSurface)
 		returnMe = (shouldBeFloat) ? CreateRGBAFloatTexIOSurface(inSize, false, bp) : CreateRGBATexIOSurface(inSize, false, bp);
@@ -423,7 +423,7 @@ void ISFScene::_setUpRenderCallback()	{
 		targetQuad.populateGeo(Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 		//	get the VBO
-		GLBufferRef		myVBO = getVBO();
+		GLBufferRef		myVBO = vbo();
 		
 		//	if there's no VBO, or the target quad doesn't match the VBO's contents
 		if (myVBO==nullptr || targetQuad!=_vboContents)	{
@@ -470,13 +470,13 @@ void ISFScene::_setUpRenderCallback()	{
 		//CGLContextObj		orig_ctx = CGLGetCurrentContext();
 		//cout << "\tin render callback, my context is " << *_context << ", current context is " << orig_ctx << endl;
 		//	if we're in GL 2 then we can't use a VAO
-		if (s.getGLVersion() == GLVersion_2)	{
+		if (s.glVersion() == GLVersion_2)	{
 			//	make a quad that describes the area we have to draw
 			Quad<VertXY>		targetQuad;
 			targetQuad.populateGeo(VVGL::Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 			//	get the VBO
-			GLBufferRef		myVBO = getVBO();
+			GLBufferRef		myVBO = vbo();
 		
 			//	if there's no VBO, or the target quad doesn't match the VBO's contents
 			if (myVBO==nullptr || targetQuad!=_vboContents)	{
@@ -521,7 +521,7 @@ void ISFScene::_setUpRenderCallback()	{
 			targetQuad.populateGeo(VVGL::Rect(0,0,_orthoSize.width,_orthoSize.height));
 		
 			//	bind the VAO
-			GLBufferRef		myVAO = getVAO();
+			GLBufferRef		myVAO = vao();
 			if (myVAO == nullptr)
 				return;
 			glBindVertexArray(myVAO->name);
@@ -669,8 +669,8 @@ void ISFScene::_renderPrep()	{
 	
 	//	make sure there's a VAO
 #if !defined(VVGL_TARGETENV_GLES)
-	if (getGLVersion() != GLVersion_2)	{
-		if (getVAO() == nullptr)
+	if (glVersion() != GLVersion_2)	{
+		if (vao() == nullptr)
 			setVAO(CreateVAO(true, (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool()));
 	}
 #endif
@@ -696,14 +696,14 @@ void ISFScene::_renderPrep()	{
 	
 	//	this block retrieves and stores the uniform location from the passed attribute for simple val-based attributes
 	auto		setAttrUniformsSimpleValBlock = [&](const ISFAttrRef & inAttr)	{
-		const char *	tmpAttrName = inAttr->getName().c_str();
+		const char *	tmpAttrName = inAttr->name().c_str();
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 	};
 	//	this block retrieves and stores the uniform locations from the passed attribute for cube-based attributes
 	auto		setAttrUniformsCubeBlock = [&](const ISFAttrRef & inAttr)	{
-		const char *		tmpAttrName = inAttr->getName().c_str();
+		const char *		tmpAttrName = inAttr->name().c_str();
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
@@ -715,7 +715,7 @@ void ISFScene::_renderPrep()	{
 	};
 	//	this block retrieves and stores the uniform locations from the passed attribute for all other image-based attributes
 	auto		setAttrUniformsImageBlock = [&](const ISFAttrRef & inAttr)	{
-		const char *		tmpAttrName = inAttr->getName().c_str();
+		const char *		tmpAttrName = inAttr->name().c_str();
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpAttrName);
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
@@ -810,7 +810,7 @@ void ISFScene::_renderPrep()	{
 	};
 	/*
 	auto		setTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
-		//const char *		tmpTargetName = inTarget->getName().c_str();
+		//const char *		tmpTargetName = inTarget->name().c_str();
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpTargetName);
 		//GLERRLOG
 		//if (samplerLoc >= 0)
@@ -827,7 +827,7 @@ void ISFScene::_renderPrep()	{
 	};
 	*/
 	auto		setTargetUniformsImageBlock = [&](const ISFPassTargetRef & inTarget)	{
-		//const char *		tmpTargetName = inTarget->getName().c_str();
+		//const char *		tmpTargetName = inTarget->name().c_str();
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpTargetName);
 		//GLERRLOG
 		//inTarget->setUniformLocation(0, samplerLoc);
@@ -851,7 +851,7 @@ void ISFScene::_renderPrep()	{
 	};
 	/*
 	auto		pushTargetUniformsCubeBlock = [&](const ISFPassTargetRef & inTarget)	{
-		tmpBuffer = inTarget->getBuffer();
+		tmpBuffer = inTarget->buffer();
 		if (tmpBuffer != nullptr)	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
@@ -880,7 +880,7 @@ void ISFScene::_renderPrep()	{
 	};
 	*/
 	auto		pushTargetUniformsImageBlock = [&](const ISFPassTargetRef & inTarget)	{
-		tmpBuffer = inTarget->getBuffer();
+		tmpBuffer = inTarget->buffer();
 		if (tmpBuffer != nullptr)	{
 			//	pass the actual texture to the program
 			glActiveTexture(GL_TEXTURE0 + textureCount);
@@ -923,10 +923,10 @@ void ISFScene::_renderPrep()	{
 	
 	
 	//	run through the inputs, applying the current values to the program
-	vector<ISFAttrRef> &	inputs = _doc->getInputs();
+	vector<ISFAttrRef> &	inputs = _doc->inputs();
 	for (const auto & attribRef : inputs)	{
-		ISFValType			attribType = attribRef->getType();
-		ISFVal &			currentVal = attribRef->getCurrentVal();
+		ISFValType			attribType = attribRef->type();
+		ISFVal &			currentVal = attribRef->currentVal();
 		
 		switch (attribType)	{
 		case ISFValType_None:
@@ -948,7 +948,7 @@ void ISFScene::_renderPrep()	{
 			//currentVal = ISFBoolVal(false);
 			//tmpInt = currentVal.getBoolVal();
 			//attribRef->setCurrentVal(ISFBoolVal(false));
-			//cout << "\tchecking: " << attribRef->getCurrentVal().getBoolVal() << endl;
+			//cout << "\tchecking: " << attribRef->currentVal().getBoolVal() << endl;
 			break;
 			}
 		case ISFValType_Bool:
@@ -974,7 +974,7 @@ void ISFScene::_renderPrep()	{
 			}
 			break;
 		case ISFValType_Float:
-			//cout << "\tprocessing float-type input named " << attribRef->getName() << ", val is " << currentVal.getDoubleVal() << endl;
+			//cout << "\tprocessing float-type input named " << attribRef->name() << ", val is " << currentVal.getDoubleVal() << endl;
 			if (findNewUniforms)
 				setAttrUniformsSimpleValBlock(attribRef);
 			samplerLoc = attribRef->getUniformLocation(0);
@@ -1027,7 +1027,7 @@ void ISFScene::_renderPrep()	{
 		case ISFValType_AudioFFT:
 			{
 			//GLBufferRef		tmpBuffer = attribRef->getCurrentImageBuffer();
-			//cout << "\tprocessing image-type input named " << attribRef->getName();
+			//cout << "\tprocessing image-type input named " << attribRef->name();
 			//cout << ", buffer is " << tmpBuffer;
 			//if (tmpBuffer==nullptr) cout << "/null" << endl; else cout << "/" << *tmpBuffer << endl;
 			if (findNewUniforms)
@@ -1039,9 +1039,9 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the imported images, applying the current values to the program
-	vector<ISFAttrRef> &	imageImports = _doc->getImageImports();
+	vector<ISFAttrRef> &	imageImports = _doc->imageImports();
 	for (const auto & attribRef : imageImports)	{
-		if (attribRef->getType() == ISFValType_Cube)	{
+		if (attribRef->type() == ISFValType_Cube)	{
 			if (findNewUniforms)
 				setAttrUniformsCubeBlock(attribRef);
 			pushAttrUniformsCubeBlock(attribRef);
@@ -1054,7 +1054,7 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the persistent buffers, applying the current values to the program
-	const vector<ISFPassTargetRef>	persistentBuffers = _doc->getPersistentBuffers();
+	const vector<ISFPassTargetRef>	persistentBuffers = _doc->persistentPassTargets();
 	for (const auto & targetRef : persistentBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
@@ -1062,7 +1062,7 @@ void ISFScene::_renderPrep()	{
 	}
 	
 	//	run through the temp buffers, applying the current values to the program
-	const vector<ISFPassTargetRef>	tempBuffers = _doc->getTempBuffers();
+	const vector<ISFPassTargetRef>	tempBuffers = _doc->tempPassTargets();
 	for (const auto & targetRef : tempBuffers)	{
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
@@ -1147,7 +1147,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 	//	cout << endl;
 	
 	//	get the doc before we hold any other locks- bail if there's no doc
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc == nullptr)
 		return;
 	
@@ -1188,7 +1188,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		
 		GLBufferRef				tmpFBO = CreateFBO(true, bp);
 		//	run through the array of passes, rendering each of them
-		vector<string>			passes = tmpDoc->getRenderPasses();
+		vector<string>			passes = tmpDoc->renderPasses();
 		_passIndex = 1;
 		for (const auto & pass : passes)	{
 			//cout << "\trendering pass " << _passIndex << endl;
@@ -1207,13 +1207,13 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			//	if there's a target buffer name, i need to find the target buffer
 			if (pass.size()>0)	{
 				//	try to find a persistent buffer matching the target name
-				targetBuffer = tmpDoc->getPersistentPassTargetForKey(pass);
+				targetBuffer = tmpDoc->persistentPassTargetForKey(pass);
 				if (targetBuffer != nullptr)
 					isPersistentBuffer = true;
 				//	else i couldn't find a persistent buffer matching the target name
 				else	{
 					//	try to find a temp buffer matching the target name
-					targetBuffer = tmpDoc->getTempPassTargetForKey(pass);
+					targetBuffer = tmpDoc->tempPassTargetForKey(pass);
 					if (targetBuffer != nullptr)
 						isTempBuffer = true;
 					else	{
@@ -1225,15 +1225,15 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			if (_passIndex >= passes.size())
 				tmpRenderTarget.color = inTargetBuffer;
 			else	{
-				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
-				//tmpRenderTarget.color = (targetBuffer->getFloatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
+				//tmpRenderTarget.color = (targetBuffer->floatFlag()) ? CreateBGRAFloatTex(targetBufferSize, bp) : CreateBGRATex(targetBufferSize, bp);
+				//tmpRenderTarget.color = (targetBuffer->floatFlag()) ? CreateRGBAFloatTex(targetBufferSize, bp) : CreateRGBATex(targetBufferSize, bp);
 				
 #if defined(VVGL_SDK_MAC)
 				if (shouldBeIOSurface)
-					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->getFloatFlag())) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
+					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->floatFlag())) ? CreateRGBAFloatTexIOSurface(targetBufferSize, true, bp) : CreateRGBATexIOSurface(targetBufferSize, true, bp);
 				else
 #endif
-					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->getFloatFlag())) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
+					tmpRenderTarget.color = (shouldBeFloat || (targetBuffer!=nullptr && targetBuffer->floatFlag())) ? CreateRGBAFloatTex(targetBufferSize, true, bp) : CreateRGBATex(targetBufferSize, true, bp);
 				
 				//_context->makeCurrentIfNotCurrent();
 			}
@@ -1262,10 +1262,10 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		}
 		
 		//	now we have to run through the inputs, and set the value of any 'event'-type inputs that were YES to NO
-		vector<ISFAttrRef> &	inputs = tmpDoc->getInputs();
+		vector<ISFAttrRef> &	inputs = tmpDoc->inputs();
 		for (const auto & attribRef : inputs)	{
-			ISFValType		attribType = attribRef->getType();
-			ISFVal &		currentVal = attribRef->getCurrentVal();
+			ISFValType		attribType = attribRef->type();
+			ISFVal &		currentVal = attribRef->currentVal();
 			
 			switch (attribType)	{
 			case ISFValType_Event:
@@ -1289,7 +1289,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			//cout << "\tstoring " << *inTargetBuffer << " at " << -1 << endl;
 			//	add the buffers for the various image inputs at keys going from 100-199
 			int			i=0;
-			for (const auto & attrIt : tmpDoc->getImageInputs())	{
+			for (const auto & attrIt : tmpDoc->imageInputs())	{
 				GLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",100+i)] = tmpBuffer;
@@ -1301,7 +1301,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			}
 			//	add the buffers for the various audio inputs at keys going from 200-299
 			i=0;
-			for (const auto & attrIt : tmpDoc->getAudioInputs())	{
+			for (const auto & attrIt : tmpDoc->audioInputs())	{
 				GLBufferRef		tmpBuffer = attrIt->getCurrentImageBuffer();
 				if (tmpBuffer != nullptr)	{
 					//(*outPassDict)[FmtString("%d",200+i)] = tmpBuffer;
@@ -1314,7 +1314,7 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		}
 		
 		//	run through and delete all the buffers in the temp buffer array
-		for (const auto & attrIt : tmpDoc->getTempBuffers())	{
+		for (const auto & attrIt : tmpDoc->tempPassTargets())	{
 			attrIt->clearBuffer();
 		}
 	}
@@ -1340,12 +1340,12 @@ void ISFScene::setVertexShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
 	GLScene::setVertexShaderString(n);
 	
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc != nullptr)	{
-		for (const auto & attrIt : tmpDoc->getInputs())	{
+		for (const auto & attrIt : tmpDoc->inputs())	{
 			attrIt->clearUniformLocations();
 		}
-		for (const auto & attrIt : tmpDoc->getImageImports())	{
+		for (const auto & attrIt : tmpDoc->imageImports())	{
 			attrIt->clearUniformLocations();
 		}
 	}
@@ -1355,12 +1355,12 @@ void ISFScene::setFragmentShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl << "\tstring is:\n" << n << endl;
 	GLScene::setFragmentShaderString(n);
 	
-	ISFDocRef			tmpDoc = getDoc();
+	ISFDocRef			tmpDoc = doc();
 	if (tmpDoc != nullptr)	{
-		for (const auto & attrIt : tmpDoc->getInputs())	{
+		for (const auto & attrIt : tmpDoc->inputs())	{
 			attrIt->clearUniformLocations();
 		}
-		for (const auto & attrIt : tmpDoc->getImageImports())	{
+		for (const auto & attrIt : tmpDoc->imageImports())	{
 			attrIt->clearUniformLocations();
 		}
 	}

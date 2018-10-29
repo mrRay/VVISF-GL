@@ -7,7 +7,7 @@
 
 
 
-JGMInputRef JGMTop::getInputNamed(const QString & n)	{
+JGMInputRef JGMTop::inputNamed(const QString & n)	{
 	QVector<JGMInputRef>		&inputsArray = _inputs.contents();
 	for (const JGMInputRef & input : inputsArray)	{
 		QJsonValue		inputName = input->value(QString("NAME"));
@@ -83,7 +83,7 @@ QString JGMTop::createNewInputName()	{
 			returnMe = QString("tmpInputName");
 		else
 			returnMe = QString("tmpInputName%1").arg(count);
-		if (getInputNamed(returnMe) != nullptr)
+		if (inputNamed(returnMe) != nullptr)
 			returnMe = QString("");
 		++count;
 	} while (returnMe.length()<1);

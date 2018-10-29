@@ -59,7 +59,7 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 		//!	Sets the size of the queue used for streaming.  Effectively, this is the number of calls it takes for the texture data to "finish downloading" and get returned as a pointer to non-GPU memory.
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
-		inline int getQueueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
+		inline int queueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
 		
 		//! Immediately downloads the passed texture into CPU memory- doesn't use the queues.  Less efficient.  Good for quick single-shot texture downloads.
 		/*!

@@ -28,7 +28,7 @@
 		//	make the GL scene we're going to use to render to texture (the texture will then be drawn in a view)
 		glScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
-		if (glScene->getGLVersion() == GLVersion_2)
+		if (glScene->glVersion() == GLVersion_2)
 			[self initForGL2];
 		else
 			[self initForModernGL];
@@ -93,7 +93,7 @@
 		double					fillerColorVal = fmod(timeSinceStart, 1.);
 		//	populate a tex quad with the geometry, tex, and color vals
 		Quad<VertXYZSTRGBA>		texQuad;
-		VVGL::Size				sceneSize = n.getOrthoSize();
+		VVGL::Size				sceneSize = n.orthoSize();
 		VVGL::Rect				geoRect = ResizeRect(imgBuffer->srcRect, VVGL::Rect(0,0,sceneSize.width,sceneSize.height), SizingMode_Fit);
 		VVGL::Rect				texRect = imgBuffer->glReadySrcRect();
 		texQuad.populateGeo(geoRect);
@@ -182,7 +182,7 @@ FragColor *= programRGBA;\r\
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			xyzAttr->cacheTheLoc(myProgram);
 			stAttr->cacheTheLoc(myProgram);
 			rgbaAttr->cacheTheLoc(myProgram);
@@ -210,7 +210,7 @@ FragColor *= programRGBA;\r\
 		glClearColor(0., 0., 0., 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		VVGL::Size			orthoSize = n.getOrthoSize();
+		VVGL::Size			orthoSize = n.orthoSize();
 		VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
 		Quad<VertXYZSTRGBA>		targetQuad;

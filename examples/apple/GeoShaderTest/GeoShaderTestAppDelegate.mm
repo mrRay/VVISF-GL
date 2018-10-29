@@ -28,7 +28,7 @@
 		//	make the GL scene we're going to use to render to texture (the texture will then be drawn in a view)
 		glScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
-		if (glScene->getGLVersion() == GLVersion_2)
+		if (glScene->glVersion() == GLVersion_2)
 			[self initForGL2];
 		else
 			[self initForModernGL];
@@ -114,7 +114,7 @@
 	});
 	
 	glScene->setRenderPreLinkCallback([](const GLScene & n)	{
-		GLint				myProgram = n.getProgram();
+		GLint				myProgram = n.program();
 		glProgramParameteriEXT(myProgram, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
 		glProgramParameteriEXT(myProgram, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
 		
@@ -164,7 +164,7 @@
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			xyzAttr->cacheTheLoc(myProgram);
 			rgbaAttr->cacheTheLoc(myProgram);
 			
@@ -183,7 +183,7 @@
 		//glClearColor(0., 1., 0., 1.);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		//VVGL::Size			orthoSize = n.getOrthoSize();
+		//VVGL::Size			orthoSize = n.orthoSize();
 		Quad<VVGL::VertXYZRGBA>	targetQuad;
 		//targetQuad.populateGeo(VVGL::Rect(0,0,orthoSize.width,orthoSize.height));
 		targetQuad.populateGeo(VVGL::Rect(50., 50., 50, 50));

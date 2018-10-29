@@ -33,7 +33,7 @@ public:
 	explicit ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent=nullptr);
 	~ISFUIItem();
 
-	QString getName() { return name; }
+	QString name() { return _name; }
 	ISFVal getISFVal();
 
 private slots:
@@ -42,7 +42,7 @@ private slots:
 	void audioCBUsed(int newIndex);
 	
 private:
-	QString			name;
+	QString			_name;
 	
 	ISFValType		type = ISFValType_None;
 	

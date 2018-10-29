@@ -22,7 +22,7 @@ public:
 	
 	QThread * getRenderThread();
 	
-	inline VVGL::GLContextRef getContext() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return ctx; }
+	inline VVGL::GLContextRef glContextRef() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return ctx; }
 	inline VVISF::ISFSceneRef getScene() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return scene; }
 	void drawBuffer(const VVGL::GLBufferRef & inBuffer);
 	VVGL::GLBufferRef getBuffer();

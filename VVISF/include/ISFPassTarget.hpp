@@ -65,15 +65,15 @@ class VVISF_EXPORT ISFPassTarget	{
 		//!	Sets the receiver's target width string to the passed value.  This string will be evaluated using the exprtk lib, and the resulting value will be used to determine the width at which this pass renders.
 		void setTargetWidthString(const string & n);
 		//!	Gets the receiver's target width string.
-		const string getTargetWidthString();
+		const string targetWidthString();
 		//!	Sets the receiver's target height string to the passed value.  This string will be evaluated using the exprtk lib, and the resulting value will be used to determine the height at which this pass renders.
 		void setTargetHeightString(const string & n);
 		//!	Gets the receiver's target height string.
-		const string getTargetHeightString();
+		const string targetHeightString();
 		//!	Sets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
 		void setFloatFlag(const bool & n);
 		//!	Gets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
-		bool getFloatFlag() const { return _floatFlag; }
+		bool floatFlag() const { return _floatFlag; }
 		//!	Deletes any GL resources that might presently be cached by this pass.
 		void clearBuffer();
 		
@@ -81,9 +81,9 @@ class VVISF_EXPORT ISFPassTarget	{
 		void evalTargetSize(const VVGL::Size & inSize, map<string, double*> & inSymbols, const bool & inResize, const bool & inCreateNewBuffer);
 		
 		//!	Returns the receiver's name.
-		string & getName() { return _name; }
+		string & name() { return _name; }
 		//!	Returns the GLBuffer currently cached with this pass, or null.
-		GLBufferRef & getBuffer() { return _buffer; }
+		GLBufferRef & buffer() { return _buffer; }
 		//!	Sets the GLBuffer currently cached with this pass.
 		void setBuffer(const GLBufferRef & n) { _buffer=n; }
 		

@@ -85,8 +85,8 @@ using namespace VVGL;
 			//string			path([tmpStr UTF8String]);
 			scene->useFile(string([tmpStr UTF8String]));
 			
-			ISFDocRef		sceneDoc = scene->getDoc();
-			auto			attrs = sceneDoc->getInputs();
+			ISFDocRef		sceneDoc = scene->doc();
+			auto			attrs = sceneDoc->inputs();
 			cout << "file\'s doc has " << attrs.size() << " attributes\n";
 			ISFAttrRef		firstAttr = (attrs.size()<1) ? nullptr : attrs.front();
 			if (firstAttr == nullptr)

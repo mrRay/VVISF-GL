@@ -161,7 +161,7 @@
 			//[returnMe setFlipped:YES];
 			returnMe->flipped = true;
 			//[VVBufferPool pushTexRangeBufferRAMtoVRAM:returnMe usingContext:[_globalVVBufferPool CGLContextObj]];
-			PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->getContext());
+			PushTexRangeBufferRAMtoVRAM(returnMe, GetGlobalBufferPool()->context());
 			CVPixelBufferRelease(pb);
 			pb = NULL;
 		}

@@ -48,9 +48,9 @@ using namespace VVISF;
 	self = [super initWithFrame:f];
 	if (self != nil)	{
 		//name = [[a attribName] retain];
-		name = [[NSString stringWithUTF8String:a->getName().c_str()] retain];
+		name = [[NSString stringWithUTF8String:a->name().c_str()] retain];
 		//type = [a attribType];
-		type = a->getType();
+		type = a->type();
 		eventButton = nil;
 		eventNeedsSending = NO;
 		boolButton = nil;
@@ -64,7 +64,7 @@ using namespace VVISF;
 		syphonClient = nil;
 		syphonLastSelectedName = nil;
 		
-		string &		tmpLabelcpp = a->getLabel();
+		string &		tmpLabelcpp = a->label();
 		if (tmpLabelcpp.length()<1)
 			[self setTitle:name];
 		else	{
@@ -88,7 +88,7 @@ using namespace VVISF;
 			[[self contentView] addSubview:boolButton];
 			[boolButton setButtonType:NSSwitchButton];
 			//[boolButton setIntValue:([a currentVal].boolVal) ? NSOnState : NSOffState];
-			[boolButton setIntValue:(a->getCurrentVal().getBoolVal()) ? NSOnState : NSOffState];
+			[boolButton setIntValue:(a->currentVal().getBoolVal()) ? NSOnState : NSOffState];
 			break;
 		case ISFValType_Long:	{
 			longPUB = [[NSPopUpButton alloc] initWithFrame:tmpRect];
@@ -96,8 +96,8 @@ using namespace VVISF;
 			NSMenu		*tmpMenu = [longPUB menu];
 			[tmpMenu removeAllItems];
 			
-			vector<string>	labelArray = a->getLabelArray();
-			vector<int32_t>	valArray = a->getValArray();
+			vector<string>	labelArray = a->labelArray();
+			vector<int32_t>	valArray = a->valArray();
 			if (labelArray.size() == valArray.size())	{
 				auto			labelIt = labelArray.begin();
 				auto			valIt = valArray.begin();
@@ -110,8 +110,8 @@ using namespace VVISF;
 				}
 			}
 			else	{
-				ISFVal		minVal = a->getMinVal();
-				ISFVal		maxVal = a->getMaxVal();
+				ISFVal		minVal = a->minVal();
+				ISFVal		maxVal = a->maxVal();
 				for (int i=fminl(minVal.getLongVal(), maxVal.getLongVal()); i<=fmaxl(minVal.getLongVal(), maxVal.getLongVal()); ++i)	{
 					NSMenuItem		*tmpItem = [tmpMenu addItemWithTitle:[NSString stringWithFormat:@"%d",i] action:nil keyEquivalent:@""];
 					if (tmpItem != nil)
@@ -119,18 +119,18 @@ using namespace VVISF;
 				}
 			}
 			//[longPUB selectItemAtIndex:[a defaultVal].longVal];
-			[longPUB selectItemAtIndex:a->getDefaultVal().getLongVal()];
+			[longPUB selectItemAtIndex:a->defaultVal().getLongVal()];
 			break;
 		}
 		case ISFValType_Float:	{
 			slider = [[NSSlider alloc] initWithFrame:tmpRect];
 			[[self contentView] addSubview:slider];
 			//[slider setMinValue:[a minVal].floatVal];
-			[slider setMinValue:a->getMinVal().getDoubleVal()];
+			[slider setMinValue:a->minVal().getDoubleVal()];
 			//[slider setMaxValue:[a maxVal].floatVal];
-			[slider setMaxValue:a->getMaxVal().getDoubleVal()];
+			[slider setMaxValue:a->maxVal().getDoubleVal()];
 			//[slider setFloatValue:[a currentVal].floatVal];
-			[slider setFloatValue:a->getCurrentVal().getDoubleVal()];
+			[slider setFloatValue:a->currentVal().getDoubleVal()];
 			break;
 		}
 		case ISFValType_Point2D:	{
@@ -173,7 +173,7 @@ using namespace VVISF;
 			//[xField setStringValue:VVFMTSTRING(@"%0.2f",tmpVal.point2DVal[0])];
 			//[yField setStringValue:VVFMTSTRING(@"%0.2f",tmpVal.point2DVal[1])];
 			//pointVal = NSMakePoint(tmpVal.point2DVal[0], tmpVal.point2DVal[1]);
-			ISFVal			tmpVal = a->getCurrentVal();
+			ISFVal			tmpVal = a->currentVal();
 			[xField setStringValue:[NSString stringWithFormat:@"%0.2f",tmpVal.getPointValByIndex(0)]];
 			[yField setStringValue:[NSString stringWithFormat:@"%0.2f",tmpVal.getPointValByIndex(1)]];
 			pointVal = NSMakePoint(tmpVal.getPointValByIndex(0), tmpVal.getPointValByIndex(1));
@@ -186,7 +186,7 @@ using namespace VVISF;
 			GLfloat		tmpFloat[4];
 			for (int i=0; i<4; ++i)	{
 				//tmpFloat[i] = [a currentVal].colorVal[i];
-				tmpFloat[i] = a->getCurrentVal().getColorValByChannel(i);
+				tmpFloat[i] = a->currentVal().getColorValByChannel(i);
 			}
 			[colorField setColor:[NSColor colorWithDeviceRed:tmpFloat[0] green:tmpFloat[1] blue:tmpFloat[2] alpha:tmpFloat[3]]];
 			break;
@@ -241,7 +241,7 @@ using namespace VVISF;
 			[audioSourcePUB setAction:@selector(uiItemUsed:)];
 			//	if there's a max or float flag, apply it by storing it in a dictionary with me
 			//long		maxVal = [a maxVal].audioVal;
-			long		maxVal = a->getMaxVal().getLongVal();
+			long		maxVal = a->maxVal().getLongVal();
 			if (maxVal>0)	{
 				[self setUserInfoDict:@{@"MAX":NUMLONG(maxVal)}];
 			}

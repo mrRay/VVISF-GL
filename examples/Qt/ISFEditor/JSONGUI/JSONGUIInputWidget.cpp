@@ -140,7 +140,7 @@ void JSONGUIInputWidget::prepareInputNameEdit(QLineEdit * inputNameEdit)	{
 		QString		origAttrName = _input->value("NAME").toString();
 		QString		newString = inputNameEdit->text();
 		//	if the new input name isn't valid (because an input by that name already exists)
-		if (top->getInputNamed(newString)!=nullptr)	{
+		if (top->inputNamed(newString)!=nullptr)	{
 			//	if the new input name is the same as the existing name
 			if (origAttrName == newString)	{
 				//	deselect the text, remove focus from the widget

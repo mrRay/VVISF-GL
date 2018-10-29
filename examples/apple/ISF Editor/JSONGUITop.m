@@ -65,7 +65,7 @@
 
 
 
-- (JSONGUIInput *) getInputNamed:(NSString *)n	{
+- (JSONGUIInput *) inputNamed:(NSString *)n	{
 	if (n==nil)
 		return nil;
 	JSONGUIInput		*returnMe = nil;
@@ -138,7 +138,7 @@
 		else
 			returnMe = [NSString stringWithFormat:@"tmpInputName%d",(int)count];
 		//	check to see if the name is already in use- if it is, set it to nil and it'll loop
-		if ([self getInputNamed:returnMe]!=nil)
+		if ([self inputNamed:returnMe]!=nil)
 			returnMe = nil;
 		//	increment the count
 		++count;

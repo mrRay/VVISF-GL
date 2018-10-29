@@ -57,7 +57,7 @@ using namespace VVISF;
 			[self release];
 			return nil;
 		}
-		GLContextRef			poolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+		GLContextRef			poolCtx = (bp==nullptr) ? nullptr : bp->context();
 		if (poolCtx!=nullptr)	{
 			propGLCtx = poolCtx->newContextSharingMe();
 			err = CVOpenGLTextureCacheCreate(

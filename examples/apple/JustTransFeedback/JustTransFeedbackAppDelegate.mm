@@ -20,7 +20,7 @@
 		scene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		
 		//	init the scene differently depending on the version of GL running the backend
-		if (scene->getGLVersion() == GLVersion_2)
+		if (scene->glVersion() == GLVersion_2)
 			[self initForGL2];
 		else
 			[self initForModernGL];
@@ -135,7 +135,7 @@
 
 }
 - (void) initForModernGL	{
-	scene->getContext()->makeCurrentIfNotCurrent();
+	scene->context()->makeCurrentIfNotCurrent();
 	
 	void		*selfPtr = (void*)self;
 	
@@ -172,12 +172,12 @@
 	scene->setRenderPreLinkCallback([](const GLScene & n)	{
 		NSLog(@"\t\trender pre-link called...");
 		const GLchar * feedbackVaryings[] = { "outXYZ", "outRGBA" };
-		glTransformFeedbackVaryings(n.getProgram(), 2, feedbackVaryings, GL_SEPARATE_ATTRIBS);
+		glTransformFeedbackVaryings(n.program(), 2, feedbackVaryings, GL_SEPARATE_ATTRIBS);
 	});
 	scene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		NSLog(@"\t\trender prep called...");
 		if (inPgmChanged)	{
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			inXYZAttr->cacheTheLoc(myProgram);
 			inRGBAAttr->cacheTheLoc(myProgram);
 			//outXYZAttr->cacheTheLoc(myProgram);

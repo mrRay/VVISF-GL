@@ -13,14 +13,14 @@
 ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(inParent)	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
-	name = QString::fromStdString(inAttr->getName());
-	type = inAttr->getType();
+	_name = QString::fromStdString(inAttr->name());
+	type = inAttr->type();
 	
-	string		tmpLabel = inAttr->getLabel();
+	string		tmpLabel = inAttr->label();
 	if (tmpLabel.length() < 1)
-		setTitle(name);
+		setTitle(_name);
 	else	{
-		QString		tmpTitle = QString("%1 (%2)").arg(QString::fromStdString(tmpLabel)).arg(name);
+		QString		tmpTitle = QString("%1 (%2)").arg(QString::fromStdString(tmpLabel)).arg(_name);
 		setTitle(tmpTitle);
 	}
 	
@@ -42,7 +42,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 		break;
 	case ISFValType_Bool:
 		boolWidget = new QCheckBox("Toggle", this);
-		boolWidget->setChecked(inAttr->getCurrentVal().getBoolVal());
+		boolWidget->setChecked(inAttr->currentVal().getBoolVal());
 		myLayout->addWidget(boolWidget);
 		//connect(boolWidget, SIGNAL(stateChanged(int)), this, SLOT(boolWidgetUsed(int)));
 		break;
@@ -51,11 +51,11 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			longCBWidget = new QComboBox(this);
 			longCBWidget->clear();
 			
-			vector<string>		labelArray = inAttr->getLabelArray();
-			vector<int32_t>		valArray = inAttr->getValArray();
+			vector<string>		labelArray = inAttr->labelArray();
+			vector<int32_t>		valArray = inAttr->valArray();
 			int					labelArraySize = labelArray.size();
 			int					valArraySize = valArray.size();
-			long				defaultValAsLong = inAttr->getDefaultVal().getLongVal();
+			long				defaultValAsLong = inAttr->defaultVal().getLongVal();
 			int					defaultValIndex = -1;
 			int					tmpIndex = 0;
 			//	if there's a val array, use it to populate the combo box
@@ -78,8 +78,8 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			}
 			//	else use the attribute's min/max vals
 			else	{
-				ISFVal		minVal = inAttr->getMinVal();
-				ISFVal		maxVal = inAttr->getMaxVal();
+				ISFVal		minVal = inAttr->minVal();
+				ISFVal		maxVal = inAttr->maxVal();
 				for (int i=std::min(minVal.getLongVal(),maxVal.getLongVal()); i<=std::max(minVal.getLongVal(),maxVal.getLongVal()); ++i)	{
 					QString		tmpKey = QString("%1").arg(i);
 					longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(i)));
@@ -102,15 +102,15 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			
 			sliderWidget->setOrientation(Qt::Horizontal);
 			
-			ISFVal			&tmpVal = inAttr->getMinVal();
+			ISFVal			&tmpVal = inAttr->minVal();
 			if (tmpVal.isFloatVal())
 				sliderWidget->setDoubleMinValue( tmpVal.getDoubleVal() );
 			
-			tmpVal = inAttr->getMaxVal();
+			tmpVal = inAttr->maxVal();
 			if (tmpVal.isFloatVal())
 				sliderWidget->setDoubleMaxValue( tmpVal.getDoubleVal() );
 			
-			tmpVal = inAttr->getDefaultVal();
+			tmpVal = inAttr->defaultVal();
 			if (tmpVal.isFloatVal())
 				sliderWidget->setDoubleValue( tmpVal.getDoubleVal() );
 			
@@ -122,9 +122,9 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			xFieldWidget = new QDoubleSpinBox(this);
 			yFieldWidget = new QDoubleSpinBox(this);
 		
-			ISFVal		tmpVal = inAttr->getCurrentVal();
-			ISFVal		tmpMin = inAttr->getMinVal();
-			ISFVal		tmpMax = inAttr->getMaxVal();
+			ISFVal		tmpVal = inAttr->currentVal();
+			ISFVal		tmpMin = inAttr->minVal();
+			ISFVal		tmpMax = inAttr->maxVal();
 			
 			if (tmpMin.isPoint2DVal() && tmpMax.isPoint2DVal())	{
 				xFieldWidget->setRange(tmpMin.getPointValByIndex(0), tmpMax.getPointValByIndex(0));
@@ -149,7 +149,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	case ISFValType_Color:
 		{
 			//	set the color ivar from the attribute's current value
-			ISFVal		currentVal = inAttr->getCurrentVal();
+			ISFVal		currentVal = inAttr->currentVal();
 			if (currentVal.isColorVal())	{
 				int			tmpColor[4];
 				for (int i=0; i<4; ++i)	{

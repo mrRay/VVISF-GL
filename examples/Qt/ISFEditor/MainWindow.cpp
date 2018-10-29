@@ -57,7 +57,7 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//	get the widget's context- if it's null, the widget's context doesn't exist yet and this method shouldn't have been called!
-	GLContextRef		widgetCtx = ui->bufferView->getContext();
+	GLContextRef		widgetCtx = ui->bufferView->glContextRef();
 	if (widgetCtx == nullptr)
 		return;
 	

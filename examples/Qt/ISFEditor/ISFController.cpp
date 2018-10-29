@@ -115,9 +115,9 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	//	tell the scene to render a frame, so the ISFController can pull its compiled shaders and populate its UI items
 	try	{
 		scene->createAndRenderABuffer();
-		ISFDocRef		tmpDoc = scene->getDoc();
+		ISFDocRef		tmpDoc = scene->doc();
 		if (tmpDoc != nullptr)
-			sceneIsFilter = ((tmpDoc->getType() & ISFFileType_Filter)!=0) ? true : false;
+			sceneIsFilter = ((tmpDoc->type() & ISFFileType_Filter)!=0) ? true : false;
 	}
 	catch (ISFErr & exc)	{
 		//QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));
@@ -185,8 +185,8 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 			//string				compiledVertSrc = (*details)["vertSrc"];
 			auto				compiledVertSrcIt = details->find("vertSrc");
 			const string		&compiledVertSrc = compiledVertSrcIt->second;
-			ISFDocRef			tmpDoc = scene->getDoc();
-			string				*precompiledVertSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->getVertShaderSource();
+			ISFDocRef			tmpDoc = scene->doc();
+			string				*precompiledVertSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->vertShaderSource();
 			
 			if (precompiledVertSrc != nullptr)	{
 				//	the compiled vertex shader has stuff added to both the beginning and the end- the first line added to the end of the raw vertex shader source is:
@@ -235,9 +235,9 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 			int					lineDelta = 0;
 			auto				compiledFragSrcIt = details->find("fragSrc");
 			const string		&compiledFragSrc = compiledFragSrcIt->second;
-			ISFDocRef			tmpDoc = scene->getDoc();
-			string				*precompiledFragSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->getFragShaderSource();
-			string				*jsonSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->getJSONSourceString();
+			ISFDocRef			tmpDoc = scene->doc();
+			string				*precompiledFragSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->fragShaderSource();
+			string				*jsonSrc = (tmpDoc==nullptr) ? nullptr : tmpDoc->jsonSourceString();
 			if (precompiledFragSrc!=nullptr && jsonSrc!=nullptr)	{
 				int		precompiledLineCount = NumLines(*precompiledFragSrc);
 				int		jsonLineCount = NumLines(*jsonSrc);
@@ -298,12 +298,12 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	}
 	
 	//	if there's no doc or a null doc, display the source buffer and bail
-	ISFDocRef	tmpDoc = scene->getDoc();
+	ISFDocRef	tmpDoc = scene->doc();
 	if (tmpDoc == nullptr)	{
 		ow->drawBuffer(newSrcBuffer);
 		return;
 	}
-	string		scenePath = tmpDoc->getPath();
+	string		scenePath = tmpDoc->path();
 	if (scenePath.length() < 1)	{
 		ow->drawBuffer(newSrcBuffer);
 		return;
@@ -323,11 +323,11 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 		if (itemPtr.isNull())
 			continue;
 		//itemPtr.data()
-		QString		itemName = itemPtr.data()->getName();
+		QString		itemName = itemPtr.data()->name();
 		ISFVal		itemVal = itemPtr.data()->getISFVal();
-		if (itemVal.getType() != ISFValType_None)	{
+		if (itemVal.type() != ISFValType_None)	{
 			//cout << itemName.toStdString() << " -> " << itemVal << endl;
-			if (itemVal.getType() == ISFValType_Image && itemVal.getImageBuffer() == nullptr)
+			if (itemVal.type() == ISFValType_Image && itemVal.imageBuffer() == nullptr)
 				scene->setValueForInputNamed(ISFImageVal(newSrcBuffer), itemName.toStdString());
 			else
 				scene->setValueForInputNamed(itemVal, itemName.toStdString());
@@ -339,7 +339,7 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	GLBufferRef						newBuffer = nullptr;
 	map<int32_t,GLBufferRef>		tmpPassDict;
 	try	{
-		Size		tmpSize = renderSize;
+		Size		tmpSize = _renderSize;
 		if (sceneIsFilter && newSrcBuffer!=nullptr)
 			tmpSize = newSrcBuffer->srcRect.size;
 		//if (newSrcBuffer != nullptr)
@@ -426,13 +426,13 @@ void ISFController::populateLoadingWindowUI()	{
 		return;
 	
 	//	run through the scene's inputs- we want to make a UI item for each...
-	vector<ISFAttrRef>		sceneInputs = scene->getInputs();
+	vector<ISFAttrRef>		sceneInputs = scene->inputs();
 	for (auto it=sceneInputs.rbegin(); it!=sceneInputs.rend(); ++it)	{
 		ISFAttrRef		attrib = *it;
 		if (attrib == nullptr)
 			continue;
 		//	if the attrib ISN'T the image filter's input image...
-		if (!attrib->getIsFilterInputImage())	{
+		if (!attrib->isFilterInputImage())	{
 			//	make the UI item, store a weak ptr to it in the vector, add the UI item to the layout
 			ISFUIItem		*newWidget = new ISFUIItem(attrib);
 			QPointer<ISFUIItem>			newWidgetPtr(newWidget);
@@ -447,20 +447,20 @@ void ISFController::populateLoadingWindowUI()	{
 	}
 	
 	//	populate the render res spinboxes!
-	//Size			renderSize(1280,720);
+	//Size			_renderSize(1280,720);
 	//if (scene != nullptr)
-	//	renderSize = scene->getOrthoSize();
+	//	_renderSize = scene->orthoSize();
 	QSpinBox		*tmpWidget = nullptr;
 	tmpWidget = lw->getWidthSB();
 	if (tmpWidget != nullptr)	{
 		tmpWidget->blockSignals(true);
-		tmpWidget->setValue(renderSize.width);
+		tmpWidget->setValue(_renderSize.width);
 		tmpWidget->blockSignals(false);
 	}
 	tmpWidget = lw->getHeightSB();
 	if (tmpWidget != nullptr)	{
 		tmpWidget->blockSignals(true);
-		tmpWidget->setValue(renderSize.height);
+		tmpWidget->setValue(_renderSize.height);
 		tmpWidget->blockSignals(false);
 	}
 }

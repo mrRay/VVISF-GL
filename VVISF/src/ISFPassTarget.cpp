@@ -87,12 +87,12 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	bool					shouldBeFloat = false;
 	bool					shouldBeIOSurface = false;
 	if (_parentDoc != nullptr)	{
-		ISFScene		*parentScene = _parentDoc->getParentScene();
+		ISFScene		*parentScene = _parentDoc->parentScene();
 		if (parentScene != nullptr)	{
-			bp = parentScene->getPrivatePool();
-			copier = parentScene->getPrivateCopier();
-			shouldBeFloat = parentScene->getAlwaysRenderToFloat();
-			shouldBeIOSurface = parentScene->getPersistentToIOSurface();
+			bp = parentScene->privatePool();
+			copier = parentScene->privateCopier();
+			shouldBeFloat = parentScene->alwaysRenderToFloat();
+			shouldBeIOSurface = parentScene->persistentToIOSurface();
 		}
 	}
 	//	if that didn't work, use the globals...
@@ -100,7 +100,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 		bp = GetGlobalBufferPool();
 	if (copier == nullptr)	{
 		if (_isfPassTargetCopier == nullptr)	{
-			GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+			GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->context();
 			if (bufferPoolCtx != nullptr)	{
 				_isfPassTargetCopier = make_shared<GLTexToTexCopier>(bufferPoolCtx);
 				copier = _isfPassTargetCopier;
@@ -195,7 +195,7 @@ void ISFPassTarget::setTargetWidthString(const string & n)	{
 	_targetWidthString = new string(n);
 	//	leave the expression nil- it'll be instantiated (and compiled) when we evaluate (we need to provide a symbol table with variables)
 }
-const string ISFPassTarget::getTargetWidthString()	{
+const string ISFPassTarget::targetWidthString()	{
 	lock_guard<mutex>		lock(_targetLock);
 	return (_targetWidthString==nullptr) ? string("") : string(*_targetWidthString);
 }
@@ -219,7 +219,7 @@ void ISFPassTarget::setTargetHeightString(const string & n)	{
 	_targetHeightString = new string(n);
 	//	leave the expression nil- it'll be instantiated (and compiled) when we evaluate (we need to provide a symbol table with variables)
 }
-const string ISFPassTarget::getTargetHeightString()	{
+const string ISFPassTarget::targetHeightString()	{
 	lock_guard<mutex>		lock(_targetLock);
 	return (_targetHeightString==nullptr) ? string("") : string(*_targetHeightString);
 }
@@ -237,12 +237,12 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		bool					shouldBeFloat = false;
 		bool					shouldBeIOSurface = false;
 		if (_parentDoc != nullptr)	{
-			ISFScene		*parentScene = _parentDoc->getParentScene();
+			ISFScene		*parentScene = _parentDoc->parentScene();
 			if (parentScene != nullptr)	{
-				bp = parentScene->getPrivatePool();
-				copier = parentScene->getPrivateCopier();
-				shouldBeFloat = parentScene->getAlwaysRenderToFloat();
-				shouldBeIOSurface = parentScene->getPersistentToIOSurface();
+				bp = parentScene->privatePool();
+				copier = parentScene->privateCopier();
+				shouldBeFloat = parentScene->alwaysRenderToFloat();
+				shouldBeIOSurface = parentScene->persistentToIOSurface();
 			}
 		}
 		//	if that didn't work, use the globals...
@@ -250,7 +250,7 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 			bp = GetGlobalBufferPool();
 		if (copier == nullptr)	{
 			if (_isfPassTargetCopier == nullptr)	{
-				GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->getContext();
+				GLContextRef		bufferPoolCtx = (bp==nullptr) ? nullptr : bp->context();
 				if (bufferPoolCtx != nullptr)	{
 					_isfPassTargetCopier = make_shared<GLTexToTexCopier>(bufferPoolCtx);
 					copier = _isfPassTargetCopier;

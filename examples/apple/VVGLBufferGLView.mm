@@ -88,7 +88,7 @@
 			
 			GLBufferPoolRef		bp = GetGlobalBufferPool();
 			if (bp != nullptr)	{
-				[self setSharedGLContext:bp->getContext()];
+				[self setSharedGLContext:bp->context()];
 				initialized = YES;
 			}
 		}
@@ -154,7 +154,7 @@
 	//	make a new scene- this also makes a new GL context that shares the passed context
 	scene = CreateGLSceneRefUsing(n->newContextSharingMe());
 	
-	if (scene->getGLVersion() == GLVersion_2)	{
+	if (scene->glVersion() == GLVersion_2)	{
 		//NSLog(@"\t\tGL 2");
 		scene->setRenderPrepCallback([](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 			
@@ -279,7 +279,7 @@ else\r\
 			//cout << __PRETTY_FUNCTION__ << endl;
 			if (inPgmChanged)	{
 				//	cache all the locations for the vertex attributes & uniform locations
-				GLint				myProgram = n.getProgram();
+				GLint				myProgram = n.program();
 				xyzAttr->cacheTheLoc(myProgram);
 				stAttr->cacheTheLoc(myProgram);
 				inputImageUni->cacheTheLoc(myProgram);
@@ -408,7 +408,7 @@ else\r\
 	
 	}
 	
-	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->getContext()->ctx];
+	NSOpenGLContext		*sceneCtxWrapper = [[NSOpenGLContext alloc] initWithCGLContextObj:scene->context()->ctx];
 	if (sceneCtxWrapper != nil)	{
 		[self setOpenGLContext:sceneCtxWrapper];
 		[sceneCtxWrapper setView:self];

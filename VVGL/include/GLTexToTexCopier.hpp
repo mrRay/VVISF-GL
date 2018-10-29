@@ -58,19 +58,19 @@ class VVGL_EXPORT GLTexToTexCopier : public GLScene	{
 		//!	Sets the _copyToIOSurface flag (Mac SDK only).  If true, buffers created by the copier will be backed by IOSurfaces (and can thus be shared with other processes)
 		void setCopyToIOSurface(const bool & n);
 		//!	Gets the _copyToIOSurface flag (Mac SDK only).
-		bool getCopyToIOSurface();
+		bool copyToIOSurface();
 		//!	Sets the _copyAndResize flag.  If true, the buffer copier will resize the buffers it copies to '_copySize'
 		void setCopyAndResize(const bool & n);
 		//!	Gets the _copyAndResize flag.
-		bool getCopyAndResize();
+		bool copyAndResize();
 		//!	Sets the copySize value.  If '_copyAndResize' is true, the buffers the receiver copies will be resized to this size.
 		void setCopySize(const Size & n);
 		//!	Gets the copySize value.
-		Size getCopySize();
+		Size copySize();
 		//!	The copy sizing mode governs how the buffers are resized if '_copySize' is true and the aspect ratio of source buffer doesn't match the target size's aspect ratio.
 		void setCopySizingMode(const SizingMode & n);
 		//!	Gets the copy sizing mode.
-		SizingMode getCopySizingMode();
+		SizingMode copySizingMode();
 		
 		//!	Returns a new GLBuffer which was made by rendering the passed buffer into a new texture of matching dimensions.
 		GLBufferRef copyToNewBuffer(const GLBufferRef & n);

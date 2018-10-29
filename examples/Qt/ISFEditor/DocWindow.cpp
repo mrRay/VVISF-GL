@@ -157,7 +157,7 @@ void DocWindow::updateContentsFromISFController()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//ISFSceneRef		scene = GetISFController()->getScene();
-	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
 	ISFController	*isfc = GetISFController();
 	if (isfc == nullptr)
 		return;
@@ -180,7 +180,7 @@ void DocWindow::updateContentsFromISFController()	{
 	
 	if (doc != nullptr)	{
 		//	get the frag file path from the doc
-		_fragFilePath = new QString( QString::fromStdString(doc->getPath()) );
+		_fragFilePath = new QString( QString::fromStdString(doc->path()) );
 		//	check for a vert file by using the common recognized extensions for vert shaders
 		QFileInfo		fragFileInfo(*_fragFilePath);
 		QString			tmpPath = QString("%1/%2.vs").arg(fragFileInfo.dir().absolutePath()).arg(fragFileInfo.completeBaseName());
@@ -317,11 +317,11 @@ void DocWindow::updateContentsFromISFController()	{
 			ui->compilerErrorsTextWidget->setPlainText( QString("No compiler errors!  Yay!") );
 		else
 			ui->compilerErrorsTextWidget->setPlainText( errString );
-		//ui->compiledFragShader->setPlainText( QString::fromStdString(scene->getFragmentShaderString()) );
-		//ui->compiledVertShader->setPlainText( QString::fromStdString(scene->getVertexShaderString()) );
+		//ui->compiledFragShader->setPlainText( QString::fromStdString(scene->fragmentShaderString()) );
+		//ui->compiledVertShader->setPlainText( QString::fromStdString(scene->vertexShaderString()) );
 		ui->compiledFragShader->setPlainText(isfc->getCompiledFragmentShaderString());
 		ui->compiledVertShader->setPlainText(isfc->getCompiledVertexShaderString());
-		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->getJSONString()) );
+		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->jsonString()) );
 		
 		//	if there's an error string...
 		if (errString.length() > 0)	{

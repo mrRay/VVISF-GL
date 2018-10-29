@@ -107,7 +107,7 @@ GLContextRef GLContext::newContextSharingMe() const	{
 	*/
 	if (ctx == nullptr)
 		return nullptr;
-	return make_shared<GLContext>(nullptr, ctx->getContext(), true, sfcFmt);
+	return make_shared<GLContext>(nullptr, ctx->context(), true, sfcFmt);
 }
 
 /*	========================================	*/
@@ -115,7 +115,7 @@ GLContextRef GLContext::newContextSharingMe() const	{
 
 void GLContext::generalInit()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	//qDebug() << __PRETTY_FUNCTION__ << ctx->getContext();
+	//qDebug() << __PRETTY_FUNCTION__ << ctx->context();
 	/*
 	if (display != nullptr)	{
 		eglSwapInterval(display, 0);
@@ -147,16 +147,16 @@ void GLContext::moveToThread(QThread * inThread)	{
 		initializedFuncs = false;
 	}
 }
-QOpenGLContext * GLContext::getContext()	{
+QOpenGLContext * GLContext::context()	{
 	QOpenGLContext		*returnMe = nullptr;
 	if (ctx != nullptr)	{
-		returnMe = ctx->getContext();
+		returnMe = ctx->context();
 	}
 	return returnMe;
 }
-QVariant GLContext::getNativeHandle()	{
+QVariant GLContext::nativeHandle()	{
 	if (ctx != nullptr)
-		return ctx->getNativeHandle();
+		return ctx->nativeHandle();
 	return QVariant();
 }
 void GLContext::makeCurrent()	{
@@ -204,7 +204,7 @@ bool GLContext::sameShareGroupAs(const GLContextRef & inCtx)	{
 	GLQtCtxWrapper		*otherCtx = inCtx->ctx;
 	if (otherCtx == nullptr)
 		return false;
-	return ctx->isSharingWith(otherCtx->getContext());
+	return ctx->isSharingWith(otherCtx->context());
 }
 GLContext & GLContext::operator=(const GLContext & /*n*/)	{
 	/*

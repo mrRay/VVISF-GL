@@ -67,11 +67,11 @@ void OutputWindow::updateContentsFromISFController()	{
 	if (isfc == nullptr)
 		return;
 	//ISFSceneRef			tmpScene = isfc->getScene();
-	//ISFDocRef			tmpDoc = (tmpScene==nullptr) ? nullptr : tmpScene->getDoc();
+	//ISFDocRef			tmpDoc = (tmpScene==nullptr) ? nullptr : tmpScene->doc();
 	ISFDocRef			tmpDoc = isfc->getCurrentDoc();
-	int					maxPassCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getRenderPasses().size();
-	int					imageInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getImageInputs().size();
-	int					audioInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->getAudioInputs().size();
+	int					maxPassCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->renderPasses().size();
+	int					imageInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->imageInputs().size();
+	int					audioInputsCount = (tmpDoc==nullptr) ? 0 : (int)tmpDoc->audioInputs().size();
 	
 	//	update the pop-up button with the list of rendering passes
 	QComboBox		*cb = ui->renderPassComboBox;
@@ -87,7 +87,7 @@ void OutputWindow::updateContentsFromISFController()	{
 			cb->insertSeparator(cb->count());
 		
 			for (int i=0; i<maxPassCount; ++ i)	{
-				QString		passName = QString::fromStdString(tmpDoc->getRenderPasses().at(i));
+				QString		passName = QString::fromStdString(tmpDoc->renderPasses().at(i));
 				if (passName.size() == 0)
 					passName = QString("PASSINDEX %1").arg(i);
 				cb->addItem(passName, QVariant(i));
@@ -98,8 +98,8 @@ void OutputWindow::updateContentsFromISFController()	{
 			cb->insertSeparator(cb->count());
 		
 			for (int i=0; i<imageInputsCount; ++i)	{
-				ISFAttrRef	inputRef = tmpDoc->getImageInputs().at(i);
-				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+				ISFAttrRef	inputRef = tmpDoc->imageInputs().at(i);
+				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->name());
 				cb->addItem(inputName, QVariant(100+i));
 			}
 		}
@@ -108,8 +108,8 @@ void OutputWindow::updateContentsFromISFController()	{
 			cb->insertSeparator(cb->count());
 		
 			for (int i=0; i<audioInputsCount; ++i)	{
-				ISFAttrRef	inputRef = tmpDoc->getAudioInputs().at(i);
-				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->getName());
+				ISFAttrRef	inputRef = tmpDoc->audioInputs().at(i);
+				QString		inputName = (inputRef==nullptr) ? QString("") : QString::fromStdString(inputRef->name());
 				cb->addItem(inputName, QVariant(200+i));
 			}
 		}
@@ -139,9 +139,9 @@ void OutputWindow::on_displayAlphaToggle_stateChanged(int arg1)	{
 	
 	ISFSceneRef		viewScene = ui->bufferView->getScene();
 	if (viewScene != nullptr)	{
-		ISFDocRef		viewDoc = viewScene->getDoc();
+		ISFDocRef		viewDoc = viewScene->doc();
 		if (viewDoc != nullptr)	{
-			ISFAttrRef		alphaAttr = viewDoc->getInput(std::string("viewAlpha"));
+			ISFAttrRef		alphaAttr = viewDoc->input(std::string("viewAlpha"));
 			if (alphaAttr != nullptr)
 				alphaAttr->setCurrentVal(ISFBoolVal(newVal));
 		}
@@ -157,7 +157,7 @@ void OutputWindow::widgetDrewItsFirstFrame()	{
 	//	qDebug() << "\tcurrent thread in widget draw first frame is NOT main thread!";
 	
 	//	get the widget's context- if it's null, the widget's context doesn't exist yet and this method shouldn't have been called!
-	GLContextRef		widgetCtx = ui->bufferView->getContext();
+	GLContextRef		widgetCtx = ui->bufferView->glContextRef();
 	if (widgetCtx == nullptr)
 		return;
 	

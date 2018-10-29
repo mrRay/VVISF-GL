@@ -182,7 +182,7 @@ void InterAppVideoSource_Mac::start()	{
 		if (opaque->ctx != nullptr)	{
 			opaque->ctx = nullptr;
 		}
-		opaque->ctx = GetGlobalBufferPool()->getContext()->newContextSharingMe();
+		opaque->ctx = GetGlobalBufferPool()->context()->newContextSharingMe();
 		
 		//	we have a UUID, but we need a dictionary describing the server.  use the UUID to get this.
 		NSDictionary		*targetServerDict = nil;
@@ -197,7 +197,7 @@ void InterAppVideoSource_Mac::start()	{
 		
 		//	if we have a context and a target server dict, we can make a syphon client...
 		if (opaque->ctx!=nullptr && targetServerDict != nil)	{
-			QVariant			nativeHandle = opaque->ctx->getNativeHandle();
+			QVariant			nativeHandle = opaque->ctx->nativeHandle();
 			//qDebug() << "native handle is " << nativeHandle;
 			if (nativeHandle.type() != QVariant::nameToType("QCocoaNativeContext"))	{
 				qDebug() << "ERR: variant (" << nativeHandle << ") is wrong type, " << __PRETTY_FUNCTION__;

@@ -90,22 +90,22 @@ void main()	{\n\
 	displayScene.setRenderPrepCallback([inputXYZ,inputST,inputTex](const VVGLScene & s, const bool & inReshaped, const bool & inPgmChanged)	{
 		//	if the program's changed, we want to re-cache the locations of the attrib/uniforms
 		if (inPgmChanged)	{
-			cout << "\tpgm changed, caching GL vals.  pgm is " << s.getProgram() << endl;
-			inputXYZ->cacheTheLoc(s.getProgram());
-			inputST->cacheTheLoc(s.getProgram());
-			inputTex->cacheTheLoc(s.getProgram());
+			cout << "\tpgm changed, caching GL vals.  pgm is " << s.program() << endl;
+			inputXYZ->cacheTheLoc(s.program());
+			inputST->cacheTheLoc(s.program());
+			inputTex->cacheTheLoc(s.program());
 			cout << "\tinputXYZ is now " << inputXYZ->loc << ", inputST is " << inputST->loc << ", inputTex is " << inputTex->loc << endl;
 			cout << "\taddress of inputTex is " << &(*inputTex) << endl;
 		}
 		else	{
 			if (inputXYZ->loc < 0)	{
-				cout << "\tpgm didn't change, but loc invalid- needs to be cached.  pgm is " << s.getProgram() << endl;
-				inputXYZ->cacheTheLoc(s.getProgram());
+				cout << "\tpgm didn't change, but loc invalid- needs to be cached.  pgm is " << s.program() << endl;
+				inputXYZ->cacheTheLoc(s.program());
 			}
 			if (inputST->loc < 0)
-				inputST->cacheTheLoc(s.getProgram());
+				inputST->cacheTheLoc(s.program());
 			if (inputTex->loc < 0)
-				inputTex->cacheTheLoc(s.getProgram());
+				inputTex->cacheTheLoc(s.program());
 		}
 	});
 	//	set up the scene's render callback

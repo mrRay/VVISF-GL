@@ -113,7 +113,7 @@ id			_globalAppDelegate = nil;
 			context:[syphonServerContext CGLContextObj]
 			options:nil];
 		*/
-		syphonServerContext = GetGlobalBufferPool()->getContext()->newContextSharingMe();
+		syphonServerContext = GetGlobalBufferPool()->context()->newContextSharingMe();
 		syphonServer = [[SyphonServer alloc]
 			initWithName:@"ISF Test App"
 			context:syphonServerContext->ctx
@@ -297,10 +297,10 @@ id			_globalAppDelegate = nil;
 	
 	//	if the scene's file is nil, but the controller's target file isn't, tell the scene to reload
 	ISFSceneRef		scene = [isfController scene];
-	ISFDocRef		tmpDoc = scene->getDoc();
+	ISFDocRef		tmpDoc = scene->doc();
 	if (tmpDoc == nullptr)
 		return;
-	if (tmpDoc->getPath().size()<1 && [isfController targetFile]!=nil)	{
+	if (tmpDoc->path().size()<1 && [isfController targetFile]!=nil)	{
 		[isfController reloadTargetFile];
 		//NSLog(@"\t\tfetchShaders is YES in %s",__func__);
 		fetchShaders = YES;
@@ -318,10 +318,10 @@ id			_globalAppDelegate = nil;
 	NSMenu			*theMenu = [outputSourcePUB menu];
 	NSMenuItem		*tmpItem = nil;
 	ISFSceneRef		scene = [isfController scene];
-	ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-	int				maxPassCount = (doc==nullptr) ? 0 : (int)doc->getRenderPasses().size();
-	int				imageInputsCount = (doc==nullptr) ? 0 : (int)doc->getImageInputs().size();
-	int				audioInputsCount = (doc==nullptr) ? 0 : (int)doc->getAudioInputs().size();
+	ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
+	int				maxPassCount = (doc==nullptr) ? 0 : (int)doc->renderPasses().size();
+	int				imageInputsCount = (doc==nullptr) ? 0 : (int)doc->imageInputs().size();
+	int				audioInputsCount = (doc==nullptr) ? 0 : (int)doc->audioInputs().size();
 	//int				maxPassCount = [[isfController scene] passCount];
 	//int				imageInputsCount = [[isfController scene] imageInputsCount];
 	//int				audioInputsCount = [[isfController scene] audioInputsCount];
@@ -341,12 +341,12 @@ id			_globalAppDelegate = nil;
 		[theMenu addItem:[NSMenuItem separatorItem]];
 		//	add menu items for the passes
 		ISFSceneRef		scene = [isfController scene];
-		ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-		if (doc != nullptr && doc->getRenderPasses().size()!=maxPassCount)
+		ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
+		if (doc != nullptr && doc->renderPasses().size()!=maxPassCount)
 			doc = nullptr;
 		for (int i=0; i<maxPassCount; ++i)	{
 			NSString		*tmpName = (doc!=nullptr)
-				?	[NSString stringWithFormat:@"%d : %s",i,doc->getRenderPasses().at(i).c_str()]
+				?	[NSString stringWithFormat:@"%d : %s",i,doc->renderPasses().at(i).c_str()]
 				:	[NSString stringWithFormat:@"PASSINDEX %d",i];
 			tmpItem = [[NSMenuItem alloc]
 				//initWithTitle:[NSString stringWithFormat:@"Pass %d",i+1]
@@ -386,14 +386,14 @@ id			_globalAppDelegate = nil;
 		//	add menu items for the image inputs
 		ISFSceneRef				scene = [isfController scene];
 		if (scene != nullptr)	{
-			vector<ISFAttrRef>		imageInputs = scene->getImageInputs();
+			vector<ISFAttrRef>		imageInputs = scene->imageInputs();
 			for (int i=0; i<imageInputsCount && i<imageInputs.size(); ++i)	{
 				ISFAttrRef				attr = imageInputs[i];
 				if (attr == nullptr)
 					continue;
 				
 				tmpItem = [[NSMenuItem alloc]
-					initWithTitle:[NSString stringWithFormat:@"Image Input \"%s\"",attr->getName().c_str()]
+					initWithTitle:[NSString stringWithFormat:@"Image Input \"%s\"",attr->name().c_str()]
 					action:nil
 					keyEquivalent:@""];
 				[tmpItem setRepresentedObject:[NSNumber numberWithInteger:100+i]];
@@ -427,14 +427,14 @@ id			_globalAppDelegate = nil;
 		[theMenu addItem:[NSMenuItem separatorItem]];
 		ISFSceneRef			scene = [isfController scene];
 		if (scene != nullptr)	{
-			vector<ISFAttrRef>	audioInputs = scene->getAudioInputs();
+			vector<ISFAttrRef>	audioInputs = scene->audioInputs();
 			for (int i=0; i<audioInputsCount && i<audioInputs.size(); ++i)	{
 				ISFAttrRef			attr = audioInputs[i];
 				if (attr == nullptr)
 					continue;
 				
 				tmpItem = [[NSMenuItem alloc]
-					initWithTitle:[NSString stringWithFormat:@"Audio Input \"%s\"",attr->getName().c_str()]
+					initWithTitle:[NSString stringWithFormat:@"Audio Input \"%s\"",attr->name().c_str()]
 					action:nil
 					keyEquivalent:@""];
 				[tmpItem setRepresentedObject:[NSNumber numberWithInteger:200+i]];
@@ -899,7 +899,7 @@ id			_globalAppDelegate = nil;
 	//NSLog(@"%s",__func__);
 	/*
 	//	make sure we have an active GL context
-	GLContextRef		ctx = (GetGlobalBufferPool()==nullptr) ? nullptr : GetGlobalBufferPool()->getContext();
+	GLContextRef		ctx = (GetGlobalBufferPool()==nullptr) ? nullptr : GetGlobalBufferPool()->context();
 	if (ctx != nullptr)
 		ctx->makeCurrent();
 	
@@ -1053,23 +1053,23 @@ id			_globalAppDelegate = nil;
 						NSString				*tmpString = nil;
 						NSMutableDictionary		*contentDict = MUTDICT;
 						ISFSceneRef				scene = [isfController scene];
-						ISFDocRef				doc = (scene==nullptr) ? nullptr : scene->getDoc();
+						ISFDocRef				doc = (scene==nullptr) ? nullptr : scene->doc();
 					
 					
 					
-						tmpCPPStringPtr = (doc==nullptr) ? nil : doc->getJSONString();
+						tmpCPPStringPtr = (doc==nullptr) ? nil : doc->jsonString();
 						tmpString = (tmpCPPStringPtr==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPStringPtr->c_str()];
 						if (tmpString != nil)
 							[contentDict setObject:tmpString forKey:@"json"];
 					
-						//tmpCPPString = (doc==nullptr) ? nil : doc->getVertShaderSource();
-						tmpCPPString = (scene==nullptr) ? nil : scene->getVertexShaderString();
+						//tmpCPPString = (doc==nullptr) ? nil : doc->vertShaderSource();
+						tmpCPPString = (scene==nullptr) ? nil : scene->vertexShaderString();
 						tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
 						if (tmpString != nil)
 							[contentDict setObject:tmpString forKey:@"vertex"];
 					
-						//tmpCPPString = (doc==nullptr) ? nil : doc->getFragShaderSource();
-						tmpCPPString = (scene==nullptr) ? nil : scene->getFragmentShaderString();
+						//tmpCPPString = (doc==nullptr) ? nil : doc->fragShaderSource();
+						tmpCPPString = (scene==nullptr) ? nil : scene->fragmentShaderString();
 						tmpString = [NSString stringWithUTF8String:tmpCPPString.c_str()];
 						if (tmpString != nil)
 							[contentDict setObject:tmpString forKey:@"fragment"];
@@ -1309,8 +1309,8 @@ id			_globalAppDelegate = nil;
 							NSInteger		lineDelta = 0;
 							NSString		*compiledVertSrc = [userInfo objectForKey:@"vertSrc"];
 							ISFSceneRef		scene = [isfController scene];
-							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-							string			*tmpString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
+							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
+							string			*tmpString = (doc==nullptr) ? nullptr : doc->vertShaderSource();
 							NSString		*precompiledVertSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
 							//NSString		*precompiledVertSrc = [[isfController scene] vertShaderSource];
 							if (compiledVertSrc!=nil && precompiledVertSrc!=nil)	{
@@ -1361,11 +1361,11 @@ id			_globalAppDelegate = nil;
 							NSInteger		lineDelta = 0;
 							NSString		*compiledFragSrc = [userInfo objectForKey:@"fragSrc"];
 							ISFSceneRef		scene = [isfController scene];
-							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-							string			*tmpString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
+							ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
+							string			*tmpString = (doc==nullptr) ? nullptr : doc->fragShaderSource();
 							NSString		*precompiledFragSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
 							//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
-							tmpString = (doc==nullptr) ? nullptr : doc->getJSONSourceString();
+							tmpString = (doc==nullptr) ? nullptr : doc->jsonSourceString();
 							NSString		*jsonSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
 							//NSString		*jsonSrc = [[isfController scene] jsonSource];
 							if (compiledFragSrc!=nil && precompiledFragSrc!=nil && jsonSrc!=nil)	{
@@ -1402,23 +1402,23 @@ id			_globalAppDelegate = nil;
 				
 					//	populate contentDict with the source code compiled and in use by the GL scene
 					ISFSceneRef		scene = [isfController scene];
-					ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
+					ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
 					string			*tmpCPPString = nullptr;
 					NSString		*tmpString = nil;
 				
-					tmpCPPString = (doc==nullptr) ? nullptr : doc->getJSONString();
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->jsonString();
 					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
 					if (tmpString == nil)
 						tmpString = @"";
 					[contentDict setObject:tmpString forKey:@"json"];
 				
-					tmpCPPString = (doc==nullptr) ? nullptr : doc->getVertShaderSource();
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->vertShaderSource();
 					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
 					if (tmpString == nil)
 						tmpString = @"";
 					[contentDict setObject:tmpString forKey:@"vertex"];
 				
-					tmpCPPString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
+					tmpCPPString = (doc==nullptr) ? nullptr : doc->fragShaderSource();
 					tmpString = (tmpCPPString==nullptr) ? nil : [NSString stringWithUTF8String:tmpCPPString->c_str()];
 					if (tmpString == nil)
 						tmpString = @"";
@@ -1583,11 +1583,11 @@ id			_globalAppDelegate = nil;
 	NSArray			*forbiddenTerms = @[@"texture2DRectProjLod",@"texture2DRectProj",@"texture2DRect",@"texture2DProjLod",@"texture2DProj",@"texture2D",@"sampler2DRect",@"sampler2D"];
 	NSString		*forbiddenTermsRegex = @"((texture2D(Rect)?(Proj)?(Lod)?)|(sampler2D(Rect)?))";
 	ISFSceneRef		scene = [isfController scene];
-	ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->getDoc();
-	string			*tmpString = (doc==nullptr) ? nullptr : doc->getFragShaderSource();
+	ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
+	string			*tmpString = (doc==nullptr) ? nullptr : doc->fragShaderSource();
 	NSString		*precompiledFragSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
 	//NSString		*precompiledFragSrc = [[isfController scene] fragShaderSource];
-	tmpString = (doc==nullptr) ? nullptr : doc->getJSONSourceString();
+	tmpString = (doc==nullptr) ? nullptr : doc->jsonSourceString();
 	NSString		*jsonSrc = (tmpString==nullptr) ? nil : [NSString stringWithUTF8String:tmpString->c_str()];
 	//NSString		*jsonSrc = [[isfController scene] jsonSource];
 	//NSInteger		lineDelta = [jsonSrc numberOfLines];

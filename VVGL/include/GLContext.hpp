@@ -175,8 +175,8 @@ class VVGL_EXPORT GLContext	{
 		void setSurface(const QSurface * inTargetSurface);
 		void swap();
 		void moveToThread(QThread * inThread);
-		QOpenGLContext * getContext();
-		QVariant getNativeHandle();
+		QOpenGLContext * context();
+		QVariant nativeHandle();
 		
 		/*
 		//	this function doesn't create anything- it just obtains a weak ref to the passed var
@@ -187,6 +187,9 @@ class VVGL_EXPORT GLContext	{
 #endif
 		//	this function creates a context using the default pixel format
 		GLContext();
+		
+		//	no copy constructors!
+		//GLContext(const GLContext &) = delete;
 		
 		
 	public:

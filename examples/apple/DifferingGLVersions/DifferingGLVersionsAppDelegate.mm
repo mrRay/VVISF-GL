@@ -56,7 +56,7 @@
 		}
 		//	populate a tex quad with the geometry & tex coords
 		Quad<VertXYST>			texQuad;
-		VVGL::Size				sceneSize = n.getOrthoSize();
+		VVGL::Size				sceneSize = n.orthoSize();
 		//VVGL::Rect				geoRect(0, 0, sceneSize.width, sceneSize.height);
 		VVGL::Rect				geoRect = ResizeRect(imgBuffer->srcRect, VVGL::Rect(0,0,sceneSize.width,sceneSize.height), SizingMode_Fit);
 		VVGL::Rect				texRect = imgBuffer->glReadySrcRect();
@@ -143,7 +143,7 @@ FragColor *= (1.-fadeVal);\r\
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			xyzAttr->cacheTheLoc(myProgram);
 			stAttr->cacheTheLoc(myProgram);
 			inputImageUni->cacheTheLoc(myProgram);
@@ -166,7 +166,7 @@ FragColor *= (1.-fadeVal);\r\
 		glClearColor(0., 0., 0., 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		VVGL::Size			orthoSize = n.getOrthoSize();
+		VVGL::Size			orthoSize = n.orthoSize();
 		VVGL::Rect			boundsRect(0, 0, orthoSize.width, orthoSize.height);
 		VVGL::Rect			geometryRect = ResizeRect(imgBuffer->srcRect, boundsRect, SizingMode_Fit);
 		Quad<VertXYST>		targetQuad;

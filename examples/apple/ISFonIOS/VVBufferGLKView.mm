@@ -105,7 +105,7 @@
 	if (!initialized || scene==nullptr)	{
 		NSLog(@"\t\tneed to initialize %@",[self class]);
 		auto			bp = GetGlobalBufferPool();
-		auto			bpCtx = (bp==nullptr) ? nullptr : bp->getContext();
+		auto			bpCtx = (bp==nullptr) ? nullptr : bp->context();
 		if (bpCtx != nullptr)	{
 			[self setSharedGLContext:bpCtx];
 			initialized = YES;
@@ -205,7 +205,7 @@ else if (isRectTex==1)\r\
 		
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			xyzAttr->cacheTheLoc(myProgram);
 			stAttr->cacheTheLoc(myProgram);
 			inputImage->cacheTheLoc(myProgram);
@@ -317,7 +317,7 @@ else if (isRectTex==1)\r\
 		
 	});
 	
-	GLContextRef	sceneCtx = scene->getContext();
+	GLContextRef	sceneCtx = scene->context();
 	EAGLContext		*sceneGLCtx = (sceneCtx==nullptr) ? nil : (EAGLContext *)(sceneCtx->ctx);
 	if (sceneGLCtx != nil)	{
 		[self setContext:sceneGLCtx];

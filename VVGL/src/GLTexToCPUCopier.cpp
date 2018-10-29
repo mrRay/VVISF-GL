@@ -21,7 +21,7 @@ using namespace std;
 GLTexToCPUCopier::GLTexToCPUCopier()	{
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)
-		_queueCtx = bp->getContext();
+		_queueCtx = bp->context();
 }
 GLTexToCPUCopier::~GLTexToCPUCopier()	{
 	clearStream();

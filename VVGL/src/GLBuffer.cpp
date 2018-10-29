@@ -127,8 +127,8 @@ GLBuffer::GLBuffer(const GLBuffer & n)	{
 	cpuBackingPtr = n.cpuBackingPtr;
 #if defined(VVGL_SDK_MAC)
 	//setUserInfo(n.getUserInfo());
-	setLocalSurfaceRef(n.getLocalSurfaceRef());
-	setRemoteSurfaceRef(n.getRemoteSurfaceRef());
+	setLocalSurfaceRef(n.localSurfaceRef());
+	setRemoteSurfaceRef(n.remoteSurfaceRef());
 #endif
 	
 	parentBufferPool = n.parentBufferPool;
@@ -213,8 +213,8 @@ GLBuffer * GLBuffer::allocShallowCopy()	{
 	returnMe->backingID = backingID;
 	returnMe->cpuBackingPtr = cpuBackingPtr;
 #if defined(VVGL_SDK_MAC)
-	returnMe->localSurfaceRef = (localSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(localSurfaceRef);
-	returnMe->remoteSurfaceRef = (remoteSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(remoteSurfaceRef);
+	returnMe->_localSurfaceRef = (_localSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(_localSurfaceRef);
+	returnMe->_remoteSurfaceRef = (_remoteSurfaceRef==NULL) ? NULL : (IOSurfaceRef)CFRetain(_remoteSurfaceRef);
 #endif	//	VVGL_SDK_MAC
 	returnMe->parentBufferPool = parentBufferPool;
 	returnMe->copySourceBuffer = copySourceBuffer;
@@ -238,17 +238,17 @@ void GLBuffer::setUserInfo(id n)	{
 	userInfo = (n==NULL) ? nullptr : (id)CFRetain(n);
 }
 */
-IOSurfaceRef GLBuffer::getLocalSurfaceRef() const	{
-	return localSurfaceRef;
+IOSurfaceRef GLBuffer::localSurfaceRef() const	{
+	return _localSurfaceRef;
 }
 
 void GLBuffer::setLocalSurfaceRef(const IOSurfaceRef & n)	{
-	if (localSurfaceRef != NULL)
-		CFRelease(localSurfaceRef);
-	localSurfaceRef = (IOSurfaceRef)n;
-	if (localSurfaceRef != NULL)	{
-		CFRetain(localSurfaceRef);
-		desc.localSurfaceID = IOSurfaceGetID(localSurfaceRef);
+	if (_localSurfaceRef != NULL)
+		CFRelease(_localSurfaceRef);
+	_localSurfaceRef = (IOSurfaceRef)n;
+	if (_localSurfaceRef != NULL)	{
+		CFRetain(_localSurfaceRef);
+		desc.localSurfaceID = IOSurfaceGetID(_localSurfaceRef);
 		//	can't have a remote surface if i just made a local surface...
 		setRemoteSurfaceRef(NULL);
 	}
@@ -256,16 +256,16 @@ void GLBuffer::setLocalSurfaceRef(const IOSurfaceRef & n)	{
 		desc.localSurfaceID = 0;
 }
 
-IOSurfaceRef GLBuffer::getRemoteSurfaceRef() const	{
-	return remoteSurfaceRef;
+IOSurfaceRef GLBuffer::remoteSurfaceRef() const	{
+	return _remoteSurfaceRef;
 }
 
 void GLBuffer::setRemoteSurfaceRef(const IOSurfaceRef & n)	{
-	if (remoteSurfaceRef != NULL)
-		CFRelease(remoteSurfaceRef);
-	remoteSurfaceRef = (IOSurfaceRef)n;
-	if (remoteSurfaceRef != NULL)	{
-		CFRetain(remoteSurfaceRef);
+	if (_remoteSurfaceRef != NULL)
+		CFRelease(_remoteSurfaceRef);
+	_remoteSurfaceRef = (IOSurfaceRef)n;
+	if (_remoteSurfaceRef != NULL)	{
+		CFRetain(_remoteSurfaceRef);
 		//	can't have a local surface if i've got a remote surface!
 		setLocalSurfaceRef(NULL);
 		
@@ -384,7 +384,7 @@ bool GLBuffer::isPOT2DTex() const	{
 
 #if defined(VVGL_SDK_MAC)
 bool GLBuffer::safeToPublishToSyphon() const	{
-	if (localSurfaceRef == nil)
+	if (_localSurfaceRef == nil)
 		return false;
 	if (flipped || desc.pixelFormat!=PF_BGRA)
 		return false;
@@ -399,7 +399,7 @@ void GLBuffer::mapPBO(const uint32_t & inAccess, const bool & inUseCurrentContex
 	if (desc.type != Type_PBO || pboMapped)
 		return;
 	if (!inUseCurrentContext)	{
-		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->getContext();
+		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->context();
 		if (poolCtx != nullptr)
 			poolCtx->makeCurrentIfNotCurrent();
 	}
@@ -420,7 +420,7 @@ void GLBuffer::unmapPBO(const bool & inUseCurrentContext)	{
 	if (desc.type != Type_PBO || !pboMapped)
 		return;
 	if (!inUseCurrentContext)	{
-		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->getContext();
+		GLContextRef		poolCtx = (parentBufferPool==nullptr) ? nullptr : parentBufferPool->context();
 		if (poolCtx != nullptr)
 			poolCtx->makeCurrentIfNotCurrent();
 	}
@@ -549,8 +549,8 @@ GLBufferRef GLBufferCopy(const GLBufferRef & n)	{
 	newBuffer->cpuBackingPtr = srcBuffer->cpuBackingPtr;
 	
 #if defined(VVGL_SDK_MAC)
-	newBuffer->setLocalSurfaceRef(srcBuffer->getLocalSurfaceRef());
-	newBuffer->setRemoteSurfaceRef(srcBuffer->getRemoteSurfaceRef());
+	newBuffer->setLocalSurfaceRef(srcBuffer->localSurfaceRef());
+	newBuffer->setRemoteSurfaceRef(srcBuffer->remoteSurfaceRef());
 #endif
 	
 	newBuffer->copySourceBuffer = n;	//	the copy needs a smart ptr so the buffer it's based on is retained

@@ -25,7 +25,7 @@
 - (JSONGUIArrayGroup *) passesGroup;
 - (JSONGUIDictGroup *) buffersGroup;
 
-- (JSONGUIInput *) getInputNamed:(NSString *)n;
+- (JSONGUIInput *) inputNamed:(NSString *)n;
 - (NSArray *) getPassesRenderingToBufferNamed:(NSString *)n;
 - (JSONGUIPersistentBuffer *) getPersistentBufferNamed:(NSString *)n;
 - (NSInteger) indexOfInput:(JSONGUIInput *)n;

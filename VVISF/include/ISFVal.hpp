@@ -40,7 +40,7 @@ enum ISFValType	{
 \ingroup VVISF_BASIC
 \relatesalso VVISF::ISFValType
 */
-string ISFValTypeString(const ISFValType & n);
+string StringFromISFValType(const ISFValType & n);
 /*!
 \brief Returns a true if the passed value type uses an image for its value.
 \ingroup VVISF_BASIC
@@ -105,7 +105,7 @@ struct ISFVal	{
 		///@{
 		
 		//!	Returns the value type.
-		inline ISFValType getType() const { return _type; }
+		inline ISFValType type() const { return _type; }
 		//!	Returns a double describing the value of this object.  Safe to call, even if the value type shouldn't be represented by a double.
 		double getDoubleVal() const;
 		//!	Returns a bool describing the value of this object.  Safe to call, even if the value type shouldn't be represented by a bool.
@@ -125,7 +125,7 @@ struct ISFVal	{
 		//!	Does nothing if the receiver's value type isn't color or the passed index is out of bounds, otherwise it sets the value of the color channel at the passed index.
 		inline void setColorValByChannel(const int & inIndex, const double & inVal) { if (_type!=ISFValType_Color || inIndex<0 || inIndex>3) return; _val.colorVal[inIndex]=inVal; }
 		//!	Returns null if the receiver's value type cannot be represented as an image, otherwise it returns the image buffer (almost certainly a GL texture) that is the receiver's value.
-		GLBufferRef getImageBuffer() const;
+		GLBufferRef imageBuffer() const;
 		//!	Does nothing if the receiver's value type cannot be represented as an image, otherwise it sets the receiver's image value with the passed buffer.  This buffer will be "retained" for the duration of the receiver's lifetime.
 		void setImageBuffer(const GLBufferRef & n);
 		//!	Returns a string describing the type of the receiver.

@@ -69,13 +69,13 @@ double * ISFAttr::updateAndGetEvalVariable()	{
 
 
 ostream & operator<<(ostream & os, const ISFAttr & n)	{
-	os << "<ISFAttr " << const_cast<ISFAttr&>(n).getName() << ": " << ISFValTypeString(const_cast<ISFAttr&>(n).getType()) << ">";
+	os << "<ISFAttr " << const_cast<ISFAttr&>(n).name() << ": " << StringFromISFValType(const_cast<ISFAttr&>(n).type()) << ">";
 	return os;
 }
 
 
 void ISFAttr::lengthyDescription()	{
-	cout << "<ISFAttr " << getName() << ": " << ISFValTypeString(getType());
+	cout << "<ISFAttr " << name() << ": " << StringFromISFValType(type());
 	cout << "\tcurrent:\t" << _currentVal << endl;
 	cout << "\tmin:\t\t" << _minVal << endl;
 	cout << "\tmax:\t\t" << _maxVal << endl;
@@ -83,7 +83,7 @@ void ISFAttr::lengthyDescription()	{
 	cout << "\tiden:\t" << _identityVal << ">" << endl;
 }
 string ISFAttr::getAttrDescription()	{
-	return FmtString("<ISFAttr %s: %s>", getName().c_str(), ISFValTypeString(getType()).c_str());
+	return FmtString("<ISFAttr %s: %s>", name().c_str(), StringFromISFValType(type()).c_str());
 }
 
 

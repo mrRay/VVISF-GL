@@ -79,7 +79,7 @@ void TexDownloadBenchmarkMainWindow::startTestClicked()
 		if (startTime == nullptr)
 			startTime = make_shared<Timestamp>();
 		
-		GetGlobalBufferPool()->getContext()->makeCurrentIfNotCurrent();
+		GetGlobalBufferPool()->context()->makeCurrentIfNotCurrent();
 		
 		while (testCount < 1000)	{
 			workMethod();
@@ -138,15 +138,15 @@ void TexDownloadBenchmarkMainWindow::prepForWork()
 	ui->bufferView->drawBuffer(texBuffer);
 	
 	//	prime the downloader with a couple frames so when we start streaming we'll be pulling stuff out right away
-	GetGlobalBufferPool()->getContext()->makeCurrentIfNotCurrent();
+	GetGlobalBufferPool()->context()->makeCurrentIfNotCurrent();
 	GLBufferRef			validFrame = nullptr;
 	texToCPU->clearStream();
-	for (int i=0; i<texToCPU->getQueueSize()+1; ++i)	{
+	for (int i=0; i<texToCPU->queueSize()+1; ++i)	{
 		GLBufferRef		targetCPU = createCPUBufferForWork();
 		GLBufferRef		downloadedCPU = texToCPU->streamTexToCPU(texBuffer, targetCPU, true);
 		//GLBufferRef		downloadedCPU = texToCPU->streamTexToCPU(texBuffer, nullptr, true);
 		
-		if (i == texToCPU->getQueueSize())	{
+		if (i == texToCPU->queueSize())	{
 			if (downloadedCPU == nullptr)
 				cout << "\tERR: download failed for some reason, " << __PRETTY_FUNCTION__ << endl;
 			else	{
@@ -252,7 +252,7 @@ void TexDownloadBenchmarkMainWindow::widgetDrewItsFirstFrame()
 	cout << __PRETTY_FUNCTION__ << endl;
 	
 	//	get the widget's context- if it's null, the widget's context doesn't exist yet and this method shouldn't have been called!
-	GLContextRef		widgetCtx = ui->bufferView->getContext();
+	GLContextRef		widgetCtx = ui->bufferView->glContextRef();
 	if (widgetCtx == nullptr)
 		return;
 	

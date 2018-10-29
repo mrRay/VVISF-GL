@@ -181,9 +181,9 @@ class VVGL_EXPORT GLBuffer	{
 #if defined(VVGL_SDK_MAC)
 		//id						userInfo = nullptr;	//	RETAINED, nil by default.  not used by this class- stick whatever you want here and it will be retained for the lifetime of this buffer.  retained if you copy the buffer!
 		//!	Mac SDK only.  The "local" surface ref was created by this process/lib.  This is a strong reference, and when this GLBuffer and its backing IOSurface are deleted the IOSurface's image will only exist in whatever remote processes have been made aware of this IOSurface.
-		IOSurfaceRef			localSurfaceRef = nullptr;
+		IOSurfaceRef			_localSurfaceRef = nullptr;
 		//!	Mac SDK only.  The "remote" surface ref was created by another process (if this is non-nil, the GLBuffer should be released immediately because another process created the image resources underlying this IOSurface).
-		IOSurfaceRef			remoteSurfaceRef = nullptr;
+		IOSurfaceRef			_remoteSurfaceRef = nullptr;
 #endif
 	
 	public:
@@ -220,9 +220,9 @@ class VVGL_EXPORT GLBuffer	{
 		//	getter/setters
 		//id getUserInfo() const;
 		//void setUserInfo(id n);
-		IOSurfaceRef getLocalSurfaceRef() const;
+		IOSurfaceRef localSurfaceRef() const;
 		void setLocalSurfaceRef(const IOSurfaceRef & n);
-		IOSurfaceRef getRemoteSurfaceRef() const;
+		IOSurfaceRef remoteSurfaceRef() const;
 		void setRemoteSurfaceRef(const IOSurfaceRef & n);
 #endif
 		

@@ -152,7 +152,7 @@ class VVGL_EXPORT GLScene	{
 		
 		
 		//!	Returns the context used by this scene.
-		inline GLContextRef getContext() const { return _context; }
+		inline GLContextRef context() const { return _context; }
 		
 		
 		/*!
@@ -184,11 +184,11 @@ class VVGL_EXPORT GLScene	{
 		//!	Sets the orthogonal render size.  If the size is 0x0 then orthogonal rendering is skipped- any other positive values will cause the scene to configure itself for orthographic projection at the passed size during rendering.
 		virtual void setOrthoSize(const Size & n);
 		//!	Gets the orthogonal render size.  If the size is 0x0 then orthogonal rendering is disabled.
-		Size getOrthoSize() const;
+		Size orthoSize() const;
 		//!	The _orthoFlipped member variable defaults to false- if it's set to true, the orthographic projection or equivalent will be flipped vertically.
 		void setOrthoFlipped(const bool & n);
 		//!	Gets the value of the _orthoFlipped member variable.  If this is true, the orthographic projection or equivalent will be flipped vertically.
-		bool getOrthoFlipped() const;
+		bool orthoFlipped() const;
 		///@}
 		
 		
@@ -220,23 +220,23 @@ class VVGL_EXPORT GLScene	{
 		//!	Sets the vertex shader string.
 		virtual void setVertexShaderString(const string & n);
 		//!	Gets the vertex shader string.
-		virtual string getVertexShaderString();
+		virtual string vertexShaderString();
 		//!	Sets the geometry shader string.
 		virtual void setGeometryShaderString(const string & n);
 		//!	Gets the geometry shader string.
-		virtual string getGeometryShaderString();
+		virtual string geometryShaderString();
 		//!	Sets the fragment shader string.
 		virtual void setFragmentShaderString(const string & n);
 		//!	Gets the fragment shader string.
-		virtual string getFragmentShaderString();
+		virtual string fragmentShaderString();
 		//!	Gets the program ID.
-		inline uint32_t getProgram() const { return _program; }
+		inline uint32_t program() const { return _program; }
 		
 		///@}
 		
 		
 		//!	Returns the version of OpenGL currently being used by this scene's GL context.
-		inline GLVersion getGLVersion() const { if (_context==nullptr) return GLVersion_Unknown; return _context->version; }
+		inline GLVersion glVersion() const { if (_context==nullptr) return GLVersion_Unknown; return _context->version; }
 		
 	protected:
 		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.

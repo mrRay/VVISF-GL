@@ -444,11 +444,11 @@ id			_globalJSONGUIController = nil;
 	if (scene == nullptr)
 		return;
 	//NSString		*exportString = [NSString stringWithFormat:@"/*\n%@\n*/%@",[newDict prettyJSONString],[scene fragShaderSource]];
-	//string			fsString = scene->getFragmentShaderString();
+	//string			fsString = scene->fragmentShaderString();
 	//NSString		*exportString = [NSString stringWithFormat:@"/*\n%@\n*/%s",[newDict prettyJSONString],fsString.c_str()];
 	
-	ISFDocRef		tmpDoc = scene->getDoc();
-	string			*fsString = (tmpDoc==nullptr) ? nullptr : tmpDoc->getFragShaderSource();
+	ISFDocRef		tmpDoc = scene->doc();
+	string			*fsString = (tmpDoc==nullptr) ? nullptr : tmpDoc->fragShaderSource();
 	NSString		*exportString = nil;
 	if (fsString == nullptr)
 		exportString = [NSString stringWithFormat:@"/*\n%@\n*/",[newDict prettyJSONString]];
@@ -456,8 +456,8 @@ id			_globalJSONGUIController = nil;
 		exportString = [NSString stringWithFormat:@"/*\n%@\n*/%s",[newDict prettyJSONString],fsString->c_str()];
 	//NSLog(@"\t\texportString is %@",exportString);
 	//NSString		*exportPath = [scene filePath];
-	//ISFDocRef		tmpDoc = scene->getDoc();
-	string			cppExportPath = (tmpDoc==nullptr) ? string("") : tmpDoc->getPath();
+	//ISFDocRef		tmpDoc = scene->doc();
+	string			cppExportPath = (tmpDoc==nullptr) ? string("") : tmpDoc->path();
 	NSString		*exportPath = [NSString stringWithUTF8String:cppExportPath.c_str()];
 	NSError			*nsErr = nil;
 	if (exportPath!=nil && exportString!=nil)	{
@@ -478,22 +478,22 @@ id			_globalJSONGUIController = nil;
 	ISFSceneRef		scene = [isfController scene];
 	if (scene == nullptr)
 		return;
-	ISFDocRef		doc = scene->getDoc();
+	ISFDocRef		doc = scene->doc();
 	if (doc == nullptr)
 		return;
-	vector<ISFAttrRef>		attrs = doc->getInputs();
+	vector<ISFAttrRef>		attrs = doc->inputs();
 	for (auto const & attr : attrs)	{
 		if (attr == nullptr)
 			continue;
 		
-		ISFVal			attribVal = attr->getCurrentVal();
-		string			cppAttribName = attr->getName();
+		ISFVal			attribVal = attr->currentVal();
+		string			cppAttribName = attr->name();
 		NSString		*tmpString = [NSString stringWithUTF8String:cppAttribName.c_str()];
-		JSONGUIInput	*input = [top getInputNamed:tmpString];
+		JSONGUIInput	*input = [top inputNamed:tmpString];
 		if (input == nil)
 			continue;
 		
-		switch (attr->getType())	{
+		switch (attr->type())	{
 		case ISFValType_None:
 		case ISFValType_Event:
 		case ISFValType_Cube:
@@ -534,7 +534,7 @@ id			_globalJSONGUIController = nil;
 	[inputs rdlock];
 	for (ISFAttrib *attrib in [inputs array])	{
 		ISFAttribVal	attribVal = [attrib currentVal];
-		JSONGUIInput	*input = [_top getInputNamed:[attrib attribName]];
+		JSONGUIInput	*input = [_top inputNamed:[attrib attribName]];
 		switch ([attrib attribType])	{
 		case ISFAT_Event:
 		case ISFAT_Image:

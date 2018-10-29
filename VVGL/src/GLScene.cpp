@@ -20,7 +20,7 @@ GLScene::GLScene()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)	{
-		_context = bp->getContext()->newContextSharingMe();
+		_context = bp->context()->newContextSharingMe();
 		//cout << "\tcontext is " << *_context << endl;
 	}
 }
@@ -282,7 +282,7 @@ void GLScene::setOrthoSize(const Size & n)	{
 	_orthoSize = n;
 	_needsReshape = true;
 }
-Size GLScene::getOrthoSize() const	{
+Size GLScene::orthoSize() const	{
 	return _orthoSize;
 }
 void GLScene::setOrthoFlipped(const bool & n)	{
@@ -290,7 +290,7 @@ void GLScene::setOrthoFlipped(const bool & n)	{
 	_orthoFlipped = n;
 	_needsReshape = true;
 }
-bool GLScene::getOrthoFlipped() const	{
+bool GLScene::orthoFlipped() const	{
 	return _orthoFlipped;
 }
 
@@ -326,7 +326,7 @@ void GLScene::setVertexShaderString(const string & n)	{
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
-string GLScene::getVertexShaderString()	{
+string GLScene::vertexShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _vsString;
 }
@@ -346,7 +346,7 @@ void GLScene::setGeometryShaderString(const string & n)	{
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
-string GLScene::getGeometryShaderString()	{
+string GLScene::geometryShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _gsString;
 }
@@ -366,7 +366,7 @@ void GLScene::setFragmentShaderString(const string & n)	{
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
-string GLScene::getFragmentShaderString()	{
+string GLScene::fragmentShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	return _fsString;
 }
@@ -688,7 +688,7 @@ void GLScene::_initialize()	{
 	//GLERRLOG
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	//GLERRLOG
-	if (getGLVersion() == GLVersion_2)	{
+	if (glVersion() == GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 		glEnable(GL_BLEND);
 		GLERRLOG
@@ -724,7 +724,7 @@ void GLScene::_reshape()	{
 	//cout << "\tthis is " << this << endl;
 	
 	if (_orthoSize.width>0. && _orthoSize.height>0.)	{
-		if (getGLVersion() == GLVersion_2)	{
+		if (glVersion() == GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glMatrixMode(GL_MODELVIEW);
 			GLERRLOG

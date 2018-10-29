@@ -463,7 +463,7 @@ GLBufferRef GLBufferPool::fetchMatchingFreeBuffer(const GLBuffer::Descriptor & d
 			if (sizeIsOK)	{
 #if defined(VVGL_SDK_MAC)
 				//	check to make sure that the IOSurface-related aspects of this buffer are compatible
-				IOSurfaceRef		srf = bufferPtr->getLocalSurfaceRef();
+				IOSurfaceRef		srf = bufferPtr->localSurfaceRef();
 				if ((desc.localSurfaceID!=0 && srf!=nullptr)	||
 				(desc.localSurfaceID==0 && srf==nullptr))	{
 #endif
@@ -582,7 +582,7 @@ void GLBufferPool::releaseBufferResources(GLBuffer * inBuffer)	{
 #if defined(VVGL_SDK_QT)
 	//	if we can't make the context current on this thread
 	QThread			*currentThread = QThread::currentThread();
-	QObject			*qCtxAsObj = (QObject*)_context->getContext();
+	QObject			*qCtxAsObj = (QObject*)_context->context();
 	QThread			*ctxThread = (qCtxAsObj==nullptr) ? nullptr : qCtxAsObj->thread();
 	
 	if (currentThread != ctxThread)	{
@@ -749,10 +749,10 @@ GLBufferRef CreateVBO(const void * inBytes, const size_t & inByteSize, const int
 	desc.localSurfaceID = 0;
 	
 	if (!inCreateInCurrentContext)	{
-		if (inPoolRef->getContext() != nullptr)	{
+		if (inPoolRef->context() != nullptr)	{
 			//inPoolRef->_context->makeCurrentIfNull();
 			//inPoolRef->_context->makeCurrent();
-			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+			inPoolRef->context()->makeCurrentIfNotCurrent();
 		}
 	}
 	
@@ -795,10 +795,10 @@ GLBufferRef CreateEBO(const void * inBytes, const size_t & inByteSize, const int
 	desc.localSurfaceID = 0;
 	
 	if (!inCreateInCurrentContext)	{
-		if (inPoolRef->getContext() != nullptr)	{
+		if (inPoolRef->context() != nullptr)	{
 			//inPoolRef->_context->makeCurrentIfNull();
 			//inPoolRef->_context->makeCurrent();
-			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+			inPoolRef->context()->makeCurrentIfNotCurrent();
 		}
 	}
 	
@@ -826,7 +826,7 @@ GLBufferRef CreateVAO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 	if (inPoolRef == nullptr)
 		return nullptr;
-	if (inPoolRef->getContext()->version < GLVersion_ES3)
+	if (inPoolRef->context()->version < GLVersion_ES3)
 		return nullptr;
 	GLBufferRef		returnMe = make_shared<GLBuffer>(inPoolRef);
 	GLBuffer::Descriptor &	desc = returnMe->desc;
@@ -844,10 +844,10 @@ GLBufferRef CreateVAO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 	desc.localSurfaceID = 0;
 	
 	if (!inCreateInCurrentContext)	{
-		if (inPoolRef->getContext() != nullptr)	{
+		if (inPoolRef->context() != nullptr)	{
 			//inPoolRef->_context->makeCurrentIfNull();
 			//inPoolRef->_context->makeCurrent();
-			inPoolRef->getContext()->makeCurrentIfNotCurrent();
+			inPoolRef->context()->makeCurrentIfNotCurrent();
 		}
 	}
 	
@@ -1676,7 +1676,7 @@ GLBufferRef CreateRGBAPBO(const GLBuffer::Target & inTarget, const int32_t & inU
 		returnMe->backingSize = inSize;
 		//	...if we're recycling then we may not have a current context on this thread right now
 		if (!inCreateInCurrentContext)	{
-			GLContextRef		tmpCtx = inPoolRef->getContext();
+			GLContextRef		tmpCtx = inPoolRef->context();
 			if (tmpCtx == nullptr)
 				return nullptr;
 			//_context->makeCurrentIfNull();
@@ -1763,7 +1763,7 @@ GLBufferRef CreateBGRAPBO(const int32_t & inTarget, const int32_t & inUsage, con
 		returnMe->backingSize = inSize;
 		//	...if we're recycling then we may not have a current context on this thread right now
 		if (!inCreateInCurrentContext)	{
-			GLContextRef		tmpCtx = inPoolRef->getContext();
+			GLContextRef		tmpCtx = inPoolRef->context();
 			if (tmpCtx == nullptr)
 				return nullptr;
 			//_context->makeCurrentIfNull();
@@ -1848,7 +1848,7 @@ GLBufferRef CreateRGBAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		returnMe->backingSize = inSize;
 		//	...if we're recycling then we may not have a current context on this thread right now
 		if (!inCreateInCurrentContext)	{
-			GLContextRef		tmpCtx = inPoolRef->getContext();
+			GLContextRef		tmpCtx = inPoolRef->context();
 			if (tmpCtx == nullptr)
 				return nullptr;
 			//_context->makeCurrentIfNull();
@@ -1933,7 +1933,7 @@ GLBufferRef CreateBGRAFloatPBO(const int32_t & inTarget, const int32_t & inUsage
 		returnMe->backingSize = inSize;
 		//	...if we're recycling then we may not have a current context on this thread right now
 		if (!inCreateInCurrentContext)	{
-			GLContextRef		tmpCtx = inPoolRef->getContext();
+			GLContextRef		tmpCtx = inPoolRef->context();
 			if (tmpCtx == nullptr)
 				return nullptr;
 			//_context->makeCurrentIfNull();
@@ -2018,7 +2018,7 @@ GLBufferRef CreateYCbCrPBO(const int32_t & inTarget, const int32_t & inUsage, co
 		returnMe->backingSize = inSize;
 		//	...if we're recycling then we may not have a current context on this thread right now
 		if (!inCreateInCurrentContext)	{
-			GLContextRef		tmpCtx = inPoolRef->getContext();
+			GLContextRef		tmpCtx = inPoolRef->context();
 			if (tmpCtx == nullptr)
 				return nullptr;
 			//_context->makeCurrentIfNull();
@@ -2606,14 +2606,14 @@ GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & 
 	//	grab a context lock so we can do stuff with the GL context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
 	if (!inCreateInCurrentContext)	{
-		GLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->getContext();
+		GLContextRef					context = (inPoolRef==nullptr) ? nullptr : inPoolRef->context();
 		context->makeCurrentIfNotCurrent();
 	}
 	CGLContextObj		cglCtx = CGLGetCurrentContext();
 	if (cglCtx != NULL)	{
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
-		if (inPoolRef->getContext()->version <= GLVersion_2)	{
+		if (inPoolRef->context()->version <= GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glEnable(returnMe->desc.target);
 			GLERRLOG
@@ -2646,7 +2646,7 @@ GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & 
 		GLERRLOG
 		glBindTexture(returnMe->desc.target, 0);
 		GLERRLOG
-		if (inPoolRef->getContext()->version <= GLVersion_2)	{
+		if (inPoolRef->context()->version <= GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 			glDisable(returnMe->desc.target);
 			GLERRLOG
@@ -2657,7 +2657,7 @@ GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & 
 	return returnMe;
 }
 GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool & inTexRange, const bool & inIOSurface, const bool & createInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	if (inPoolRef==nullptr || inCVPB==NULL || inPoolRef->getContext()==nullptr)
+	if (inPoolRef==nullptr || inCVPB==NULL || inPoolRef->context()==nullptr)
 		return nullptr;
 	
 	GLBuffer::Descriptor	desc;
@@ -2696,7 +2696,7 @@ GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool &
 			desc.pixelType = GLBuffer::PT_UShort88;
 			*/
 			
-			if (inPoolRef->getContext()->version == GLVersion_4)	{
+			if (inPoolRef->context()->version == GLVersion_4)	{
 				//	GL4 doesn't have YCbCr textures on os x, so we create it as a half-width RGBA image
 				bitsPerPixel = 32;
 			}
@@ -2757,7 +2757,7 @@ GLBufferRef CreateBufferForCVPixelBuffer(CVPixelBufferRef & inCVPB, const bool &
 	};
 	returnMe->preferDeletion = true;
 	
-	if (inPoolRef->getContext()->version == GLVersion_4)	{
+	if (inPoolRef->context()->version == GLVersion_4)	{
 		returnMe->srcRect = VVGL::Rect(cvpb_srcRect.origin.x, cvpb_srcRect.origin.y, cvpb_srcRect.size.width/2., cvpb_srcRect.size.height);
 	}
 	else	{
@@ -2855,7 +2855,7 @@ GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateI
 	
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
 	if (!inCreateInCurrentContext)	{
-		GLContextRef				context = inPoolRef->getContext();
+		GLContextRef				context = inPoolRef->context();
 		if (context == nullptr)
 			return nullptr;
 		//context->makeCurrentIfNull();
@@ -2946,7 +2946,7 @@ GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool & inCreateI
 			(long)imgSize.height,
 			8,
 			((long)(imgSize.width))*4,
-			inPoolRef->getColorSpace(),
+			inPoolRef->colorSpace(),
 			kCGImageAlphaPremultipliedLast);
 		if (ctx == NULL)	{
 			cout << "ERR: ctx null in " << __PRETTY_FUNCTION__ << endl;
@@ -3057,7 +3057,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 	//	lock, set the current context
 	lock_guard<recursive_mutex>		lock(inPoolRef->getContextLock());
 	if (!inCreateInCurrentContext)	{
-		GLContextRef				context = inPoolRef->getContext();
+		GLContextRef				context = inPoolRef->context();
 		if (context == nullptr)
 			return nullptr;
 		//context->makeCurrentIfNull();
@@ -3068,7 +3068,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 	//	create the GL resource, do some basic setup before we upload data to it
 	glActiveTexture(GL_TEXTURE0);
 	GLERRLOG
-	if (inPoolRef->getContext()->version <= GLVersion_2)	{
+	if (inPoolRef->context()->version <= GLVersion_2)	{
 #if defined(VVGL_TARGETENV_GL2)
 		glEnable(desc.target);
 		GLERRLOG
@@ -3109,7 +3109,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 		(long)baseSize.height,
 		8,
 		((long)(baseSize.width))*4,
-		inPoolRef->getColorSpace(),
+		inPoolRef->colorSpace(),
 		kCGImageAlphaPremultipliedLast);
 	if (ctx != NULL)	{
 		//	run through the images, drawing them into the clipboard and then uploading the clipboard
@@ -3146,7 +3146,7 @@ GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const boo
 	glBindTexture(desc.target, 0);
 	GLERRLOG
 //#if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
-	if (inPoolRef->getContext()->version <= GLVersion_2)	{
+	if (inPoolRef->context()->version <= GLVersion_2)	{
 		glDisable(desc.target);
 		GLERRLOG
 	}

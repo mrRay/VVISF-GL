@@ -27,7 +27,7 @@
 		feedbackScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		rasterScene = CreateGLSceneRefUsing(sharedContext->newContextSharingMe());
 		//	set up the GL context- this will vary significantly based on the version of GL you chose to use when making the shared context above
-		if (rasterScene->getGLVersion() == GLVersion_2)
+		if (rasterScene->glVersion() == GLVersion_2)
 			[self initForGL2];
 		else
 			[self initForModernGL];
@@ -96,7 +96,7 @@
 	NSLog(@"%s",__func__);
 	
 	{
-		rasterScene->getContext()->makeCurrentIfNotCurrent();
+		rasterScene->context()->makeCurrentIfNotCurrent();
 		//vao = CreateVAO(true);
 		
 		
@@ -125,7 +125,7 @@
 	
 	
 	//	make the feedback scene's context current
-	feedbackScene->getContext()->makeCurrentIfNotCurrent();
+	feedbackScene->context()->makeCurrentIfNotCurrent();
 	
 	//	make a target quad, use it to populate the vertVBO.  initialize the feedbackVBO to nil.
 	Quad<VVGL::VertXYZRGBA>			targetQuad;
@@ -150,13 +150,13 @@
 	//	transform feedbacks require a special step after shader compilation but before program linking
 	feedbackScene->setRenderPreLinkCallback([](const GLScene & n)	{
 		const GLchar * feedbackVaryings[] = { "outXYZ", "outRGBA" };
-		glTransformFeedbackVaryings(n.getProgram(), 2, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
+		glTransformFeedbackVaryings(n.program(), 2, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
 	});
 	//	render prep only has to make sure the attrib locations are cached
 	feedbackScene->setRenderPrepCallback([=](const GLScene & n, const bool & inReshaped, const bool & inPgmChanged)	{
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			inXYZAttr->cacheTheLoc(myProgram);
 			inRGBAAttr->cacheTheLoc(myProgram);
 		}
@@ -235,7 +235,7 @@
 	
 	
 	//	now set up the raster scene- first make its context current
-	feedbackScene->getContext()->makeCurrentIfNotCurrent();
+	feedbackScene->context()->makeCurrentIfNotCurrent();
 	
 	//	load the vertex and frag shaders from disk
 	nsVSString = [NSString stringWithContentsOfFile:[mb pathForResource:@"TransFeedback_Renderer" ofType:@"vs"] encoding:NSUTF8StringEncoding error:nil];
@@ -259,7 +259,7 @@
 		//cout << __PRETTY_FUNCTION__ << endl;
 		if (inPgmChanged)	{
 			//	cache all the locations for the vertex attributes & uniform locations
-			GLint				myProgram = n.getProgram();
+			GLint				myProgram = n.program();
 			inXYZAttr->cacheTheLoc(myProgram);
 			inRGBAAttr->cacheTheLoc(myProgram);
 		}
