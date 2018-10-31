@@ -18,7 +18,7 @@ class JSONGUIInputPoint2DWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputPoint2DWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputPoint2DWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputPoint2DWidget();
 	
 	virtual void prepareUIItems() override;

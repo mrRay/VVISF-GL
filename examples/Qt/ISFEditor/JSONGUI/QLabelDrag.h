@@ -22,6 +22,7 @@ public:
 		
 		QMimeData	*md = new QMimeData;
 		md->setData(mimeType, dragVariant.toByteArray());
+		//md->setData(mimeScrollType, QVariant().toByteArray());
 		drag->setMimeData(md);
 		
 		qDebug() << "\tbeginning drag...";
@@ -31,6 +32,7 @@ public:
 	
 public:
 	QString			mimeType = QString("text/JGMDrag");
+	QString			mimeScrollType = QString("text/JGMDrag");
 	QVariant		dragVariant = QVariant( QString("XXX") );
 };
 

@@ -18,7 +18,7 @@ class JSONGUIInputEventWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputEventWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputEventWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputEventWidget();
 	
 	virtual void prepareUIItems() override;

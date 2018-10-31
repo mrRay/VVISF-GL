@@ -1,8 +1,8 @@
 #include "JSONGUIInputEventWidget.h"
 #include "ui_JSONGUIInputEventWidget.h"
 
-JSONGUIInputEventWidget::JSONGUIInputEventWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputEventWidget::JSONGUIInputEventWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputEvent)
 {
 	ui->setupUi(this);

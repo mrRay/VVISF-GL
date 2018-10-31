@@ -18,7 +18,7 @@ class JSONGUIInputImageWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputImageWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputImageWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputImageWidget();
 	
 	virtual void prepareUIItems() override;

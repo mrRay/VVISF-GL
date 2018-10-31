@@ -49,7 +49,7 @@ void MainWindow::on_actionSave_triggered()	{
 
 void MainWindow::on_actionQuit_triggered()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	QCoreApplication::exit();
+	QCoreApplication::quit();
 }
 
 

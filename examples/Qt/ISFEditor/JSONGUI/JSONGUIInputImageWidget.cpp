@@ -4,8 +4,8 @@
 
 
 
-JSONGUIInputImageWidget::JSONGUIInputImageWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputImageWidget::JSONGUIInputImageWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputImage)
 {
 	ui->setupUi(this);

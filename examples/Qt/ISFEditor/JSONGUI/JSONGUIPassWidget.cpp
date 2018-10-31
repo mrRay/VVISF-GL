@@ -3,16 +3,16 @@
 
 #include <QDebug>
 #include "JGMTop.h"
-#include "JSONScrollWidget.h"
 #include "QLabelDrag.h"
 
 
 
 
-JSONGUIPassWidget::JSONGUIPassWidget(const JGMPassRef & inRef, QWidget *parent) :
+JSONGUIPassWidget::JSONGUIPassWidget(const JGMPassRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
 	QWidget(parent),
+	ui(new Ui::JSONGUIPassWidget),
 	_pass(inRef),
-	ui(new Ui::JSONGUIPassWidget)
+	_parentScroll(inScrollWidget)
 {
 	ui->setupUi(this);
 	
@@ -35,6 +35,7 @@ JSONGUIPassWidget::~JSONGUIPassWidget()
 void JSONGUIPassWidget::prepareUIItems()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
+	prepareDragLabel( (ui->dragLabel) );
 	prepareDeleteLabel( (ui->deleteLabel) );
 	prepareBufferNameEdit( (ui->targetBufferEdit) );
 	preparePBufferCBox( (ui->persistentCBox) );
@@ -59,30 +60,84 @@ void JSONGUIPassWidget::refreshUIItems()	{
 void JSONGUIPassWidget::dragEnterEvent(QDragEnterEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	const QMimeData		*md = e->mimeData();
-	if (md!=nullptr && md->hasFormat("text/JGMPassDrag"))	{
-		QPoint		tmpPoint = e->pos();
-		QSize		tmpSize = frameSize();
-		if (tmpPoint.y() > tmpSize.height()/2)
-			_dropEdge = Qt::BottomEdge;
-		else
-			_dropEdge = Qt::TopEdge;
+	if (md==nullptr || !md->hasFormat("text/JGMPassDrag"))
+		return;
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget == nullptr)
+		return;
+	QPoint			localPoint = e->pos();
+	QPoint			globalPoint = mapToGlobal(localPoint);
+	QPoint			parentPoint = scrollWidget->mapFromGlobal(globalPoint);
+	//QPoint			parentPoint = mapToParent(localPoint);
+	QSize			parentSize = scrollWidget->frameSize();
+	if (parentPoint.y() < 50)	{
+		//qDebug() << "should be starting a drag";
+		//emit parentScrollShouldStartScrolling(Qt::TopEdge);
+		scrollWidget->startScrolling(Qt::TopEdge);
+		
+	}
+	else if ((parentSize.height()-parentPoint.y())<50)	{
+		//qDebug() << "should be starting a drag";
+		//emit parentScrollShouldStartScrolling(Qt::BottomEdge);
+		scrollWidget->startScrolling(Qt::BottomEdge);
+	}
+	else	{
+		scrollWidget->stopScrolling();
+		
+		QSize			mySize = frameSize();
+		_dropEdge = (localPoint.y() > parentSize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
 		update();
 		e->acceptProposedAction();
 	}
 }
 void JSONGUIPassWidget::dragMoveEvent(QDragMoveEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
-	QPoint		tmpPoint = e->pos();
-	QSize		tmpSize = frameSize();
-	if (tmpPoint.y() > tmpSize.height()/2)
-		_dropEdge = Qt::BottomEdge;
-	else
-		_dropEdge = Qt::TopEdge;
-	update();
-	e->accept();
+	
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget == nullptr)
+		return;
+	QPoint			localPoint = e->pos();
+	QPoint			globalPoint = mapToGlobal(localPoint);
+	QPoint			parentPoint = scrollWidget->mapFromGlobal(globalPoint);
+	//QPoint			parentPoint = mapToParent(localPoint);
+	QSize			parentSize = scrollWidget->viewport()->frameSize();
+	if (parentPoint.y() < 50)	{
+		//qDebug() << "should be continuing a drag";
+		//emit parentScrollShouldStartScrolling(Qt::TopEdge);
+		scrollWidget->startScrolling(Qt::TopEdge);
+	}
+	else if ((parentSize.height()-parentPoint.y())<50)	{
+		//qDebug() << "should be continuing a drag";
+		//emit parentScrollShouldStartScrolling(Qt::BottomEdge);
+		scrollWidget->startScrolling(Qt::BottomEdge);
+	}
+	else	{
+		scrollWidget->stopScrolling();
+		
+		bool			needsRedraw = false;
+		if (localPoint.y() > parentSize.height()/2)	{
+			if (_dropEdge != Qt::BottomEdge)
+				needsRedraw = true;
+			_dropEdge = Qt::BottomEdge;
+		}
+		else	{
+			if (_dropEdge != Qt::TopEdge)
+				needsRedraw = true;
+			_dropEdge = Qt::TopEdge;
+		}
+		if (needsRedraw)
+			update();
+		e->accept();
+	}
 }
 void JSONGUIPassWidget::dragLeaveEvent(QDragLeaveEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	//qDebug() << "should be stopping a drag on leave";
+	//emit parentScrollShouldStopScrolling();
+	scrollWidget->stopScrolling();
+	
 	_dropEdge = Qt::LeftEdge;
 	update();
 	e->accept();
@@ -96,8 +151,12 @@ void JSONGUIPassWidget::dropEvent(QDropEvent * e)	{
 	
 	JGMTop			*top = _pass->top();
 	int				dstIndex = top->indexOfPass(*_pass);
-	if (srcIndex == dstIndex)
+	if (srcIndex == dstIndex)	{
+		_dropEdge = Qt::LeftEdge;
+		update();
+		e->accept();
 		return;
+	}
 	if (_dropEdge == Qt::BottomEdge)
 		++dstIndex;
 	if (dstIndex > srcIndex)
@@ -107,6 +166,12 @@ void JSONGUIPassWidget::dropEvent(QDropEvent * e)	{
 	JGMCPassArray		&passesC = top->passesContainer();
 	QVector<JGMPassRef>		&passesV = passesC.contents();
 	passesV.move(srcIndex, dstIndex);
+	
+	//qDebug() << "should be stopping a drag on drop";
+	//emit parentScrollShouldStopScrolling();
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget != nullptr)
+		scrollWidget->stopScrolling();
 	
 	_dropEdge = Qt::LeftEdge;
 	update();
@@ -121,6 +186,7 @@ void JSONGUIPassWidget::dropEvent(QDropEvent * e)	{
 
 
 void JSONGUIPassWidget::prepareDragLabel(QLabelDrag * dragLabel)	{
+	qDebug() << __PRETTY_FUNCTION__;
 	JGMTop		*top = _pass->top();
 	if (top != nullptr)	{
 		//	configure the drag label so it's "text/JGMPassDrag" and its data is the index of my pass

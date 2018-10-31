@@ -4,8 +4,8 @@
 
 
 
-JSONGUIInputLongWidget::JSONGUIInputLongWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputLongWidget::JSONGUIInputLongWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputLong)
 {
 	ui->setupUi(this);

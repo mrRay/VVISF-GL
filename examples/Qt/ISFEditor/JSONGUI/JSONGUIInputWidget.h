@@ -2,6 +2,7 @@
 #define JSONGUIINPUTWIDGET_H
 
 #include <QWidget>
+#include <QPointer>
 class QLabel;
 class QComboBox;
 class QLineEdit;
@@ -9,6 +10,7 @@ class QLabelClickable;
 class QLabelDrag;
 
 #include "JGMObject.h"
+#include "JSONScrollWidget.h"
 
 
 
@@ -17,7 +19,7 @@ class JSONGUIInputWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit JSONGUIInputWidget(const JGMInputRef & inInput, QWidget *parent = nullptr);
+	explicit JSONGUIInputWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent * e) Q_DECL_OVERRIDE;
@@ -42,6 +44,7 @@ protected:
 protected:
 	JGMInputRef			_input = nullptr;
 	Qt::Edge			_dropEdge = Qt::LeftEdge;
+	QPointer<JSONScrollWidget>		_parentScroll = nullptr;
 };
 
 

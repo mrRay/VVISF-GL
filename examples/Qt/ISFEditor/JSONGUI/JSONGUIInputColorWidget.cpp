@@ -35,8 +35,8 @@ QColor ConvertArrayJSONToColor(const QJsonValue & inVal)	{
 
 
 
-JSONGUIInputColorWidget::JSONGUIInputColorWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputColorWidget::JSONGUIInputColorWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputColor)
 {
 	ui->setupUi(this);

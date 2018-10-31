@@ -3,13 +3,16 @@
 #include <QDebug>
 #include <QLayout>
 #include <QFile>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
 
 #include "ISFController.h"
 
 #include "JGMTop.h"
 
-#include "JSONGUIBasicInfoWidget.h"
 #include "JSONGUIGroupInputWidget.h"
+#include "JSONGUIBasicInfoWidget.h"
 #include "JSONGUIGroupPassWidget.h"
 #include "JSONGUIInputAudioWidget.h"
 #include "JSONGUIInputAudioFFTWidget.h"
@@ -32,7 +35,9 @@ static JSONScrollWidget * globalScrollWidget = nullptr;
 
 
 
-JSONScrollWidget::JSONScrollWidget(QWidget * inParent) : QScrollArea(inParent)	{
+JSONScrollWidget::JSONScrollWidget(QWidget * inParent) :
+	QScrollArea(inParent)
+{
 	/*
 	QPalette			p = palette();
 	p.setColor(QPalette::Background, p.color(QPalette::Background).darker(105));
@@ -41,6 +46,16 @@ JSONScrollWidget::JSONScrollWidget(QWidget * inParent) : QScrollArea(inParent)	{
 	*/
 	
 	globalScrollWidget = this;
+	
+	//setViewport(new JSONScrollViewportWidget(this));
+	//setViewport(new QWidget(this));
+	
+	//qDebug() << "viewport is " << viewport();
+	viewport()->setAcceptDrops(true);
+	
+	eventFilter = new JSONScrollEventFilter(this, this);
+	viewport()->installEventFilter(eventFilter);
+	//qApp->installEventFilter(eventFilter);
 }
 JSONScrollWidget::~JSONScrollWidget()	{
 	clearItems();
@@ -59,6 +74,10 @@ JSONScrollWidget::~JSONScrollWidget()	{
 	if (top != nullptr)
 		top = nullptr;
 	
+	viewport()->removeEventFilter(eventFilter);
+	//qApp->removeEventFilter(eventFilter);
+	delete eventFilter;
+	eventFilter = nullptr;
 }
 
 
@@ -138,6 +157,29 @@ void JSONScrollWidget::recreateJSONAndExport()	{
 	tmpFile.close();
 	*/
 }
+void JSONScrollWidget::startScrolling(const Qt::Edge & inScrollDirection)	{
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << this;
+	
+	lock_guard<recursive_mutex>		tmpLock(itemLock);
+	scrollDirection = inScrollDirection;
+	if (scrollTimer == nullptr)	{
+		scrollTimer = new QTimer(this);
+		scrollTimer->setInterval(50);
+		scrollTimer->setSingleShot(false);
+		connect(scrollTimer, &QTimer::timeout, this, &JSONScrollWidget::scrollTimerCallback);
+		scrollTimer->start();
+	}
+}
+void JSONScrollWidget::stopScrolling()	{
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << this;
+	
+	lock_guard<recursive_mutex>		tmpLock(itemLock);
+	if (scrollTimer != nullptr)	{
+		scrollTimer->stop();
+		delete scrollTimer;
+		scrollTimer = nullptr;
+	}
+}
 
 
 
@@ -200,34 +242,34 @@ void JSONScrollWidget::repopulateUI()	{
 		QWidget		*newWidget = nullptr;
 		QString		inputTypeString = input->value("TYPE").toString();
 		if (inputTypeString == "event")	{
-			newWidget = new JSONGUIInputEventWidget(input);
+			newWidget = new JSONGUIInputEventWidget(input, this);
 		}
 		else if (inputTypeString == "bool")	{
-			newWidget = new JSONGUIInputBoolWidget(input);
+			newWidget = new JSONGUIInputBoolWidget(input, this);
 		}
 		else if (inputTypeString == "long")	{
-			newWidget = new JSONGUIInputLongWidget(input);
+			newWidget = new JSONGUIInputLongWidget(input, this);
 		}
 		else if (inputTypeString == "float")	{
-			newWidget = new JSONGUIInputFloatWidget(input);
+			newWidget = new JSONGUIInputFloatWidget(input, this);
 		}
 		else if (inputTypeString == "point2D")	{
-			newWidget = new JSONGUIInputPoint2DWidget(input);
+			newWidget = new JSONGUIInputPoint2DWidget(input, this);
 		}
 		else if (inputTypeString == "color")	{
-			newWidget = new JSONGUIInputColorWidget(input);
+			newWidget = new JSONGUIInputColorWidget(input, this);
 		}
 		else if (inputTypeString == "cube")	{
 			//	intentionally blank, no UI should be shown?
 		}
 		else if (inputTypeString == "image")	{
-			newWidget = new JSONGUIInputImageWidget(input);
+			newWidget = new JSONGUIInputImageWidget(input, this);
 		}
 		else if (inputTypeString == "audio")	{
-			newWidget = new JSONGUIInputAudioWidget(input);
+			newWidget = new JSONGUIInputAudioWidget(input, this);
 		}
 		else if (inputTypeString == "audioFFT")	{
-			newWidget = new JSONGUIInputAudioFFTWidget(input);
+			newWidget = new JSONGUIInputAudioFFTWidget(input, this);
 		}
 		
 		if (newWidget == nullptr)
@@ -250,7 +292,7 @@ void JSONScrollWidget::repopulateUI()	{
 	for (const JGMPassRef & pass : passes)	{
 		if (pass == nullptr)
 			continue;
-		QWidget				*newWidget = new JSONGUIPassWidget(pass);
+		QWidget				*newWidget = new JSONGUIPassWidget(pass, this);
 		if (newWidget == nullptr)
 			continue;
 		QPointer<QWidget>	newWidgetPtr(newWidget);
@@ -265,6 +307,29 @@ void JSONScrollWidget::repopulateUI()	{
 		scrollLayout->addItem(spacerItem);
 	
 }
+
+
+void JSONScrollWidget::scrollTimerCallback()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	lock_guard<recursive_mutex>		tmpLock(itemLock);
+	switch (scrollDirection)	{
+	case Qt::TopEdge:
+		//qDebug() << "\tscrolling content up";
+		//scrollContentsBy(0, 50);
+		verticalScrollBar()->setValue( verticalScrollBar()->value() - 25 );
+		break;
+	case Qt::BottomEdge:
+		//qDebug() << "\tscrolling content down";
+		verticalScrollBar()->setValue( verticalScrollBar()->value() + 25 );
+		//scrollContentsBy(0, -50);
+		break;
+	default:
+		break;
+	}
+}
+
+
 int JSONScrollWidget::indexBasicInfo()	{
 	return 0;
 }
@@ -284,6 +349,37 @@ int JSONScrollWidget::indexPassByIndex(const int & n)	{
 	return 0;
 }
 
+
+/*
+bool JSONScrollWidget::eventFilter(QObject * watched, QEvent * event)	{
+	//return true;	//	'false' means "don't filter"
+	
+	if (!this->isAncestorOf(qobject_cast<QWidget*>(watched)))
+		return false;
+	
+	switch (event->type())	{
+	case QEvent::Paint:
+		return false;
+	
+	case QEvent::DragEnter:
+	case QEvent::DragLeave:
+	case QEvent::DragMove:
+	case QEvent::Drop:
+		qDebug() << __PRETTY_FUNCTION__;
+		qDebug() << "\twatched: " << watched;
+		qDebug() << "\tevent: " << event;
+		return false;
+	
+	default:
+		return false;
+	
+	//default:
+	//	return false;
+	}
+	
+	return false;
+}
+*/
 
 
 

@@ -177,6 +177,11 @@ void OutputWindow::widgetDrewItsFirstFrame()	{
 }
 */
 void OutputWindow::aboutToQuit()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	QSettings		settings;
+	settings.setValue("OutputWindowGeometry", saveGeometry());
+	
 	//	we want to clear all the rendering resources- if we don't, Qt will crash on quit, which is harmless but tacky and should be avoided
 	
 	//	set the global buffer pool to null

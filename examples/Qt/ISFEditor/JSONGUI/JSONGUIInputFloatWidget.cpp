@@ -10,8 +10,8 @@
 
 
 
-JSONGUIInputFloatWidget::JSONGUIInputFloatWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputFloatWidget::JSONGUIInputFloatWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputFloat)
 {
 	ui->setupUi(this);

@@ -18,7 +18,7 @@ class JSONGUIInputLongWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputLongWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputLongWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputLongWidget();
 	
 	virtual void prepareUIItems() override;

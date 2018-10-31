@@ -6,7 +6,6 @@
 #include <QLineEdit>
 #include <QDebug>
 
-#include "JSONScrollWidget.h"
 #include "JGMTop.h"
 #include "QLabelClickable.h"
 #include "QLabelDrag.h"
@@ -14,9 +13,10 @@
 
 
 
-JSONGUIInputWidget::JSONGUIInputWidget(const JGMInputRef & inInput, QWidget *parent) :
+JSONGUIInputWidget::JSONGUIInputWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent) :
 	QWidget(parent),
-	_input(inInput)
+	_input(inInput),
+	_parentScroll(inScrollWidget)
 {
 	setAcceptDrops(true);
 }
@@ -26,6 +26,38 @@ JSONGUIInputWidget::JSONGUIInputWidget(const JGMInputRef & inInput, QWidget *par
 
 void JSONGUIInputWidget::dragEnterEvent(QDragEnterEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	const QMimeData		*md = e->mimeData();
+	if (md==nullptr || !md->hasFormat("text/JGMInputDrag"))
+		return;
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget == nullptr)
+		return;
+	QPoint			localPoint = e->pos();
+	QPoint			globalPoint = mapToGlobal(localPoint);
+	QPoint			parentPoint = scrollWidget->mapFromGlobal(globalPoint);
+	//QPoint			parentPoint = mapToParent(localPoint);
+	QSize			parentSize = scrollWidget->frameSize();
+	if (parentPoint.y() < 50)	{
+		//qDebug() << "should be starting a drag";
+		//emit parentScrollShouldStartScrolling(Qt::TopEdge);
+		scrollWidget->startScrolling(Qt::TopEdge);
+		
+	}
+	else if ((parentSize.height()-parentPoint.y())<50)	{
+		//qDebug() << "should be starting a drag";
+		//emit parentScrollShouldStartScrolling(Qt::BottomEdge);
+		scrollWidget->startScrolling(Qt::BottomEdge);
+	}
+	else	{
+		scrollWidget->stopScrolling();
+		
+		QSize			mySize = frameSize();
+		_dropEdge = (localPoint.y() > parentSize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
+		update();
+		e->acceptProposedAction();
+	}
+	/*
 	const QMimeData		*md = e->mimeData();
 	if (md!=nullptr && md->hasFormat("text/JGMInputDrag"))	{
 		QPoint		tmpPoint = e->pos();
@@ -37,9 +69,48 @@ void JSONGUIInputWidget::dragEnterEvent(QDragEnterEvent * e)	{
 		update();
 		e->acceptProposedAction();
 	}
+	*/
 }
 void JSONGUIInputWidget::dragMoveEvent(QDragMoveEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget == nullptr)
+		return;
+	QPoint			localPoint = e->pos();
+	QPoint			globalPoint = mapToGlobal(localPoint);
+	QPoint			parentPoint = scrollWidget->mapFromGlobal(globalPoint);
+	//QPoint			parentPoint = mapToParent(localPoint);
+	QSize			parentSize = scrollWidget->viewport()->frameSize();
+	if (parentPoint.y() < 50)	{
+		//qDebug() << "should be continuing a drag";
+		//emit parentScrollShouldStartScrolling(Qt::TopEdge);
+		scrollWidget->startScrolling(Qt::TopEdge);
+	}
+	else if ((parentSize.height()-parentPoint.y())<50)	{
+		//qDebug() << "should be continuing a drag";
+		//emit parentScrollShouldStartScrolling(Qt::BottomEdge);
+		scrollWidget->startScrolling(Qt::BottomEdge);
+	}
+	else	{
+		scrollWidget->stopScrolling();
+		
+		bool			needsRedraw = false;
+		if (localPoint.y() > parentSize.height()/2)	{
+			if (_dropEdge != Qt::BottomEdge)
+				needsRedraw = true;
+			_dropEdge = Qt::BottomEdge;
+		}
+		else	{
+			if (_dropEdge != Qt::TopEdge)
+				needsRedraw = true;
+			_dropEdge = Qt::TopEdge;
+		}
+		if (needsRedraw)
+			update();
+		e->accept();
+	}
+	/*
 	QPoint		tmpPoint = e->pos();
 	QSize		tmpSize = frameSize();
 	if (tmpPoint.y() > tmpSize.height()/2)
@@ -48,12 +119,24 @@ void JSONGUIInputWidget::dragMoveEvent(QDragMoveEvent * e)	{
 		_dropEdge = Qt::TopEdge;
 	update();
 	e->accept();
+	*/
 }
 void JSONGUIInputWidget::dragLeaveEvent(QDragLeaveEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	//qDebug() << "should be stopping a drag on leave";
+	//emit parentScrollShouldStopScrolling();
+	scrollWidget->stopScrolling();
+	
 	_dropEdge = Qt::LeftEdge;
 	update();
 	e->accept();
+	/*
+	_dropEdge = Qt::LeftEdge;
+	update();
+	e->accept();
+	*/
 }
 void JSONGUIInputWidget::dropEvent(QDropEvent * e)	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -75,6 +158,12 @@ void JSONGUIInputWidget::dropEvent(QDropEvent * e)	{
 	JGMCInputArray		&inputsC = top->inputsContainer();
 	QVector<JGMInputRef>		&inputsV = inputsC.contents();
 	inputsV.move(srcIndex, dstIndex);
+	
+	//qDebug() << "should be stopping a drag on drop";
+	//emit parentScrollShouldStopScrolling();
+	JSONScrollWidget	*scrollWidget = _parentScroll.data();
+	if (scrollWidget != nullptr)
+		scrollWidget->stopScrolling();
 	
 	_dropEdge = Qt::LeftEdge;
 	update();

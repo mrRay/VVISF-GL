@@ -189,7 +189,7 @@ class VVGL_EXPORT GLContext	{
 		GLContext();
 		
 		//	no copy constructors!
-		//GLContext(const GLContext &) = delete;
+		GLContext(const GLContext &) = delete;
 		
 		
 	public:

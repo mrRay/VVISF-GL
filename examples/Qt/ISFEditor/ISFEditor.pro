@@ -85,7 +85,8 @@ SOURCES += \
     misc_classes/RemoteImageClient_Mac.cpp \
     misc_ui/ISFFileListView.cpp \
     misc_classes/LoadingWindowFileListModel.cpp \
-    JSONGUI/JSONGUIInputWidget.cpp
+    JSONGUI/JSONGUIInputWidget.cpp \
+    JSONGUI/JSONScrollEventFilter.cpp
 
 
 HEADERS += \
@@ -133,7 +134,8 @@ HEADERS += \
     misc_ui/ISFFileListView.h \
     misc_classes/LoadingWindowFileListModel.h \
     JSONGUI/JSONGUIInputWidget.h \
-    JSONGUI/QLabelDrag.h
+    JSONGUI/QLabelDrag.h \
+    JSONGUI/JSONScrollEventFilter.h
 
 # platform-specific classes
 mac	{

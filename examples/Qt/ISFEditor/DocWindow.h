@@ -40,6 +40,7 @@ public:
 	
 protected:
 	void closeEvent(QCloseEvent * event);
+	void appQuitEvent();
 	
 private:
 	Ui::DocWindow		*ui;

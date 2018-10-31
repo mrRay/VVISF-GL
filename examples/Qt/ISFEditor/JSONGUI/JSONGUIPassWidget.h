@@ -2,6 +2,7 @@
 #define JSONGUIPASSWIDGET_H
 
 #include <QWidget>
+#include <QPointer>
 class QLabel;
 class QComboBox;
 class QLineEdit;
@@ -9,6 +10,7 @@ class QLabelClickable;
 class QLabelDrag;
 
 #include "JGMObject.h"
+#include "JSONScrollWidget.h"
 
 
 
@@ -24,7 +26,8 @@ class JSONGUIPassWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIPassWidget(const JGMPassRef & inRef, QWidget *parent = nullptr);
+	//	my parent is the JSONScrollView that created me!
+	explicit JSONGUIPassWidget(const JGMPassRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIPassWidget();
 	
 	virtual void prepareUIItems();
@@ -60,6 +63,7 @@ private:
 	
 	JGMPassRef			_pass = nullptr;
 	Qt::Edge			_dropEdge = Qt::LeftEdge;
+	QPointer<JSONScrollWidget>		_parentScroll = nullptr;
 };
 
 

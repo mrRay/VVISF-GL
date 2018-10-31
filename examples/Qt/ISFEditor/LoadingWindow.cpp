@@ -89,7 +89,8 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	if (settings.contains("LoadingWindowGeometry"))	{
 		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
 	}
-	
+	//	save window position on app quit
+	connect(qApp, &QCoreApplication::aboutToQuit, this, &LoadingWindow::appQuitEvent);
 	
 	
 	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
@@ -163,6 +164,12 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	
 	//	bump the slot to populate the pop-up button with the list of sources.
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
+}
+void LoadingWindow::appQuitEvent()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	QSettings		settings;
+	settings.setValue("LoadingWindowGeometry", saveGeometry());
 }
 
 

@@ -4,8 +4,8 @@
 
 
 
-JSONGUIInputPoint2DWidget::JSONGUIInputPoint2DWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputPoint2DWidget::JSONGUIInputPoint2DWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputPoint2D)
 {
 	ui->setupUi(this);

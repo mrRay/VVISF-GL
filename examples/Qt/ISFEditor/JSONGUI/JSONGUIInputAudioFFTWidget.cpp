@@ -4,8 +4,8 @@
 
 
 
-JSONGUIInputAudioFFTWidget::JSONGUIInputAudioFFTWidget(const JGMInputRef & inRef, QWidget *parent) :
-	JSONGUIInputWidget(inRef, parent),
+JSONGUIInputAudioFFTWidget::JSONGUIInputAudioFFTWidget(const JGMInputRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent) :
+	JSONGUIInputWidget(inRef, inScrollWidget, parent),
 	ui(new Ui::JSONGUIInputAudioFFT)
 {
 	ui->setupUi(this);

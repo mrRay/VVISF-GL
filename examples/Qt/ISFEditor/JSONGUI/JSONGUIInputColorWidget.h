@@ -18,7 +18,7 @@ class JSONGUIInputColorWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputColorWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputColorWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputColorWidget();
 	
 	virtual void prepareUIItems() override;

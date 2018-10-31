@@ -129,6 +129,8 @@ DocWindow::DocWindow(QWidget *parent) :
 	if (settings.contains("DocWindowGeometry"))	{
 		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
 	}
+	//	save window position on app quit
+	connect(qApp, &QCoreApplication::aboutToQuit, this, &DocWindow::appQuitEvent);
 }
 DocWindow::~DocWindow()	{
 	delete ui;
@@ -522,6 +524,12 @@ void DocWindow::closeEvent(QCloseEvent * event)	{
 	settings.setValue("DocWindowGeometry", saveGeometry());
 	
 	QWidget::closeEvent(event);
+}
+void DocWindow::appQuitEvent()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	QSettings		settings;
+	settings.setValue("DocWindowGeometry", saveGeometry());
 }
 
 

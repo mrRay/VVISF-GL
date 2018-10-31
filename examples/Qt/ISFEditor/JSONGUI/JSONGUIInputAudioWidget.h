@@ -18,7 +18,7 @@ class JSONGUIInputAudioWidget : public JSONGUIInputWidget
 	Q_OBJECT
 
 public:
-	explicit JSONGUIInputAudioWidget(const JGMInputRef & inRef, QWidget *parent = nullptr);
+	explicit JSONGUIInputAudioWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputAudioWidget();
 	
 	virtual void prepareUIItems() override;
