@@ -68,6 +68,7 @@ GLBufferRef CreateBufferForSyphonClient(SyphonClient * c, const GLBufferPoolRef 
 	
 	//	set up the buffer i'm returning to use this callback when it's released- we'll free the SyphonImage in this callback
 	returnMe->backingReleaseCallback = [](GLBuffer& inBuffer, void* inReleaseContext)	{
+		Q_UNUSED(inBuffer);
 		SyphonImage		*tmpImg = (SyphonImage*)inReleaseContext;
 		if (tmpImg != nil)	{
 			[tmpImg release];

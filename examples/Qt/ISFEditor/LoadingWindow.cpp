@@ -311,6 +311,7 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 }
 void LoadingWindow::videoSourceChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	Q_UNUSED(arg1);
 	
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();
 	if (dvs != nullptr)	{
@@ -378,6 +379,7 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	if (selModel != nullptr)	{
 		//connect(selModel, &QItemSelectionModel::selectionChanged, this, &LoadingWindow::newFileSelected);
 		connect(selModel, &QItemSelectionModel::selectionChanged, [&](const QItemSelection &selected, const QItemSelection &deselected)	{
+			Q_UNUSED(deselected);
 			qDebug() << __FUNCTION__ << "->&QItemSelectionModel::selectionChanged";
 			QList<QModelIndex>		selectedIndexes = selected.indexes();
 			if (selectedIndexes.count() < 1)

@@ -90,7 +90,7 @@ InterAppVideoSource_Mac::InterAppVideoSource_Mac(QObject *parent) : VideoSource(
 						//	store a ref to the runloop
 						syphonThreadRunLoop = [NSRunLoop currentRunLoop];
 						//	add a one-year timer to the run loop, so it will run & pause when i tell the run loop to run
-						[NSTimer scheduledTimerWithTimeInterval:60.0*60.0*24.0*7.0*52.0 repeats:NO block:^(NSTimer *t) { }];
+						[NSTimer scheduledTimerWithTimeInterval:60.0*60.0*24.0*7.0*52.0 repeats:NO block:^(NSTimer *t) { Q_UNUSED(t); }];
 						
 						//	loop indefinitely, running the loop.  not very elegant, but this is a simple app.
 						while (1) { CFRunLoopRunInMode(kCFRunLoopDefaultMode, 2.0, false); }
@@ -122,6 +122,7 @@ InterAppVideoSource_Mac::InterAppVideoSource_Mac(QObject *parent) : VideoSource(
 				object:nil
 				queue:nil
 				usingBlock:^(NSNotification *note)	{
+					Q_UNUSED(note);
 					//	emit a signal indicating that the list of static sources has changed
 					emit staticSourceUpdated(this);
 				}];

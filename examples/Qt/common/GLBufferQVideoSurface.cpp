@@ -128,6 +128,7 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 //bool start(const QVideoSurfaceFormat & inFmt)	{ return true; }
 //void stop()	{ }
 QList<QVideoFrame::PixelFormat> GLBufferQVideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType inType) const	{
+	Q_UNUSED(inType);
 	QList<QVideoFrame::PixelFormat>		returnMe;
 	returnMe.append(QVideoFrame::Format_UYVY);
 	returnMe.append(QVideoFrame::Format_BGRA32);

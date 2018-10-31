@@ -115,6 +115,7 @@ void FinishLaunching()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
 	DynamicVideoSource		*dvs = new DynamicVideoSource();
+	Q_UNUSED(dvs);
 	OutputWindow		*ow = new OutputWindow();;
 	ow->show();
 	

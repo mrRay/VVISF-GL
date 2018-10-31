@@ -6,6 +6,7 @@
 InterAppVideoSource::InterAppVideoSource(QObject *parent) :
 	src()
 {
+	Q_UNUSED(parent);
 	QObject::connect(&src, &VideoSource::staticSourceUpdated, [&](VideoSource * n)	{
 		emit staticSourceUpdated(n);
 	});

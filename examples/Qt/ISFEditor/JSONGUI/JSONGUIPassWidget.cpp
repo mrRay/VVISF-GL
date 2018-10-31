@@ -2,6 +2,9 @@
 #include "ui_JSONGUIPassWidget.h"
 
 #include <QDebug>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include "JGMTop.h"
 #include "QLabelDrag.h"
 
@@ -85,7 +88,7 @@ void JSONGUIPassWidget::dragEnterEvent(QDragEnterEvent * e)	{
 		scrollWidget->stopScrolling();
 		
 		QSize			mySize = frameSize();
-		_dropEdge = (localPoint.y() > parentSize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
+		_dropEdge = (localPoint.y() > mySize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
 		update();
 		e->acceptProposedAction();
 	}
@@ -114,8 +117,9 @@ void JSONGUIPassWidget::dragMoveEvent(QDragMoveEvent * e)	{
 	else	{
 		scrollWidget->stopScrolling();
 		
+		QSize			mySize = frameSize();
 		bool			needsRedraw = false;
-		if (localPoint.y() > parentSize.height()/2)	{
+		if (localPoint.y() > mySize.height()/2)	{
 			if (_dropEdge != Qt::BottomEdge)
 				needsRedraw = true;
 			_dropEdge = Qt::BottomEdge;
@@ -187,6 +191,7 @@ void JSONGUIPassWidget::dropEvent(QDropEvent * e)	{
 
 void JSONGUIPassWidget::prepareDragLabel(QLabelDrag * dragLabel)	{
 	qDebug() << __PRETTY_FUNCTION__;
+	Q_UNUSED(dragLabel);
 	JGMTop		*top = _pass->top();
 	if (top != nullptr)	{
 		//	configure the drag label so it's "text/JGMPassDrag" and its data is the index of my pass
@@ -370,6 +375,7 @@ void JSONGUIPassWidget::refreshCustHeightEdit(QLineEdit * custHeightEdit)	{
 
 void JSONGUIPassWidget::paintEvent(QPaintEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	Q_UNUSED(e);
 	
 	QRect			bounds(QPoint(), frameSize());
 	QRect			drawRect;

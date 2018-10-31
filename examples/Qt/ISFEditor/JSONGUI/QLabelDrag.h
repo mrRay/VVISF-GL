@@ -16,6 +16,7 @@ public:
 	
 	void mousePressEvent(QMouseEvent * e)	{
 		qDebug() << __PRETTY_FUNCTION__;
+		Q_UNUSED(e);
 		
 		QDrag		*drag = new QDrag(this);
 		drag->setPixmap(this->parentWidget()->grab());
@@ -25,9 +26,10 @@ public:
 		//md->setData(mimeScrollType, QVariant().toByteArray());
 		drag->setMimeData(md);
 		
-		qDebug() << "\tbeginning drag...";
+		//qDebug() << "\tbeginning drag...";
 		Qt::DropAction		dropAction = drag->exec();
-		qDebug() << "\tdrag->exec() returned...";
+		//qDebug() << "\tdrag->exec() returned...";
+		Q_UNUSED(dropAction);
 	}
 	
 public:

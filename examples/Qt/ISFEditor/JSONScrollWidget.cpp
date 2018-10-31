@@ -337,15 +337,18 @@ int JSONScrollWidget::indexInputsGroupItem()	{
 	return 0;
 }
 int JSONScrollWidget::indexInputByIndex(const int & n)	{
+	Q_UNUSED(n);
 	return 0;
 }
 int JSONScrollWidget::indexInputByName(const std::string & n)	{
+	Q_UNUSED(n);
 	return 0;
 }
 int JSONScrollWidget::indexPassesGroupItem()	{
 	return 0;
 }
 int JSONScrollWidget::indexPassByIndex(const int & n)	{
+	Q_UNUSED(n);
 	return 0;
 }
 

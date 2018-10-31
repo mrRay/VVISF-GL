@@ -131,10 +131,12 @@ void OutputWindow::closeEvent(QCloseEvent * event)	{
 }
 
 void OutputWindow::on_freezeOutputToggle_stateChanged(int arg1)	{
+	Q_UNUSED(arg1);
 	freezeOutputFlag = ui->freezeOutputToggle->isChecked();
 }
 
 void OutputWindow::on_displayAlphaToggle_stateChanged(int arg1)	{
+	Q_UNUSED(arg1);
 	bool			newVal = ui->displayAlphaToggle->isChecked();
 	
 	ISFSceneRef		viewScene = ui->bufferView->getScene();

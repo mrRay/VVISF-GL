@@ -20,7 +20,9 @@ void ImgVideoSource::stop()	{
 	VideoSource::stop();
 }
 bool ImgVideoSource::playingBackItem(const MediaFile & n)	{
+	Q_UNUSED(n);
 	return false;
 }
 void ImgVideoSource::loadFile(const MediaFile & n)	{
+	Q_UNUSED(n);
 }

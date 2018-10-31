@@ -2295,7 +2295,7 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	}
 	
 	//	make sure the frame has at least the min number of bytes required for an image of its type and format
-	if (newFrame->mappedBytes() < desc.backingLengthForSize(imgSize))	{
+	if (newFrame->mappedBytes() < int(desc.backingLengthForSize(imgSize)))	{
 		cout << "\tERR: frame does not contain enough bytes for reported format/dimensions\n";
 		cout << "\tdims are " << imgSize << ", target size is " << desc.backingLengthForSize(imgSize) << ", mapped size is " << newFrame->mappedBytes() << endl;
 		newFrame->unmap();

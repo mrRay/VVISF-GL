@@ -131,6 +131,7 @@ void DynamicVideoSource::stopSources()	{
 
 
 void DynamicVideoSource::staticSourceUpdated(VideoSource * inSrc)	{
+	Q_UNUSED(inSrc);
 	emit listOfStaticSourcesUpdated(this);
 }
 void DynamicVideoSource::aboutToQuit()	{

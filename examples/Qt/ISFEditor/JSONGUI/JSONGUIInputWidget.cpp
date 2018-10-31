@@ -53,7 +53,7 @@ void JSONGUIInputWidget::dragEnterEvent(QDragEnterEvent * e)	{
 		scrollWidget->stopScrolling();
 		
 		QSize			mySize = frameSize();
-		_dropEdge = (localPoint.y() > parentSize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
+		_dropEdge = (localPoint.y() > mySize.height()/2) ? Qt::BottomEdge : Qt::TopEdge;
 		update();
 		e->acceptProposedAction();
 	}
@@ -95,8 +95,9 @@ void JSONGUIInputWidget::dragMoveEvent(QDragMoveEvent * e)	{
 	else	{
 		scrollWidget->stopScrolling();
 		
+		QSize			mySize = frameSize();
 		bool			needsRedraw = false;
-		if (localPoint.y() > parentSize.height()/2)	{
+		if (localPoint.y() > mySize.height()/2)	{
 			if (_dropEdge != Qt::BottomEdge)
 				needsRedraw = true;
 			_dropEdge = Qt::BottomEdge;
@@ -175,6 +176,7 @@ void JSONGUIInputWidget::dropEvent(QDropEvent * e)	{
 }
 void JSONGUIInputWidget::paintEvent(QPaintEvent * e)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	Q_UNUSED(e);
 	
 	QRect			bounds(QPoint(), frameSize());
 	QRect			drawRect;

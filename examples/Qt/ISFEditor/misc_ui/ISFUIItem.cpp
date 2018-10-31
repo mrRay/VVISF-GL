@@ -209,6 +209,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			
 			//	configure the video source to repopulate the combo box when its list of static sources gets udpated
 			connect(interAppSrc, &VideoSource::staticSourceUpdated, [&](VideoSource * n)	{
+				Q_UNUSED(n);
 				if (interAppVideoCB == nullptr)
 					return;
 				
@@ -261,6 +262,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			
 			//	configure the combo box to tell the video source to load a new file when its selection changes
 			connect(interAppVideoCB, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int newIndex)	{
+				Q_UNUSED(newIndex);
 				MediaFile		selectedMediaFile = interAppVideoCB->currentData().value<MediaFile>();
 				interAppSrc->loadFile(selectedMediaFile);
 				interAppBuffer = nullptr;
@@ -317,8 +319,10 @@ void ISFUIItem::pointWidgetUsed()	{
 	}
 }
 void ISFUIItem::interAppVideoCBUsed(int newIndex)	{
+	Q_UNUSED(newIndex);
 }
 void ISFUIItem::audioCBUsed(int newIndex)	{
+	Q_UNUSED(newIndex);
 	qDebug() << __PRETTY_FUNCTION__;
 }
 

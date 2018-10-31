@@ -278,6 +278,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 
 void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	Q_UNUSED(n);
 	
 	OutputWindow		*ow = GetOutputWindow();
 	if (ow == nullptr)
@@ -465,6 +466,7 @@ void ISFController::populateLoadingWindowUI()	{
 	}
 }
 void ISFController::pushNormalizedMouseClickToPoints(const Size & inSize)	{
+	Q_UNUSED(inSize);
 }
 void ISFController::reloadTargetFile()	{
 }

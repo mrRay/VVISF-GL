@@ -52,6 +52,7 @@ bool LoadingWindowFileListModel::canDropMimeData(const QMimeData *data, Qt::Drop
 	Q_UNUSED(action);
 	Q_UNUSED(row);
 	Q_UNUSED(parent);
+	Q_UNUSED(column);
 
 	if (!data->hasFormat("text/uri-list"))
 		return false;
