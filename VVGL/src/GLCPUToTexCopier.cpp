@@ -205,10 +205,20 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 		//	create a PBO and a texture for the CPU buffer
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
-			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
+			else	{
+				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_BGRA:
-			texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				texBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
+			else	{
+				texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
 			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
@@ -239,28 +249,56 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 	GLBufferRef		pboBuffer = nullptr;
 	switch (inCPUBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_RGBA:
-		pboBuffer = CreateRGBAPBO(
-			GLBuffer::Target_PBOUnpack,
-			GL_STREAM_DRAW,
-			cpuBufferDims,
+		if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+			pboBuffer = CreateRGBAFloatPBO(
+				GLBuffer::Target_PBOUnpack,
+				GL_STREAM_DRAW,
+				cpuBufferDims,
 #if PATHTYPE==0
-			inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
 #elif PATHTYPE==1
-			NULL,	//	this will delete-initialize the buffer
+				NULL,	//	this will delete-initialize the buffer
 #endif
-			createInCurrentContext);
+				createInCurrentContext);
+		}
+		else	{
+			pboBuffer = CreateRGBAPBO(
+				GLBuffer::Target_PBOUnpack,
+				GL_STREAM_DRAW,
+				cpuBufferDims,
+#if PATHTYPE==0
+				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+				NULL,	//	this will delete-initialize the buffer
+#endif
+				createInCurrentContext);
+		}
 		break;
 	case GLBuffer::PF_BGRA:
-		pboBuffer = CreateBGRAPBO(
-			GLBuffer::Target_PBOUnpack,
-			GL_STREAM_DRAW,
-			cpuBufferDims,
+		if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+			pboBuffer = CreateBGRAFloatPBO(
+				GLBuffer::Target_PBOUnpack,
+				GL_STREAM_DRAW,
+				cpuBufferDims,
 #if PATHTYPE==0
-			inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
 #elif PATHTYPE==1
-			NULL,	//	this will delete-initialize the buffer
+				NULL,	//	this will delete-initialize the buffer
 #endif
-			createInCurrentContext);
+				createInCurrentContext);
+		}
+		else	{
+			pboBuffer = CreateBGRAPBO(
+				GLBuffer::Target_PBOUnpack,
+				GL_STREAM_DRAW,
+				cpuBufferDims,
+#if PATHTYPE==0
+				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+				NULL,	//	this will delete-initialize the buffer
+#endif
+				createInCurrentContext);
+		}
 		break;
 	case GLBuffer::PF_YCbCr_422:
 		pboBuffer = CreateYCbCrPBO(
@@ -316,10 +354,20 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	if (safeToPush)	{
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
-			inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
+			else	{
+				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_BGRA:
-			inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				inTexBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
+			else	{
+				inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
 			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, createInCurrentContext);
@@ -372,28 +420,56 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	if (safeToPush)	{
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
-			inPBOBuffer = CreateRGBAPBO(
-				GLBuffer::Target_PBOUnpack,
-				GL_STREAM_DRAW,
-				cpuBufferDims,
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				inPBOBuffer = CreateRGBAFloatPBO(
+					GLBuffer::Target_PBOUnpack,
+					GL_STREAM_DRAW,
+					cpuBufferDims,
 #if PATHTYPE==0
-				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+					inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
 #elif PATHTYPE==1
-				NULL,	//	this will delete-initialize the buffer
+					NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+					createInCurrentContext);
+			}
+			else	{
+				inPBOBuffer = CreateRGBAPBO(
+					GLBuffer::Target_PBOUnpack,
+					GL_STREAM_DRAW,
+					cpuBufferDims,
+#if PATHTYPE==0
+					inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+					NULL,	//	this will delete-initialize the buffer
+#endif
+					createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_BGRA:
-			inPBOBuffer = CreateBGRAPBO(
-				GLBuffer::Target_PBOUnpack,
-				GL_STREAM_DRAW,
-				cpuBufferDims,
+			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+				inPBOBuffer = CreateBGRAFloatPBO(
+					GLBuffer::Target_PBOUnpack,
+					GL_STREAM_DRAW,
+					cpuBufferDims,
 #if PATHTYPE==0
-				inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+					inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
 #elif PATHTYPE==1
-				NULL,	//	this will delete-initialize the buffer
+					NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+					createInCurrentContext);
+			}
+			else	{
+				inPBOBuffer = CreateBGRAPBO(
+					GLBuffer::Target_PBOUnpack,
+					GL_STREAM_DRAW,
+					cpuBufferDims,
+#if PATHTYPE==0
+					inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+					NULL,	//	this will delete-initialize the buffer
+#endif
+					createInCurrentContext);
+			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
 			inPBOBuffer = CreateYCbCrPBO(

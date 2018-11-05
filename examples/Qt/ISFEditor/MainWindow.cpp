@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "ISFGLBufferQWidget.h"
+#include "AudioController.h"
 #include "OutputWindow.h"
 #include "DynamicVideoSource.h"
 #include "ISFController.h"
@@ -116,6 +117,9 @@ void FinishLaunching()	{
 	
 	DynamicVideoSource		*dvs = new DynamicVideoSource();
 	Q_UNUSED(dvs);
+	
+	GetAudioController();
+	
 	OutputWindow		*ow = new OutputWindow();;
 	ow->show();
 	

@@ -7,6 +7,8 @@
 #include <QColorDialog>
 #include <QTimer>
 
+#include "AudioController.h"
+
 
 
 
@@ -15,6 +17,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	
 	_name = QString::fromStdString(inAttr->name());
 	type = inAttr->type();
+	attr = inAttr;
 	
 	string		tmpLabel = inAttr->label();
 	if (tmpLabel.length() < 1)
@@ -367,7 +370,22 @@ ISFVal ISFUIItem::getISFVal()	{
 		}
 		break;
 	case ISFValType_Cube:
+		break;
 	case ISFValType_Audio:
+		{
+			AudioController		*ac = GetAudioController();
+			if (ac != nullptr)	{
+				int					maxVal = 0;
+				if (attr != nullptr)	{
+					ISFVal				tmpVal = attr->maxVal();
+					if (!tmpVal.isNullVal())
+						maxVal = tmpVal.getLongVal();
+				}
+				
+				return ISFImageVal(ac->getAudioImageBuffer(maxVal));
+			}
+		}
+		break;
 	case ISFValType_AudioFFT:
 		break;
 	}

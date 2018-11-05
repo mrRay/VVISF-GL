@@ -15,6 +15,7 @@
 #include "DocWindow.h"
 #include "OutputWindow.h"
 #include "DynamicVideoSource.h"
+#include "AudioController.h"
 
 
 
@@ -62,6 +63,7 @@ ISFController::~ISFController()	{
 void ISFController::aboutToQuit()	{
 	std::lock_guard<std::recursive_mutex>		tmpLock(sceneLock);
 	scene = nullptr;
+	currentDoc = nullptr;
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
 	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
@@ -82,6 +84,9 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	
 	sceneVertErrors.clear();
 	sceneFragErrors.clear();
+	
+	//	make a doc for the file
+	currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), nullptr, false);;
 	
 	//	start watching the file- reload the file if it changes...
 	if (sceneFileWatcher != nullptr)
@@ -283,6 +288,12 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	OutputWindow		*ow = GetOutputWindow();
 	if (ow == nullptr)
 		return;
+	
+	//	do audio processing!
+	AudioController			*ac = GetAudioController();
+	if (ac == nullptr)
+		return;
+	ac->updateAudioResults();
 	
 	//	get a "source buffer" from the dynamic video source
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();

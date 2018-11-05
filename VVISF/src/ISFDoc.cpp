@@ -31,18 +31,19 @@ using namespace VVGL;
 #pragma mark --------------------- constructor/destructor
 
 
-ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene)	{
+ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene, const bool & throwExcept)	{
 	_parentScene = inParentScene;
 	
 	_path = new string("");
 	_name = new string("");
+	_throwExcept = throwExcept;
 	
 	_initWithRawFragShaderString(inFSContents);
 	
 	//_vertShaderSource = new string(ISFVertPassthru_GL2);
 	_vertShaderSource = new string(inVSContents);
 }
-ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
+ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene, const bool & throwExcept) noexcept(false)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//cout << "\t" << inPath << endl;
 	
@@ -51,6 +52,7 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	//	set the local path and name variables
 	_path = new string(inPath);
 	_name = new string(LastPathComponent(inPath));
+	_throwExcept = throwExcept;
 	//cout << "\tpath is " << *_path << endl;
 	//cout << "\tname is " << *_name << endl;
 	
@@ -58,8 +60,12 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	//	read the passed file into a string
 	ifstream		fin;
 	fin.open(inPath);
-	if (!fin.is_open())
-		throw ISFErr(ISFErrType_MissingResource, "cannot create ISFDoc from passed path", inPath);
+	if (!fin.is_open())	{
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MissingResource, "cannot create ISFDoc from passed path", inPath);
+		else
+			return;
+	}
 	string			rawFile( static_cast<stringstream const &>(stringstream() << fin.rdbuf()).str() );
 	fin.close();
 	/*
@@ -68,12 +74,8 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 	cout << rawFile << endl;
 	cout << "**************************" << endl;
 	*/
-	
-	
-	//	call the init method with the contents of the file we read in
-	_initWithRawFragShaderString(rawFile);
-	
-	
+
+
 	//	look for a vert shader that matches the name of the frag shader
 	string			noExtPath = StringByDeletingExtension(inPath);
 	string			tmpPath;
@@ -91,6 +93,10 @@ ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene) throw(ISFErr)	{
 		_vertShaderSource = new string( static_cast<stringstream const &>(stringstream() << fin.rdbuf()).str() );
 		fin.close();
 	}
+	
+	
+	//	call the init method with the contents of the file we read in
+	_initWithRawFragShaderString(rawFile);
 }
 ISFDoc::~ISFDoc()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -350,13 +356,21 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	//cout << __PRETTY_FUNCTION__ << ", vers is " << inGLVers << endl;
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
-	if (outFragSrc==nullptr || outVertSrc==nullptr || _vertShaderSource==nullptr || _fragShaderSource==nullptr)
-		throw ISFErr(ISFErrType_ErrorParsingFS, "Preflight failed", __PRETTY_FUNCTION__);
+	if (outFragSrc==nullptr || outVertSrc==nullptr || _vertShaderSource==nullptr || _fragShaderSource==nullptr)	{
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_ErrorParsingFS, "Preflight failed", __PRETTY_FUNCTION__);
+		else
+			return false;
+	}
 	//	assemble the variable declarations
 	string		vsVarDeclarations = string("");
 	string		fsVarDeclarations = string("");
-	if (!_assembleShaderSource_VarDeclarations(&vsVarDeclarations, &fsVarDeclarations, inGLVers, inVarsAsUBO))
-		throw ISFErr(ISFErrType_ErrorParsingFS, "Var Dec failed", __PRETTY_FUNCTION__);
+	if (!_assembleShaderSource_VarDeclarations(&vsVarDeclarations, &fsVarDeclarations, inGLVers, inVarsAsUBO))	{
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_ErrorParsingFS, "Var Dec failed", __PRETTY_FUNCTION__);
+		else
+			return false;
+	}
 	//cout << "vs var declarations:\n*******************\n" << vsVarDeclarations << "*******************\n";
 	//cout << "fs var declarations:\n*******************\n" << fsVarDeclarations << "*******************\n";
 	
@@ -462,7 +476,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -509,7 +524,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -556,7 +572,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -622,7 +639,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -687,7 +705,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
 				}
 				else	{
 					string &		samplerName = varArray[0];
@@ -884,7 +903,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -931,7 +951,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
 				}
 				else	{
 					string			newFuncString("");
@@ -978,7 +999,8 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
-					throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+					if (_throwExcept)
+						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
 				}
 				else	{
 					string &		samplerName = varArray[0];
@@ -1113,7 +1135,10 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	auto			openCommentIndex = inRawFile.find("/*");
 	auto			closeCommentIndex = inRawFile.find("*/");
 	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
-		throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *_path);
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *_path);
+		else
+			return;
 	}
 	//	we need to advance 'closeCommentLineEnd' to include both the full "close comment" as well as the next "line break"
 	auto			tmpIt = inRawFile.begin();
@@ -1129,21 +1154,34 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	
 	//	parse the JSON blob, turning it into objects we can parse programmatically
 	json			jblob;
+	bool			caughtJSONException = false;
 	try	{
 		jblob = json::parse(*_jsonString);
 	}
 	catch (std::invalid_argument&)	{
-		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		caughtJSONException = true;
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
 	}
 	catch (const std::exception& /*ex*/) {
-		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		caughtJSONException = true;
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
 	}
 	catch (const std::string& /*ex*/) {
-		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		caughtJSONException = true;
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
 	}
 	catch (...) {
-		throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		caughtJSONException = true;
+		if (_throwExcept)
+			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
 	}
+	//	if i caught an exception parsing the basic JSON, we can't do anything further
+	if (caughtJSONException)
+		return;
+	
 	
 	//	parse the description
 	auto			anObj = jblob.value("DESCRIPTION",json());
@@ -1297,43 +1335,63 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (!cubeFlagJ.is_null())	{
 					//	the PATH var should have an array of strings with the paths to the six files...
 					json			partialPathsJ = importDict.value("PATH",json());
-					if (partialPathsJ.is_null() || !partialPathsJ.is_array())
-						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", *_path);
-					//	assemble an array with the full paths to the files
-					vector<string>		fullPaths(0);
-					for (auto it=partialPathsJ.begin(); it!=partialPathsJ.end(); ++it)	{
-						json		tmpPath = it.value();
-						if (!tmpPath.is_string())
-							throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", *_path);
-						fullPaths.emplace_back(FmtString("%s/%s",parentDirectory.c_str(),tmpPath.get<string>().c_str()));
+					if (partialPathsJ.is_null() || !partialPathsJ.is_array())	{
+						if (_throwExcept)
+							throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", *_path);
 					}
-					//	make a cube texture from the array of paths
-					importedBuffer = CreateCubeTexFromImagePaths(fullPaths);
-					if (importedBuffer == nullptr)
-						throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", *_path);
-					//	make an attrib from the import and store it
-					//ISFAttr		newAttrib(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
-					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Cube, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					_imageImports.emplace_back(newAttribRef);
+					else	{
+						//	assemble an array with the full paths to the files
+						vector<string>		fullPaths(0);
+						for (auto it=partialPathsJ.begin(); it!=partialPathsJ.end(); ++it)	{
+							json		tmpPath = it.value();
+							if (!tmpPath.is_string())	{
+								if (_throwExcept)
+									throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", *_path);
+							}
+							else	{
+								fullPaths.emplace_back(FmtString("%s/%s",parentDirectory.c_str(),tmpPath.get<string>().c_str()));
+							}
+						}
+						//	make a cube texture from the array of paths
+						importedBuffer = CreateCubeTexFromImagePaths(fullPaths);
+						if (importedBuffer == nullptr)	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", *_path);
+						}
+						else	{
+							//	make an attrib from the import and store it
+							//ISFAttr		newAttrib(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+							//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
+							ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), string(""), string(""), ISFValType_Cube, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+							_imageImports.emplace_back(newAttribRef);
+						}
+					}
 				}
 				//	else it's just a normal image
 				else	{
 					//	if the PATH entry isn't a string, throw an error
 					json			partialPathJ = importDict.value("PATH",json());
-					if (partialPathJ.is_null() || !partialPathJ.is_string())
-						throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *_path);
-					//	get the full path to the image we need to import
-					string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
-					//	import the image to an GLBufferRef
-					importedBuffer = CreateTexFromImage(fullPath);
-					if (importedBuffer == nullptr)
-						throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
-					//	make an attrib for the import and store it
-					//ISFAttr		newAttrib(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
-					ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
-					_imageImports.emplace_back(newAttribRef);
+					if (partialPathJ.is_null() || !partialPathJ.is_string())	{
+						if (_throwExcept)
+							throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *_path);
+					}
+					else	{
+						//	get the full path to the image we need to import
+						string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
+						//	import the image to an GLBufferRef
+						importedBuffer = CreateTexFromImage(fullPath);
+						if (importedBuffer == nullptr)	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
+						}
+						else	{
+							//	make an attrib for the import and store it
+							//ISFAttr		newAttrib(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+							//ISFAttrRef	newAttribRef = make_shared<ISFAttr>(newAttrib);
+							ISFAttrRef	newAttribRef = make_shared<ISFAttr>(samplerNameJ.get<string>(), fullPath, string(""), ISFValType_Image, ISFNullVal(), ISFNullVal(), ISFImageVal(importedBuffer), ISFNullVal(), nullptr, nullptr);
+							_imageImports.emplace_back(newAttribRef);
+						}
+					}
 				}
 			}
 			
@@ -1366,135 +1424,139 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	//	parse the PASSES array of dictionaries describing the various passes (which may need temp buffers)
 	anObj = jblob.value("PASSES",json());
 	if (!anObj.is_null())	{
-		if (!anObj.is_array())
-			throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", *_path);
-		for (auto passIt = anObj.begin(); passIt != anObj.end(); ++passIt)	{
-			json		rawPassDict = passIt.value();
-			//	make a new render pass and populate it from the raw pass dict
-			//ISFRenderPass			newPass = ISFRenderPass();
-			json				passTarget = rawPassDict.value("TARGET",json());
-			if (passTarget.is_string())	{
-				string				tmpBufferName = passTarget.get<string>();
-				//newPass.targetName = tmpBufferName;
-				//newPass.setTargetName(tmpBufferName);
-				//	find the target buffer for this pass- first check the persistent buffers
-				ISFPassTargetRef		targetBuffer = persistentPassTargetForKey(tmpBufferName);
-				//	if i couldn't find a persistent buffer...
-				if (targetBuffer == nullptr)	{
-					//	create a new target buffer, set its name
-					targetBuffer = ISFPassTarget::Create(tmpBufferName, this);
-					//	check for PERSISTENT flag as per the ISF 2.0 spec
-					json				persistentObj = rawPassDict.value("PERSISTENT",json());
-					ISFVal				persistentVal = ISFNullVal();
-					if (persistentObj.is_string())	{
-						persistentVal = ParseStringAsBool(persistentObj);
-						//if (persistentVal.type() == ISFValType_None)
-							//persistentVal = ISFValByEvaluatingString(persistentObj);
+		if (!anObj.is_array())	{
+			if (_throwExcept)
+				throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", *_path);
+		}
+		else	{
+			for (auto passIt = anObj.begin(); passIt != anObj.end(); ++passIt)	{
+				json		rawPassDict = passIt.value();
+				//	make a new render pass and populate it from the raw pass dict
+				//ISFRenderPass			newPass = ISFRenderPass();
+				json				passTarget = rawPassDict.value("TARGET",json());
+				if (passTarget.is_string())	{
+					string				tmpBufferName = passTarget.get<string>();
+					//newPass.targetName = tmpBufferName;
+					//newPass.setTargetName(tmpBufferName);
+					//	find the target buffer for this pass- first check the persistent buffers
+					ISFPassTargetRef		targetBuffer = persistentPassTargetForKey(tmpBufferName);
+					//	if i couldn't find a persistent buffer...
+					if (targetBuffer == nullptr)	{
+						//	create a new target buffer, set its name
+						targetBuffer = ISFPassTarget::Create(tmpBufferName, this);
+						//	check for PERSISTENT flag as per the ISF 2.0 spec
+						json				persistentObj = rawPassDict.value("PERSISTENT",json());
+						ISFVal				persistentVal = ISFNullVal();
+						if (persistentObj.is_string())	{
+							persistentVal = ParseStringAsBool(persistentObj);
+							//if (persistentVal.type() == ISFValType_None)
+								//persistentVal = ISFValByEvaluatingString(persistentObj);
+						}
+						else if (persistentObj.is_boolean())
+							persistentVal = ISFBoolVal(persistentObj.get<bool>());
+						else if (persistentObj.is_number())
+							persistentVal = ISFFloatVal(persistentObj.get<double>());
+						//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
+						if (persistentVal.getDoubleVal() > 0.)
+							_persistentPassTargets.push_back(targetBuffer);
+						//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
+						else
+							_tempPassTargets.push_back(targetBuffer);
 					}
-					else if (persistentObj.is_boolean())
-						persistentVal = ISFBoolVal(persistentObj.get<bool>());
-					else if (persistentObj.is_number())
-						persistentVal = ISFFloatVal(persistentObj.get<double>());
-					//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
-					if (persistentVal.getDoubleVal() > 0.)
-						_persistentPassTargets.push_back(targetBuffer);
-					//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
-					else
-						_tempPassTargets.push_back(targetBuffer);
-				}
 				
-				//	update the width/height stuff for the target buffer
-				json		tmpObj;
-				tmpObj = rawPassDict.value("WIDTH",json());
-				if (tmpObj != nullptr)	{
-					switch (tmpObj.type())	{
-					case json::value_t::null:
-					case json::value_t::object:
-					case json::value_t::array:
-					case json::value_t::boolean:
-					case json::value_t::discarded:
-					case json::value_t::string:
-						{
-						string			tmpString = tmpObj.get<string>();
-						FindAndReplaceInPlace("$", "", tmpString);
-						targetBuffer->setTargetWidthString(tmpString);
+					//	update the width/height stuff for the target buffer
+					json		tmpObj;
+					tmpObj = rawPassDict.value("WIDTH",json());
+					if (tmpObj != nullptr)	{
+						switch (tmpObj.type())	{
+						case json::value_t::null:
+						case json::value_t::object:
+						case json::value_t::array:
+						case json::value_t::boolean:
+						case json::value_t::discarded:
+						case json::value_t::string:
+							{
+							string			tmpString = tmpObj.get<string>();
+							FindAndReplaceInPlace("$", "", tmpString);
+							targetBuffer->setTargetWidthString(tmpString);
+							}
+							break;
+						case json::value_t::number_integer:
+							{
+							int				tmpVal = tmpObj.get<int>();
+							targetBuffer->setTargetWidthString(FmtString("%d",tmpVal));
+							}
+							break;
+						case json::value_t::number_unsigned:
+							{
+							unsigned long	tmpVal = tmpObj.get<unsigned long>();
+							targetBuffer->setTargetWidthString(FmtString("%ld",tmpVal));
+							}
+							break;
+						case json::value_t::number_float:
+							{
+							double			tmpVal = tmpObj.get<float>();
+							targetBuffer->setTargetWidthString(FmtString("%f",tmpVal));
+							}
+							break;
 						}
-						break;
-					case json::value_t::number_integer:
-						{
-						int				tmpVal = tmpObj.get<int>();
-						targetBuffer->setTargetWidthString(FmtString("%d",tmpVal));
-						}
-						break;
-					case json::value_t::number_unsigned:
-						{
-						unsigned long	tmpVal = tmpObj.get<unsigned long>();
-						targetBuffer->setTargetWidthString(FmtString("%ld",tmpVal));
-						}
-						break;
-					case json::value_t::number_float:
-						{
-						double			tmpVal = tmpObj.get<float>();
-						targetBuffer->setTargetWidthString(FmtString("%f",tmpVal));
-						}
-						break;
 					}
-				}
-				tmpObj = rawPassDict.value("HEIGHT",json());
-				if (tmpObj != nullptr)	{
-					switch (tmpObj.type())	{
-					case json::value_t::null:
-					case json::value_t::object:
-					case json::value_t::array:
-					case json::value_t::boolean:
-					case json::value_t::discarded:
-					case json::value_t::string:
-						{
-						string			tmpString = tmpObj.get<string>();
-						FindAndReplaceInPlace("$", "", tmpString);
-						targetBuffer->setTargetHeightString(tmpString);
+					tmpObj = rawPassDict.value("HEIGHT",json());
+					if (tmpObj != nullptr)	{
+						switch (tmpObj.type())	{
+						case json::value_t::null:
+						case json::value_t::object:
+						case json::value_t::array:
+						case json::value_t::boolean:
+						case json::value_t::discarded:
+						case json::value_t::string:
+							{
+							string			tmpString = tmpObj.get<string>();
+							FindAndReplaceInPlace("$", "", tmpString);
+							targetBuffer->setTargetHeightString(tmpString);
+							}
+							break;
+						case json::value_t::number_integer:
+							{
+							int				tmpVal = tmpObj.get<int>();
+							targetBuffer->setTargetHeightString(FmtString("%d",tmpVal));
+							}
+							break;
+						case json::value_t::number_unsigned:
+							{
+							unsigned long	tmpVal = tmpObj.get<unsigned long>();
+							targetBuffer->setTargetHeightString(FmtString("%ld",tmpVal));
+							}
+							break;
+						case json::value_t::number_float:
+							{
+							double			tmpVal = tmpObj.get<float>();
+							targetBuffer->setTargetHeightString(FmtString("%f",tmpVal));
+							}
+							break;
 						}
-						break;
-					case json::value_t::number_integer:
-						{
-						int				tmpVal = tmpObj.get<int>();
-						targetBuffer->setTargetHeightString(FmtString("%d",tmpVal));
-						}
-						break;
-					case json::value_t::number_unsigned:
-						{
-						unsigned long	tmpVal = tmpObj.get<unsigned long>();
-						targetBuffer->setTargetHeightString(FmtString("%ld",tmpVal));
-						}
-						break;
-					case json::value_t::number_float:
-						{
-						double			tmpVal = tmpObj.get<float>();
-						targetBuffer->setTargetHeightString(FmtString("%f",tmpVal));
-						}
-						break;
 					}
-				}
 				
-				//	update the float flag for the target buffer
-				json		tmpFloatFlag = rawPassDict.value("FLOAT",json());
-				ISFVal		tmpFloatVal = ISFNullVal();
-				if (tmpFloatFlag.is_string())	{
-					tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
-					//if (tmpFloatVal.type() == ISFValType_None)
-						//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
+					//	update the float flag for the target buffer
+					json		tmpFloatFlag = rawPassDict.value("FLOAT",json());
+					ISFVal		tmpFloatVal = ISFNullVal();
+					if (tmpFloatFlag.is_string())	{
+						tmpFloatVal = ParseStringAsBool(tmpFloatFlag);
+						//if (tmpFloatVal.type() == ISFValType_None)
+							//tmpFloatVal = ISFValByEvaluatingString(tmpFloatFlag);
+					}
+					else if (tmpFloatFlag.is_boolean())
+						tmpFloatVal = ISFBoolVal(tmpFloatFlag.get<bool>());
+					else if (tmpFloatFlag.is_number())
+						tmpFloatVal = ISFBoolVal( (tmpFloatFlag.get<double>()>0.) ? true : false );
+					targetBuffer->setFloatFlag( (tmpFloatVal.getDoubleVal()>0.) ? true : false );
+					//	add the new render pass to the array of render passes
+					_renderPasses.emplace_back(tmpBufferName);
 				}
-				else if (tmpFloatFlag.is_boolean())
-					tmpFloatVal = ISFBoolVal(tmpFloatFlag.get<bool>());
-				else if (tmpFloatFlag.is_number())
-					tmpFloatVal = ISFBoolVal( (tmpFloatFlag.get<double>()>0.) ? true : false );
-				targetBuffer->setFloatFlag( (tmpFloatVal.getDoubleVal()>0.) ? true : false );
-				//	add the new render pass to the array of render passes
-				_renderPasses.emplace_back(tmpBufferName);
-			}
-			else	{
-				//	add an empty render pass to the array of render passes
-				_renderPasses.emplace_back("");
+				else	{
+					//	add an empty render pass to the array of render passes
+					_renderPasses.emplace_back("");
+				}
 			}
 		}
 	}
@@ -1639,15 +1701,23 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (!valArrayJ.is_null() && !labelArrayJ.is_null() && valArrayJ.size()==labelArrayJ.size())	{
 					for (auto it=valArrayJ.begin(); it!=valArrayJ.end(); ++it)	{
 						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", *_path);
-						valArray.push_back(val.get<int32_t>());
+						if (!val.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", *_path);
+						}
+						else	{
+							valArray.push_back(val.get<int32_t>());
+						}
 					}
 					for (auto it=labelArrayJ.begin(); it!=labelArrayJ.end(); ++it)	{
 						json &		label = it.value();
-						if (!label.is_string())
-							throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", *_path);
-						labelArray.push_back(label.get<string>());
+						if (!label.is_string())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", *_path);
+						}
+						else	{
+							labelArray.push_back(label.get<string>());
+						}
 					}
 				}
 				//	else i couldn't find the values/labels arrays- look for MIN/MAX keys
@@ -1691,10 +1761,14 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					int			i;
 					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
 						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", *_path);
-						//defVal.val.colorVal[i] = val.get<double>();
-						defVal.setColorValByChannel(i, val.get<double>());
+						if (!val.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", *_path);
+						}
+						else	{
+							//defVal.val.colorVal[i] = val.get<double>();
+							defVal.setColorValByChannel(i, val.get<double>());
+						}
 					}
 				}
 				tmpObj = inputDict.value("IDENTITY",json());
@@ -1704,10 +1778,14 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					int					i;
 					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
 						json &		val = it.value();
-						if (!val.is_number())
-							throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", *_path);
-						//idenVal.val.colorVal[i] = val.get<double>();
-						idenVal.setColorValByChannel(i, val.get<double>());
+						if (!val.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", *_path);
+						}
+						else	{
+							//idenVal.val.colorVal[i] = val.get<double>();
+							idenVal.setColorValByChannel(i, val.get<double>());
+						}
 					}
 				}
 				//	if i'm missing a min or a max val, reset both
@@ -1724,28 +1802,40 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				tmpObj = inputDict.value("DEFAULT",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", *_path);
+						if (!n.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", *_path);
+						}
 					});
 					defVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				tmpObj = inputDict.value("IDENTITY",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", *_path);
+						if (!n.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", *_path);
+						}
 					});
 					idenVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				tmpObj = inputDict.value("MIN",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *_path);
+						if (!n.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *_path);
+						}
 					});
 					minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				tmpObj = inputDict.value("MAX",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
-						if (!n.is_number()) throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *_path);
+						if (!n.is_number())	{
+							if (_throwExcept)
+								throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *_path);
+						}
 					});
 					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}

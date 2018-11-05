@@ -45,6 +45,7 @@ private:
 	QString			_name;
 	
 	ISFValType		type = ISFValType_None;
+	ISFAttrRef		attr = nullptr;
 	
 	//	all of these widgets are owned by my layout
 	QPushButton		*eventWidget = nullptr;

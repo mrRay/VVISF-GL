@@ -86,7 +86,9 @@ SOURCES += \
     misc_ui/ISFFileListView.cpp \
     misc_classes/LoadingWindowFileListModel.cpp \
     JSONGUI/JSONGUIInputWidget.cpp \
-    JSONGUI/JSONScrollEventFilter.cpp
+    JSONGUI/JSONScrollEventFilter.cpp \
+    AudioController.cpp \
+    Audio/ISFAudioBufferList.cpp
 
 
 HEADERS += \
@@ -135,7 +137,9 @@ HEADERS += \
     misc_classes/LoadingWindowFileListModel.h \
     JSONGUI/JSONGUIInputWidget.h \
     JSONGUI/QLabelDrag.h \
-    JSONGUI/JSONScrollEventFilter.h
+    JSONGUI/JSONScrollEventFilter.h \
+    AudioController.h \
+    Audio/ISFAudioBufferList.h
 
 # platform-specific classes
 mac	{
@@ -189,6 +193,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/../
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoSource
 #DEPENDPATH += $$PWD/../VVGL
 #DEPENDPATH += $$PWD/../VVISF
+INCLUDEPATH += $$_PRO_FILE_PWD_/Audio
 INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui

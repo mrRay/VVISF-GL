@@ -156,7 +156,7 @@ DocWindow::~DocWindow()	{
 
 
 void DocWindow::updateContentsFromISFController()	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__;
 	
 	//ISFSceneRef		scene = GetISFController()->getScene();
 	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
@@ -164,6 +164,8 @@ void DocWindow::updateContentsFromISFController()	{
 	if (isfc == nullptr)
 		return;
 	ISFDocRef		doc = isfc->getCurrentDoc();
+	//if (doc != nullptr)
+	//	cout << "doc is " << *doc;
 	
 	lock_guard<recursive_mutex>		lock(propLock);
 	
@@ -183,6 +185,7 @@ void DocWindow::updateContentsFromISFController()	{
 	if (doc != nullptr)	{
 		//	get the frag file path from the doc
 		_fragFilePath = new QString( QString::fromStdString(doc->path()) );
+		//qDebug() << "_fragFilePath is " << *_fragFilePath;
 		//	check for a vert file by using the common recognized extensions for vert shaders
 		QFileInfo		fragFileInfo(*_fragFilePath);
 		QString			tmpPath = QString("%1/%2.vs").arg(fragFileInfo.dir().absolutePath()).arg(fragFileInfo.completeBaseName());
@@ -244,6 +247,14 @@ void DocWindow::updateContentsFromISFController()	{
 					ui->fragShaderEditor->setTextCursor(newCursor);
 				}
 			}
+			else	{
+				//qDebug() << "frag shader hasn't changed since opened, not updating presently visible contents";
+				//qDebug() << "*****************************";
+				//qDebug() << "orig text is " << origFragShaderTxt;
+				//qDebug() << "*****************************";
+				//qDebug() << "current text is " << *_fragFilePathContentsOnOpen;
+				//qDebug() << "*****************************";
+			}
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
 			auto				fragErrs = GetISFController()->getSceneFragErrors();
@@ -300,6 +311,9 @@ void DocWindow::updateContentsFromISFController()	{
 						newCursor.movePosition(QTextCursor::Down);
 					ui->vertShaderEditor->setTextCursor(newCursor);
 				}
+			}
+			else	{
+				//qDebug() << "vert shader hasn't changed since opened, not updating presently visible contents";
 			}
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;

@@ -42,6 +42,7 @@ class VVISF_EXPORT ISFDoc	{
 		string			*_credit = nullptr;	//	credit
 		string			*_vsn = nullptr;
 		ISFFileType		_type = ISFFileType_Source;
+		bool			_throwExcept = true;
 		
 		vector<string>			_categories;	//	array of strings of the category names this doc should be listed under
 		vector<ISFAttrRef>		_inputs;	//	array of ISFAttrRef instances for the various inputs
@@ -72,18 +73,20 @@ class VVISF_EXPORT ISFDoc	{
 		/*!
 		\param inPath The path to the ISF file you want to load as an ISFDoc.
 		\param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
+		\param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 		Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
 		*/
-		ISFDoc(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr);
+		ISFDoc(const string & inPath, ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true) noexcept(false);
 		
 		//! Constructs an ISFDoc instance from shader strings.  Consider using CreateISFDocRef() instead.
 		/*
 		\param inFSContents A string containing the fragment shader portion of the ISF file.  The JSON blob that defines the ISF file must be contained in here.
 		\param inVSContents A string containing the vertex shader portion of the ISF file.  If you don't have a vertex shader to pass, VVISF defines a static string "ISFVertPassthru_GL2", which should work as a "passthru" vertex shader for most purposes.
 		\param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
+		\param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 		Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 		*/
-		ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr);
+		ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true);
 		
 		///@}
 		
@@ -215,9 +218,10 @@ class VVISF_EXPORT ISFDoc	{
 \relatedalso ISFDoc
 \param inPath The path to the ISF file you want to load as an ISFDoc.
 \param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
+\param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 Throws an ISFErr if there is a problem of some sort loading the ISF file from disk or parsing the JSON in the ISF file.
 */
-inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene=nullptr) throw(ISFErr) { return make_shared<ISFDoc>(inPath,inParentScene); }
+inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true) noexcept(false) { return make_shared<ISFDoc>(inPath,inParentScene,inThrowExcept); }
 
 //! Constructs an ISFDoc instance from shader strings.
 /*!
@@ -225,9 +229,10 @@ inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene
 \param inFSContents A string containing the fragment shader portion of the ISF file.  The JSON blob that defines the ISF file must be contained in here.
 \param inVSContents A string containing the vertex shader portion of the ISF file.  If you don't have a vertex shader to pass, VVISF defines a static string "ISFVertPassthru_GL2", which should work as a "passthru" vertex shader for most purposes.
 \param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
+\param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 */
-inline ISFDocRef CreateISFDocRefWith(const string & inFSContents, const string & inVSContents=string(ISFVertPassthru_GL2), ISFScene * inParentScene=nullptr) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene); }
+inline ISFDocRef CreateISFDocRefWith(const string & inFSContents, const string & inVSContents=string(ISFVertPassthru_GL2), ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene,inThrowExcept); }
 
 
 
