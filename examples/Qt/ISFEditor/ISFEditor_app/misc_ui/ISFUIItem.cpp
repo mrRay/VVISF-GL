@@ -387,6 +387,19 @@ ISFVal ISFUIItem::getISFVal()	{
 		}
 		break;
 	case ISFValType_AudioFFT:
+		{
+			AudioController		*ac = GetAudioController();
+			if (ac != nullptr)	{
+				int					maxVal = 0;
+				if (attr != nullptr)	{
+					ISFVal				tmpVal = attr->maxVal();
+					if (!tmpVal.isNullVal())
+						maxVal = tmpVal.getLongVal();
+				}
+				
+				return ISFImageVal(ac->getAudioFFTBuffer(maxVal));
+			}
+		}
 		break;
 	}
 	

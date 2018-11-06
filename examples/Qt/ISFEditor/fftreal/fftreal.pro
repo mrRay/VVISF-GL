@@ -31,8 +31,28 @@ SOURCES  += fftreal_wrapper.cpp
 
 DEFINES  += FFTREAL_LIBRARY
 
+
+
+
+win32 {
+    # spectrum_build_dir is defined with a leading slash so that it can
+    # be used in contexts such as
+    #     ..$${spectrum_build_dir}
+    # without the result having a trailing slash where spectrum_build_dir
+    # is undefined.
+    build_pass {
+        CONFIG(release, release|debug): spectrum_build_dir = /release
+        CONFIG(debug, release|debug): spectrum_build_dir = /debug
+    }
+}
+
+
+
+
 macx {
     CONFIG += lib_bundle
+	# This adds the @rpath prefix to the lib install name (the lib is expected to be bundled with the app package)
+	QMAKE_SONAME_PREFIX = @rpath
 } else {
     DESTDIR = ../..$${spectrum_build_dir}
 }

@@ -12,10 +12,14 @@
 #include "VVGL.hpp"
 #include "ISFAudioBufferList.h"
 
+#include "fftreal_wrapper.h"
+#include "FFTRealFixLenParam.h"
+
 
 
 
 using namespace VVGL;
+#define fftQuality 512
 
 
 
@@ -41,6 +45,7 @@ private:
 	std::recursive_mutex			_lock;
 	
 	GLCPUToTexCopierRef				_audioUploader;
+	GLCPUToTexCopierRef				_fftUploader;
 	
 	QScopedPointer<QAudioDeviceInfo>	_device;
 	QAudioFormat					_format;
@@ -50,6 +55,11 @@ private:
 	ISFAudioBufferList				_lastABL;	//	the last ABL we processed
 	GLBufferRef						_audioBuffer = nullptr;
 	GLBufferRef						_fftBuffer = nullptr;
+	
+	typedef FFTRealFixLenParam::DataType        DataType;
+	FFTRealWrapper								m_fft;
+	//QVector<DataType>							m_input;
+	QVector<DataType>							m_output;
 };
 
 

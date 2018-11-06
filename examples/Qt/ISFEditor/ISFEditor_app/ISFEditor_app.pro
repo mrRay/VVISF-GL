@@ -247,15 +247,18 @@ fftreal_dir = ../fftreal
 INCLUDEPATH += $${fftreal_dir}
 
 # Dynamic linkage against FFTReal DLL
-!contains(DEFINES, DISABLE_FFT) {
-	macx {
-		# Link to fftreal framework
-		LIBS += -F$${fftreal_dir}
-		LIBS += -framework fftreal
-	} else {
-		LIBS += -L..$${spectrum_build_dir}
-		LIBS += -lfftreal
-	}
+mac {
+	# Link to fftreal framework
+	
+	LIBS += -framework fftreal
+	
+	QMAKE_CXXFLAGS += -F $${fftreal_dir}
+	QMAKE_LFLAGS += -F $${fftreal_dir}
+	#LIBS += -F$${fftreal_dir}
+	LIBS += -L$${fftreal_dir}
+} else {
+	LIBS += -L..$${spectrum_build_dir}
+	LIBS += -lfftreal
 }
 
 
@@ -288,18 +291,23 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 mac {
 	QMAKE_INFO_PLIST = Info.plist
 	
+	
+	framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
+	
 	CONFIG(debug, debug|release)	{
 		# intentionally blank, debug builds don't need any work (build & run works just fine)
+		
+		
 	}
 	# release builds need to have the libs bundled up and macdeployqt executed on the output app package to relink them
 	else	{
-		framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
 		QMAKE_POST_LINK += echo "****************************";
 		QMAKE_POST_LINK += mkdir -pv $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/../../../../external/GLEW/mac_x86_64/libGLEW*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../../VVGL/libVVGL*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../../VVISF/libVVISF*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
+		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../fftreal/fftreal.framework $$framework_dir;
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}
 }

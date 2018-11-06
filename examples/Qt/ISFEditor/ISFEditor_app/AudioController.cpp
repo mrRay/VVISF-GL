@@ -8,18 +8,23 @@
 
 
 static AudioController * globalAudioController = nullptr;
-static int					fftQuality = 512;
+//static int					fftQuality = 512;
 
 
 
 
 AudioController::AudioController(QObject *parent) :
-	QObject(parent)
+	QObject(parent),
+	//m_input(fftQuality*2, 0.0),
+	m_output(fftQuality*2, 0.0)
 {
 	qDebug() << __PRETTY_FUNCTION__;
 	
 	_audioUploader = CreateGLCPUToTexCopierRef();
 	_audioUploader->setQueueSize(1);
+	
+	_fftUploader = CreateGLCPUToTexCopierRef();
+	_fftUploader->setQueueSize(1);
 	
 	_device.reset(new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice()));
 	
@@ -54,16 +59,19 @@ AudioController::AudioController(QObject *parent) :
 			int					numSamplesAvailable = int(totalBytesAvailable / bytesPerSample);
 			int					samplesCopiedSoFar = 0;
 			//	split up the byte array into smaller byte arrays, make IFSAudioBufferList instances from them and dump them to _bufferList
+			//qDebug() << "\t\t_bufferList had " << _bufferList.size() << " items";
 			while ((samplesCopiedSoFar + fftQuality) <= numSamplesAvailable)	{
 				QByteArray			subArray = rawByteArray.mid(samplesCopiedSoFar * bytesPerSample, fftQuality * bytesPerSample);
+				//qDebug() << "\t\tadding ABL with size " << subArray.size() << " to _bufferList...";
 				_bufferList.append( ISFAudioBufferList(subArray, _format) );
 				samplesCopiedSoFar += fftQuality;
 			}
 			
 			//	make sure _bufferList isn't growing too large
-			while (_bufferList.size() > 8)	{
+			while (_bufferList.size() > 12)	{
 				_bufferList.removeFirst();
 			}
+			//qDebug() << "\t\t_bufferList now has " << _bufferList.size() << " items";
 			
 		});
 	}
@@ -78,8 +86,8 @@ QAudioDeviceInfo * AudioController::currentDeviceInfo()	{
 	return _device.data();
 }
 
-//static float			tmpMax = 0.0;
-//static float			tmpMin = 99999999.0;
+static float			tmpMax = 0.0;
+static float			tmpMin = 99999999.0;
 void AudioController::updateAudioResults()	{
 	
 	QLinkedList<ISFAudioBufferList>		ablsToProcess;
@@ -90,17 +98,58 @@ void AudioController::updateAudioResults()	{
 		for (const ISFAudioBufferList & tmpBuffer : _bufferList)	{
 			samplesAvailable += tmpBuffer.numberOfFrames;
 			ablsToProcess.append(tmpBuffer);
-			if (samplesAvailable > (fftQuality * 2))
+			if (samplesAvailable >= (fftQuality * 2))
 				break;
 		}
 		if (samplesAvailable < (fftQuality * 2))
 			return;
-		for (int i=0; i<ablsToProcess.size(); ++i)
+		//qDebug() << "ablsToProcess is " << ablsToProcess.size();
+		//qDebug() << "removing " << (ablsToProcess.size()-1) << " items from _bufferList...";
+		for (int i=0; i<(ablsToProcess.size()-1); ++i)	{
 			_bufferList.removeFirst();
+		}
+		//qDebug() << "_bufferList now has " << _bufferList.size() << " items";
 	}
+	
 	//	make a single ISFAudioBufferList by combining two- this is what we're going to be working with
 	ISFAudioBufferList		ablToProcess(ablsToProcess);
+	
 	//	run the FFT on the large audio buffer list
+	if (ablToProcess.numberOfFrames == fftQuality*2)	{
+		//	calculate the fft, dump it to m_output
+		m_fft.calculateFFT(m_output.data(), ablToProcess.floatPtr());
+		
+		//	...from here on out, i'm not sure if i'm doing this correctly- the results are not an exact match to an FFT calculated using a different API with different settings/variables in different apps.  similar- very similar- but different.
+		
+		//	normalize the vals in m_output, get the abs value
+		float			tmpMax = 0.0;
+		float			tmpMin = 99999999.0;
+		for (const DataType & tmpFloat : m_output)	{
+			DataType		tmpAbsVal = fabs(tmpFloat);
+			tmpMax = std::max(tmpMax, tmpAbsVal);
+			tmpMin = std::min(tmpMin, tmpAbsVal);
+		}
+		float			delta = tmpMax - tmpMin;
+		
+		//	this bit here runs through and copies the vals, normalizing them.
+		//	this is commented out b/c this gives us a "2-up" result (it looks like two FFT graphs?)
+		/*
+		for (DataType & tmpFloat : m_output)	{
+			tmpFloat = (fabs(tmpFloat) - tmpMin) / delta;
+		}
+		*/
+		
+		//	this bit runs through both of the "2-up" FFT graphs, averages the vals, and writes that to the first half of m_output, which is what we're going to upload
+		
+		for (int i=0; i<fftQuality; ++i)	{
+			float		tmpVal = (fabs(m_output[i]) - tmpMin) / delta * 4.0;
+			float		altVal = (fabs(m_output[i+fftQuality]) - tmpMin) / delta * 4.0;
+			//m_output[i] = (tmpVal + altVal)/2.0;
+			m_output[i] = std::max(tmpVal, altVal);
+		}
+		
+	}
+	
 	//	make a CPU-based buffer, copy the single ISFAudioBufferList's values to it, start uploading it, update the local audio buffer
 	GLBufferRef		tmpAudioBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality*2,1));
 	float			*rPtr = ablToProcess.floatPtr();
@@ -128,13 +177,34 @@ void AudioController::updateAudioResults()	{
 	}
 	else
 		qDebug() << "ERR: rPtr or wPtr null, " << __PRETTY_FUNCTION__;
+	
 	//	make a CPU-based buffer, copy the FFT result's values to it, start uploading it, update the local fft audio buffer
+	GLBufferRef		tmpFFTBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality,1));
+	rPtr = m_output.data();
+	wPtr = reinterpret_cast<float*>( tmpFFTBuffer->cpuBackingPtr );
+	GLBufferRef		newFFTBuffer = nullptr;
+	
+	if (rPtr!=nullptr && wPtr!=nullptr)	{
+		for (int i=0; i<(fftQuality); ++i)	{
+			*(wPtr+0) = *rPtr;
+			*(wPtr+1) = *rPtr;
+			*(wPtr+2) = *rPtr;
+			*(wPtr+3) = 1.0;
+			
+			++rPtr;
+			wPtr += 4;
+		}
+		newFFTBuffer = _fftUploader->streamCPUToTex(tmpFFTBuffer);
+	}
 	
 	//	update the local vars i have with the new images
 	{
 		std::lock_guard<recursive_mutex>		tmpLock(_lock);
 		if (newAudioBuffer != nullptr)	{
 			_audioBuffer = newAudioBuffer;
+		}
+		if (newFFTBuffer != nullptr)	{
+			_fftBuffer = newFFTBuffer;
 		}
 		//	update the audio buffer, we may need it to calculate images with specific widths
 		_lastABL = ablToProcess;
@@ -198,7 +268,14 @@ GLBufferRef AudioController::getAudioImageBuffer(const int & inWidth)	{
 	
 }
 GLBufferRef AudioController::getAudioFFTBuffer(const int & inWidth)	{
-	return nullptr;
+	GLBufferRef		cpuBuffer = nullptr;
+	{
+		std::lock_guard<recursive_mutex>		tmpLock(_lock);
+		//	if the width is 0 or less, just return _audioBuffer, which is being automatically calculated anyway
+		if (inWidth < 1)
+			return _fftBuffer;
+	}
+	return _fftUploader->uploadCPUToTex(cpuBuffer);
 }
 
 
