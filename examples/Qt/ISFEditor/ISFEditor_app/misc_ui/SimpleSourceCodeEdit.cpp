@@ -13,6 +13,10 @@
 #include <QTimer>
 #include <QPointer>
 
+#include <regex>
+#include <string>
+#include <iostream>
+
 
 
 
@@ -176,6 +180,8 @@ void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << ", timestamp is " << inEvent->timestamp() << ", text is " << inEvent->text();
 	
+	using namespace std;
+	
 	if (completer && completer->popup()->isVisible()) {
 		// The following keys are forwarded by the completer to the widget
 		switch (inEvent->key()) {
@@ -187,7 +193,7 @@ void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
 			//qDebug() << "\tignoring...";
 			inEvent->ignore();
 			return; // let the completer do default behavior
-			default:
+		default:
 			break;
 		}
 	}
@@ -216,19 +222,45 @@ void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
 	//	...if i'm here, this wasn't a shortcut
 	
 	
-	//	pass the keystroke to the super
-	QPlainTextEdit::keyPressEvent(inEvent);
-	
-	//	if this was a left/right arrow key event, close the popup immediately.  we have to check for this first because arrow keys are considered a modifier, and modifiers should not automatically close the pop-up...
 	switch (inEvent->key())	{
+	//	if this was a left/right arrow key event, close the popup immediately.  we have to check for this first because arrow keys are considered a modifier, and modifiers should not automatically close the pop-up...
 	case Qt::Key_Left:
 	case Qt::Key_Right:
-		//qDebug() << "\tdirectional key used, closing popup and bailing";
+		//qDebug() << "\tdirectional key used, closing popup and moving cursor
 		closeCompleter();
-		return;
+		//	pass the key event to the super
+		QPlainTextEdit::keyPressEvent(inEvent);
+		break;
+	//	if this was a return/enter key, we want to add a newline- and also as much whitespace as exists at the beginning of this line
+	case Qt::Key_Enter:
+	case Qt::Key_Return:
+		{
+			//	we know for a fact that the completer isn't open because enter and return are explicitly checked for if there's a completer at this method's beginning
+			
+			//	select the line under the current cursor, copy it into a std::string
+			QTextCursor		tmpCurs = textCursor();
+			tmpCurs.select(QTextCursor::LineUnderCursor);
+			string			lineString = tmpCurs.selectedText().toStdString();
+			
+			//	pass the key event to the super
+			QPlainTextEdit::keyPressEvent(inEvent);
+			
+			//	search the line that was under the current cursor for all the whitespace in the beginning- if i found stuff, append it
+			regex			regex("^[\\s]*");
+			smatch			matches;
+			if (regex_search(lineString, matches, regex))	{
+				insertPlainText( QString::fromStdString(matches[0]) );
+			}
+		}
+		break;
 	default:
+		//	pass the key event to the super
+		QPlainTextEdit::keyPressEvent(inEvent);
 		break;
 	}
+	
+	
+	
 	
 	//	if this was a shift/cmd/opt/ctrl modifier, i can return now- i'm not going to do anything popup- or completer-related
 	if (inEvent->modifiers() != Qt::NoModifier && inEvent->text().length()<1)	{

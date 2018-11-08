@@ -68,7 +68,7 @@ AudioController::AudioController(QObject *parent) :
 			}
 			
 			//	make sure _bufferList isn't growing too large
-			while (_bufferList.size() > 12)	{
+			while (_bufferList.size() > 4)	{
 				_bufferList.removeFirst();
 			}
 			//qDebug() << "\t\t_bufferList now has " << _bufferList.size() << " items";
@@ -86,8 +86,8 @@ QAudioDeviceInfo * AudioController::currentDeviceInfo()	{
 	return _device.data();
 }
 
-static float			tmpMax = 0.0;
-static float			tmpMin = 99999999.0;
+//static float			tmpMax = 0.0;
+//static float			tmpMin = 99999999.0;
 void AudioController::updateAudioResults()	{
 	
 	QLinkedList<ISFAudioBufferList>		ablsToProcess;
@@ -111,46 +111,10 @@ void AudioController::updateAudioResults()	{
 		//qDebug() << "_bufferList now has " << _bufferList.size() << " items";
 	}
 	
-	//	make a single ISFAudioBufferList by combining two- this is what we're going to be working with
+	//	make a single ISFAudioBufferList by combining two- this is what we're going to be working with (uploading, and running an FFT on)
 	ISFAudioBufferList		ablToProcess(ablsToProcess);
 	
-	//	run the FFT on the large audio buffer list
-	if (ablToProcess.numberOfFrames == fftQuality*2)	{
-		//	calculate the fft, dump it to m_output
-		m_fft.calculateFFT(m_output.data(), ablToProcess.floatPtr());
-		
-		//	...from here on out, i'm not sure if i'm doing this correctly- the results are not an exact match to an FFT calculated using a different API with different settings/variables in different apps.  similar- very similar- but different.
-		
-		//	normalize the vals in m_output, get the abs value
-		float			tmpMax = 0.0;
-		float			tmpMin = 99999999.0;
-		for (const DataType & tmpFloat : m_output)	{
-			DataType		tmpAbsVal = fabs(tmpFloat);
-			tmpMax = std::max(tmpMax, tmpAbsVal);
-			tmpMin = std::min(tmpMin, tmpAbsVal);
-		}
-		float			delta = tmpMax - tmpMin;
-		
-		//	this bit here runs through and copies the vals, normalizing them.
-		//	this is commented out b/c this gives us a "2-up" result (it looks like two FFT graphs?)
-		/*
-		for (DataType & tmpFloat : m_output)	{
-			tmpFloat = (fabs(tmpFloat) - tmpMin) / delta;
-		}
-		*/
-		
-		//	this bit runs through both of the "2-up" FFT graphs, averages the vals, and writes that to the first half of m_output, which is what we're going to upload
-		
-		for (int i=0; i<fftQuality; ++i)	{
-			float		tmpVal = (fabs(m_output[i]) - tmpMin) / delta * 4.0;
-			float		altVal = (fabs(m_output[i+fftQuality]) - tmpMin) / delta * 4.0;
-			//m_output[i] = (tmpVal + altVal)/2.0;
-			m_output[i] = std::max(tmpVal, altVal);
-		}
-		
-	}
-	
-	//	make a CPU-based buffer, copy the single ISFAudioBufferList's values to it, start uploading it, update the local audio buffer
+	//	make a CPU-based buffer, copy the single ISFAudioBufferList's values to it, start uploading it to a texture
 	GLBufferRef		tmpAudioBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality*2,1));
 	float			*rPtr = ablToProcess.floatPtr();
 	float			*wPtr = reinterpret_cast<float*>( tmpAudioBuffer->cpuBackingPtr );
@@ -178,6 +142,63 @@ void AudioController::updateAudioResults()	{
 	else
 		qDebug() << "ERR: rPtr or wPtr null, " << __PRETTY_FUNCTION__;
 	
+	
+	//	run the FFT on the large audio buffer list
+	if (ablToProcess.numberOfFrames == fftQuality*2)	{
+		//	calculate the fft, dump it to m_output
+		m_fft.calculateFFT(m_output.data(), ablToProcess.floatPtr());
+		
+		//	...from here on out, i'm not sure if i'm doing this correctly- the results are not an exact match to an FFT calculated using a different API with different settings/variables in different apps.  similar- very similar- but different.
+		
+		//	normalize the vals in m_output, get the abs value
+		float			tmpMax = 0.0f;
+		float			tmpMin = 99999999.0f;
+		for (const DataType & tmpFloat : m_output)	{
+			DataType		tmpAbsVal = fabs(tmpFloat);
+			tmpMax = std::max(tmpMax, tmpAbsVal);
+			tmpMin = std::min(tmpMin, tmpAbsVal);
+		}
+		float			delta = tmpMax - tmpMin;
+		
+		//	this bit here runs through and copies the vals, normalizing them.
+		//	this is commented out b/c this gives us a "2-up" result (it looks like two FFT graphs?)
+		/*
+		for (DataType & tmpFloat : m_output)	{
+			tmpFloat = (fabs(tmpFloat) - tmpMin) / delta;
+		}
+		*/
+		
+		//	this bit runs through both of the "2-up" FFT graphs, averages the vals, and writes that to the first half of m_output, which is what we're going to upload
+		/*
+		for (int i=0; i<fftQuality; ++i)	{
+			float		tmpVal = (fabs(m_output[i]) - tmpMin) / delta;
+			float		altVal = (fabs(m_output[i+fftQuality]) - tmpMin) / delta;
+			//m_output[i] = (tmpVal + altVal)/2.0;
+			m_output[i] = std::max(tmpVal, altVal);
+		}
+		*/
+		
+		
+		//	this bit is similar to the data transformation from the apple version of this class
+		float			sampleRate = _format.sampleRate();
+		float			grain = sampleRate / fftQuality;
+		
+		for (int i=0; i<fftQuality; ++i)	{
+			float			tmpVal = (fabs(m_output[i]) - tmpMin) / delta * 2.f;
+			float			altVal = (fabs(m_output[i+fftQuality]) - tmpMin) / delta * 2.f;
+			
+			float			tmpFreq = grain * i;
+			float			tmpMag = std::max(tmpVal, altVal);
+			if (i > 0)	{
+				m_output[i] = tmpMag * log10(tmpFreq) / log(grain);
+			}
+			else	{
+				m_output[i] = tmpMag / log(grain);
+			}
+		}
+		
+	}
+	
 	//	make a CPU-based buffer, copy the FFT result's values to it, start uploading it, update the local fft audio buffer
 	GLBufferRef		tmpFFTBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality,1));
 	rPtr = m_output.data();
@@ -196,6 +217,7 @@ void AudioController::updateAudioResults()	{
 		}
 		newFFTBuffer = _fftUploader->streamCPUToTex(tmpFFTBuffer);
 	}
+	
 	
 	//	update the local vars i have with the new images
 	{
@@ -221,7 +243,7 @@ GLBufferRef AudioController::getAudioImageBuffer(const int & inWidth)	{
 		if (_lastABL.numberOfFrames<(fftQuality*2) || _lastABL.numberOfChannels<1)
 			return _audioBuffer;
 	
-		//	...if we're here, the caller wants an audio image buffer with a particular width, which we have to create on the fly.  we also have an audio buffer that we can use to calculate this value.
+		//	...if we're here, the caller wants an audio image buffer with a particular width, which we have to create on the fly.  we also have an ABL that we can use to calculate this value.
 	
 		int				rawResultsCount = fftQuality * 2;
 		VVGL::Size		newBufferSize(std::max(1, std::min(inWidth, rawResultsCount)), _lastABL.numberOfChannels);
@@ -274,7 +296,56 @@ GLBufferRef AudioController::getAudioFFTBuffer(const int & inWidth)	{
 		//	if the width is 0 or less, just return _audioBuffer, which is being automatically calculated anyway
 		if (inWidth < 1)
 			return _fftBuffer;
+		//	if the last ABL doesn't have any frames or channels, bail- something's wrong and we can't do anything
+		if (_lastABL.numberOfFrames<(fftQuality*2) || _lastABL.numberOfChannels<1)
+			return _fftBuffer;
+		
+		//	...if we're here, the caller wants an fft image buffer with a particular width, which we have to create on the fly.  we also have an ABL that we can use to calculate this value.
+		
+		int				rawResultsCount = fftQuality;
+		VVGL::Size		newBufferSize(std::max(1, std::min(inWidth, rawResultsCount)), _lastABL.numberOfChannels);
+		cpuBuffer = CreateBGRAFloatCPUBuffer(newBufferSize);
+		if (cpuBuffer == nullptr)
+			return _fftBuffer;
+		//	figure out how many vals from the buffer we need to combine to create every result val
+		int				valsPerAvg = int( round( float(rawResultsCount)/float(newBufferSize.width) ) );
+		//	run through every row of the output image, populating the pixels one at a time
+		for (int rowIndex=0; rowIndex<newBufferSize.height; ++rowIndex)	{
+			//	get a new wPtr for each row
+			float			*wPtr = reinterpret_cast<float*>( cpuBuffer->cpuBackingPtr );
+			wPtr += (rowIndex * int(sizeof(float)) * int(newBufferSize.width) );
+		
+			//	run through each column in the output image, populating the pixels one at a time
+			for (int colIndex=0; colIndex<newBufferSize.width; ++colIndex)	{
+				//	read from m_output, which already has the adjusted (cleaned up) fft output
+				float			*rPtr = m_output.data() + (colIndex * valsPerAvg);
+				//	make sure that we don't try to read outside the bounds of the buffer
+				if (((colIndex+1)*valsPerAvg) >= rawResultsCount)	{
+					rPtr = m_output.data() + (rawResultsCount - valsPerAvg);
+				}
+				
+				//	calculate the average value
+				double			avgVal = 0.0;
+				for (int i=0; i<valsPerAvg; ++i)	{
+					avgVal += double(*rPtr);
+					//avgVal = fmax(avgVal, fabs(*rPtr));
+					++rPtr;
+				}
+				avgVal /= double(valsPerAvg);
+			
+				//	write the avg val to the pixel
+				*(wPtr+0) = float(avgVal);
+				*(wPtr+1) = float(avgVal);
+				*(wPtr+2) = float(avgVal);
+				*(wPtr+3) = float(avgVal);
+			
+				//	increment the write ptr
+				wPtr += 4;
+			}
+			
+		}
 	}
+	//	upload the cpu buffer to a gl texture immediately (don't stream), return the GL texture
 	return _fftUploader->uploadCPUToTex(cpuBuffer);
 }
 

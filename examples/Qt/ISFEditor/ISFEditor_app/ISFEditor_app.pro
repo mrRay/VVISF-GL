@@ -88,7 +88,9 @@ SOURCES += \
 	JSONGUI/JSONGUIInputWidget.cpp \
 	JSONGUI/JSONScrollEventFilter.cpp \
 	AudioController.cpp \
-	Audio/ISFAudioBufferList.cpp
+	Audio/ISFAudioBufferList.cpp \
+	VideoOutput/InterAppOutput.cpp \
+	VideoOutput/VideoOutput.cpp
 
 
 HEADERS += \
@@ -139,14 +141,18 @@ HEADERS += \
 	JSONGUI/QLabelDrag.h \
 	JSONGUI/JSONScrollEventFilter.h \
 	AudioController.h \
-	Audio/ISFAudioBufferList.h
+	Audio/ISFAudioBufferList.h \
+	VideoOutput/InterAppOutput.h \
+	VideoOutput/VideoOutput.h
 
 # platform-specific classes
 mac {
 	SOURCES += ../../common/SyphonVVBufferPoolAdditions.mm \
-		VideoSource/InterAppVideoSource_Mac.mm
+		VideoSource/InterAppVideoSource_Mac.mm \
+		VideoOutput/InterAppOutput_Mac.mm
 	HEADERS += ../../common/SyphonVVBufferPoolAdditions.h \
-		VideoSource/InterAppVideoSource_Mac.h
+		VideoSource/InterAppVideoSource_Mac.h \
+		VideoOutput/InterAppOutput_Mac.h
 }
 
 
@@ -198,6 +204,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
 INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
+INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
 
 
 

@@ -25,6 +25,10 @@ using namespace VVGL;
 
 
 
+
+
+
+
 //	this c++ class stores objective-c objects- it exists so we can isolate the obj-c from the c++ header
 class InterAppVideoSource_MacOpaque	{
 public:
@@ -56,6 +60,13 @@ public:
 	__block NSThread				*thread = nil;
 };
 
+
+
+
+
+
+
+
 //	this function executes a block on a given background thread
 typedef void (^BasicBlock)(void);
 void RunOnThread(NSThread *thread, BOOL wait, BasicBlock block)
@@ -69,7 +80,6 @@ void RunOnThread(NSThread *thread, BOOL wait, BasicBlock block)
 //	this static thread is created and will exist until the app launches.  only do syphon processing on it.
 static NSThread			*syphonThread = nil;
 static NSRunLoop		*syphonThreadRunLoop = nil;
-
 
 
 

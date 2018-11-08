@@ -60,6 +60,7 @@ void OutputWindow::drawBuffer(const VVGL::GLBufferRef & n)	{
 			ui->imageResLabel->setText(resText);
 		//}, ui->imageResLabel);
 	}
+	interAppOutput.publishBuffer(n);
 }
 void OutputWindow::updateContentsFromISFController()	{
 	//	get the ISFController, and from it retrieve the doc that is currently loaded

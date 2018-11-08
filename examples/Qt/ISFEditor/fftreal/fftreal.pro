@@ -49,6 +49,12 @@ win32 {
 
 
 
+# the readme says to specify this flag when compiling in release mode...
+CONFIG(release, release|debug): DEFINES += NDEBUG
+
+
+
+
 macx {
     CONFIG += lib_bundle
 	# This adds the @rpath prefix to the lib install name (the lib is expected to be bundled with the app package)

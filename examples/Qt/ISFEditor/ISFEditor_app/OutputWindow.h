@@ -7,6 +7,8 @@
 #include <VVGL.hpp>
 #include <VVISF.hpp>
 
+#include "InterAppOutput.h"
+
 
 
 
@@ -43,6 +45,7 @@ private slots:
 private:
 	Ui::OutputWindow			*ui;
 	bool			freezeOutputFlag = false;
+	InterAppOutput		interAppOutput;
 };
 
 
