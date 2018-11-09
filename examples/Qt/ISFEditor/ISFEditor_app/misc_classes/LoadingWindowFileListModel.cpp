@@ -13,6 +13,7 @@
 LoadingWindowFileListModel::LoadingWindowFileListModel(QObject * parent) :
 	QFileSystemModel(parent)
 {
+	qDebug() << __PRETTY_FUNCTION__;
 	setReadOnly(true);
 	//setReadOnly(false);
 

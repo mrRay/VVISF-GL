@@ -36,8 +36,8 @@ public:
 	void on_saveFile();
 	
 protected:
-	void closeEvent(QCloseEvent * event) override;
-	void showEvent(QShowEvent * event) override;
+	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
+	virtual void showEvent(QShowEvent * event) Q_DECL_OVERRIDE;
 	void appQuitEvent();
 
 public slots:

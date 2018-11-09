@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="ISFGLBufferQWidget" name="bufferView">
+   <widget class="GLBufferQWidget" name="bufferView">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -88,9 +88,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>ISFGLBufferQWidget</class>
+   <class>GLBufferQWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>ISFGLBufferQWidget.h</header>
+   <header>GLBufferQWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

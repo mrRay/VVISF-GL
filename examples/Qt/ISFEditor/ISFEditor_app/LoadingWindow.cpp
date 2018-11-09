@@ -11,6 +11,7 @@
 //#include <QErrorMessage>
 #include <QScrollArea>
 #include <QDir>
+#include <QStandardItemModel>
 
 #include "DocWindow.h"
 #include "ISFController.h"
@@ -61,34 +62,6 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
 	*/
 	
-	//	figure out what directory's contents we want to display, and use it to set the base directory
-	QString			defaultDirToLoad;
-#ifdef Q_OS_MAC
-		defaultDirToLoad = QString("~/Library/Graphics/ISF");
-		//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
-		defaultDirToLoad.replace("~", QDir::homePath());
-#endif
-	QSettings		settings;
-	QVariant		lastUsedPath = settings.value("baseDir");
-	if (!lastUsedPath.isNull())	{
-		//qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
-		QString			tmpStr = lastUsedPath.toString();
-		tmpStr.replace("~", QDir::homePath());
-		if (QDir(tmpStr).exists())	{
-			setBaseDirectory(tmpStr);
-		}
-		else	{
-			//qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
-			setBaseDirectory(defaultDirToLoad);
-		}
-	}
-	else
-		setBaseDirectory(defaultDirToLoad);
-	
-	//	restore the window position
-	if (settings.contains("LoadingWindowGeometry"))	{
-		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
-	}
 	//	save window position on app quit
 	connect(qApp, &QCoreApplication::aboutToQuit, this, &LoadingWindow::appQuitEvent);
 	
@@ -160,10 +133,45 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 	QWidget::closeEvent(event);
 }
 void LoadingWindow::showEvent(QShowEvent * event)	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	//Q_UNUSED(event);
 	QWidget::showEvent(event);
 	
 	//	bump the slot to populate the pop-up button with the list of sources.
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
+	
+	QTimer::singleShot(50, [&]()	{
+		//	figure out what directory's contents we want to display, and use it to set the base directory
+		QString			defaultDirToLoad;
+#ifdef Q_OS_MAC
+		defaultDirToLoad = QString("~/Library/Graphics/ISF");
+		//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
+		defaultDirToLoad.replace("~", QDir::homePath());
+#endif
+		QSettings		settings;
+		QVariant		lastUsedPath = settings.value("baseDir");
+		if (!lastUsedPath.isNull())	{
+			//qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
+			QString			tmpStr = lastUsedPath.toString();
+			tmpStr.replace("~", QDir::homePath());
+			if (QDir(tmpStr).exists())	{
+				setBaseDirectory(tmpStr);
+			}
+			else	{
+				//qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
+				setBaseDirectory(defaultDirToLoad);
+			}
+		}
+		else
+			setBaseDirectory(defaultDirToLoad);
+	});
+	
+	//	restore the window position
+	QSettings		settings;
+	if (settings.contains("LoadingWindowGeometry"))	{
+		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
+	}
 }
 void LoadingWindow::appQuitEvent()	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -184,9 +192,13 @@ void LoadingWindow::loadUserISFsButtonClicked()	{
 }
 void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	
+	/*
 	QString			dirToLoad("/Library/Graphics/ISF");
 	setBaseDirectory(dirToLoad);
+	*/
+	QTimer::singleShot(50, []()	{
+		qDebug() << "TIMER EXECUTING";
+	});
 }
 void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -270,14 +282,15 @@ void LoadingWindow::newFileSelected(const QItemSelection &selected, const QItemS
 void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
-	if (inSrc == nullptr)
+	if (inSrc == nullptr)	{
+		qDebug() << "ERR: bailing, inSrc null, " << __PRETTY_FUNCTION__;
 		return;
+	}
 	
 	//if (qApp->thread() == QThread::currentThread())
 	//	qDebug() << "reloading list of sources on main thread";
 	//else
 	//	qDebug() << "ERR: reloading list of sources on NON-MAIN thread!";
-	
 	
 	
 	ui->videoSourceComboBox->blockSignals(true);
@@ -288,9 +301,23 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	
 	//	get a new list of video source menu items, use them to populate the combo box
 	QList<MediaFile>		newFiles = inSrc->createListOfStaticMediaFiles();
+	//QStandardItemModel		*tmpModel = nullptr;
 	for (const MediaFile & newFile : newFiles)	{
-		//qDebug() << "\titem " << newFile.name();
 		ui->videoSourceComboBox->addItem(newFile.name(), QVariant::fromValue(newFile));
+		
+		//	manually enable the items- turns out to be unnecessary, doesn't work around that weird bug where items in the pop-up button are not selectable.
+		/*
+		if (tmpModel == nullptr)
+			tmpModel = qobject_cast<QStandardItemModel*>( ui->videoSourceComboBox->model() );
+		if (tmpModel == nullptr)
+			continue;
+		
+		int			lastItemNumber = tmpModel->rowCount() - 1;
+		QStandardItem		*lastItem = tmpModel->item(lastItemNumber);
+		if (lastItem == nullptr)
+			continue;
+		lastItem->setFlags( lastItem->flags() | Qt::ItemIsEnabled );
+		*/
 	}
 	
 	//	run through the items in the combo box, select the first item that appears to be playing back
@@ -307,7 +334,7 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	
 	ui->videoSourceComboBox->setCurrentIndex(foundIndex);
 	ui->videoSourceComboBox->blockSignals(false);
-	
+	//connect(ui->videoSourceComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &LoadingWindow::videoSourceChanged);
 }
 void LoadingWindow::videoSourceChanged(int arg1)	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -366,7 +393,12 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	//newModel->setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
 	newModel->setNameFilters(QStringList(QString("*.fs")));
 	newModel->setNameFilterDisables(false);
+	QItemSelectionModel		*oldSelModel = ui->filterListView->selectionModel();
 	ui->filterListView->setModel(newModel);
+	if (oldSelModel != nullptr)	{
+		delete oldSelModel;
+		oldSelModel = nullptr;
+	}
 	ui->filterListView->setRootIndex(newModel->setRootPath(baseDirectory));
 	
 	//	delete the old model

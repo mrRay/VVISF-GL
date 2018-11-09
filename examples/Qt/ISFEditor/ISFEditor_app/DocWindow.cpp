@@ -55,38 +55,6 @@ DocWindow::DocWindow(QWidget *parent) :
 	else
 		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
 	
-	//	configure the splitter
-	ui->splitter->setCollapsible(2, false);
-	QWidget		*jsonTableWidget = ui->splitter->widget(2);
-	if (jsonTableWidget != nullptr)	{
-		jsonTableWidget->setMinimumSize(QSize(335,335));
-	}
-	
-	QList<int>		tmpSizes;
-	tmpSizes.append(99999);
-	tmpSizes.append(0);
-	tmpSizes.append(0);
-	ui->splitter->setSizes(tmpSizes);
-	
-	//	configure the compiler errors widget
-	QFont		tmpFont;
-	tmpFont.setFamily("Courier");
-	tmpFont.setFixedPitch(true);
-	tmpFont.setPointSize(12);
-	ui->compilerErrorsTextWidget->setFont(tmpFont);
-	
-	//	all of the various error/shader/parsed json widgets are read-only...
-	ui->compilerErrorsTextWidget->setReadOnly(true);
-	ui->compiledVertShader->setReadOnly(true);
-	ui->compiledFragShader->setReadOnly(true);
-	ui->parsedJSON->setReadOnly(true);
-	
-	//	configure the error splitter
-	tmpSizes.clear();
-	tmpSizes.append(9999999);
-	tmpSizes.append(0);
-	ui->errSplitter->setSizes(tmpSizes);
-	
 	//	set up the frag shader editor so tmp files are auto-saved
 	connect(ui->fragShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
 		lock_guard<recursive_mutex>		lock(propLock);
@@ -123,12 +91,6 @@ DocWindow::DocWindow(QWidget *parent) :
 			_tmpFileSaveTimer->start(2000);
 		}
 	});
-	
-	//	restore the window position
-	QSettings		settings;
-	if (settings.contains("DocWindowGeometry"))	{
-		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
-	}
 	//	save window position on app quit
 	connect(qApp, &QCoreApplication::aboutToQuit, this, &DocWindow::appQuitEvent);
 }
@@ -538,6 +500,50 @@ void DocWindow::closeEvent(QCloseEvent * event)	{
 	settings.setValue("DocWindowGeometry", saveGeometry());
 	
 	QWidget::closeEvent(event);
+}
+void DocWindow::showEvent(QShowEvent * event)	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	//Q_UNUSED(event);
+	QWidget::showEvent(event);
+	
+	//	configure the splitter
+	ui->splitter->setCollapsible(2, false);
+	QWidget		*jsonTableWidget = ui->splitter->widget(2);
+	if (jsonTableWidget != nullptr)	{
+		jsonTableWidget->setMinimumSize(QSize(335,335));
+	}
+	
+	QList<int>		tmpSizes;
+	tmpSizes.append(99999);
+	tmpSizes.append(0);
+	tmpSizes.append(0);
+	ui->splitter->setSizes(tmpSizes);
+	
+	//	configure the compiler errors widget
+	QFont		tmpFont;
+	tmpFont.setFamily("Courier");
+	tmpFont.setFixedPitch(true);
+	tmpFont.setPointSize(12);
+	ui->compilerErrorsTextWidget->setFont(tmpFont);
+	
+	//	all of the various error/shader/parsed json widgets are read-only...
+	ui->compilerErrorsTextWidget->setReadOnly(true);
+	ui->compiledVertShader->setReadOnly(true);
+	ui->compiledFragShader->setReadOnly(true);
+	ui->parsedJSON->setReadOnly(true);
+	
+	//	configure the error splitter
+	tmpSizes.clear();
+	tmpSizes.append(9999999);
+	tmpSizes.append(0);
+	ui->errSplitter->setSizes(tmpSizes);
+	
+	//	restore the window position
+	QSettings		settings;
+	if (settings.contains("DocWindowGeometry"))	{
+		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
+	}
 }
 void DocWindow::appQuitEvent()	{
 	qDebug() << __PRETTY_FUNCTION__;

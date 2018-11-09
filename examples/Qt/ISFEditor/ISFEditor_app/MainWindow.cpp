@@ -99,12 +99,12 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 	*/
 	
 	//	hide myself, i don't need to be visible any more
-	QTimer::singleShot(100,[&]()	{
+	QTimer::singleShot(50,[&]()	{
 		hide();
 	});
 	
 	//	finish launching
-	QTimer::singleShot(500, [&]()	{
+	QTimer::singleShot(50, [&]()	{
 		FinishLaunching();
 	});
 }
@@ -121,17 +121,20 @@ void FinishLaunching()	{
 	GetAudioController();
 	
 	OutputWindow		*ow = new OutputWindow();;
-	ow->show();
 	
 	//	ISF controller has to be created after OutputWindow (it connects to a signal from the window)
 	GetISFController();
 	
 	DocWindow			*dw = new DocWindow();;
-	dw->show();
 	
 	LoadingWindow		*lw = new LoadingWindow();
-	lw->show();	//	NO, not yet- this loads webcam stuff, which causes problems right now
-	lw->on_createNewFile();	//	NO, not yet- there's no GL buffer pool, so the scene can't compile anything
+	
+	QTimer::singleShot(50, [=]()	{
+		ow->show();
+		dw->show();
+		lw->show();
+		lw->on_createNewFile();
+	});
 	
 	/*
 	static DynamicVideoSource		dvs;

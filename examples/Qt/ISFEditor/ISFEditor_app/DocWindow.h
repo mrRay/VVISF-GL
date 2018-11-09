@@ -39,7 +39,8 @@ public:
 	QString fragFilePath();
 	
 protected:
-	void closeEvent(QCloseEvent * event);
+	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
+	virtual void showEvent(QShowEvent * event) Q_DECL_OVERRIDE;
 	void appQuitEvent();
 	
 private:
