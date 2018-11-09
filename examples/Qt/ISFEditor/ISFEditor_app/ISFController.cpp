@@ -275,10 +275,12 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	populateLoadingWindowUI();
 	
 	//	tell the doc window to update its contents
-	GetDocWindow()->updateContentsFromISFController();
+	if (GetDocWindow() != nullptr)
+		GetDocWindow()->updateContentsFromISFController();
 	
 	//	tell the output window to update its contents
-	GetOutputWindow()->updateContentsFromISFController();
+	if (GetOutputWindow() != nullptr)
+		GetOutputWindow()->updateContentsFromISFController();
 }
 
 void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
@@ -380,14 +382,6 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 			ow->drawBuffer(found->second);
 	}
 	
-	/*
-	//n->drawBuffer(newBuffer);
-	cout << "newBuffer is " << *newBuffer << endl;
-	cout << "tmp pass dict:\n";
-	for (const auto & it : tmpPassDict)	{
-		cout << "\t" << it.first << " : " << *it.second << endl;
-	}
-	*/
 }
 
 void ISFController::populateLoadingWindowUI()	{

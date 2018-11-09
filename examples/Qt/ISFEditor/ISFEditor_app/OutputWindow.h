@@ -35,7 +35,7 @@ public:
 	
 protected:
 	void closeEvent(QCloseEvent * event);
-	void showEvent(QShowEvent * event);
+	//void showEvent(QShowEvent * event);
 
 private slots:
 	void on_freezeOutputToggle_stateChanged(int arg1);

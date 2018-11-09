@@ -76,37 +76,11 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 	//	tell the widget to draw a single frame.  for some reason, GL widgets on os x don't have their internal sizes set properly when they draw their first frame.
 	ui->bufferView->drawBuffer(nullptr);
 	
-	//	start loading camera stuff, i'm hoping this reduces problems later?
-	/*
-	QThread		*tmpThread = QThread::create([&]()	{
-		if (qApp->thread() == QThread::currentThread())
-			qDebug() << "CAM SETUP MAIN THREAD";
-		else
-			qDebug() << "CAM SETUP ALT THREAD";
-			
-		QList<QCameraInfo>		cameraInfos = QCameraInfo::availableCameras();
-		for (const QCameraInfo & cameraInfo : cameraInfos)	{
-			Q_UNUSED(cameraInfo);
-		}
-		
-		QTimer::singleShot(500, [&]()	{
-			qDebug() << "CAM SETUP KILLING THREAD";
-			tmpThread->quit();
-			delete tmpThread;
-		});
-	});
-	tmpThread->start();
-	*/
-	
 	//	hide myself, i don't need to be visible any more
-	QTimer::singleShot(50,[&]()	{
-		hide();
-	});
+	hide();
 	
 	//	finish launching
-	QTimer::singleShot(50, [&]()	{
-		FinishLaunching();
-	});
+	FinishLaunching();
 }
 
 
@@ -129,26 +103,10 @@ void FinishLaunching()	{
 	
 	LoadingWindow		*lw = new LoadingWindow();
 	
-	QTimer::singleShot(50, [=]()	{
-		ow->show();
-		dw->show();
-		lw->show();
-		lw->on_createNewFile();
-	});
+	dw->show();
+	lw->show();
+	lw->on_createNewFile();
 	
-	/*
-	static DynamicVideoSource		dvs;
-	static OutputWindow		ow;
-	ow.show();
+	ow->show();
 	
-	//	ISF controller has to be created after OutputWindow (it connects to a signal from the window)
-	GetISFController();
-	
-	static DocWindow			dw;
-	dw.show();
-	
-	static LoadingWindow		lw;
-	lw.show();	//	NO, not yet- this loads webcam stuff, which causes problems right now
-	lw.on_createNewFile();	//	NO, not yet- there's no GL buffer pool, so the scene can't compile anything
-	*/
 }

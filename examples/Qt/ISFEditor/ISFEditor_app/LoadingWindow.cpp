@@ -12,6 +12,7 @@
 #include <QScrollArea>
 #include <QDir>
 #include <QStandardItemModel>
+#include <QAbstractEventDispatcher>
 
 #include "DocWindow.h"
 #include "ISFController.h"
@@ -141,34 +142,32 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//	bump the slot to populate the pop-up button with the list of sources.
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
 	
-	QTimer::singleShot(50, [&]()	{
-		//	figure out what directory's contents we want to display, and use it to set the base directory
-		QString			defaultDirToLoad;
+	//	figure out what directory's contents we want to display, and use it to set the base directory
+	QString			defaultDirToLoad;
 #ifdef Q_OS_MAC
-		defaultDirToLoad = QString("~/Library/Graphics/ISF");
-		//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
-		defaultDirToLoad.replace("~", QDir::homePath());
+	defaultDirToLoad = QString("~/Library/Graphics/ISF");
+	//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
+	defaultDirToLoad.replace("~", QDir::homePath());
 #endif
-		QSettings		settings;
-		QVariant		lastUsedPath = settings.value("baseDir");
-		if (!lastUsedPath.isNull())	{
-			//qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
-			QString			tmpStr = lastUsedPath.toString();
-			tmpStr.replace("~", QDir::homePath());
-			if (QDir(tmpStr).exists())	{
-				setBaseDirectory(tmpStr);
-			}
-			else	{
-				//qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
-				setBaseDirectory(defaultDirToLoad);
-			}
+	QSettings		settings;
+	QVariant		lastUsedPath = settings.value("baseDir");
+	if (!lastUsedPath.isNull())	{
+		//qDebug() << "\tfound a path stored in the user settings! (" << lastUsedPath.toString() << ")";
+		QString			tmpStr = lastUsedPath.toString();
+		tmpStr.replace("~", QDir::homePath());
+		if (QDir(tmpStr).exists())	{
+			setBaseDirectory(tmpStr);
 		}
-		else
+		else	{
+			//qDebug() << "\terr: the dir to load doesn't exist, falling back to default dir";
 			setBaseDirectory(defaultDirToLoad);
-	});
+		}
+	}
+	else
+		setBaseDirectory(defaultDirToLoad);
 	
 	//	restore the window position
-	QSettings		settings;
+	//QSettings		settings;
 	if (settings.contains("LoadingWindowGeometry"))	{
 		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
 	}
@@ -192,13 +191,10 @@ void LoadingWindow::loadUserISFsButtonClicked()	{
 }
 void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	/*
+	
 	QString			dirToLoad("/Library/Graphics/ISF");
 	setBaseDirectory(dirToLoad);
-	*/
-	QTimer::singleShot(50, []()	{
-		qDebug() << "TIMER EXECUTING";
-	});
+	
 }
 void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;

@@ -52,36 +52,34 @@ void ISFGLBufferQWidget::_renderNow()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
-	if (bp == nullptr)
-		return;
-	bool			renderAnotherFrame = false;
-	{
-		lock_guard<recursive_mutex>		lock(ctxLock);
-		//cout<<"\tctxThread is "<<ctxThread<<", current thread is "<<QThread::currentThread()<<", main thread is "<< QCoreApplication::instance()->thread()<<endl;
-		//if (ctxThread!=nullptr)	{
-			if (ctxThread!=nullptr && ctxThread!=QThread::currentThread())	{
-				cout << "err: ctxThread isnt currentThread, bailing, " << __PRETTY_FUNCTION__ << endl;
-				return;
-			}
-			
-			if (ctxThread != nullptr)
-				renderAnotherFrame = true;
-			
-			
-			if (scene != nullptr)	{
-				if (buffer != nullptr)	{
-					scene->setFilterInputBuffer(buffer);
+	bool			renderAnotherFrame = true;
+	if (bp != nullptr)	{
+		{
+			lock_guard<recursive_mutex>		lock(ctxLock);
+			//cout<<"\tctxThread is "<<ctxThread<<", current thread is "<<QThread::currentThread()<<", main thread is "<< QCoreApplication::instance()->thread()<<endl;
+			//if (ctxThread!=nullptr)	{
+				if (ctxThread!=nullptr && ctxThread!=QThread::currentThread())	{
+					cout << "err: ctxThread isnt currentThread, bailing, " << __PRETTY_FUNCTION__ << endl;
+					return;
 				}
-				scene->render();
-			}
-		//}
+			
+				if (ctxThread != nullptr)
+					renderAnotherFrame = true;
+			
+			
+				if (scene != nullptr)	{
+					if (buffer != nullptr)	{
+						scene->setFilterInputBuffer(buffer);
+					}
+					scene->render();
+				}
+			//}
+		}
 	}
 	
 	if (renderAnotherFrame)	{
 		update();
 	}
-
-	bp->housekeeping();
 	
 }
 
@@ -235,8 +233,15 @@ void ISFGLBufferQWidget::paintGL()
 	//qDebug() << "\t" << QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
 	
 	emit aboutToRedraw(this);
+	
+	QOpenGLWidget::paintGL();
 	makeCurrent();
 	_renderNow();
+	
+	GLBufferPoolRef		bp = GetGlobalBufferPool();
+	if (bp != nullptr)
+		bp->housekeeping();
+	
 }
 void ISFGLBufferQWidget::initializeGL()
 {

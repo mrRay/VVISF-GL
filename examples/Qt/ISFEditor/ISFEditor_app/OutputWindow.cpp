@@ -130,13 +130,16 @@ void OutputWindow::closeEvent(QCloseEvent * event)	{
 	
 	QWidget::closeEvent(event);
 }
+/*
 void OutputWindow::showEvent(QShowEvent * event)	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
-	//Q_UNUSED(event);
+	Q_UNUSED(event);
 	QWidget::showEvent(event);
 	
 }
+*/
+
 
 void OutputWindow::on_freezeOutputToggle_stateChanged(int arg1)	{
 	Q_UNUSED(arg1);

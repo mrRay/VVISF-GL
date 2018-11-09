@@ -31,19 +31,23 @@ using namespace VVGL;
 class InterAppOutput_MacOpaque	{
 public:
 	InterAppOutput_MacOpaque()	{
-		ctx = GetGlobalBufferPool()->context()->newContextSharingMe();
-		
-		QVariant		nativeHandle = ctx->nativeHandle();
-		if (nativeHandle.type() != QVariant::nameToType("QCocoaNativeContext"))	{
-			qDebug() << "ERR: variant (" << nativeHandle << ") is wrong type, " << __PRETTY_FUNCTION__;
+		GLBufferPoolRef		bp = GetGlobalBufferPool();
+		if (bp != nullptr)	{
+			ctx = bp->context()->newContextSharingMe();
+
+			QVariant		nativeHandle = ctx->nativeHandle();
+			if (nativeHandle.type() != QVariant::nameToType("QCocoaNativeContext"))	{
+				qDebug() << "ERR: variant (" << nativeHandle << ") is wrong type, " << __PRETTY_FUNCTION__;
+			}
+			else	{
+				QCocoaNativeContext		nativeCtx = nativeHandle.value<QCocoaNativeContext>();
+				server = [[SyphonServer alloc]
+					initWithName:@"ISF Test App"
+					context:[nativeCtx.context() CGLContextObj]
+					options:nil];
+			}
 		}
-		else	{
-			QCocoaNativeContext		nativeCtx = nativeHandle.value<QCocoaNativeContext>();
-			server = [[SyphonServer alloc]
-				initWithName:@"ISF Test App"
-				context:[nativeCtx.context() CGLContextObj]
-				options:nil];
-		}
+
 		
 		
 	}
