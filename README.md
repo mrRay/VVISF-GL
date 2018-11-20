@@ -23,13 +23,15 @@ This is all BSD licensed, you can do whatever you want with it and feel good abo
 
 # Documentation
 
-The source code is heavily documented, using both normal comments and doxygen.  The compiled doxygen docs are available at the following URLs.  Platform-specific functions are listed in the documentation for the given platform:
+This project is documented, using both Doxygen and traditional inline comments.  The compiled Doxygen web pages are available at the following URLs, broken down by platform:
 
 <A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/Mac/html/modules.html">Mac Documentation</A><BR>
 <A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/iOS/html/modules.html">iOS Documentation</A><BR>
 <A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/GLFW/html/modules.html">GLFW Documentation</A><BR>
 <A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/Qt/html/modules.html">Qt Documentation</A><BR>
 <A HREF="https://www.vidvox.net/rays_oddsnends/VVGLVVISF_Docs/RPi/html/modules.html">Raspbian Documentation</A><BR>
+
+...Your first stop should probably be to the "Modules" section, which has a series of walkthroughs that introduce the concepts, classes, and workflows for these libs.
 
 # Building and Using VVGL & VVISF
 
@@ -42,7 +44,7 @@ Compiling VVGL is hopefully straightforward- detailed per-SDK sample projects an
 This repository includes an xcode project (examples/apple/ISFSandbox.xcodeproj) that has already been configured to compile VVGL and VVISF as frameworks that can be embedded in and deployed with your software.  The same xcode project also includes a number of sample applications for OS X and iOS demonstrating how to include and use the frameworks.
 
 Adding VVGL.framework and VVISF.framework to an existing xcode project:
-- Add the project file XXXXX.xcodeproj to your workspace.
+- Add the project file ISFSandbox.xcodeproj to your workspace.
 - Add VVGL.framework and VVISF.framework as dependencies for your target (if you're compiling them for iOS, add VVGL_iOS and VVISF_iOS instead).
 - Navigate to the "Build Phases" UI in XCode for your target.  Locate the "Link Binary With Libraries" section, and add VVGL.framework and VVISF.framework to the list (click the "+" button and locate the frameworks in the list).
 - Add a new "Copy Files" build phase.  Set its destination to "Frameworks".  Add VVGL.framework and VVISF.framework to this list (click the "+" button and then navigate to the frameworks in the "Products" folder).
@@ -50,7 +52,7 @@ Adding VVGL.framework and VVISF.framework to an existing xcode project:
 
 ### VVGL/VVISF in Qt
 
-This repository includes a Qt project (examples/Qt/Qt.pro) that compiles VVGL and VVISF as shared libraries- the same project also includes two sample apps demonstrating the basic use of these shared libraries and VVGL/VVISF in Qt.
+This repository includes a Qt project (examples/Qt/Qt.pro) that compiles VVGL and VVISF as shared libraries- the same project also includes two sample apps demonstrating the basic use of these shared libraries and VVGL/VVISF in Qt, two texture upload/download benchmark apps, and a full-featured cross-platform port of the original cocoa ISF editor.
 
 After adding the shared libraries and their accompanying header files to your project file, you'll have to define which SDK the Qt project you're adding VVGL to is using.  This is done by defining the compiler flag VVGL_SDK_QT, either in the Qt project file (DEFINES += VVGL_SDK_QT), or by un-commenting the appropriate line in "VVGL_HardCodedDefines.hpp".
 
