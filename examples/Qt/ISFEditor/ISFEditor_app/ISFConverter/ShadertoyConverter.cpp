@@ -48,6 +48,7 @@ void ShadertoyConverter::okClicked()	{
 	//QString			rawURLString("https://www.shadertoy.com/view/4lcfDB");
 	//QString			rawURLString("https://www.shadertoy.com/view/lljfRD");
 	//QString			rawURLString("https://www.shadertoy.com/view/MlKBWD");
+	//QString			rawURLString("https://www.shadertoy.com/view/XtGBWW");
 	if (rawURLString.isNull() || rawURLString.length()<1)	{
 		QMessageBox::warning(GetLoadingWindow(), "", QString("Error: cannot parse URL \"%1\"").arg(rawURLString), QMessageBox::Ok);
 		done(1);
@@ -788,7 +789,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 					QString				regexString = regexFmtString.arg(replaceMe);
 					QString				replaceString = replaceFmtString.arg(replacement);
 					QRegularExpression	regex(regexString);
-					if (targetLine.contains(regex))
+					while (targetLine.contains(regex))
 						targetLine.replace(regex, replaceString);
 				}
 			}
