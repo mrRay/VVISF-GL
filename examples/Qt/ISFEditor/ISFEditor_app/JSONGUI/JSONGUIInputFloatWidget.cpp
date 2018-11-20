@@ -21,10 +21,25 @@ JSONGUIInputFloatWidget::JSONGUIInputFloatWidget(const JGMInputRef & inRef, JSON
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputFloatWidget::~JSONGUIInputFloatWidget()
 {
 	delete ui;
+}
+void JSONGUIInputFloatWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->defaultSBox, 0, 0, 0);
+	QObject::disconnect(ui->defaultCBox, 0, 0, 0);
+	QObject::disconnect(ui->identitySBox, 0, 0, 0);
+	QObject::disconnect(ui->identityCBox, 0, 0, 0);
+	QObject::disconnect(ui->minSBox, 0, 0, 0);
+	QObject::disconnect(ui->minCBox, 0, 0, 0);
+	QObject::disconnect(ui->maxSBox, 0, 0, 0);
+	QObject::disconnect(ui->maxCBox, 0, 0, 0);
+	
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

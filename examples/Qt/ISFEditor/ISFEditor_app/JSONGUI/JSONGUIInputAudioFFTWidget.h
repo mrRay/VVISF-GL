@@ -21,6 +21,8 @@ public:
 	explicit JSONGUIInputAudioFFTWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputAudioFFTWidget();
 	
+	virtual void prepareToBeDeleted() override;
+	
 	virtual void prepareUIItems() override;
 	virtual void refreshUIItems() override;
 

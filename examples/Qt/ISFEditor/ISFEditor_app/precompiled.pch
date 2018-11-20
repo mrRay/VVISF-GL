@@ -1,17 +1,29 @@
 
-
 #include <algorithm>
+#include <cassert>
+#include <climits>
+#include <cmath>
+#include <cstdio>
 #include <functional>
+#include <iostream>
 #include <limits>
 #include <mutex>
+#include <new>
 #include <regex>
 #include <sstream>
+#include <string>
+#include <typeinfo>
 #include <utility>
 #include <vector>
+#include <vector>
 
-
+#include <QAbstractEventDispatcher>
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QAudioDeviceInfo>
+#include <QAudioFormat>
+#include <QAudioInput>
+#include <QByteArray>
 #include <QCamera>
 #include <QCameraInfo>
 #include <QCheckBox>
@@ -22,6 +34,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QDoubleSpinBox>
+#include <QDrag>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -42,6 +55,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QLinkedList>
 #include <QListView>
 #include <QListWidget>
 #include <QMainWindow>
@@ -54,6 +68,7 @@
 #include <QPointer>
 #include <QPushButton>
 #include <QRegularExpression>
+#include <QScopedPointer>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSettings>
@@ -61,11 +76,14 @@
 #include <QSlider>
 #include <QSpacerItem>
 #include <QSpinBox>
+#include <QStandardItemModel>
 #include <QString>
 #include <QStringListModel>
 #include <QSyntaxHighlighter>
 #include <QTableView>
+#include <QtCore/QtGlobal>
 #include <QTextBlock>
+#include <QTime>
 #include <QTimer>
 #include <QUrl>
 #include <QVariant>

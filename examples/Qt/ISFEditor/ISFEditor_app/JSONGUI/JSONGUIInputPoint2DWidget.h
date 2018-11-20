@@ -21,6 +21,8 @@ public:
 	explicit JSONGUIInputPoint2DWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputPoint2DWidget();
 	
+	virtual void prepareToBeDeleted() override;
+	
 	virtual void prepareUIItems() override;
 	virtual void refreshUIItems() override;
 

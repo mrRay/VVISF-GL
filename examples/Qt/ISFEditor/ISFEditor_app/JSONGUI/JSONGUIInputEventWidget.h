@@ -21,6 +21,8 @@ public:
 	explicit JSONGUIInputEventWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputEventWidget();
 	
+	virtual void prepareToBeDeleted() override;
+	
 	virtual void prepareUIItems() override;
 	virtual void refreshUIItems() override;
 

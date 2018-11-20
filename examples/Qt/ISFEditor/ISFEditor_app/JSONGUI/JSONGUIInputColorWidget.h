@@ -21,6 +21,8 @@ public:
 	explicit JSONGUIInputColorWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIInputColorWidget();
 	
+	virtual void prepareToBeDeleted() override;
+	
 	virtual void prepareUIItems() override;
 	virtual void refreshUIItems() override;
 

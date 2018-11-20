@@ -127,6 +127,29 @@ void LoadingWindow::on_saveFile()	{
 
 
 
+void LoadingWindow::finishedConversionDisplayFile(const QString & n)	{
+	qDebug() << __PRETTY_FUNCTION__ << "... " << n;
+	//on_loadFile(n);
+	
+	//	set the base directory- this should manually create a new data model with an updated file list
+	setBaseDirectory(baseDirectory);
+	//	get the filter list view's data model, figure out the index corresponding to the file path i was just passed
+	QFileSystemModel		*tmpModel = qobject_cast<QFileSystemModel*>(ui->filterListView->model());
+	if (tmpModel != nullptr)	{
+		QModelIndex				tmpIndex = tmpModel->index(n);
+		if (!tmpIndex.isValid())
+			qDebug() << "\tERR: tmpIndex not valid in " << __PRETTY_FUNCTION__;
+		else	{
+			ui->filterListView->setCurrentIndex(tmpIndex);
+		}
+	}
+	else
+		qDebug() << "\tERR: model null in " << __PRETTY_FUNCTION__;
+}
+
+
+
+
 void LoadingWindow::closeEvent(QCloseEvent * event)	{
 	QSettings		settings;
 	settings.setValue("LoadingWindowGeometry", saveGeometry());
@@ -354,10 +377,10 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 	qDebug() << __PRETTY_FUNCTION__ << ", " << inBaseDir;
 	
 	if (qApp->thread() != QThread::currentThread()) qDebug() << "ERR: thread is not main! " << __PRETTY_FUNCTION__;
-	
+	/*
 	if (baseDirectory == inBaseDir)
 		return;
-	
+	*/
 	QDir		tmpDir(inBaseDir);
 	if (!tmpDir.exists() || !tmpDir.isReadable())	{
 		qDebug() << "\tERR: passed dir doesn't exist or is not readable (" << inBaseDir << "), " << __PRETTY_FUNCTION__;

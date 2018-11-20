@@ -35,6 +35,15 @@ JSONGUIPassWidget::~JSONGUIPassWidget()
 
 
 
+void JSONGUIPassWidget::prepareToBeDeleted()	{
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
+	QObject::disconnect((ui->targetBufferEdit), 0, 0, 0);
+	QObject::disconnect((ui->persistentCBox), 0, 0, 0);
+	QObject::disconnect((ui->floatCBox), 0, 0, 0);
+	QObject::disconnect((ui->widthEdit), 0, 0, 0);
+	QObject::disconnect((ui->heightEdit), 0, 0, 0);
+}
 void JSONGUIPassWidget::prepareUIItems()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	

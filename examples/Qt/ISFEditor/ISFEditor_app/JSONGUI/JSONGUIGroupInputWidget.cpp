@@ -21,10 +21,12 @@ JSONGUIGroupInputWidget::JSONGUIGroupInputWidget(const JGMTopRef & inTop, QWidge
 	
 	connect(ui->pushButton, &QAbstractButton::clicked, this, &JSONGUIGroupInputWidget::newInputClicked);
 }
-
 JSONGUIGroupInputWidget::~JSONGUIGroupInputWidget()
 {
 	delete ui;
+}
+void JSONGUIGroupInputWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->pushButton, 0, 0, 0);
 }
 
 

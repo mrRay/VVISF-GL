@@ -15,10 +15,16 @@ JSONGUIInputPoint2DWidget::JSONGUIInputPoint2DWidget(const JGMInputRef & inRef, 
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputPoint2DWidget::~JSONGUIInputPoint2DWidget()
 {
 	delete ui;
+}
+void JSONGUIInputPoint2DWidget::prepareToBeDeleted()	{
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

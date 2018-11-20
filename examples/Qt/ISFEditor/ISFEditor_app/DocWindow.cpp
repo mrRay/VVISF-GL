@@ -225,6 +225,7 @@ void DocWindow::updateContentsFromISFController()	{
 			for (auto fragErrPair : fragErrs)	{
 				tmpLineNos.append(fragErrPair.first);
 				errString.append( QString::fromStdString(fragErrPair.second) );
+				errString.append("\n");
 			}
 			if (fragErrs.size() > 0)
 				errString.append("\n\n");
@@ -285,6 +286,7 @@ void DocWindow::updateContentsFromISFController()	{
 			for (auto vertErrPair : vertErrs)	{
 				tmpLineNos.append(vertErrPair.first);
 				errString.append( QString::fromStdString(vertErrPair.second) );
+				errString.append("\n");
 			}
 			//	give the vector of line numbers for errors to the frag shader editor
 			ui->vertShaderEditor->setErrorLineNumbers(tmpLineNos);

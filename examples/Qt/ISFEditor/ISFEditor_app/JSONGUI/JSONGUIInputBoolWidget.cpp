@@ -17,10 +17,18 @@ JSONGUIInputBoolWidget::JSONGUIInputBoolWidget(const JGMInputRef & inRef, JSONSc
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputBoolWidget::~JSONGUIInputBoolWidget()
 {
 	delete ui;
+}
+void JSONGUIInputBoolWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->defaultCBox, 0, 0, 0);
+	
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

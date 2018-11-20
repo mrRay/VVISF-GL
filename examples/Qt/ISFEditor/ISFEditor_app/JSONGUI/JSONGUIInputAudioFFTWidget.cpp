@@ -15,10 +15,16 @@ JSONGUIInputAudioFFTWidget::JSONGUIInputAudioFFTWidget(const JGMInputRef & inRef
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputAudioFFTWidget::~JSONGUIInputAudioFFTWidget()
 {
 	delete ui;
+}
+void JSONGUIInputAudioFFTWidget::prepareToBeDeleted()	{
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

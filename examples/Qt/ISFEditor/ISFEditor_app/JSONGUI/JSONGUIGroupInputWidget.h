@@ -21,6 +21,8 @@ class JSONGUIGroupInputWidget : public QWidget
 public:
 	explicit JSONGUIGroupInputWidget(const JGMTopRef & inTop, QWidget *parent = nullptr);
 	~JSONGUIGroupInputWidget();
+	
+	void prepareToBeDeleted();
 
 public slots:
 	void newInputClicked();

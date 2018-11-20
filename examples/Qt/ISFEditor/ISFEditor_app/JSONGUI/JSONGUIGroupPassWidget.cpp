@@ -21,10 +21,12 @@ JSONGUIGroupPassWidget::JSONGUIGroupPassWidget(const JGMTopRef & inTop, QWidget 
 	
 	connect(ui->pushButton, &QAbstractButton::clicked, this, &JSONGUIGroupPassWidget::newInputClicked);
 }
-
 JSONGUIGroupPassWidget::~JSONGUIGroupPassWidget()
 {
 	delete ui;
+}
+void JSONGUIGroupPassWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->pushButton, 0, 0, 0);
 }
 
 

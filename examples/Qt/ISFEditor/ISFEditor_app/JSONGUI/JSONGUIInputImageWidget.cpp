@@ -15,10 +15,16 @@ JSONGUIInputImageWidget::JSONGUIInputImageWidget(const JGMInputRef & inRef, JSON
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputImageWidget::~JSONGUIInputImageWidget()
 {
 	delete ui;
+}
+void JSONGUIInputImageWidget::prepareToBeDeleted()	{
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

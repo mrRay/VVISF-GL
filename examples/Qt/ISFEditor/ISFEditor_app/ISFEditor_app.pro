@@ -90,7 +90,10 @@ SOURCES += \
 	AudioController.cpp \
 	Audio/ISFAudioBufferList.cpp \
 	VideoOutput/InterAppOutput.cpp \
-	VideoOutput/VideoOutput.cpp
+	VideoOutput/VideoOutput.cpp \
+    ISFConverter/GLSLSandboxConverter.cpp \
+    ISFConverter/ShadertoyConverter.cpp \
+    misc_classes/StringUtilities.cpp
 
 
 HEADERS += \
@@ -143,7 +146,10 @@ HEADERS += \
 	AudioController.h \
 	Audio/ISFAudioBufferList.h \
 	VideoOutput/InterAppOutput.h \
-	VideoOutput/VideoOutput.h
+	VideoOutput/VideoOutput.h \
+    ISFConverter/GLSLSandboxConverter.h \
+    ISFConverter/ShadertoyConverter.h \
+    misc_classes/StringUtilities.h
 
 # platform-specific classes
 mac {
@@ -173,11 +179,14 @@ FORMS += \
 	JSONGUI/JSONGUIInputImageWidget.ui \
 	JSONGUI/JSONGUIInputLongWidget.ui \
 	JSONGUI/JSONGUIInputPoint2DWidget.ui \
-	JSONGUI/JSONGUIPassWidget.ui
+	JSONGUI/JSONGUIPassWidget.ui \
+    ISFConverter/GLSLSandboxConverter.ui \
+    ISFConverter/ShadertoyConverter.ui
 
 RESOURCES += \
 	misc_ui/shaderLanguagefiles.qrc \
-	resources.qrc
+	resources.qrc \
+    ISFConverter/shadertoy_textures/shadertoy_textures.qrc
 
 
 
@@ -205,6 +214,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
 INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
+INCLUDEPATH += $$_PRO_FILE_PWD_/ISFConverter
 
 
 

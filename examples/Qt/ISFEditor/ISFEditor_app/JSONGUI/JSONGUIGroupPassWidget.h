@@ -21,6 +21,8 @@ class JSONGUIGroupPassWidget : public QWidget
 public:
 	explicit JSONGUIGroupPassWidget(const JGMTopRef & inTop, QWidget *parent = nullptr);
 	~JSONGUIGroupPassWidget();
+	
+	void prepareToBeDeleted();
 
 public slots:
 	void newInputClicked();

@@ -35,6 +35,8 @@ public:
 	void on_loadFile(const QString & n);
 	void on_saveFile();
 	
+	void finishedConversionDisplayFile(const QString & n);
+	
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
 	virtual void showEvent(QShowEvent * event) Q_DECL_OVERRIDE;

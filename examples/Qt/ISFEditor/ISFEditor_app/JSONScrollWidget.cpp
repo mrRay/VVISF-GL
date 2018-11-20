@@ -194,6 +194,30 @@ void JSONScrollWidget::clearItems()	{
 	for (const QPointer<QWidget> & itemPtr : items)	{
 		if (itemPtr.isNull())
 			continue;
+		//static_cast<JSONGUIInputWidget*>(itemPtr.data())->prepareToBeDeleted();
+		//qobject_cast<JSONGUIInputWidget*>()
+		//qDebug() << "hitting item " << itemPtr.data();
+		
+		JSONGUIBasicInfoWidget		*tmpBasicInfo = qobject_cast<JSONGUIBasicInfoWidget*>(itemPtr.data());
+		JSONGUIGroupInputWidget		*tmpGroupInput = qobject_cast<JSONGUIGroupInputWidget*>(itemPtr.data());
+		JSONGUIInputWidget			*tmpInput = qobject_cast<JSONGUIInputWidget*>(itemPtr.data());
+		JSONGUIGroupPassWidget		*tmpGroupPass = qobject_cast<JSONGUIGroupPassWidget*>(itemPtr.data());
+		JSONGUIPassWidget			*tmpPass = qobject_cast<JSONGUIPassWidget*>(itemPtr.data());
+		
+		if (tmpBasicInfo != nullptr)
+			tmpBasicInfo->prepareToBeDeleted();
+		else if (tmpGroupInput != nullptr)
+			tmpGroupInput->prepareToBeDeleted();
+		else if (tmpInput != nullptr)
+			tmpInput->prepareToBeDeleted();
+		else if (tmpGroupPass != nullptr)
+			tmpGroupPass->prepareToBeDeleted();
+		else if (tmpPass != nullptr)
+			tmpPass->prepareToBeDeleted();
+	}
+	for (const QPointer<QWidget> & itemPtr : items)	{
+		if (itemPtr.isNull())
+			continue;
 		//	remove the widget from the layout and hide it
 		scrollLayout->removeWidget(itemPtr.data());
 		itemPtr->hide();

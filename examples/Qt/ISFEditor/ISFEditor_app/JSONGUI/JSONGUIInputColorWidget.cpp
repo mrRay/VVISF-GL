@@ -46,10 +46,25 @@ JSONGUIInputColorWidget::JSONGUIInputColorWidget(const JGMInputRef & inRef, JSON
 		refreshUIItems();
 	}
 }
-
 JSONGUIInputColorWidget::~JSONGUIInputColorWidget()
 {
 	delete ui;
+}
+void JSONGUIInputColorWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->defaultLabel, 0, 0, 0);
+	QObject::disconnect(ui->defaultCBox, 0, 0, 0);
+	QObject::disconnect(ui->identityLabel, 0, 0, 0);
+	QObject::disconnect(ui->identityCBox, 0, 0, 0);
+	QObject::disconnect(ui->minLabel, 0, 0, 0);
+	QObject::disconnect(ui->minCBox, 0, 0, 0);
+	QObject::disconnect(ui->maxLabel, 0, 0, 0);
+	QObject::disconnect(ui->maxCBox, 0, 0, 0);
+	
+	QObject::disconnect((ui->dragLabel), 0, 0, 0);
+	QObject::disconnect((ui->inputNameEdit), 0, 0, 0);
+	QObject::disconnect((ui->labelField), 0, 0, 0);
+	QObject::disconnect((ui->typePUB), 0, 0, 0);
+	QObject::disconnect((ui->deleteLabel), 0, 0, 0);
 }
 
 

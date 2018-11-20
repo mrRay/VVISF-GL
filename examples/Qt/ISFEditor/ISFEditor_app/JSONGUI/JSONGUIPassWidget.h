@@ -30,6 +30,8 @@ public:
 	explicit JSONGUIPassWidget(const JGMPassRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	~JSONGUIPassWidget();
 	
+	virtual void prepareToBeDeleted();
+	
 	virtual void prepareUIItems();
 	virtual void refreshUIItems();
 	

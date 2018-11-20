@@ -71,6 +71,12 @@ JSONGUIBasicInfoWidget::~JSONGUIBasicInfoWidget()
 {
 	delete ui;
 }
+void JSONGUIBasicInfoWidget::prepareToBeDeleted()	{
+	QObject::disconnect(ui->descriptionEdit, 0, 0, 0);
+	QObject::disconnect(ui->creditEdit, 0, 0, 0);
+	QObject::disconnect(ui->categoriesEdit, 0, 0, 0);
+	QObject::disconnect(ui->vsnEdit, 0, 0, 0);
+}
 
 
 

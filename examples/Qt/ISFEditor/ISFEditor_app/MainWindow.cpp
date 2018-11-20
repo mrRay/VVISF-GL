@@ -10,6 +10,8 @@
 #include "ISFController.h"
 #include "DocWindow.h"
 #include "LoadingWindow.h"
+#include "GLSLSandboxConverter.h"
+#include "ShadertoyConverter.h"
 
 
 
@@ -46,6 +48,34 @@ void MainWindow::on_actionSave_triggered()	{
 	DocWindow		*dw = GetDocWindow();
 	if (dw != nullptr)
 		dw->saveOpenFile();
+}
+
+void MainWindow::on_actionImport_from_GLSLSandbox_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	GLSLSandboxConverter		*conv = new GLSLSandboxConverter(GetLoadingWindow());
+	int				returnCode = conv->exec();
+	qDebug() << "returnCode is " << returnCode;
+	if (!returnCode)	{
+		LoadingWindow		*lw = GetLoadingWindow();
+		if (lw != nullptr)	{
+			lw->finishedConversionDisplayFile(conv->exportedISFPath());
+		}
+	}
+}
+
+void MainWindow::on_actionImport_from_Shadertoy_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	
+	ShadertoyConverter		*conv = new ShadertoyConverter(GetLoadingWindow());
+	int				returnCode = conv->exec();
+	qDebug() << "returnCode is " << returnCode;
+	if (!returnCode)	{
+		LoadingWindow		*lw = GetLoadingWindow();
+		if (lw != nullptr)	{
+			lw->finishedConversionDisplayFile(conv->exportedISFPath());
+		}
+	}
 }
 
 void MainWindow::on_actionQuit_triggered()	{

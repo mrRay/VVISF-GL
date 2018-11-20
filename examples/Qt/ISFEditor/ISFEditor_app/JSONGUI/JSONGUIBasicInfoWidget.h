@@ -22,6 +22,8 @@ class JSONGUIBasicInfoWidget : public QWidget
 public:
 	explicit JSONGUIBasicInfoWidget(const JGMTopRef & inTop, QWidget *parent = nullptr);
 	~JSONGUIBasicInfoWidget();
+	
+	void prepareToBeDeleted();
 
 public slots:
 	void descriptionFieldUsed();

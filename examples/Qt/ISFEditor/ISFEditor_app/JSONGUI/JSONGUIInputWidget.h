@@ -21,6 +21,8 @@ class JSONGUIInputWidget : public QWidget
 public:
 	explicit JSONGUIInputWidget(const JGMInputRef & inInput, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
 	
+	virtual void prepareToBeDeleted() = 0;
+	
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent * e) Q_DECL_OVERRIDE;
 	virtual void dragMoveEvent(QDragMoveEvent * e) Q_DECL_OVERRIDE;

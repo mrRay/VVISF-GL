@@ -32,6 +32,10 @@ private slots:
 	
 	void widgetDrewItsFirstFrame();
 
+	void on_actionImport_from_GLSLSandbox_triggered();
+
+	void on_actionImport_from_Shadertoy_triggered();
+
 private:
 	Ui::MainWindow *ui;
 };
