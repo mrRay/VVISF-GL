@@ -30,7 +30,7 @@ using namespace std;
 GLCPUToTexCopier::GLCPUToTexCopier()	{
 	GLBufferPoolRef		bp = GetGlobalBufferPool();
 	if (bp != nullptr)
-		_queueCtx = bp->context();
+		_queueCtx = bp->context()->newContextSharingMe();
 }
 GLCPUToTexCopier::~GLCPUToTexCopier()	{
 	clearStream();
@@ -130,12 +130,16 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
 		return;
 	
+	GLVersion		myVers = _queueCtx->version;
+	
 	//	bind the PBO and texture
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	GLERRLOG
 	
-	glEnable(inTexBuffer->desc.target);
-	GLERRLOG
+	if (myVers==GLVersion_2)	{
+		glEnable(inTexBuffer->desc.target);
+		GLERRLOG
+	}
 	glBindTexture(inTexBuffer->desc.target, inTexBuffer->name);
 	GLERRLOG
 	
@@ -166,8 +170,10 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	//	unbind the PBO and texture
 	glBindTexture(inTexBuffer->desc.target, 0);
 	GLERRLOG
-	glDisable(inTexBuffer->desc.target);
-	GLERRLOG
+	if (myVers==GLVersion_2)	{
+		glDisable(inTexBuffer->desc.target);
+		GLERRLOG
+	}
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
 	GLERRLOG
@@ -206,22 +212,22 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, true);
 			}
 			else	{
-				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				texBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				texBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, true);
 			}
 			else	{
-				texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, true);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
 			break;
 		default:
 			break;
@@ -259,7 +265,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+				true);
 		}
 		else	{
 			pboBuffer = CreateRGBAPBO(
@@ -271,7 +277,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+				true);
 		}
 		break;
 	case GLBuffer::PF_BGRA:
@@ -285,7 +291,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+				true);
 		}
 		else	{
 			pboBuffer = CreateBGRAPBO(
@@ -297,7 +303,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+				true);
 		}
 		break;
 	case GLBuffer::PF_YCbCr_422:
@@ -310,7 +316,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 			NULL,	//	this will delete-initialize the buffer
 #endif
-			createInCurrentContext);
+			true);
 		break;
 	default:
 		break;
@@ -355,22 +361,22 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, true);
 			}
 			else	{
-				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				inTexBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				inTexBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, true);
 			}
 			else	{
-				inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext);
+				inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, true);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, createInCurrentContext);
+			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, true);
 			break;
 		default:
 			break;
@@ -430,7 +436,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					createInCurrentContext);
+					true);
 			}
 			else	{
 				inPBOBuffer = CreateRGBAPBO(
@@ -442,7 +448,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					createInCurrentContext);
+					true);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
@@ -456,7 +462,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					createInCurrentContext);
+					true);
 			}
 			else	{
 				inPBOBuffer = CreateBGRAPBO(
@@ -468,7 +474,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					createInCurrentContext);
+					true);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
@@ -481,7 +487,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				createInCurrentContext);
+				true);
 			break;
 		default:
 			break;

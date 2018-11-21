@@ -44,7 +44,7 @@ void ShadertoyConverter::cancelClicked()	{
 void ShadertoyConverter::okClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
-	QString			rawURLString = ui->lineEdit->text();
+	//QString			rawURLString = ui->lineEdit->text();
 	//QString			rawURLString("https://www.shadertoy.com/view/ldtczX");
 	//QString			rawURLString("https://www.shadertoy.com/view/4lcfDB");
 	//QString			rawURLString("https://www.shadertoy.com/view/lljfRD");
@@ -53,6 +53,8 @@ void ShadertoyConverter::okClicked()	{
 	//QString			rawURLString("https://www.shadertoy.com/view/4stXDX");
 	//QString			rawURLString("https://www.shadertoy.com/view/4tdBDS");
 	//QString			rawURLString("https://www.shadertoy.com/view/MtyBWh");	//	cube texture upload still not implemented for Qt
+	//QString			rawURLString("https://www.shadertoy.com/view/4dfGzs");
+	QString			rawURLString("https://www.shadertoy.com/view/4dcGW2");
 	
 	if (rawURLString.isNull() || rawURLString.length()<1)	{
 		QMessageBox::warning(GetLoadingWindow(), "", QString("Error: cannot parse URL \"%1\"").arg(rawURLString), QMessageBox::Ok);
@@ -1163,7 +1165,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 	
 	//	close our main function
 	//if (multiplePasses)
-		tmpMutString.append("}");
+		tmpMutString.append("\n}");
 	tmpMutString.append("\n");
 	
 	

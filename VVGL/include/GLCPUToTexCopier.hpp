@@ -53,6 +53,9 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		GLCPUToTexCopier(const GLContextRef & inCtx) : _queueCtx(inCtx) {};
 		~GLCPUToTexCopier();
 		
+		//!	Gets the context
+		GLContextRef context() { return _queueCtx; }
+		
 		//!	Clears all the queues, called when freed.
 		void clearStream();
 		

@@ -419,8 +419,8 @@ QSurfaceFormat GLQtCtxWrapper::CreateGL4SurfaceFormat()	{
 	//fmt.setRedBufferSize(8);
 	//fmt.setGreenBufferSize(8);
 	//fmt.setBlueBufferSize(8);
-	fmt.setOptions(0);
-	//fmt.setOptions(QSurfaceFormat::DeprecatedFunctions);
+	//fmt.setOptions(0);
+	fmt.setOptions(QSurfaceFormat::DeprecatedFunctions);
 	fmt.setProfile(QSurfaceFormat::CoreProfile);
 	fmt.setRenderableType(QSurfaceFormat::OpenGL);
 	fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);

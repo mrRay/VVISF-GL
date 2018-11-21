@@ -572,6 +572,7 @@ Highlighter::Highlighter(QTextDocument * inParent)
 	: QSyntaxHighlighter(inParent)
 {
 	//	configure some default comment start and end expressions
+	commentSingleExpr = QRegularExpression("//[^\n]*");
 	commentStartExpr = QRegularExpression("/\\*");
 	commentEndExpr = QRegularExpression("\\*/");
 	
@@ -686,6 +687,9 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		}
 	}
 	
+	if (tmpDocObj.contains("SINGLE_LINE_COMMENT_REGEX") && tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].isString())	{
+		commentSingleExpr = QRegularExpression(tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].toString());
+	}
 	if (tmpDocObj.contains("MULTI_LINE_COMMENT_START_REGEX") && tmpDocObj["MULTI_LINE_COMMENT_START_REGEX"].isString()) {
 		//	no format to set here, we're not making a rule- just an expression!
 		commentStartExpr = QRegularExpression(tmpDocObj["MULTI_LINE_COMMENT_START_REGEX"].toString());
@@ -705,7 +709,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 
 void Highlighter::highlightBlock(const QString & inText)
 {
-	
+	//qDebug() << __PRETTY_FUNCTION__ << ": " << inText;
 	//	run through all of the highlight rules, checked the passed string against each
 	foreach (const HighlightRule & tmpRule, highlightRules) {
 		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
@@ -717,10 +721,20 @@ void Highlighter::highlightBlock(const QString & inText)
 	//	set the current block state
 	setCurrentBlockState(HBS_OK);
 	
+	//	check this line- figure out if there's a single-line comment, and if so, the index where the single-line comment starts
+	int		singleLineCommentStartIndex = -1;
+	if (inText.contains(commentSingleExpr))	{
+		singleLineCommentStartIndex = commentSingleExpr.match(inText).capturedStart();
+	}
+	
 	//	if there isn't an open multi-line comment, look for the beginning of one in the passed text
 	int		startIndex = 0;
-	if (previousBlockState() != HBS_OpenComment)
+	if (previousBlockState() != HBS_OpenComment)	{
 		startIndex = inText.indexOf(commentStartExpr);
+	}
+	//	if the multi-line comment beginning occurred after the single-line comment start, we need to ignore it!
+	if (startIndex>=0 && singleLineCommentStartIndex>=0 && startIndex>singleLineCommentStartIndex)
+		startIndex = -1;
 	
 	//	if we found the beginning of a multi-line comment...
 	while (startIndex >= 0) {

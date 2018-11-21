@@ -100,7 +100,8 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	//	tell the scene to load the file, catch exceptions so we can throw stuff
 	try	{
 		sceneIsFilter = false;
-		scene->useFile(inPathToLoad.toStdString());
+		//scene->useFile(inPathToLoad.toStdString());
+		scene->useDoc(currentDoc);
 	}
 	catch (ISFErr & exc)	{
 		QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));

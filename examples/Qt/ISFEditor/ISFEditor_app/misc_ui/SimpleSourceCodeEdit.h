@@ -140,6 +140,7 @@ private:
 	};
 	
 	QVector<HighlightRule>		highlightRules;
+	QRegularExpression			commentSingleExpr;
 	QRegularExpression			commentStartExpr;
 	QRegularExpression			commentEndExpr;
 	

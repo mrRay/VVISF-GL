@@ -2117,7 +2117,8 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	returnMe->parentBufferPool = inPoolRef;
 	returnMe->srcRect = VVGL::Rect(0,0,imgSize.width,imgSize.height);
 	returnMe->backingID = GLBuffer::BackingID_None;
-	returnMe->backingSize = imgSize;
+	//returnMe->backingSize = imgSize;
+	returnMe->backingSize = repSize;
 	returnMe->flipped = true;
 	
 	returnMe->preferDeletion = true;
