@@ -431,7 +431,7 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 		//connect(selModel, &QItemSelectionModel::selectionChanged, this, &LoadingWindow::newFileSelected);
 		connect(selModel, &QItemSelectionModel::selectionChanged, [&](const QItemSelection &selected, const QItemSelection &deselected)	{
 			Q_UNUSED(deselected);
-			qDebug() << __FUNCTION__ << "->&QItemSelectionModel::selectionChanged";
+			//qDebug() << __FUNCTION__ << "->&QItemSelectionModel::selectionChanged";
 			QList<QModelIndex>		selectedIndexes = selected.indexes();
 			if (selectedIndexes.count() < 1)
 				return;
@@ -441,7 +441,7 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 			QVariant		selectedPath = firstIndex.data(QFileSystemModel::FilePathRole);
 			if (selectedPath.isNull())
 				return;
-			qDebug() << "\tshould be loading file " << selectedPath.toString();
+			//qDebug() << "\tshould be loading file " << selectedPath.toString();
 			
 			QString			selectedPathString = selectedPath.toString();
 			//GetISFController()->loadFile(selectedPathString);

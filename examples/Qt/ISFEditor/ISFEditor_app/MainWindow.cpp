@@ -62,6 +62,7 @@ void MainWindow::on_actionImport_from_GLSLSandbox_triggered()	{
 			lw->finishedConversionDisplayFile(conv->exportedISFPath());
 		}
 	}
+	delete conv;
 }
 
 void MainWindow::on_actionImport_from_Shadertoy_triggered()	{
@@ -76,6 +77,7 @@ void MainWindow::on_actionImport_from_Shadertoy_triggered()	{
 			lw->finishedConversionDisplayFile(conv->exportedISFPath());
 		}
 	}
+	delete conv;
 }
 
 void MainWindow::on_actionQuit_triggered()	{

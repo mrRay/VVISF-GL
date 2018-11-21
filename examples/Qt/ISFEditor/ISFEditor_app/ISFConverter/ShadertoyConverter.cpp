@@ -30,6 +30,7 @@ ShadertoyConverter::ShadertoyConverter(QWidget *parent) :
 
 ShadertoyConverter::~ShadertoyConverter()
 {
+	qDebug() << __PRETTY_FUNCTION__;
 	delete ui;
 }
 
@@ -49,6 +50,10 @@ void ShadertoyConverter::okClicked()	{
 	//QString			rawURLString("https://www.shadertoy.com/view/lljfRD");
 	//QString			rawURLString("https://www.shadertoy.com/view/MlKBWD");
 	//QString			rawURLString("https://www.shadertoy.com/view/XtGBWW");
+	//QString			rawURLString("https://www.shadertoy.com/view/4stXDX");
+	//QString			rawURLString("https://www.shadertoy.com/view/4tdBDS");
+	//QString			rawURLString("https://www.shadertoy.com/view/MtyBWh");	//	cube texture upload still not implemented for Qt
+	
 	if (rawURLString.isNull() || rawURLString.length()<1)	{
 		QMessageBox::warning(GetLoadingWindow(), "", QString("Error: cannot parse URL \"%1\"").arg(rawURLString), QMessageBox::Ok);
 		done(1);
@@ -130,6 +135,8 @@ void ShadertoyConverter::okClicked()	{
 		for (int i=1; i<renderpassArray.count(); ++i)
 			sortedRenderpassArray.append(renderpassArray.at(i));
 		sortedRenderpassArray.append(renderpassArray.at(0));
+		
+		//qDebug() << "\torig sortedRenderpassArray is " << sortedRenderpassArray;
 		
 		//	run through the sorted renderpass array, removing any passes that render to audio
 		auto			renderpassIt = sortedRenderpassArray.begin();
@@ -379,6 +386,7 @@ void ShadertoyConverter::okClicked()	{
 	//	run through the sorted array of render pass dicts- parse the inputs and outputs
 	int				passIndex = 0;
 	for (const QJsonValue & renderpassDictValue : sortedRenderpassArray)	{
+		//qDebug() << "\t******* processing render pass " << passIndex << "...";
 		QJsonObject		renderpassDict = renderpassDictValue.toObject();
 		
 		//	get the array of OUTPUTS for thsi pass- if there's more than one, bail with error
@@ -446,6 +454,8 @@ void ShadertoyConverter::okClicked()	{
 		//	run through the inputs
 		for (const QJsonValue & renderpassInputVal : renderpassInputs)	{
 			QJsonObject			renderpassInput = renderpassInputVal.toObject();
+			//qDebug() << "\t*******";
+			//qDebug() << "\trenderpassInput is " << renderpassInput;
 			int					channelNum = renderpassInput.value("channel").toInt();
 			QString				channelType = renderpassInput.value("type").toString();
 			QString				channelSrc = QString::fromStdString(VVGL::LastPathComponent( renderpassInput.value("filepath").toString().toStdString() ));
@@ -453,6 +463,7 @@ void ShadertoyConverter::okClicked()	{
 			
 			//	make sure the channel name is unique (a prior pass may have added an input or something with this name)
 			QString				uniqueChannelName;
+			//qDebug() << "\tprocessing channelNum " << channelNum << ", channelType is " << channelType << ", channelName is " << channelName << ", channelSrc is " << channelSrc;
 			
 			if (channelType == QString("texture"))	{
 				//	texture are IMPORTs, so check the supplemental imports array for a dict using this name
@@ -492,11 +503,13 @@ void ShadertoyConverter::okClicked()	{
 				QJsonArray			pathArray;
 				QRegularExpression	regex("([\\w]+)(\\.((jpg)|(png)))");
 				for (int i=0; i<6; ++i)	{
-					QString				modString;
-					if (i == 0)
-						modString = channelSrc;
-					else
-						modString = channelSrc.replace(regex, QString("\\1_%1\\2").arg(i));
+					QString				modString = channelSrc;
+					if (i != 0)
+						modString.replace(regex, QString("\\1_%1\\2").arg(i));
+					//if (i == 0)
+					//	modString = channelSrc;
+					//else
+					//	modString = channelSrc.replace(regex, QString("\\1_%1\\2").arg(i));
 					if (modString.isNull())	{
 						qDebug() << "\tERR: couldnt calculate cubemap file name, src string was " << channelSrc;
 						break;
@@ -504,6 +517,7 @@ void ShadertoyConverter::okClicked()	{
 					pathArray.append(QJsonValue(modString));
 				}
 				channelDict.insert("PATH", QJsonValue(pathArray));
+				channelDict.insert("TYPE", QJsonValue(QString("cube")));
 				suppImports.insert(uniqueChannelName, QJsonValue(channelDict));
 			}
 			else if (channelType == QString("video"))	{
@@ -671,6 +685,10 @@ void ShadertoyConverter::okClicked()	{
 
 
 QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrings, QJsonObject & suppEntries, const QJsonArray & varSwapNameDicts)	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << "\tsuppEntries are " << suppEntries;
+	//qDebug() << "\tvarSwapNameDicts are " << varSwapNameDicts;
+	
 	QStringList			environmentProvidedSamplers;
 	QJsonArray			tmpSuppArray;
 	QJsonObject			tmpSuppObject;
@@ -678,8 +696,8 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 	tmpSuppObject = suppEntries.value("IMPORTED").toObject();
 	for (const QString & tmpKey : tmpSuppObject.keys())	{
 		QJsonObject			importDict = tmpSuppObject.value(tmpKey).toObject();
-		QString				tmpString = importDict.value("TYPE").toString();
-		if (!tmpString.isNull() && tmpString==QString("cube"))
+		//QString				tmpString = importDict.value("TYPE").toString();
+		//if (!tmpString.isNull() && (tmpString==QString("cube") || tmpString==QString("image")))
 			environmentProvidedSamplers.append(importDict.value("NAME").toString());
 	}
 	tmpSuppArray = suppEntries.value("INPUTS").toArray();
@@ -837,7 +855,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 							--tmpRange.length;	//	i searched for the string + left parenthesis
 							//	'texture()' implies a newer GL environment, and may be referring to a cube sampler- so we can't just assume it's 2D and replace it...
 							QStringList			tmpVarArray;
-							//StringRange			fullFuncRangeToReplace = LexFunctionCall(targetLine, tmpRange, tmpVarArray);
+							StringRange			fullFuncRangeToReplace = LexFunctionCall(targetLine, tmpRange, tmpVarArray);
 							//qDebug() << "\ttexture() call's vars are " << tmpVarArray;
 							if (tmpVarArray.count()>0 && environmentProvidedSamplers.contains(tmpVarArray.at(0)))	{
 								//qDebug() << "\ttexture() call phase A complete";
@@ -857,7 +875,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 					}
 				}
 				if (tmpRange.length != 0)	{
-					//qDebug() << "\tline matches a texture lookup:\n" << targetLine;
+					//qDebug() << "\tline matches a texture lookup:\n\t\"" << targetLine << "\"";
 					StringRange			funcNameRange = tmpRange;
 					QStringList			tmpVarArray;
 					StringRange			fullFuncRangeToReplace = LexFunctionCall(targetLine, funcNameRange, tmpVarArray);
@@ -876,6 +894,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 							else	{
 								newFuncString = QString("IMG_PIXEL(%1,%2)").arg(samplerName).arg(samplerCoord);
 							}
+							//qDebug() << "\tnewFuncString is " << newFuncString << ", range to replace is " << fullFuncRangeToReplace.location << "/" << fullFuncRangeToReplace.length;
 							targetLine.replace(fullFuncRangeToReplace.location, fullFuncRangeToReplace.length, newFuncString);
 						}
 						else if (tmpVarArray.count() == 3)	{
@@ -892,6 +911,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 							else	{
 								newFuncString = QString("IMG_PIXEL(%1,%2,%3)").arg(samplerName).arg(samplerCoord).arg(samplerBias);
 							}
+							//qDebug() << "\tnewFuncString is " << newFuncString << ", range to replace is " << fullFuncRangeToReplace.location << "/" << fullFuncRangeToReplace.length;
 							targetLine.replace(fullFuncRangeToReplace.location, fullFuncRangeToReplace.length, newFuncString);
 						}
 						else	{
@@ -902,6 +922,7 @@ QString ShadertoyConverter::convertShaderSource(const QStringList & rawFragStrin
 					}
 					//	else the sampler in this texture lookup isn't a sampler being controlled by the ISF environment...
 					else	{
+						//qDebug() << "\tskipping this line, sampler isn't controlled by ISF environment...";
 						tmpRange.length = 0;
 					}
 				}

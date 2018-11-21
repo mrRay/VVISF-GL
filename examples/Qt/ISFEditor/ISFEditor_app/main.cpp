@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("com.yourcompanyname");
 	QCoreApplication::setApplicationName("ISFEditor");
 	
-	//QSurfaceFormat::setDefaultFormat(CreateCompatibilityGLSurfaceFormat());
-	QSurfaceFormat::setDefaultFormat(CreateGL4SurfaceFormat());
+	QSurfaceFormat::setDefaultFormat(CreateCompatibilityGLSurfaceFormat());
+	//QSurfaceFormat::setDefaultFormat(CreateGL4SurfaceFormat());
 	
 	QApplication a(argc, argv);
 	

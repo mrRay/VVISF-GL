@@ -199,7 +199,7 @@ void JSONGUIPassWidget::dropEvent(QDropEvent * e)	{
 
 
 void JSONGUIPassWidget::prepareDragLabel(QLabelDrag * dragLabel)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	Q_UNUSED(dragLabel);
 	JGMTop		*top = _pass->top();
 	if (top != nullptr)	{
