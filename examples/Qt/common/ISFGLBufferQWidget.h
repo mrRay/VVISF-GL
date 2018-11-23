@@ -41,10 +41,10 @@ protected:
 	void initializeGL() Q_DECL_OVERRIDE;
 	void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 	
-private:
+protected:
 	void _renderNow();
 	
-private:
+protected:
 	std::recursive_mutex	ctxLock;
 	VVGL::GLContextRef		ctx = nullptr;
 	VVISF::ISFSceneRef		scene = nullptr;

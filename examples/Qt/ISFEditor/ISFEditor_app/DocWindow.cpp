@@ -301,7 +301,10 @@ void DocWindow::updateContentsFromISFController()	{
 		//ui->compiledVertShader->setPlainText( QString::fromStdString(scene->vertexShaderString()) );
 		ui->compiledFragShader->setPlainText(isfc->getCompiledFragmentShaderString());
 		ui->compiledVertShader->setPlainText(isfc->getCompiledVertexShaderString());
-		ui->parsedJSON->setPlainText( QString::fromStdString(*doc->jsonString()) );
+		if (doc->jsonString()==nullptr)
+			ui->parsedJSON->setPlainText("");
+		else
+			ui->parsedJSON->setPlainText( QString::fromStdString(*doc->jsonString()) );
 		
 		//	if there's an error string...
 		if (errString.length() > 0)	{

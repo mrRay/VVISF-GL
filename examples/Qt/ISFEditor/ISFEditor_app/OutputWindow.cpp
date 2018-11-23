@@ -31,6 +31,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	//	we need to shut stuff down and delete contexts gracefull on quit
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 	
+	//	the gl widget publishes a signal when the user clicks & drags in it
+	connect(ui->bufferView, &MouseEventISFWidget::mouseMoved, [&](VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc)	{
+		emit outputWindowMouseMoved(normMouseEventLoc, absMouseEventLoc);
+	});
+	
 	//	restore the window position
 	QSettings		settings;
 	if (settings.contains("OutputWindowGeometry"))	{

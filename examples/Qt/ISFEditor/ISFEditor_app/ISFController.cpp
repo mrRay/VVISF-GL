@@ -471,9 +471,6 @@ void ISFController::populateLoadingWindowUI()	{
 		tmpWidget->blockSignals(false);
 	}
 }
-void ISFController::pushNormalizedMouseClickToPoints(const Size & inSize)	{
-	Q_UNUSED(inSize);
-}
 void ISFController::reloadTargetFile()	{
 }
 

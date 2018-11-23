@@ -8,6 +8,7 @@
 #include <QTimer>
 
 #include "AudioController.h"
+#include "OutputWindow.h"
 
 
 
@@ -134,8 +135,10 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 				yFieldWidget->setRange(tmpMin.getPointValByIndex(1), tmpMax.getPointValByIndex(1));
 			}
 			else	{
-				xFieldWidget->setRange(0.0, 1.0);
-				yFieldWidget->setRange(0.0, 1.0);
+				//xFieldWidget->setRange(0.0, 1.0);
+				//yFieldWidget->setRange(0.0, 1.0);
+				xFieldWidget->setRange(-16384, 16384);
+				yFieldWidget->setRange(-16384, 16384);
 			}
 			if (tmpVal.isPoint2DVal())	{
 				xFieldWidget->setValue(tmpVal.getPointValByIndex(0));
@@ -147,6 +150,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 		
 			connect( xFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
 			connect( yFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
+			connect(GetOutputWindow(), &OutputWindow::outputWindowMouseMoved, this, &ISFUIItem::outputWindowMouseUsed);
 		}
 		break;
 	case ISFValType_Color:
@@ -305,6 +309,51 @@ ISFUIItem::~ISFUIItem()	{
 
 
 
+void ISFUIItem::outputWindowMouseUsed(VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc)	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	//	if there's no attr, or there's an attr but the attr has either a null min val or a null max val...
+	if (attr==nullptr || (attr!=nullptr && (attr->minVal().isNullVal() || attr->maxVal().isNullVal())))	{
+		//	...since there's no min AND max we can't use the normalized event loc, we have to use the absolute event loc.  just make sure it's within the acceptable range.
+		Point			newPointVal = absMouseEventLoc;
+		ISFVal			tmpMin = attr->minVal();
+		ISFVal			tmpMax = attr->maxVal();
+		if (!tmpMin.isNullVal())	{
+			newPointVal.x = std::max(newPointVal.x, tmpMin.getPointValByIndex(0));
+			newPointVal.y = std::max(newPointVal.y, tmpMin.getPointValByIndex(1));
+		}
+		if (!tmpMax.isNullVal())	{
+			newPointVal.x = std::min(newPointVal.x, tmpMax.getPointValByIndex(0));
+			newPointVal.y = std::max(newPointVal.y, tmpMax.getPointValByIndex(1));
+		}
+		pointVal = newPointVal;
+		
+		xFieldWidget->blockSignals(true);
+		xFieldWidget->setValue(newPointVal.x);
+		xFieldWidget->blockSignals(false);
+		
+		yFieldWidget->blockSignals(true);
+		yFieldWidget->setValue(newPointVal.y);
+		yFieldWidget->blockSignals(false);
+	}
+	//	else there's an attr and the attr has both a min and a max val- use the normalized mouse location to calculate the value
+	else	{
+		ISFVal			tmpMin = attr->minVal();
+		ISFVal			tmpMax = attr->maxVal();
+		Point			newPointVal;
+		newPointVal.x = (normMouseEventLoc.x * (tmpMax.getPointValByIndex(0) - tmpMin.getPointValByIndex(0))) + tmpMin.getPointValByIndex(0);
+		newPointVal.y = (normMouseEventLoc.y * (tmpMax.getPointValByIndex(1) - tmpMin.getPointValByIndex(1))) + tmpMin.getPointValByIndex(1);
+		pointVal = newPointVal;
+		
+		xFieldWidget->blockSignals(true);
+		xFieldWidget->setValue(newPointVal.x);
+		xFieldWidget->blockSignals(false);
+		
+		yFieldWidget->blockSignals(true);
+		yFieldWidget->setValue(newPointVal.y);
+		yFieldWidget->blockSignals(false);
+	}
+}
 void ISFUIItem::pointWidgetUsed()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	QObject		*rawSender = sender();

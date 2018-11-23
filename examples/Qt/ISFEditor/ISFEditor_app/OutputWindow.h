@@ -33,6 +33,9 @@ public:
 	int selectedIndexToDisplay();
 	bool getFreezeOutputFlag() { return freezeOutputFlag; }
 	
+signals:
+	Q_SIGNAL void outputWindowMouseMoved(VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc);
+	
 protected:
 	void closeEvent(QCloseEvent * event);
 	//void showEvent(QShowEvent * event);

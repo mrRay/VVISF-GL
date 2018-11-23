@@ -16,7 +16,7 @@ LoadingWindowFileListModel::LoadingWindowFileListModel(QObject * parent) :
 	qDebug() << __PRETTY_FUNCTION__;
 	setReadOnly(true);
 	//setReadOnly(false);
-
+	setFilter(QDir::Files);
 }
 
 

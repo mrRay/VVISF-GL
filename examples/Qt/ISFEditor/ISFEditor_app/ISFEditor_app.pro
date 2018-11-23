@@ -149,7 +149,8 @@ HEADERS += \
 	VideoOutput/VideoOutput.h \
     ISFConverter/GLSLSandboxConverter.h \
     ISFConverter/ShadertoyConverter.h \
-    misc_classes/StringUtilities.h
+    misc_classes/StringUtilities.h \
+    misc_ui/MouseEventISFWidget.h
 
 # platform-specific classes
 mac {

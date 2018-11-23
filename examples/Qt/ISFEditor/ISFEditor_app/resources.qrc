@@ -4,5 +4,6 @@
         <file>resources/JSONDeleteButtonImage.png</file>
         <file>resources/JSONRearrangeButtonImg.png</file>
         <file>resources/AlphaOverCheckerboard.fs</file>
+        <file>resources/SwizzleISF-CbY0CrY1toRGB.fs</file>
     </qresource>
 </RCC>

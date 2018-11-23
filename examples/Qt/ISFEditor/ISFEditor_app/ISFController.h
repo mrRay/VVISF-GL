@@ -62,7 +62,6 @@ private:
 
 private:
 	void populateLoadingWindowUI();
-	void pushNormalizedMouseClickToPoints(const Size & inSize);
 	void reloadTargetFile();
 private slots:
 	void aboutToQuit();

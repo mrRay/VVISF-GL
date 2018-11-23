@@ -37,6 +37,7 @@ public:
 	ISFVal getISFVal();
 
 private slots:
+	void outputWindowMouseUsed(VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc);
 	void pointWidgetUsed();
 	void interAppVideoCBUsed(int newIndex);
 	void audioCBUsed(int newIndex);

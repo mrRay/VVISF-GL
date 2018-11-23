@@ -110,7 +110,7 @@
     </widget>
    </item>
    <item>
-    <widget class="ISFGLBufferQWidget" name="bufferView">
+    <widget class="MouseEventISFWidget" name="bufferView">
      <property name="minimumSize">
       <size>
        <width>611</width>
@@ -123,9 +123,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ISFGLBufferQWidget</class>
+   <class>MouseEventISFWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>ISFGLBufferQWidget.h</header>
+   <header>MouseEventISFWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
