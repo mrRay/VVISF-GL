@@ -135,6 +135,11 @@ void OutputWindow::closeEvent(QCloseEvent * event)	{
 	
 	QWidget::closeEvent(event);
 }
+void OutputWindow::showEvent(QShowEvent * event)	{
+	QWidget::showEvent(event);
+	
+	ui->displayAlphaToggle->setChecked(false);
+}
 /*
 void OutputWindow::showEvent(QShowEvent * event)	{
 	qDebug() << __PRETTY_FUNCTION__;

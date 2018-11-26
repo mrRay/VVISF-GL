@@ -23,9 +23,9 @@ ShadertoyConverter::ShadertoyConverter(QWidget *parent) :
 	ui(new Ui::ShadertoyConverter)
 {
 	qDebug() << __PRETTY_FUNCTION__;
+	ui->setupUi(this);
 	//setWindowModality(Qt::ApplicationModal);
 	setWindowModality(Qt::WindowModal);
-	ui->setupUi(this);
 }
 
 ShadertoyConverter::~ShadertoyConverter()
@@ -55,6 +55,8 @@ void ShadertoyConverter::okClicked()	{
 	//QString			rawURLString("https://www.shadertoy.com/view/MtyBWh");	//	cube texture upload still not implemented for Qt
 	//QString			rawURLString("https://www.shadertoy.com/view/4dfGzs");
 	//QString			rawURLString("https://www.shadertoy.com/view/4dcGW2");
+	//QString			rawURLString("https://www.shadertoy.com/view/MdXcD2");
+	//QString			rawURLString("https://www.shadertoy.com/view/ldBfzw");
 	
 	if (rawURLString.isNull() || rawURLString.length()<1)	{
 		QMessageBox::warning(GetLoadingWindow(), "", QString("Error: cannot parse URL \"%1\"").arg(rawURLString), QMessageBox::Ok);

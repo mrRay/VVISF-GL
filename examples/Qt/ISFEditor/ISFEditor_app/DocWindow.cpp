@@ -444,6 +444,9 @@ void DocWindow::saveOpenFile()	{
 						wFile.close();
 						_fragEditsPerformed = false;
 					}
+					else	{
+						qDebug() << "\tERR: could not open frag file for writing! " << *_fragFilePath;
+					}
 				}
 			}
 			if (vertContentsChanged)	{
@@ -458,6 +461,9 @@ void DocWindow::saveOpenFile()	{
 						wStream << currentVertString;
 						wFile.close();
 						_vertEditsPerformed = false;
+					}
+					else	{
+						qDebug() << "\tERR: could not open vert file for writing! " << *_vertFilePath;
 					}
 				}
 			}

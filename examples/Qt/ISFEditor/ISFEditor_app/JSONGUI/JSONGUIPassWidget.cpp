@@ -256,9 +256,9 @@ void JSONGUIPassWidget::prepareBufferNameEdit(QLineEdit * bufferNameEdit)	{
 void JSONGUIPassWidget::preparePBufferCBox(QCheckBox * pbufferCBox)	{
 	QObject::disconnect(pbufferCBox, 0, 0, 0);
 	
-	QObject::connect(pbufferCBox, &QCheckBox::clicked, [&]()	{
+	QObject::connect(pbufferCBox, &QCheckBox::clicked, [&](bool inChecked)	{
 		//	if it's checked, add it
-		if (pbufferCBox->isChecked())	{
+		if (inChecked)	{
 			_pass->setValue("PERSISTENT", QJsonValue(true));
 		}
 		//	else it's not checked- just remove the value entirely
@@ -272,9 +272,9 @@ void JSONGUIPassWidget::preparePBufferCBox(QCheckBox * pbufferCBox)	{
 void JSONGUIPassWidget::prepareFBufferCBox(QCheckBox * fbufferCBox)	{
 	QObject::disconnect(fbufferCBox, 0, 0, 0);
 	
-	QObject::connect(fbufferCBox, &QCheckBox::clicked, [&]()	{
+	QObject::connect(fbufferCBox, &QCheckBox::clicked, [&](bool inChecked)	{
 		//	if it's checked, add it
-		if (fbufferCBox->isChecked())	{
+		if (inChecked)	{
 			_pass->setValue("FLOAT", QJsonValue(true));
 		}
 		//	else it's not checked- just remove the value entirely
