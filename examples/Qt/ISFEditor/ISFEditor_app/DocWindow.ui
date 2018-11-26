@@ -45,7 +45,7 @@
          </widget>
         </item>
         <item>
-         <widget class="SimpleSourceCodeEdit" name="fragShaderEditor"/>
+         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="fragShaderEditor"/>
         </item>
        </layout>
       </widget>
@@ -59,7 +59,7 @@
          </widget>
         </item>
         <item>
-         <widget class="SimpleSourceCodeEdit" name="vertShaderEditor"/>
+         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="vertShaderEditor"/>
         </item>
        </layout>
       </widget>
@@ -179,7 +179,7 @@
          </widget>
         </item>
         <item>
-         <widget class="SimpleSourceCodeEdit" name="compiledVertShader"/>
+         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledVertShader"/>
         </item>
        </layout>
       </widget>
@@ -208,7 +208,7 @@
          </widget>
         </item>
         <item>
-         <widget class="SimpleSourceCodeEdit" name="compiledFragShader"/>
+         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledFragShader"/>
         </item>
        </layout>
       </widget>
@@ -237,7 +237,7 @@
          </widget>
         </item>
         <item>
-         <widget class="SimpleSourceCodeEdit" name="parsedJSON"/>
+         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="parsedJSON"/>
         </item>
        </layout>
       </widget>
@@ -248,15 +248,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SimpleSourceCodeEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>SimpleSourceCodeEdit.h</header>
-  </customwidget>
-  <customwidget>
    <class>JSONScrollWidget</class>
    <extends>QScrollArea</extends>
    <header>JSONScrollWidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SimpleSourceCodeEdit::SimpleSourceCodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header>SimpleSourceCodeEditor.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

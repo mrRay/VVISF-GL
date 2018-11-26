@@ -4,34 +4,26 @@
 #include <mutex>
 
 #include <QPlainTextEdit>
-#include <QSyntaxHighlighter>
-#include <QRegularExpression>
-#include <QObject>
-#include <QVector>
 #include <QCompleter>
 
-class QPaintEvent;
-class QResizeEvent;
-class QSize;
-class QWidget;
+#include "FindOpts.h"
 
-class LineNumberArea;
+
+
+
+namespace SimpleSourceCodeEdit	{
+
+
 class Highlighter;
 
 
-
-
-
-
-
-
-class SimpleSourceCodeEdit : public QPlainTextEdit
+class SimpleSourceCodeEditor : public QPlainTextEdit
 {
 	Q_OBJECT
 	
 public:
-	SimpleSourceCodeEdit(QWidget * inParent = nullptr);
-	~SimpleSourceCodeEdit();
+	SimpleSourceCodeEditor(QWidget * inParent = nullptr);
+	~SimpleSourceCodeEditor();
 	
 	//	the passed line numbers will be flagged for display as errors of some sort in the UI, and the signal 'selectedErrorAtLine' will be emitted when the cursor navigates over any of these lines
 	void setErrorLineNumbers(const QVector<int> & inVect);
@@ -54,6 +46,11 @@ public:
 signals:
 	void selectedErrorAtLine(int selectedErrorLineIndex);
 
+public slots:
+	Q_SLOT void openFindDialog();
+	Q_SLOT void findNext();
+	Q_SLOT void findPrevious();
+	Q_SLOT void setFindStringFromCursor();
 
 protected:
 	void resizeEvent(QResizeEvent * inEvent) override;
@@ -78,6 +75,8 @@ private:
 	std::recursive_mutex	timestampLock;
 	ulong					lastKeyEventTimestamp = 0;
 	
+	FindOpts		findOpts;	//	last search opts
+	
 	void updateCompleterUsingTextUnderCursor();
 	void maybeOpenCompleterEvent(const QKeyEvent & inEvent);
 	inline void resetKeyEventTimestamp() { std::lock_guard<std::recursive_mutex> tmpLock(timestampLock); lastKeyEventTimestamp=0; };
@@ -90,74 +89,7 @@ public:
 
 
 
-
-
-
-
-class LineNumberArea : public QWidget
-{
-	Q_OBJECT
-	
-public:
-	LineNumberArea(SimpleSourceCodeEdit * inEditor);
-	QSize sizeHint() const override;
-
-protected:
-	void paintEvent(QPaintEvent * event) override;
-
-private:
-	SimpleSourceCodeEdit			*codeEditor;
-};
-
-
-
-
-
-
-
-
-class Highlighter : public QSyntaxHighlighter
-{
-	Q_OBJECT
-	
-public:
-	Highlighter(QTextDocument * inParent = nullptr);
-	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
-	
-protected:
-	void highlightBlock(const QString & inText) override;
-	
-private:
-	struct HighlightRule	{
-		QRegularExpression		pattern;
-		QTextCharFormat			format;
-	};
-	
-	enum HighlighterBlockState	{
-		HBS_Undefined = -1,
-		HBS_OK = 0,
-		HBS_OpenComment = 1
-	};
-	
-	QVector<HighlightRule>		highlightRules;
-	QRegularExpression			commentSingleExpr;
-	QRegularExpression			commentStartExpr;
-	QRegularExpression			commentEndExpr;
-	
-	QTextCharFormat		variablesFmt;
-	QTextCharFormat		typeAndClassNamesFmt;
-	QTextCharFormat		functionsFmt;
-	QTextCharFormat		sdkFunctionsFmt;
-	QTextCharFormat		keywordsFmt;
-	QTextCharFormat		pragmasFmt;
-	QTextCharFormat		numbersFmt;
-	QTextCharFormat		quotationsFmt;
-	QTextCharFormat		commentFmt;
-};
-
-
-
-
+}	//	namespace SimpleSourceCodeEdit
 
 
 

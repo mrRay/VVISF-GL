@@ -142,3 +142,31 @@ void FinishLaunching()	{
 	ow->show();
 	
 }
+
+
+
+
+void MainWindow::on_actionFind_triggered()	{
+	DocWindow		*dw = GetDocWindow();
+	if (dw == nullptr)
+		return;
+	dw->on_actionFind_triggered();
+}
+void MainWindow::on_actionFind_Previous_triggered()	{
+	DocWindow		*dw = GetDocWindow();
+	if (dw == nullptr)
+		return;
+	dw->on_actionFind_Previous_triggered();
+}
+void MainWindow::on_actionFind_Next_triggered()	{
+	DocWindow		*dw = GetDocWindow();
+	if (dw == nullptr)
+		return;
+	dw->on_actionFind_Next_triggered();
+}
+void MainWindow::on_actionUse_selection_for_search_triggered()	{
+	DocWindow		*dw = GetDocWindow();
+	if (dw == nullptr)
+		return;
+	dw->on_actionUse_selection_for_search_triggered();
+}

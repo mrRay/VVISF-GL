@@ -1,36 +1,37 @@
-#include "SimpleSourceCodeEdit.h"
+#include "SimpleSourceCodeEditor.h"
 
-#include <QPainter>
-#include <QTextBlock>
+//#include <QTextBlock>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QStringListModel>
 #include <QAbstractItemView>
 #include <QScrollBar>
-#include <QStringListModel>
-#include <QApplication>
-#include <QTimer>
 #include <QPointer>
+#include <QTimer>
+//#include <QApplication>
+#include <QPainter>
 
 #include <regex>
-#include <string>
-#include <iostream>
+//#include <string>
+//#include <iostream>
+
+#include "Highlighter.h"
+#include "LineNumberArea.h"
+#include "FindDialog.h"
 
 
 
 
 
 
-/*	========================================	*/
-#pragma mark --------------------- SimpleSourceCodeEdit
+namespace SimpleSourceCodeEdit	{
 
 
 
 
-
-
-SimpleSourceCodeEdit::SimpleSourceCodeEdit(QWidget * inParent) :
+SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 	QPlainTextEdit(inParent)
 {
 	lineNumberArea = new LineNumberArea(this);
@@ -73,7 +74,7 @@ SimpleSourceCodeEdit::SimpleSourceCodeEdit(QWidget * inParent) :
 	
 	setAttribute(Qt::WA_DeleteOnClose);
 }
-SimpleSourceCodeEdit::~SimpleSourceCodeEdit()
+SimpleSourceCodeEditor::~SimpleSourceCodeEditor()
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -85,7 +86,7 @@ SimpleSourceCodeEdit::~SimpleSourceCodeEdit()
 }
 
 
-void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> & inVect)	{
+void SimpleSourceCodeEditor::setErrorLineNumbers(const QVector<int> & inVect)	{
 	{
 		std::lock_guard<std::recursive_mutex>		lock(errLock);
 		if (errLineNumbers != nullptr)
@@ -98,7 +99,7 @@ void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> & inVect)	{
 	
 	highlightCurrentLine();
 }
-void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> * inVect)	{
+void SimpleSourceCodeEditor::setErrorLineNumbers(const QVector<int> * inVect)	{
 	{
 		std::lock_guard<std::recursive_mutex>		lock(errLock);
 		if (errLineNumbers != nullptr)
@@ -111,7 +112,7 @@ void SimpleSourceCodeEdit::setErrorLineNumbers(const QVector<int> * inVect)	{
 	
 	highlightCurrentLine();
 }
-void SimpleSourceCodeEdit::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
+void SimpleSourceCodeEditor::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -167,16 +168,229 @@ void SimpleSourceCodeEdit::loadSyntaxDefinitionDocument(const QJsonDocument & in
 		highlighter->loadSyntaxDefinitionDocument(inDocument);
 	}
 }
+void SimpleSourceCodeEditor::openFindDialog()	{
+	FindDialog		*finder = new FindDialog(findOpts, this);
+	//	get the find opts and return code from the dialog, then delete it right away
+	int				returnCode = finder->exec();
+	findOpts = finder->findOpts();
+	delete finder;
+	
+	//	if we didn't get a return code then the dialog was a success and we need to search for something
+	if (!returnCode)	{
+		findNext();
+	}
+	else	{
+		//	do nothing- user clicked 'cancel'
+	}
+}
+void SimpleSourceCodeEditor::findNext()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+
+	//	assemble the find flags enum we'll need later
+	QTextDocument::FindFlags		ff = QTextDocument::FindFlags();
+	if (findOpts.caseSensitive)
+		ff |= QTextDocument::FindCaseSensitively;
+	if (findOpts.entireWord)
+		ff |= QTextDocument::FindWholeWords;
+	
+	//	make the regex options, and then the regex
+	QRegularExpression::PatternOptions	regexOpts = QRegularExpression::NoPatternOption;
+	if (findOpts.caseSensitive)
+		regexOpts |= QRegularExpression::CaseInsensitiveOption;
+	regexOpts |= QRegularExpression::OptimizeOnFirstUsageOption;
+	QRegularExpression		regex(findOpts.searchString, regexOpts);
+	
+	//	get the current cursor- we're going to start searching from here
+	QTextCursor		startCursor = textCursor();
+	startCursor.clearSelection();
+	QTextCursor		searchCursor = startCursor;
+	QTextCursor		resultsCursor;
+	
+	//	figure out which block contains the start cursor, and how many blocks there are
+	QTextDocument	*td = document();
+	int				totalBlocks = td->blockCount();
+	
+	//	run the search for the information from the find options
+	if (findOpts.regex)
+		resultsCursor = td->find(regex, searchCursor, ff);
+	else
+		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+	
+	//	if we got a non-null cursor then we found something
+	if (!resultsCursor.isNull())	{
+		//	select the text described by the cursor and return, we're done
+		setTextCursor(resultsCursor);
+		return;
+	}
+	
+	//	...if we're here, we haven't found a result yet- run through the text blocks to the end of the doc, running the search again for each block
+	for (int i=searchCursor.blockNumber()+1; i<totalBlocks; ++i)	{
+		searchCursor.setPosition(td->findBlockByNumber(i).position(), QTextCursor::MoveAnchor);
+		if (findOpts.regex)
+			resultsCursor = td->find(regex, searchCursor, ff);
+		else
+			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		//	if i found the text, select it and return, we're done
+		if (!resultsCursor.isNull())	{
+			setTextCursor(resultsCursor);
+			return;
+		}
+	}
+	
+	//	...if we're here, we still haven't found a result- loop around to the beginning of the doc and start searching again, stopping when we hit the initial search cursor
+	for (int i=0; i<startCursor.blockNumber(); ++i)	{
+		searchCursor.setPosition(td->findBlockByNumber(i).position(), QTextCursor::MoveAnchor);
+		if (findOpts.regex)
+			resultsCursor = td->find(regex, searchCursor, ff);
+		else
+			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		//	if i found the text, select it and return, we're done
+		if (!resultsCursor.isNull())	{
+			setTextCursor(resultsCursor);
+			return;
+		}
+	}
+	
+	//	...if we're here, we still haven't found a result- we have almost looped through the entire document by now.  we just need to check the area in the original block prior to 'startCursor'
+	searchCursor.setPosition(startCursor.block().position(), QTextCursor::MoveAnchor);
+	if (findOpts.regex)
+		resultsCursor = td->find(regex, searchCursor, ff);
+	else
+		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+	if (!resultsCursor.isNull())	{
+		//	we can only use 'resultsCursor' if its position is prior to the position of the start cursor
+		if (resultsCursor.position() < startCursor.position())	{
+			//	we found the thing we're looking for!
+			setTextCursor(resultsCursor);
+			return;
+		}
+		//	else the results cursor is after the start cursor- do nothing, disregard it
+	}
+	//	else the results cursor was null- we've searched the entire document and haven't found anything.
+	//	maybe beep or something?
+}
+void SimpleSourceCodeEditor::findPrevious()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+
+	//	assemble the find flags enum we'll need later
+	QTextDocument::FindFlags		ff = QTextDocument::FindFlags();
+	if (findOpts.caseSensitive)
+		ff |= QTextDocument::FindCaseSensitively;
+	if (findOpts.entireWord)
+		ff |= QTextDocument::FindWholeWords;
+	//	we're searching backwards, so we need this flag too...
+	ff |= QTextDocument::FindBackward;
+	
+	//	make the regex options, and then the regex
+	QRegularExpression::PatternOptions	regexOpts = QRegularExpression::NoPatternOption;
+	if (findOpts.caseSensitive)
+		regexOpts |= QRegularExpression::CaseInsensitiveOption;
+	regexOpts |= QRegularExpression::OptimizeOnFirstUsageOption;
+	QRegularExpression		regex(findOpts.searchString, regexOpts);
+	
+	//	get the current cursor- we're going to start searching from here
+	QTextCursor		startCursor = textCursor();
+	QTextCursor		searchCursor = startCursor;
+	searchCursor.clearSelection();
+	QTextCursor		resultsCursor;
+	
+	//	figure out which block contains the start cursor, and how many blocks there are
+	QTextDocument	*td = document();
+	int				totalBlocks = td->blockCount();
+	
+	//	run the search for the information from the find options
+	if (findOpts.regex)
+		resultsCursor = td->find(regex, searchCursor, ff);
+	else
+		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+	
+	//	if we got a non-null cursor result and that result starts on the same char as the start cursor....we have to run the search again.
+	if (!resultsCursor.isNull() && resultsCursor==startCursor)	{
+		//	if this was the first thing in the block then null the result- we found the text we started with
+		if (searchCursor.selectionStart() - searchCursor.block().position() == 0)	{
+			resultsCursor = QTextCursor();
+		}
+		//	else this wasn't the first thing in the block- decrement the cursor and search again
+		else	{
+			searchCursor.setPosition(resultsCursor.selectionStart()-1, QTextCursor::MoveAnchor);
+			if (findOpts.regex)
+				resultsCursor = td->find(regex, searchCursor, ff);
+			else
+				resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		}
+	}
+	
+	//	if we got a non-null cursor then we found something
+	if (!resultsCursor.isNull())	{
+		//	select the text described by the cursor and return, we're done
+		setTextCursor(resultsCursor);
+		return;
+	}
+	
+	//	...if we're here, we haven't found a result yet- run through the text blocks to the beginning of the doc, running the search again for each block
+	for (int i=searchCursor.blockNumber()-1; i>=0; --i)	{
+		QTextBlock		tmpBlock = td->findBlockByNumber(i);
+		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length(), QTextCursor::MoveAnchor);
+		if (findOpts.regex)
+			resultsCursor = td->find(regex, searchCursor, ff);
+		else
+			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		//	if i found the text, select it and return, we're done
+		if (!resultsCursor.isNull())	{
+			setTextCursor(resultsCursor);
+			return;
+		}
+	}
+	
+	//	...if we're here, we still haven't found a result- loop around to the beginning of the doc and start searching again, stopping when we hit the initial search cursor
+	for (int i=totalBlocks-1; i>startCursor.blockNumber(); --i)	{
+		QTextBlock		tmpBlock = td->findBlockByNumber(i);
+		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length(), QTextCursor::MoveAnchor);
+		if (findOpts.regex)
+			resultsCursor = td->find(regex, searchCursor, ff);
+		else
+			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		//	if i found the text, select it and return, we're done
+		if (!resultsCursor.isNull())	{
+			setTextCursor(resultsCursor);
+			return;
+		}
+	}
+	
+	//	...if we're here, we still haven't found a result- we have almost looped through the entire document by now.  we just need to check the area in the original block prior to 'startCursor'
+	{
+		QTextBlock		tmpBlock = td->findBlockByNumber(startCursor.blockNumber());
+		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
+		if (findOpts.regex)
+			resultsCursor = td->find(regex, searchCursor, ff);
+		else
+			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		if (!resultsCursor.isNull())	{
+			//	we can only use 'resultsCursor' if its position is prior to the position of the start cursor
+			if (resultsCursor.position() > startCursor.position())	{
+				//	we found the thing we're looking for!
+				setTextCursor(resultsCursor);
+				return;
+			}
+			//	else the results cursor is after the start cursor- do nothing, disregard it
+		}
+		//	else the results cursor was null- we've searched the entire document and haven't found anything.
+		//	maybe beep or something?
+	}
+}
+void SimpleSourceCodeEditor::setFindStringFromCursor()	{
+	findOpts.searchString = textCursor().selectedText();
+}
 
 	
-void SimpleSourceCodeEdit::resizeEvent(QResizeEvent * inEvent)
+void SimpleSourceCodeEditor::resizeEvent(QResizeEvent * inEvent)
 {
 	QPlainTextEdit::resizeEvent(inEvent);
 	
 	QRect		cr = contentsRect();
 	lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
-void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
+void SimpleSourceCodeEditor::keyPressEvent(QKeyEvent *inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << ", timestamp is " << inEvent->timestamp() << ", text is " << inEvent->text();
 	
@@ -301,7 +515,7 @@ void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
 	//	else the popup isn't already open
 	else	{
 		//	call the maybe open completer event after a delay
-		QPointer<SimpleSourceCodeEdit>		saveSelfPtr(this);
+		QPointer<SimpleSourceCodeEditor>		saveSelfPtr(this);
 		QKeyEvent				eventCopy = *inEvent;
 		QTimer::singleShot(2000, [=]()	{
 			if (saveSelfPtr != nullptr)
@@ -310,7 +524,7 @@ void SimpleSourceCodeEdit::keyPressEvent(QKeyEvent *inEvent)
 		return;
 	}
 }
-void SimpleSourceCodeEdit::focusInEvent(QFocusEvent *e)
+void SimpleSourceCodeEditor::focusInEvent(QFocusEvent *e)
 {
 	if (completer)
 		completer->setWidget(this);
@@ -318,12 +532,12 @@ void SimpleSourceCodeEdit::focusInEvent(QFocusEvent *e)
 }
 
 
-void SimpleSourceCodeEdit::updateLineNumberAreaWidth(int newBlockCount)
+void SimpleSourceCodeEditor::updateLineNumberAreaWidth(int newBlockCount)
 {
 	Q_UNUSED(newBlockCount);
 	setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
-void SimpleSourceCodeEdit::highlightCurrentLine()
+void SimpleSourceCodeEditor::highlightCurrentLine()
 {
 	QList<QTextEdit::ExtraSelection>		extraSelections;
 	
@@ -399,7 +613,7 @@ void SimpleSourceCodeEdit::highlightCurrentLine()
 			emit selectedErrorAtLine(lineCount);
 	}
 }
-void SimpleSourceCodeEdit::updateLineNumberArea(const QRect & rect, int dy)
+void SimpleSourceCodeEditor::updateLineNumberArea(const QRect & rect, int dy)
 {
 	if (dy)
 		lineNumberArea->scroll(0, dy);
@@ -409,7 +623,7 @@ void SimpleSourceCodeEdit::updateLineNumberArea(const QRect & rect, int dy)
 	if (rect.contains(viewport()->rect()))
 		updateLineNumberAreaWidth(0);
 }
-void SimpleSourceCodeEdit::insertCompletion(const QString& completion)
+void SimpleSourceCodeEditor::insertCompletion(const QString& completion)
 {
 	if (completer->widget() != this)
 		return;
@@ -426,7 +640,7 @@ void SimpleSourceCodeEdit::insertCompletion(const QString& completion)
 	tc.removeSelectedText();
 	tc.insertText(completion);
 }
-void SimpleSourceCodeEdit::closeCompleter()
+void SimpleSourceCodeEditor::closeCompleter()
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
@@ -439,7 +653,7 @@ void SimpleSourceCodeEdit::closeCompleter()
 }
 
 
-void SimpleSourceCodeEdit::updateCompleterUsingTextUnderCursor()
+void SimpleSourceCodeEditor::updateCompleterUsingTextUnderCursor()
 {
 	if (completer == nullptr)
 		return;
@@ -451,7 +665,7 @@ void SimpleSourceCodeEdit::updateCompleterUsingTextUnderCursor()
 	if (completer->popup()!=nullptr && completer->completionModel()!=nullptr)
 		completer->popup()->setCurrentIndex(completer->completionModel()->index(0, 0));
 }
-void SimpleSourceCodeEdit::maybeOpenCompleterEvent(const QKeyEvent & inEvent)
+void SimpleSourceCodeEditor::maybeOpenCompleterEvent(const QKeyEvent & inEvent)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << ", timestamp is " << inEvent.timestamp();
 	
@@ -491,7 +705,7 @@ void SimpleSourceCodeEdit::maybeOpenCompleterEvent(const QKeyEvent & inEvent)
 }
 
 
-void SimpleSourceCodeEdit::lineNumberAreaPaintEvent(QPaintEvent * event)
+void SimpleSourceCodeEditor::lineNumberAreaPaintEvent(QPaintEvent * event)
 {
 	QPainter		painter(lineNumberArea);
 	painter.fillRect(event->rect(), Qt::lightGray);
@@ -514,7 +728,7 @@ void SimpleSourceCodeEdit::lineNumberAreaPaintEvent(QPaintEvent * event)
 		++blockNumber;
 	}
 }
-int SimpleSourceCodeEdit::lineNumberAreaWidth()
+int SimpleSourceCodeEditor::lineNumberAreaWidth()
 {
 	int			digits = 1;
 	int			max = qMax(1, blockCount());
@@ -534,222 +748,5 @@ int SimpleSourceCodeEdit::lineNumberAreaWidth()
 
 
 
+}	//	namespace SimpleSourceCodeEdit
 
-
-/*	========================================	*/
-#pragma mark --------------------- LineNumberArea
-
-
-
-
-
-
-LineNumberArea::LineNumberArea(SimpleSourceCodeEdit * inEditor) : QWidget(inEditor) {
-	codeEditor = inEditor;
-}
-QSize LineNumberArea::sizeHint() const {
-	return QSize(codeEditor->lineNumberAreaWidth(), 0);
-}
-void LineNumberArea::paintEvent(QPaintEvent * event)	{
-	
-	codeEditor->lineNumberAreaPaintEvent(event);
-}
-
-
-
-
-
-
-/*	========================================	*/
-#pragma mark --------------------- Highlighter
-
-
-
-
-
-
-Highlighter::Highlighter(QTextDocument * inParent)
-	: QSyntaxHighlighter(inParent)
-{
-	//	configure some default comment start and end expressions
-	commentSingleExpr = QRegularExpression("//[^\n]*");
-	commentStartExpr = QRegularExpression("/\\*");
-	commentEndExpr = QRegularExpression("\\*/");
-	
-	//xxxFmt.setFontWeight(QFont::Bold);
-	
-	variablesFmt.setForeground(Qt::darkMagenta);
-	typeAndClassNamesFmt.setForeground(Qt::darkGreen);
-	functionsFmt.setForeground(Qt::darkBlue);
-	sdkFunctionsFmt.setForeground(Qt::blue);
-	keywordsFmt.setForeground(Qt::darkYellow);
-	pragmasFmt.setForeground(Qt::green);
-	numbersFmt.setForeground(Qt::magenta);
-	quotationsFmt.setForeground(Qt::darkRed);
-	commentFmt.setForeground(QColor(255,194,0,255));
-}
-void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)	{
-	//qDebug() << __PRETTY_FUNCTION__;
-	if (!inDocument.isObject()) {
-		qDebug() << "\tERR: document is not a JSON object, bailing, " << __PRETTY_FUNCTION__;
-		return;
-	}
-	
-	highlightRules.clear();
-	
-	QJsonObject		tmpDocObj = inDocument.object();
-	HighlightRule	tmpRule;
-	
-	if (tmpDocObj.contains("VARIABLES") && tmpDocObj["VARIABLES"].isArray())	{
-		tmpRule.format = variablesFmt;
-		QJsonArray		tmpArray = tmpDocObj["VARIABLES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("TYPE_AND_CLASS_NAMES") && tmpDocObj["TYPE_AND_CLASS_NAMES"].isArray())	{
-		tmpRule.format = typeAndClassNamesFmt;
-		QJsonArray		tmpArray = tmpDocObj["TYPE_AND_CLASS_NAMES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("FUNCTION_REGEXES") && tmpDocObj["FUNCTION_REGEXES"].isArray())	{
-		tmpRule.format = functionsFmt;
-		QJsonArray		tmpArray = tmpDocObj["FUNCTION_REGEXES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("SDK_FUNCTIONS") && tmpDocObj["SDK_FUNCTIONS"].isArray())	{
-		tmpRule.format = sdkFunctionsFmt;
-		QJsonArray		tmpArray = tmpDocObj["SDK_FUNCTIONS"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("KEYWORDS") && tmpDocObj["KEYWORDS"].isArray())	{
-		tmpRule.format = keywordsFmt;
-		QJsonArray		tmpArray = tmpDocObj["KEYWORDS"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("PRAGMA_REGEXES") && tmpDocObj["PRAGMA_REGEXES"].isArray())	{
-		tmpRule.format = pragmasFmt;
-		QJsonArray		tmpArray = tmpDocObj["PRAGMA_REGEXES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("NUMBER_REGEXES") && tmpDocObj["NUMBER_REGEXES"].isArray())	{
-		tmpRule.format = numbersFmt;
-		QJsonArray		tmpArray = tmpDocObj["NUMBER_REGEXES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	if (tmpDocObj.contains("QUOTATION_REGEXES") && tmpDocObj["QUOTATION_REGEXES"].isArray())	{
-		tmpRule.format = quotationsFmt;
-		QJsonArray		tmpArray = tmpDocObj["QUOTATION_REGEXES"].toArray();
-		for (const QJsonValue & tmpVal : tmpArray)	{
-			if (tmpVal.isString())	{
-				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
-			}
-		}
-	}
-	
-	if (tmpDocObj.contains("SINGLE_LINE_COMMENT_REGEX") && tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].isString())	{
-		commentSingleExpr = QRegularExpression(tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].toString());
-	}
-	if (tmpDocObj.contains("MULTI_LINE_COMMENT_START_REGEX") && tmpDocObj["MULTI_LINE_COMMENT_START_REGEX"].isString()) {
-		//	no format to set here, we're not making a rule- just an expression!
-		commentStartExpr = QRegularExpression(tmpDocObj["MULTI_LINE_COMMENT_START_REGEX"].toString());
-	}
-	if (tmpDocObj.contains("MULTI_LINE_COMMENT_END_REGEX") && tmpDocObj["MULTI_LINE_COMMENT_END_REGEX"].isString()) {
-		//	no format to set here, we're not making a rule- just an expression!
-		commentEndExpr = QRegularExpression(tmpDocObj["MULTI_LINE_COMMENT_END_REGEX"].toString());
-	}
-	
-	if (tmpDocObj.contains("SINGLE_LINE_COMMENT_REGEX") && tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].isString())	{
-		tmpRule.format = commentFmt;
-		tmpRule.pattern = QRegularExpression(tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].toString());
-		highlightRules.append(tmpRule);
-	}
-}
-
-
-void Highlighter::highlightBlock(const QString & inText)
-{
-	//qDebug() << __PRETTY_FUNCTION__ << ": " << inText;
-	//	run through all of the highlight rules, checked the passed string against each
-	foreach (const HighlightRule & tmpRule, highlightRules) {
-		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
-		while (matchIterator.hasNext()) {
-			QRegularExpressionMatch		tmpMatch = matchIterator.next();
-			setFormat(tmpMatch.capturedStart(), tmpMatch.capturedLength(), tmpRule.format);
-		}
-	}
-	//	set the current block state
-	setCurrentBlockState(HBS_OK);
-	
-	//	check this line- figure out if there's a single-line comment, and if so, the index where the single-line comment starts
-	int		singleLineCommentStartIndex = -1;
-	if (inText.contains(commentSingleExpr))	{
-		singleLineCommentStartIndex = commentSingleExpr.match(inText).capturedStart();
-	}
-	
-	//	if there isn't an open multi-line comment, look for the beginning of one in the passed text
-	int		startIndex = 0;
-	if (previousBlockState() != HBS_OpenComment)	{
-		startIndex = inText.indexOf(commentStartExpr);
-	}
-	//	if the multi-line comment beginning occurred after the single-line comment start, we need to ignore it!
-	if (startIndex>=0 && singleLineCommentStartIndex>=0 && startIndex>singleLineCommentStartIndex)
-		startIndex = -1;
-	
-	//	if we found the beginning of a multi-line comment...
-	while (startIndex >= 0) {
-		QRegularExpressionMatch		tmpMatch = commentEndExpr.match(inText, startIndex);
-		int			endIndex = tmpMatch.capturedStart();
-		int			commentLength = 0;
-		if (endIndex == -1) {
-			setCurrentBlockState(HBS_OpenComment);
-			commentLength = inText.length() - startIndex;
-		}
-		else	{
-			commentLength = endIndex - startIndex + tmpMatch.capturedLength();
-		}
-		setFormat(startIndex, commentLength, commentFmt);
-		startIndex = inText.indexOf(commentStartExpr, startIndex + commentLength);
-	}
-	
-}

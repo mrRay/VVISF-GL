@@ -9,7 +9,11 @@
 
 #include "VVISF.hpp"
 
-class SimpleSourceCodeEdit;
+namespace SimpleSourceCodeEdit	{
+	class SimpleSourceCodeEditor;
+}
+using namespace SimpleSourceCodeEdit;
+
 class QTableView;
 class QListWidget;
 
@@ -38,6 +42,12 @@ public:
 	bool contentsNeedToBeSaved();
 	QString fragFilePath();
 	
+public slots:
+	void on_actionFind_triggered();
+	void on_actionFind_Previous_triggered();
+	void on_actionFind_Next_triggered();
+	void on_actionUse_selection_for_search_triggered();
+
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
 	virtual void showEvent(QShowEvent * event) Q_DECL_OVERRIDE;
@@ -56,6 +66,8 @@ private:
 	bool				_vertEditsPerformed = false;
 	
 	QTimer				*_tmpFileSaveTimer = nullptr;	//	we save tmp files after ~2 sec of inactivity (this makes the backend reload the tmp file, which recompiles it automatically)
+	
+	SimpleSourceCodeEditor * focusedSourceCodeEditor();
 	
 private slots:
 	void tmpSaveTimerSlot();

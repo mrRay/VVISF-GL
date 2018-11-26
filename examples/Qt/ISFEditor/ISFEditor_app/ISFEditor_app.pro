@@ -72,7 +72,11 @@ SOURCES += \
 	misc_classes/MediaFile.cpp \
 	misc_classes/VideoSourceMenuItem.cpp \
 	misc_ui/ISFUIItem.cpp \
-	misc_ui/SimpleSourceCodeEdit.cpp \
+	misc_ui/SimpleSourceCodeEditor/SimpleSourceCodeEditor.cpp \
+	misc_ui/SimpleSourceCodeEditor/FindDialog.cpp \
+	misc_ui/SimpleSourceCodeEditor/FindOpts.cpp \
+	misc_ui/SimpleSourceCodeEditor/Highlighter.cpp \
+	misc_ui/SimpleSourceCodeEditor/LineNumberArea.cpp \
 	OutputWindow.cpp \
 	VideoSource/DynamicVideoSource.cpp \
 	VideoSource/ImgVideoSource.cpp \
@@ -126,7 +130,11 @@ HEADERS += \
 	misc_classes/MediaFile.h \
 	misc_classes/VideoSourceMenuItem.h \
 	misc_ui/ISFUIItem.h \
-	misc_ui/SimpleSourceCodeEdit.h \
+	misc_ui/SimpleSourceCodeEditor/SimpleSourceCodeEditor.h \
+	misc_ui/SimpleSourceCodeEditor/FindDialog.h \
+	misc_ui/SimpleSourceCodeEditor/FindOpts.h \
+	misc_ui/SimpleSourceCodeEditor/Highlighter.h \
+	misc_ui/SimpleSourceCodeEditor/LineNumberArea.h \
 	OutputWindow.h \
 	misc_ui/QDoubleSlider.h \
 	VideoSource/DynamicVideoSource.h \
@@ -168,6 +176,7 @@ FORMS += \
 	LoadingWindow.ui \
 	OutputWindow.ui \
 	DocWindow.ui \
+	misc_ui/SimpleSourceCodeEditor/FindDialog.ui \
 	JSONGUI/JSONGUIGroupInputWidget.ui \
 	JSONGUI/JSONGUIBasicInfoWidget.ui \
 	JSONGUI/JSONGUIGroupPassWidget.ui \
@@ -185,7 +194,7 @@ FORMS += \
     ISFConverter/ShadertoyConverter.ui
 
 RESOURCES += \
-	misc_ui/shaderLanguagefiles.qrc \
+	misc_ui/SimpleSourceCodeEditor/shaderLanguagefiles.qrc \
 	resources.qrc \
     ISFConverter/shadertoy_textures/shadertoy_textures.qrc
 
@@ -213,6 +222,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/Audio
 INCLUDEPATH += $$_PRO_FILE_PWD_/JSONGUI
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
+INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui/SimpleSourceCodeEditor
 INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
 INCLUDEPATH += $$_PRO_FILE_PWD_/ISFConverter

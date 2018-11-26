@@ -10,7 +10,7 @@
 #include <QFileDialog>
 #include <QSettings>
 
-#include "SimpleSourceCodeEdit.h"
+#include "SimpleSourceCodeEditor.h"
 #include "LoadingWindow.h"
 #include "ISFController.h"
 #include "LevenshteinCalc.h"
@@ -506,6 +506,42 @@ QString DocWindow::fragFilePath()	{
 
 
 
+void DocWindow::on_actionFind_triggered()	{
+	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
+	if (focusedEd == nullptr)
+		return;
+	
+	focusedEd->openFindDialog();
+}
+void DocWindow::on_actionFind_Previous_triggered()	{
+	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
+	if (focusedEd == nullptr)
+		return;
+	
+	focusedEd->findPrevious();
+}
+void DocWindow::on_actionFind_Next_triggered()	{
+	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
+	if (focusedEd == nullptr)
+		return;
+	
+	focusedEd->findNext();
+}
+void DocWindow::on_actionUse_selection_for_search_triggered()	{
+	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
+	if (focusedEd == nullptr)
+		return;
+	
+	focusedEd->setFindStringFromCursor();
+}
+
+
+
+
+
+
+
+
 void DocWindow::closeEvent(QCloseEvent * event)	{
 	QSettings		settings;
 	settings.setValue("DocWindowGeometry", saveGeometry());
@@ -570,6 +606,21 @@ void DocWindow::appQuitEvent()	{
 
 
 
+SimpleSourceCodeEditor * DocWindow::focusedSourceCodeEditor()	{
+	//	run through the various source code editors, looking for one that has keyboard focus
+	SimpleSourceCodeEditor		*focusedEd = nullptr;
+	if (ui->fragShaderEditor->hasFocus())
+		focusedEd = ui->fragShaderEditor;
+	else if (ui->vertShaderEditor->hasFocus())
+		focusedEd = ui->vertShaderEditor;
+	else if (ui->compiledVertShader->hasFocus())
+		focusedEd = ui->compiledVertShader;
+	else if (ui->compiledFragShader->hasFocus())
+		focusedEd = ui->compiledFragShader;
+	else if (ui->parsedJSON->hasFocus())
+		focusedEd = ui->parsedJSON;
+	return focusedEd;
+}
 void DocWindow::tmpSaveTimerSlot()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	

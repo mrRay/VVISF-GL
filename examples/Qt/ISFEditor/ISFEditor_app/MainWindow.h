@@ -36,6 +36,11 @@ private slots:
 
 	void on_actionImport_from_Shadertoy_triggered();
 
+	void on_actionFind_triggered();
+	void on_actionFind_Previous_triggered();
+	void on_actionFind_Next_triggered();
+	void on_actionUse_selection_for_search_triggered();
+
 private:
 	Ui::MainWindow *ui;
 };
