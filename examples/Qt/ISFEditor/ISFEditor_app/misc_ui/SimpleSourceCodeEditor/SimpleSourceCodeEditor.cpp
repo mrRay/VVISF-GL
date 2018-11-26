@@ -330,7 +330,7 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	//	...if we're here, we haven't found a result yet- run through the text blocks to the beginning of the doc, running the search again for each block
 	for (int i=searchCursor.blockNumber()-1; i>=0; --i)	{
 		QTextBlock		tmpBlock = td->findBlockByNumber(i);
-		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length(), QTextCursor::MoveAnchor);
+		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
 		if (findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
@@ -345,7 +345,7 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	//	...if we're here, we still haven't found a result- loop around to the beginning of the doc and start searching again, stopping when we hit the initial search cursor
 	for (int i=totalBlocks-1; i>startCursor.blockNumber(); --i)	{
 		QTextBlock		tmpBlock = td->findBlockByNumber(i);
-		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length(), QTextCursor::MoveAnchor);
+		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
 		if (findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
