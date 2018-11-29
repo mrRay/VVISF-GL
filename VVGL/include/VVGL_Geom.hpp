@@ -1,5 +1,5 @@
-#ifndef VVGL_Geom_h
-#define VVGL_Geom_h
+#ifndef VVGL_GLGeom_hpp
+#define VVGL_GLGeom_hpp
 
 #include "VVGL_Defines.hpp"
 
@@ -24,7 +24,7 @@ using namespace std;
 \ingroup VVGL_GEOM
 */
 //	basic geometry structs
-struct VVGL_EXPORT Point	{
+struct Point	{
 	double		x = 0.;
 	double		y = 0.;
 	
@@ -43,7 +43,7 @@ struct VVGL_EXPORT Point	{
 \brief Basic struct for 2D size
 \ingroup VVGL_GEOM
 */
-struct VVGL_EXPORT Size	{
+struct Size	{
 	double		width = 0.;
 	double		height = 0.;
 	
@@ -62,7 +62,7 @@ struct VVGL_EXPORT Size	{
 \brief Basic struct for a rectangle using VVGL::Point and VVGL::Size
 \ingroup VVGL_GEOM
 */
-struct VVGL_EXPORT Rect	{
+struct Rect	{
 	Point	origin = {0.,0.};
 	Size	size = {0., 0.};
 	
@@ -106,7 +106,7 @@ struct VVGL_EXPORT Rect	{
 sizing modes used for the 'ResizeRect' function
 \ingroup VVGL_GEOM
 */
-enum VVGL_EXPORT SizingMode	{
+enum SizingMode	{
 	SizingMode_Fit,	//!<	the content is made as large as possible, proportionally, without cutting itself off or going outside the bounds of the desired area
 	SizingMode_Fill,	//!<	the content is made as large as possible, proportionally, to fill the desired area- some of the content may get cut off
 	SizingMode_Stretch,	//!<	the content is scaled to fit perfectly within the desired area- some stretching or squashing may occur, this isn't necessarily proportional
@@ -126,14 +126,14 @@ VVGL_EXPORT Rect ResizeRect(const Rect & fitThisRect, const Rect & inThisRect, c
 \ingroup VVGL_GEOM
 \brief Abstract base struct for vertex types (VT == "vertex type")
 */
-struct VVGL_EXPORT VT	{
+struct VT	{
 	//virtual void zero() = 0;
 };
 /*!
 \ingroup VVGL_GEOM
 \brief This vertex type describes a two-dimensional point.  Derives from VT.  Concrete subclasses of Vertex use one or more of these to store their data.
 */
-struct VVGL_EXPORT VT_XY : public VT	{
+struct VT_XY : public VT	{
 	float		x = 0.;
 	float		y = 0.;
 	
@@ -152,7 +152,7 @@ struct VVGL_EXPORT VT_XY : public VT	{
 \ingroup VVGL_GEOM
 \brief This vertex type describes a three-dimensional point.  Derives from VT.  Concrete subclasses of Vertex use one or more of these to store their data.
 */
-struct VVGL_EXPORT VT_XYZ : public VT	{
+struct VT_XYZ : public VT	{
 	float		x = 0.;
 	float		y = 0.;
 	float		z = 0.;
@@ -172,7 +172,7 @@ struct VVGL_EXPORT VT_XYZ : public VT	{
 \ingroup VVGL_GEOM
 \brief This vertex type describes a two-dimensional texture location.  Derives from VT.  Concrete subclasses of Vertex use one or more of these to store their data.
 */
-struct VVGL_EXPORT VT_ST : public VT	{
+struct VT_ST : public VT	{
 	float		s = 0.;
 	float		t = 0.;
 	
@@ -191,7 +191,7 @@ struct VVGL_EXPORT VT_ST : public VT	{
 \ingroup VVGL_GEOM
 \brief This vertex type describes RGBA color data.  Derives from VT.  Concrete subclasses of Vertex use one or more of these to store their data.
 */
-struct VVGL_EXPORT VT_RGBA : public VT	{
+struct VT_RGBA : public VT	{
 	float		r = 0.0;
 	float		g = 0.0;
 	float		b = 0.0;
@@ -218,7 +218,7 @@ struct VVGL_EXPORT VT_RGBA : public VT	{
 \ingroup VVGL_GEOM
 Structs derived from VVGL::Vertex describe a single vertex and the various kinds of data associated with it (geometry, color, texture coords, and various combinations thereof).  Typically, these derived structs are passed to the Quad template (Quad consists of four vertices and the template is used to determine what kind of data is contained in each vertex)
 */
-struct VVGL_EXPORT Vertex	{
+struct Vertex	{
 	//!	Zeros out any data contained by the vertex.
 	//virtual void zero() = 0;
 };
@@ -227,7 +227,7 @@ struct VVGL_EXPORT Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that only contains x/y geometry data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXY : public Vertex	{
+struct VertXY : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XY		geo;
 	
@@ -243,7 +243,7 @@ struct VVGL_EXPORT VertXY : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y geometry data and s/t texture coordinate data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYST : public Vertex	{
+struct VertXYST : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XY		geo;
 	//!	The texture coordinate data for this vertex.
@@ -263,7 +263,7 @@ struct VVGL_EXPORT VertXYST : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y geometry data and RGBA color data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYRGBA : public Vertex	{
+struct VertXYRGBA : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XY		geo;
 	//!	The RGBA color data for this vertex.
@@ -283,7 +283,7 @@ struct VVGL_EXPORT VertXYRGBA : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y geometry data and s/t texture coordinate data and RGBA color data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYSTRGBA : public Vertex	{
+struct VertXYSTRGBA : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XY		geo;
 	//!	The texture coordinate data for this vertex.
@@ -309,7 +309,7 @@ struct VVGL_EXPORT VertXYSTRGBA : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y/z geometry data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYZ : public Vertex	{
+struct VertXYZ : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XYZ		geo;
 	
@@ -325,7 +325,7 @@ struct VVGL_EXPORT VertXYZ : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y/z geometry data and s/t texture coordinate data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYZST : public Vertex	{
+struct VertXYZST : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XYZ		geo;
 	//!	The texture coordinate data for this vertex.
@@ -345,7 +345,7 @@ struct VVGL_EXPORT VertXYZST : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y/z geometry data and RGBA color data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYZRGBA : public Vertex	{
+struct VertXYZRGBA : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XYZ		geo;
 	//!	The RGBA color data for this vertex.
@@ -365,7 +365,7 @@ struct VVGL_EXPORT VertXYZRGBA : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains x/y/z geometry data and s/t texture coordinate data and RGBA color data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertXYZSTRGBA : public Vertex	{
+struct VertXYZSTRGBA : public Vertex	{
 	//!	The geometry data for this vertex.
 	VT_XYZ		geo;
 	//!	The texture coordinate data for this vertex.
@@ -389,7 +389,7 @@ struct VVGL_EXPORT VertXYZSTRGBA : public Vertex	{
 \ingroup VVGL_GEOM
 \brief Describes a vertex that contains RGBA color data.  Derived from Vertex.
 */
-struct VVGL_EXPORT VertRGBA : public Vertex	{
+struct VertRGBA : public Vertex	{
 	//!	The RGBA color data for this vertex.
 	VT_RGBA		color;
 	
@@ -410,7 +410,7 @@ struct VVGL_EXPORT VertRGBA : public Vertex	{
 \brief This struct defines a quad- it's a simple template which is expected to be passed one of the structs derived from Vertex as the template type (this template type defines what kind of data the quad will contain).  The instance methods make populating the quad with geometry/texture/color data easy, and the stride and offset methods simplify uploading the struct's memory directly to GL.
 */
 template <typename QuadType>
-struct VVGL_EXPORT Quad	{
+struct Quad	{
 	//!	The bottom-left vertex
 	QuadType		bl;
 	//!	The bottom-right vertex
@@ -515,4 +515,4 @@ struct VVGL_EXPORT Quad	{
 }
 
 
-#endif /* VVGL_Geom_h */
+#endif /* VVGL_GLGeom_hpp */

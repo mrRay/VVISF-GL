@@ -7,6 +7,10 @@
 
 #include "LoadingWindow.h"
 
+#if defined(Q_OS_WIN)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 
 
 
@@ -74,12 +78,36 @@ bool LoadingWindowFileListModel::dropMimeData(const QMimeData *data, Qt::DropAct
 	if (lw != nullptr)	{
 		QList<QUrl>		urls = data->urls();
 		for (const QUrl & url : urls)	{
-			//qDebug() << "url is " << url << ", as string it's " << url.toString();
+			QString			localPath = url.toLocalFile();
+			qDebug() << "\turl is " << url << ", path is " << localPath;
+			QFileInfo		fi(localPath);
+			if (fi.isDir())	{
+				lw->setBaseDirectory(localPath);
+			}
+			else	{
+				QDir			parentDir = fi.dir();
+				//qDebug() << "file is file, parentDir is " << parentDir;
+				//qDebug() << "parentDir absoluteFilePath is " << parentDir.absolutePath();
+				//qDebug() << "parentDir canonicalPath is " <<  parentDir.canonicalPath();
+				//qDebug() << "parentDir path is " << parentDir.path();
+				//QFileInfo		altFI(parentDir.path());
+				//qDebug() << "altFI is " << altFI;
+				//qDebug() << "altFI path is " << altFI.path();
+				//qDebug() << "altFI absolutePath is " << altFI.absolutePath();
+				//qDebug() << "altFI absoluteFilePath is " << altFI.absoluteFilePath();
+				//qDebug() << "test string is " << parentDir.path().remove(0,7);
+				//lw->setBaseDirectory( parentDir.path().remove(0,7) );
+				lw->setBaseDirectory(parentDir.path());
+			}
+
+
+			/*
+			qDebug() << "\turl is " << url << ", as string it's " << url.toString();
 			QFileInfo		fi(url.toString());
-			//qDebug() << "file info is " << fi;
+			qDebug() << "\tfile info is " << fi;
 			
 			if (fi.isDir())	{
-				//qDebug() << "file is dir, path is " << fi.absolutePath();
+				qDebug() << "\tfile is dir, path is " << fi.absolutePath();
 				lw->setBaseDirectory( fi.absolutePath() );
 			}
 			else	{
@@ -96,6 +124,7 @@ bool LoadingWindowFileListModel::dropMimeData(const QMimeData *data, Qt::DropAct
 				//qDebug() << "test string is " << parentDir.path().remove(0,7);
 				lw->setBaseDirectory( parentDir.path().remove(0,7) );
 			}
+			*/
 			break;
 		}
 	}

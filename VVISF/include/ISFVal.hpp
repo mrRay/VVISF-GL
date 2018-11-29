@@ -54,7 +54,7 @@ inline bool ISFValTypeUsesImage(const ISFValType & n) { return (n==ISFValType_Cu
 \brief ISFVal describes an ISF value- it has a type (ISFValType) and a type-dependent value.  Intended to be immutable.
 \ingroup VVISF_BASIC
 */
-struct ISFVal	{
+struct VVISF_EXPORT ISFVal	{
 	private:
 		//	this union stores the value of an ISFVal (the member of the union used depends on the ISFVal's 'type' member)
 		union ISFValUnion {

@@ -29,7 +29,8 @@ public:
 	GLBufferQVideoSurface(const GLContextRef & inCtx, QObject * parent=nullptr);
 	~GLBufferQVideoSurface() {
 		uploader = nullptr;
-		swizzleScene = nullptr;
+		yuvSwizzleScene = nullptr;
+		bgrSwizzleScene = nullptr;
 		lastUploadedFrame = nullptr;
 	}
 	
@@ -48,8 +49,10 @@ signals:
 	Q_SIGNAL void frameProduced(GLBufferRef n);
 	
 private:
+	GLContextRef			ctxToUse = nullptr;	//	null by default.  if null, scenes can use their own contexts.  if non-null, scenes must use this context to do their rendering.
 	GLCPUToTexCopierRef		uploader = nullptr;
-	ISFSceneRef				swizzleScene = nullptr;	//	GL4 doesn't support YCbCr textures (FFFFFFUUUUUUU...) so we use this to swizzle the uploaded YCbCr data (packed in a half-width RGBA texture) to a full-width RGBA image
+	ISFSceneRef				yuvSwizzleScene = nullptr;	//	GL4 doesn't support YCbCr textures (FFFFFFUUUUUUU...) so we use this to swizzle the uploaded YCbCr data (packed in a half-width RGBA texture) to a full-width RGBA image
+	ISFSceneRef				bgrSwizzleScene = nullptr;	//	Qt vends "RGB32" as "xRGB", which we upload as BGRA and then swizzle to RGBA using this scene
 	GLBufferRef				lastUploadedFrame = nullptr;
 	bool					native2vuySupport = false;	//	set this to 'true' to upload the frames to YCbCr textures.  if this is 'false', the YCbCr CPU data is uploaded as a half-width RGBA texture, and the YCbCr->RGB conversion is done in a shader
 	

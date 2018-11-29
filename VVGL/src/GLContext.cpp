@@ -85,6 +85,10 @@ void GLContext::calculateVersion()	{
 		}
 		break;
 	}
+	const char			*rendererString = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+	GLERRLOG
+	//cout << "\traw renderer string is " << rendererString << endl;
+	_renderer = std::string(rendererString);
 }
 
 

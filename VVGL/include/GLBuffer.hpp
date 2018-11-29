@@ -112,7 +112,7 @@ class VVGL_EXPORT GLBuffer	{
 		/*!
 		These are usually properties that cannot be changed, and are in their own struct for organizational purposes (buffers in the pool are checked for compatibility using equality of instances of this struct)
 		*/
-		struct Descriptor	{
+		struct VVGL_EXPORT Descriptor	{
 			//!	What type of buffer this is (texture, renderbuffer, etc.)
 			Type					type = Type_Tex;
 			//!	What kind of texture this is (only used if this buffer is Type_Tex)
@@ -201,7 +201,7 @@ class VVGL_EXPORT GLBuffer	{
 		GLBuffer(GLBufferPoolRef inParentPool);
 		GLBuffer(const GLBuffer &);
 		virtual ~GLBuffer();
-		friend ostream & operator<<(ostream & os, const GLBuffer & n);
+		friend ostream & operator<<(ostream & os, const GLBuffer & n) { os << n.getDescriptionString(); return os; }
 		
 		//	copy assignment operators are disabled to prevent accidents
 		GLBuffer& operator=(const GLBuffer&) = delete;

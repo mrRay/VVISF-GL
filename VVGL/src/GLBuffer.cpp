@@ -189,12 +189,6 @@ GLBuffer::~GLBuffer()	{
 	parentBufferPool = nullptr;
 	
 }
-ostream & operator<<(ostream & os, const GLBuffer & n)	{
-	//os << "<GLBuffer " << n.name << ", " << (int)n.size.width << "x" << (int)n.size.height << ">";
-	
-	os << n.getDescriptionString();
-	return os;
-}
 
 
 GLBuffer * GLBuffer::allocShallowCopy()	{

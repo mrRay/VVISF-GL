@@ -40,10 +40,10 @@ win32 {
     #     ..$${spectrum_build_dir}
     # without the result having a trailing slash where spectrum_build_dir
     # is undefined.
-    build_pass {
-        CONFIG(release, release|debug): spectrum_build_dir = /release
-        CONFIG(debug, release|debug): spectrum_build_dir = /debug
-    }
+	build_pass {
+		CONFIG(release, release|debug): spectrum_build_dir = /release
+		CONFIG(debug, release|debug): spectrum_build_dir = /debug
+	}
 }
 
 
@@ -60,12 +60,12 @@ macx {
 	# This adds the @rpath prefix to the lib install name (the lib is expected to be bundled with the app package)
 	QMAKE_SONAME_PREFIX = @rpath
 } else {
-    DESTDIR = ../..$${spectrum_build_dir}
+	#DESTDIR = ../..$${spectrum_build_dir}
 }
 
 EXAMPLE_FILES = bwins/fftreal.def eabi/fftreal.def readme.txt license.txt
 
-target.path = $$[QT_INSTALL_EXAMPLES]/multimedia/spectrum
-INSTALLS += target
+#target.path = $$[QT_INSTALL_EXAMPLES]/multimedia/spectrum
+#INSTALLS += target
 
-CONFIG += install_ok  # Do not cargo-cult this!
+#CONFIG += install_ok  # Do not cargo-cult this!

@@ -276,6 +276,11 @@ void ISFGLBufferQWidget::initializeGL()
 			
 			//scene->setPerformClear(true);
 			//scene->setClearColor(0., 0., 0., 0.);
+
+			if (scene->context()->sameShareGroupAs(GetGlobalBufferPool()->context()))
+				cout << "\tISFGLBufferQWidget is in same sharegroup as buffer pool...\n";
+			else
+				cout << "\tERR: ISFGLBufferQWidget is NOT in same sharegroup as buffer pool!\n";
 		}
 		
 		

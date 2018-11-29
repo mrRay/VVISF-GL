@@ -292,6 +292,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 			}
 		}
 		
+#if defined(VVGL_SDK_MAC) || (defined(VVGL_SDK_QT) && defined(Q_OS_MAC))
 		if (newBufferDesc.pixelFormat == GLBuffer::PF_Depth)	{
 			glTexParameteri(newBufferDesc.target, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_CACHED_APPLE);
 			GLERRLOG
@@ -300,6 +301,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 			glTexParameteri(newBufferDesc.target, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_SHARED_APPLE);
 			GLERRLOG
 		}
+#endif
 #endif
 //#endif
 		
@@ -2244,7 +2246,7 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 		desc.pixelFormat = GLBuffer::PF_BGRA;
 		break;
 	
-	case QVideoFrame::Format_RGB32:
+	case QVideoFrame::Format_RGB32:	//	really ARGB, so we have to swizzle
 		desc.internalFormat = GLBuffer::IF_RGB;
 		desc.pixelFormat = GLBuffer::PF_RGBA;
 		break;
@@ -2318,7 +2320,11 @@ GLBufferRef CreateCPUBufferForQVideoFrame(QVideoFrame * inFrame, const GLBufferP
 	returnMe->preferDeletion = true;
 	returnMe->size = repSize;
 	returnMe->srcRect = { 0, 0, imgSize.width, imgSize.height };
+#if defined(Q_OS_WIN)
+	returnMe->flipped = false;
+#elif defined(Q_OS_MAC)
 	returnMe->flipped = true;
+#endif
 	returnMe->backingSize = repSize;
 	
 	inPoolRef->timestampThisBuffer(returnMe);

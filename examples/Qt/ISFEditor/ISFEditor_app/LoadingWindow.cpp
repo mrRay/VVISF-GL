@@ -171,6 +171,10 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	defaultDirToLoad = QString("~/Library/Graphics/ISF");
 	//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
 	defaultDirToLoad.replace("~", QDir::homePath());
+#else
+	defaultDirToLoad = QDir::toNativeSeparators("C:/Users/operator/Desktop/ISF tests+tutorials");
+	//QString		desktopDir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+	defaultDirToLoad = QCoreApplication::applicationDirPath() + "/sample_ISFs";
 #endif
 	QSettings		settings;
 	QVariant		lastUsedPath = settings.value("baseDir");

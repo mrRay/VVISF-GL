@@ -10,6 +10,8 @@ namespace Ui {
 	class MainWindow;
 }
 
+class GLBufferQWidget;
+
 
 
 
@@ -20,6 +22,8 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
+
+	GLBufferQWidget * bufferView();
 
 private slots:
 	void on_actionNew_triggered();
@@ -47,6 +51,9 @@ private:
 
 
 
+
+//	gets the global singleton for this class
+MainWindow * GetMainWindow();
 
 //	this function is called when the GL environment has been created and the app is ready to finish launching
 void FinishLaunching();

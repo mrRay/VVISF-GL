@@ -6,5 +6,5 @@ SUBDIRS += \
 	fftreal \
     ISFEditor_app
 
-app.depends += fftreal
+ISFEditor_app.depends += fftreal
 

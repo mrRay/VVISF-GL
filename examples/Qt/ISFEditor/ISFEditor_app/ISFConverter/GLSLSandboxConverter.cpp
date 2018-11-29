@@ -14,6 +14,10 @@
 #include "LoadingWindow.h"
 #include "StringUtilities.h"
 
+#if defined(Q_OS_WIN)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 
 
 

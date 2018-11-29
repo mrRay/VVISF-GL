@@ -6,23 +6,60 @@
 
 
 GLBufferQVideoSurface::GLBufferQVideoSurface(QObject * parent) :
-	QAbstractVideoSurface(parent),
-	uploader(CreateGLCPUToTexCopierRef()),
-	swizzleScene(CreateISFSceneRef())
+	QAbstractVideoSurface(parent)
 {
 	generalInit();
 }
 GLBufferQVideoSurface::GLBufferQVideoSurface(const GLContextRef & inCtx, QObject * parent) :
 	QAbstractVideoSurface(parent),
-	uploader(CreateGLCPUToTexCopierRefUsing(inCtx)),
-	swizzleScene(CreateISFSceneRefUsing(inCtx))
+	ctxToUse(inCtx)
 {
 	generalInit();
 }
 void GLBufferQVideoSurface::generalInit()	{
+	if (ctxToUse == nullptr)	{
+		uploader = CreateGLCPUToTexCopierRef();
+		yuvSwizzleScene = CreateISFSceneRef();
+		bgrSwizzleScene = CreateISFSceneRef();
+	}
+	else	{
+		uploader = CreateGLCPUToTexCopierRefUsing(ctxToUse);
+		yuvSwizzleScene = CreateISFSceneRefUsing(ctxToUse);
+		bgrSwizzleScene = CreateISFSceneRefUsing(ctxToUse);
+	}
+
 	if (uploader!=nullptr)
 		uploader->setQueueSize(1);
-	if (swizzleScene != nullptr)	{
+
+	ISFSceneRef			*sceneRefs[2] = { &yuvSwizzleScene, &bgrSwizzleScene };
+	QString				shaderPaths[2] = {
+		QString(":/resources/SwizzleISF-CbY0CrY1toRGB.fs"),
+		QString(":/resources/SwizzleISF-BGRAtoRGBA.fs")
+	};
+	for (int i=0; i<2; ++i)	{
+		//if (sceneRefs[i] == nullptr)	//	skip if the scene's null
+		//	continue;
+		ISFSceneRef		&tmpScene = *(sceneRefs[i]);
+		if (tmpScene == nullptr)
+			continue;
+
+		QFile			tmpFile(shaderPaths[i]);
+		if (!tmpFile.open(QFile::ReadOnly | QFile::Text))	{
+			qDebug() << "\tERR: could not open " << shaderPaths[i];
+		}
+		else	{
+			QTextStream		tmpStream(&tmpFile);
+			QString			fileContentsAsString = tmpStream.readAll();
+			std::string		fileContents = fileContentsAsString.toStdString();
+			tmpFile.close();
+
+			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+			tmpScene->useDoc(tmpDoc);
+		}
+	}
+
+	/*
+	if (yuvSwizzleScene != nullptr)	{
 		QString			tmpString(":/resources/SwizzleISF-CbY0CrY1toRGB.fs");
 		QFile			tmpFile(tmpString);
 		if (!tmpFile.open(QFile::ReadOnly | QFile::Text))	{
@@ -33,17 +70,38 @@ void GLBufferQVideoSurface::generalInit()	{
 			QString			fileContentsAsString = tmpStream.readAll();
 			std::string		fileContents = fileContentsAsString.toStdString();
 			tmpFile.close();
-			
+
 			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
-			swizzleScene->useDoc(tmpDoc);
+			yuvSwizzleScene->useDoc(tmpDoc);
 		}
 	}
+	else
+		qDebug() << "ERR: yuv swizzle scene null";
+	if (bgrSwizzleScene != nullptr)	{
+		QString			tmpString(":/resources/SwizzleISF-BGRAtoRGBA.fs");
+		QFile			tmpFile(tmpString);
+		if (!tmpFile.open(QFile::ReadOnly | QFile::Text))	{
+			qDebug() << "\tERR: could not open SwizzleISF-BGRAtoRGBA.fs";
+		}
+		else	{
+			QTextStream		tmpStream(&tmpFile);
+			QString			fileContentsAsString = tmpStream.readAll();
+			std::string		fileContents = fileContentsAsString.toStdString();
+			tmpFile.close();
+
+			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+			bgrSwizzleScene->useDoc(tmpDoc);
+		}
+	}
+	else
+		qDebug() << "ERR: bgr swizzle scene null";
+	*/
 }
 
 
 bool GLBufferQVideoSurface::isFormatSupported(const QVideoSurfaceFormat & inFmt) const	{
 	qDebug() << __PRETTY_FUNCTION__ << "... " << inFmt;
-	
+
 	//	check the handle type
 	switch (inFmt.handleType())	{
 	case QAbstractVideoBuffer::GLTextureHandle:
@@ -136,49 +194,76 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 	}
 	//cout << "\tcpuBuffer is " << *cpuBuffer << ", pixel format is " << cpuBuffer->desc.pixelFormat << endl;
 	//cout << "\tPF_BGRA is " << GLBuffer::PF_BGRA << ", PF_RGBA is " << GLBuffer::PF_RGBA << ", PF_YCbCr_422 is " << GLBuffer::PF_YCbCr_422 << endl;
-	
-	//	BGRA/RGBA images from Qt are little-endian, so we need to swap bytes if that's what we're working with
-	bool			textureNeedsToBeSwizzled = false;
+
+
+
+
+	GLBufferRef		freshTexture = nullptr;
+	GLBufferRef		texToEmit = nullptr;
 	switch(cpuBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_YCbCr_422:
 		uploader->setSwapBytes(false);
 		//	if we're uploading the YCbCr tex as RGBA and then swizzling it on the GPU, adjust the cpu buffer accordingly
 		if (!native2vuySupport)	{
-			textureNeedsToBeSwizzled = true;
-			cpuBuffer->size = { ceil(cpuBuffer->size.width/2.), cpuBuffer->size.height };
-			cpuBuffer->backingSize = { ceil(cpuBuffer->size.width/2.), cpuBuffer->size.height };
-			cpuBuffer->srcRect = { 0, 0, ceil(cpuBuffer->srcRect.size.width/2.), cpuBuffer->size.height };
+			GLBufferRef		fauxCPUBuffer = GLBufferCopy(cpuBuffer);
+			fauxCPUBuffer->size = { ceil(fauxCPUBuffer->size.width/2.), fauxCPUBuffer->size.height };
+			fauxCPUBuffer->backingSize = { ceil(fauxCPUBuffer->size.width/2.), fauxCPUBuffer->size.height };
+			fauxCPUBuffer->srcRect = { 0, 0, ceil(fauxCPUBuffer->srcRect.size.width/2.), fauxCPUBuffer->size.height };
+			fauxCPUBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
+			fauxCPUBuffer->desc.pixelFormat = GLBuffer::PF_BGRA;
+			fauxCPUBuffer->desc.pixelType = GLBuffer::PT_UByte;
+			freshTexture = uploader->streamCPUToTex(fauxCPUBuffer,false);
+		}
+		else
+			freshTexture = uploader->streamCPUToTex(cpuBuffer,false);
+		if (freshTexture != nullptr)	{
+			if (!native2vuySupport)	{
+				yuvSwizzleScene->setFilterInputBuffer(freshTexture);
+				//yuvSwizzleScene->setSize(Size(freshTexture->size.width*2.0, freshTexture->size.height));
+				Size			tmpSize(freshTexture->size.width*2.0, freshTexture->size.height);
+				GLBufferRef		swizzledTexture = yuvSwizzleScene->createAndRenderABuffer(tmpSize);
+				if (swizzledTexture != nullptr)
+					lastUploadedFrame = swizzledTexture;
+			}
+			else	{
+				lastUploadedFrame = freshTexture;
+			}
+		}
+		break;
+	case GLBuffer::PF_RGBA:	//	not really RGBA- Qt vends xRGB, which we upload as BGRA and then swizzle to RGBA in a shader
+		{
+			uploader->setSwapBytes(false);
+			//GLBufferRef		fauxCPUBuffer = GLBufferCopy(cpuBuffer);
+			//fauxCPUBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
+			//fauxCPUBuffer->desc.pixelFormat = GLBuffer::PF_BGRA;
+			//fauxCPUBuffer->desc.pixelType = GLBuffer::PT_UByte;
 			cpuBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
 			cpuBuffer->desc.pixelFormat = GLBuffer::PF_BGRA;
 			cpuBuffer->desc.pixelType = GLBuffer::PT_UByte;
+			freshTexture = uploader->streamCPUToTex(cpuBuffer,false);
+			if (freshTexture != nullptr)	{
+				//cout << "\tfreshTexture is " << *freshTexture << endl;
+				//cout << "\tcpuBuffer flipped is " << cpuBuffer->flipped << ", freshTexture flipped is " << freshTexture->flipped << endl;
+				//bgrSwizzleScene->setFilterInputBuffer(freshTexture);
+				//GLBufferRef		swizzledTexture = bgrSwizzleScene->createAndRenderABuffer(freshTexture->size);
+				//cout << "\tswizzledTexture is " << *swizzledTexture << endl;
+				lastUploadedFrame = freshTexture;
+			}
+			else	{
+				//cout << "\tfreshTexture was null\n";
+			}
 		}
 		break;
 	default:
+#if defined(Q_OS_WIN)
+		uploader->setSwapBytes(false);
+#elif defined(Q_OS_MAC)
 		uploader->setSwapBytes(true);
+#endif
 		break;
 	}
-	
-	GLBufferRef		freshTexture = uploader->streamCPUToTex(cpuBuffer,false);
-	GLBufferRef		texToEmit = nullptr;
+
 	if (freshTexture != nullptr)	{
-		if (textureNeedsToBeSwizzled)	{
-			swizzleScene->setFilterInputBuffer(freshTexture);
-			//swizzleScene->setSize(Size(freshTexture->size.width*2.0, freshTexture->size.height));
-			Size			tmpSize(freshTexture->size.width*2.0, freshTexture->size.height);
-			GLBufferRef		swizzledTexture = swizzleScene->createAndRenderABuffer(tmpSize);
-			if (swizzledTexture != nullptr)
-				lastUploadedFrame = swizzledTexture;
-		}
-		else	{
-			lastUploadedFrame = freshTexture;
-		}
-	}
-	
-	if (freshTexture == nullptr)	{
-		//cout << "\tsuccessfully uploaded frame, nothing retrieved\n";
-	}
-	else	{
-		//cout << "\tsuccessfully retrieved uploaded frame " << *lastUploadedFrame << endl;
 		emit frameProduced(lastUploadedFrame);
 	}
 	

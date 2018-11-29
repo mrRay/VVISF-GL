@@ -390,7 +390,7 @@ QSurfaceFormat GLQtCtxWrapper::CreateCompatibilityGLSurfaceFormat()	{
 	fmt.setRenderableType(QSurfaceFormat::OpenGL);
 	fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
 	fmt.setSwapInterval(1);
-	fmt.setVersion(4,1);
+	fmt.setVersion(2,1);
 	
 	return fmt;
 }
@@ -420,7 +420,7 @@ QSurfaceFormat GLQtCtxWrapper::CreateGL4SurfaceFormat()	{
 	//fmt.setGreenBufferSize(8);
 	//fmt.setBlueBufferSize(8);
 	//fmt.setOptions(0);
-	fmt.setOptions(QSurfaceFormat::DeprecatedFunctions);
+	//fmt.setOptions(QSurfaceFormat::DeprecatedFunctions);
 	fmt.setProfile(QSurfaceFormat::CoreProfile);
 	fmt.setRenderableType(QSurfaceFormat::OpenGL);
 	fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);

@@ -97,7 +97,7 @@ SOURCES += \
 	VideoOutput/VideoOutput.cpp \
     ISFConverter/GLSLSandboxConverter.cpp \
     ISFConverter/ShadertoyConverter.cpp \
-    misc_classes/StringUtilities.cpp
+	misc_classes/StringUtilities.cpp \
 
 
 HEADERS += \
@@ -158,7 +158,7 @@ HEADERS += \
     ISFConverter/GLSLSandboxConverter.h \
     ISFConverter/ShadertoyConverter.h \
     misc_classes/StringUtilities.h \
-    misc_ui/MouseEventISFWidget.h
+	misc_ui/MouseEventISFWidget.h \
 
 # platform-specific classes
 mac {
@@ -168,6 +168,12 @@ mac {
 	HEADERS += ../../common/SyphonVVBufferPoolAdditions.h \
 		VideoSource/InterAppVideoSource_Mac.h \
 		VideoOutput/InterAppOutput_Mac.h
+}
+win32	{
+	SOURCES += VideoSource/InterAppVideoSource_Win.cpp \
+		VideoOutput/InterAppOutput_Win.cpp
+	HEADERS += VideoSource/InterAppVideoSource_Win.h \
+		VideoOutput/InterAppOutput_Win.h
 }
 
 
@@ -285,9 +291,15 @@ mac {
 	#LIBS += -F$${fftreal_dir}
 	LIBS += -L$${fftreal_dir}
 } else {
-	LIBS += -L..$${spectrum_build_dir}
-	LIBS += -lfftreal
+	#LIBS += -L..$${spectrum_build_dir}
+	#LIBS += -lfftreal
+	#LIBS += -L$$_PRO_FILE_PWD_/../../debug -lfftreal
 }
+
+# additions for fftreal lib
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../fftreal/release/ -lfftreal
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../fftreal/debug/ -lfftreal
+#else:unix: LIBS += -L$$OUT_PWD/../../VVGL/ -lVVGL
 
 
 
@@ -339,12 +351,29 @@ mac {
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}
 }
-else	{
-	linux-g++*: {
-		# Provide relative path from application to fftreal library
-		QMAKE_LFLAGS += -Wl,--rpath=\\\$\$ORIGIN
+win32	{
+	CONFIG(debug, debug|release)	{
+		#	intentionally blank, debug builds don't need any work (build & run works just fine)
+	}
+	else	{
+		MY_DEPLOY_DIR = $$shell_quote($$shell_path("$${OUT_PWD}/release"))
+
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../VVGL/release/VVGL.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../VVISF/release/VVISF.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../../../external/GLEW/win_x64/glew32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../fftreal/release/fftreal.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+
+		MY_WINDEPLOYQT = $$shell_quote($$shell_path($$[QT_INSTALL_BINS]/windeployqt))
+		MY_TARGET_EXE = $$shell_quote($$shell_path("$${OUT_PWD}/release/$${TARGET}.exe"))
+		QMAKE_POST_LINK += $${MY_WINDEPLOYQT} --compiler-runtime --verbose 3 $${MY_TARGET_EXE} $$escape_expand(\n)
 	}
 }
+#else	{
+#	linux-g++*: {
+#		# Provide relative path from application to fftreal library
+#		QMAKE_LFLAGS += -Wl,--rpath=\\\$\$ORIGIN
+#	}
+#}
 
 
 

@@ -647,11 +647,12 @@ void ShadertoyConverter::okClicked()	{
 #if defined(Q_OS_MAC)
 				QString			importSrcImgPath = QString("%1/Resources/%2").arg(QString::fromStdString(VVGL::StringByDeletingLastPathComponent(QDir::currentPath().toStdString()))).arg(importFileName);
 #else
+				QString			importSrcImgPath = QString("");
 #endif
 				QString			importDstImgPath = QString("%1/%2").arg(writeFolder).arg(importFileName);
 				
-				QFileInfo		fileInfo(importDstImgPath);
-				if (!fileInfo.exists())	{
+				//QFileInfo		fileInfo(importDstImgPath);
+				if (QFileInfo(importSrcImgPath).exists() && !QFileInfo(importDstImgPath).exists())	{
 					QFile::copy(importSrcImgPath, importDstImgPath);
 				}
 			}

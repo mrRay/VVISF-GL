@@ -131,7 +131,26 @@ struct GLColor	{
 
 //	this macro is a crude but effective way of logging GL errors on platforms that don't have dedicated GL debugging utilities
 #ifdef GL_DEBUG
-#define GLERRLOG {if(glGetError()!=0) { std::cout<<"\tglGetError() returned "<<glGetError()<<" in "<<__LINE__<<" of "<<__FILE__<<endl; }}
+#define GLERRLOG { \
+	int __ASDFQWERZXCV__=glGetError(); \
+	if (__ASDFQWERZXCV__!=0){ \
+		std::string		humanReadable("???"); \
+		switch(__ASDFQWERZXCV__){ \
+		case 0x0: humanReadable=std::string("no error"); break; \
+		case 0x500: humanReadable=std::string("invalid enum"); break; \
+		case 0x501: humanReadable=std::string("invalid value"); break; \
+		case 0x502: humanReadable=std::string("invalid operation"); break; \
+		case 0x503: humanReadable=std::string("stack overflow"); break; \
+		case 0x504: humanReadable=std::string("stack underflow"); break; \
+		case 0x505: humanReadable=std::string("out of memory"); break; \
+		case 0x506: humanReadable=std::string("invalid framebuffer"); break; \
+		case 0x507: humanReadable=std::string("context lost"); break; \
+		case 0x8031: humanReadable=std::string("table too large"); break; \
+		default: break; \
+		} \
+		std::cout<<"\tglGetError() returned "<<__ASDFQWERZXCV__<<" ("<<humanReadable<<") in "<<__LINE__<<" of "<<__FILE__<<endl; \
+	} \
+}
 #else
 #define GLERRLOG
 #endif
@@ -173,12 +192,6 @@ static void perform_async(FTYPE && inFunc, QObject * inObj=qApp)
 	QCoreApplication::postEvent(inObj, new Event(std::forward<FTYPE>(inFunc)));
 }
 #endif
-
-
-
-
-//	load some basic geometry structs and functions
-#include "VVGL_Geom.hpp"
 
 
 

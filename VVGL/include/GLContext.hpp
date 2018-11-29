@@ -3,6 +3,7 @@
 
 #include "VVGL_Defines.hpp"
 
+#include <string>
 #include <iostream>
 #if defined(VVGL_SDK_MAC)
 #pragma clang diagnostic push
@@ -39,6 +40,7 @@
 #endif
 
 #include "VVGL_Base.hpp"
+#include "VVGL_Geom.hpp"
 
 
 
@@ -139,6 +141,7 @@ class VVGL_EXPORT GLContext	{
 #endif
 		//!	The version of OpenGL this context is using.
 		GLVersion			version = GLVersion_Unknown;
+		std::string			_renderer = std::string("");
 		
 		
 	public:
@@ -218,6 +221,8 @@ class VVGL_EXPORT GLContext	{
 #if defined(VVGL_SDK_MAC)
 		bool sameShareGroupAs(const CGLContextObj & inCtx);
 #endif
+
+		std::string getRenderer() { return _renderer; }
 		
 		GLContext & operator=(const GLContext & n);
 		friend ostream & operator<<(ostream & os, const GLContext & n);

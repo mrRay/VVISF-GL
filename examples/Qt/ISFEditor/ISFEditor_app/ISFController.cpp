@@ -16,6 +16,8 @@
 #include "OutputWindow.h"
 #include "DynamicVideoSource.h"
 #include "AudioController.h"
+#include "MainWindow.h"
+#include "GLBufferQWidget.h"
 
 
 

@@ -8,6 +8,15 @@
 #include <QTimer>
 
 
+#if defined(Q_OS_WIN)
+extern "C"
+{
+	__declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
+
 int main(int argc, char *argv[])
 {
 	QGuiApplication a(argc, argv);
@@ -15,11 +24,16 @@ int main(int argc, char *argv[])
 	using namespace VVGL;
 
 	//	figure out what version GL we're going to use
-	QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
-	//QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
+	//QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
+	QSurfaceFormat		sfcFmt = CreateGL4SurfaceFormat();
 	
 	//	make the shared context using the vsn of GL you need to target.  all GL contexts are going to share this so they can share textures/etc with one another
 	GLContextRef		sharedContext = CreateNewGLContextRef(nullptr, nullptr, sfcFmt);
+	if (sharedContext == nullptr)	{
+		qDebug() << "ERR: shared context NULL";
+		return 1;
+	}
+	qDebug() << "renderer is " << QString::fromStdString(sharedContext->getRenderer());
 	
 	//	make the global buffer pool.  buffer pools create GL resources, so you need one- they also recycle these resources, improving runtime performance.  this global buffer pool will use the shared context to create any GL resources
 	CreateGlobalBufferPool(sharedContext);
@@ -101,38 +115,38 @@ int main(int argc, char *argv[])
 
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 
-			string			vsString("\r\
-#version 330 core\r\
-in vec3		inXYZ;\r\
-in vec2		inST;\r\
-in vec4		inRGBA;\r\
-uniform mat4	vvglOrthoProj;\r\
-out vec2		programST;\r\
-out vec4		programRGBA;\r\
-void main()	{\r\
-	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
-	programST = inST;\r\
-	programRGBA = inRGBA;\r\
-}\r\
+			string			vsString("\r\n\
+#version 330 core\r\n\
+in vec3		inXYZ;\r\n\
+in vec2		inST;\r\n\
+in vec4		inRGBA;\r\n\
+uniform mat4	vvglOrthoProj;\r\n\
+out vec2		programST;\r\n\
+out vec4		programRGBA;\r\n\
+void main()	{\r\n\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\n\
+	programST = inST;\r\n\
+	programRGBA = inRGBA;\r\n\
+}\r\n\
 ");
-			string			fsString("\r\
-#version 330 core\r\
-in vec2		programST;\r\
-in vec4		programRGBA;\r\
-uniform sampler2D		inputImage;\r\
-uniform sampler2DRect	inputImageRect;\r\
-uniform int		isRectTex;\r\
-uniform float	fadeVal;\r\
-out vec4		FragColor;\r\
-void main()	{\r\
-if (isRectTex==0)\r\
-	FragColor = vec4(0,0,0,1);\r\
-else if (isRectTex==1)\r\
-	FragColor = texture(inputImage,programST);\r\
-else\r\
-	FragColor = texture(inputImageRect,programST);\r\
-FragColor *= programRGBA;\r\
-}\r\
+			string			fsString("\r\n\
+#version 330 core\r\n\
+in vec2		programST;\r\n\
+in vec4		programRGBA;\r\n\
+uniform sampler2D		inputImage;\r\n\
+uniform sampler2DRect	inputImageRect;\r\n\
+uniform int		isRectTex;\r\n\
+uniform float	fadeVal;\r\n\
+out vec4		FragColor;\r\n\
+void main()	{\r\n\
+if (isRectTex==0)\r\n\
+	FragColor = vec4(0,0,0,1);\r\n\
+else if (isRectTex==1)\r\n\
+	FragColor = texture(inputImage,programST);\r\n\
+else\r\n\
+	FragColor = texture(inputImageRect,programST);\r\n\
+FragColor *= programRGBA;\r\n\
+}\r\n\
 ");
 			renderScene->setVertexShaderString(vsString);
 			renderScene->setFragmentShaderString(fsString);

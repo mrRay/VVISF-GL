@@ -8,6 +8,15 @@
 #include "DynamicVideoSource.h"
 #include "ISFController.h"
 
+/*
+#if defined(Q_OS_WIN)
+extern "C"
+{
+	__declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+*/
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +32,7 @@ int main(int argc, char *argv[])
 	
 	//QSurfaceFormat::setDefaultFormat(CreateCompatibilityGLSurfaceFormat());
 	QSurfaceFormat::setDefaultFormat(CreateGL4SurfaceFormat());
+	//QSurfaceFormat::setDefaultFormat(CreateGL3SurfaceFormat());
 	
 	QApplication a(argc, argv);
 	

@@ -214,6 +214,8 @@ VVGL::GLBufferRef TexDownloadBenchmarkMainWindow::createCPUBufferForWork()
 	//returnMe->parentBufferPool = GetGlobalBufferPool();
 	
 	VVGL::Size			tmpSize(ui->widthField->value(), ui->heightField->value());
+	uint32_t		tmpThing = desc.bytesPerRowForWidth(64);
+	++tmpThing;
 	void			*bufferMemory = malloc(desc.backingLengthForSize(tmpSize));
 	GLBufferPoolRef	bp = GetGlobalBufferPool();
 	//cout << "\tcpu buffer should be sized " << tmpSize << endl;

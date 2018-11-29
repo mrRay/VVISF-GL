@@ -1,10 +1,10 @@
 QT += gui
-QT += opengl multimedia
+QT += opengl multimedia network
 
 TARGET = VVGLTestApp
 TEMPLATE = app
 
-CONFIG += c++14 console
+CONFIG += c++14
 #CONFIG -= app_bundle
 
 # The following define makes your compiler emit warnings if you use
@@ -93,6 +93,22 @@ mac	{
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/../../../external/GLEW/mac_x86_64/libGLEW*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../VVGL/libVVGL*.dylib $$framework_dir;
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+	}
+}
+win32	{
+	CONFIG(debug, debug|release)	{
+		#	intentionally blank, debug builds don't need any work (build & run works just fine)
+	}
+	#	release builds need to have the libs copied to the dest dir, and windeployqt executed on the output app
+	else	{
+		MY_DEPLOY_DIR = $$shell_quote($$shell_path("$${OUT_PWD}/release"))
+
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../VVGL/release/VVGL.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../../external/GLEW/win_x64/glew32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+
+		MY_WINDEPLOYQT = $$shell_quote($$shell_path($$[QT_INSTALL_BINS]/windeployqt))
+		MY_TARGET_EXE = $$shell_quote($$shell_path("$${OUT_PWD}/release/$${TARGET}.exe"))
+		QMAKE_POST_LINK += $${MY_WINDEPLOYQT} --compiler-runtime --verbose 3 $${MY_TARGET_EXE} $$escape_expand(\n)
 	}
 }
 

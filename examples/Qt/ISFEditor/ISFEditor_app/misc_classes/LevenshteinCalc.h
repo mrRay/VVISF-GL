@@ -1,7 +1,7 @@
 #ifndef LEVENSHTEINCALC_H
 #define LEVENSHTEINCALC_H
 
-#import <QString>
+#include <QString>
 
 
 

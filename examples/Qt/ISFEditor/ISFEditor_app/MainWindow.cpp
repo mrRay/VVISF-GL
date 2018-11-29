@@ -3,6 +3,7 @@
 
 #include <QDebug>
 
+#include "GLBufferQWidget.h"
 #include "ISFGLBufferQWidget.h"
 #include "AudioController.h"
 #include "OutputWindow.h"
@@ -16,12 +17,19 @@
 
 
 
+static MainWindow * globalMainWindow = nullptr;
+
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
+	globalMainWindow = this;
+
 	ui->setupUi(this);
 	
 	//	we want to know when the widget draws its first frame because we can't create the global shared context/buffer pool until we can get a base ctx from the widget
@@ -30,6 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()	{
 	delete ui;
+}
+
+GLBufferQWidget * MainWindow::bufferView()	{
+	return ui->bufferView;
 }
 
 void MainWindow::on_actionNew_triggered()	{
@@ -170,3 +182,11 @@ void MainWindow::on_actionUse_selection_for_search_triggered()	{
 		return;
 	dw->on_actionUse_selection_for_search_triggered();
 }
+
+
+
+
+MainWindow * GetMainWindow()	{
+	return globalMainWindow;
+}
+

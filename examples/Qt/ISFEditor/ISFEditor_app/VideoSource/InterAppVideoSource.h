@@ -8,6 +8,7 @@
 #if defined(Q_OS_MAC)
 #include "InterAppVideoSource_Mac.h"
 #elif defined(Q_OS_WIN)
+#include "InterAppVideoSource_Win.h"
 #endif
 
 
@@ -35,7 +36,9 @@ private:
 #if defined(Q_OS_MAC)
 	InterAppVideoSource_Mac		src;
 #elif defined(Q_OS_WIN)
+	InterAppVideoSource_Win		src;
 #endif
+	int				derp;
 };
 
 

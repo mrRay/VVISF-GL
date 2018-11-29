@@ -50,32 +50,32 @@ void GLTexToTexCopier::generalInit()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//	set up simple frag & vert shaders that draw a tex
 #if defined(VVGL_TARGETENV_GL3PLUS)
-	string			vsString("\r\
-#version 330 core\r\
-in vec3		inXYZ;\r\
-in vec2		inST;\r\
-uniform mat4	vvglOrthoProj;\r\
-out vec2		programST;\r\
-void main()	{\r\
-	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
-	programST = inST;\r\
-}\r\
+	string			vsString("\r\n\
+#version 330 core\r\n\
+in vec3		inXYZ;\r\n\
+in vec2		inST;\r\n\
+uniform mat4	vvglOrthoProj;\r\n\
+out vec2		programST;\r\n\
+void main()	{\r\n\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\n\
+	programST = inST;\r\n\
+}\r\n\
 ");
-	string			fsString("\r\
-#version 330 core\r\
-in vec2		programST;\r\
-uniform sampler2D		inputImage;\r\
-uniform sampler2DRect	inputImageRect;\r\
-uniform int		isRectTex;\r\
-out vec4		FragColor;\r\
-void main()	{\r\
-	if (isRectTex==0)\r\
-		FragColor = vec4(0,0,0,1);\r\
-	else if (isRectTex==1)\r\
-		FragColor = texture(inputImage,programST);\r\
-	else\r\
-		FragColor = texture(inputImageRect,programST);\r\
-}\r\
+	string			fsString("\r\n\
+#version 330 core\r\n\
+in vec2		programST;\r\n\
+uniform sampler2D		inputImage;\r\n\
+uniform sampler2DRect	inputImageRect;\r\n\
+uniform int		isRectTex;\r\n\
+out vec4		FragColor;\r\n\
+void main()	{\r\n\
+	if (isRectTex==0)\r\n\
+		FragColor = vec4(0,0,0,1);\r\n\
+	else if (isRectTex==1)\r\n\
+		FragColor = texture(inputImage,programST);\r\n\
+	else\r\n\
+		FragColor = texture(inputImageRect,programST);\r\n\
+}\r\n\
 ");
 #elif defined(VVGL_TARGETENV_GLES)
 	string			vsString("\n\
@@ -105,33 +105,33 @@ void main()	{\n\
 }\n\
 ");
 #elif defined(VVGL_TARGETENV_GLES3)
-	string			vsString("\r\
-#version 300 es\r\
-in vec3		inXYZ;\r\
-in vec2		inST;\r\
-uniform mat4	vvglOrthoProj;\r\
-out vec2		programST;\r\
-void main()	{\r\
-	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\
-	programST = inST;\r\
-}\r\
+	string			vsString("\r\n\
+#version 300 es\r\n\
+in vec3		inXYZ;\r\n\
+in vec2		inST;\r\n\
+uniform mat4	vvglOrthoProj;\r\n\
+out vec2		programST;\r\n\
+void main()	{\r\n\
+	gl_Position = vec4(inXYZ.x, inXYZ.y, inXYZ.z, 1.0) * vvglOrthoProj;\r\n\
+	programST = inST;\r\n\
+}\r\n\
 ");
-	string			fsString("\r\
-#version 300 es\r\
-precision mediump		float;\r\
-in vec2		programST;\r\
-uniform sampler2D		inputImage;\r\
-uniform sampler2DRect	inputImageRect;\r\
-uniform int		isRectTex;\r\
-out vec4		FragColor;\r\
-void main()	{\r\
-	if (isRectTex==0)\r\
-		FragColor = vec4(0,0,0,1);\r\
-	else if (isRectTex==1)\r\
-		FragColor = texture(inputImage,programST);\r\
-	else\r\
-		FragColor = texture(inputImageRect,programST);\r\
-}\r\
+	string			fsString("\r\n\
+#version 300 es\r\n\
+precision mediump		float;\r\n\
+in vec2		programST;\r\n\
+uniform sampler2D		inputImage;\r\n\
+uniform sampler2DRect	inputImageRect;\r\n\
+uniform int		isRectTex;\r\n\
+out vec4		FragColor;\r\n\
+void main()	{\r\n\
+	if (isRectTex==0)\r\n\
+		FragColor = vec4(0,0,0,1);\r\n\
+	else if (isRectTex==1)\r\n\
+		FragColor = texture(inputImage,programST);\r\n\
+	else\r\n\
+		FragColor = texture(inputImageRect,programST);\r\n\
+}\r\n\
 ");
 #elif defined(VVGL_TARGETENV_GL2)
 //	intentionally blank, no shaders used
