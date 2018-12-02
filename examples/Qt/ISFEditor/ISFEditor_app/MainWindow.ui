@@ -6,60 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>321</width>
+    <height>267</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="GLBufferQWidget" name="bufferView">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>20</y>
-      <width>300</width>
-      <height>200</height>
-     </rect>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>400</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNew"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave"/>
-    <addaction name="separator"/>
-    <addaction name="actionImport_from_GLSLSandbox"/>
-    <addaction name="actionImport_from_Shadertoy"/>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <widget class="QMenu" name="menuSearch">
-    <property name="title">
-     <string>Search</string>
-    </property>
-    <addaction name="actionFind"/>
-    <addaction name="separator"/>
-    <addaction name="actionFind_Previous"/>
-    <addaction name="actionFind_Next"/>
-    <addaction name="separator"/>
-    <addaction name="actionUse_selection_for_search"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuSearch"/>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="GLBufferQWidget" name="bufferView"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -70,89 +29,6 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionNew">
-   <property name="text">
-    <string>New</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="text">
-    <string>Save...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="actionQuit">
-   <property name="text">
-    <string>Quit</string>
-   </property>
-  </action>
-  <action name="actionImport_from_GLSLSandbox">
-   <property name="text">
-    <string>Import from GLSLSandbox</string>
-   </property>
-  </action>
-  <action name="actionImport_from_Shadertoy">
-   <property name="text">
-    <string>Import from Shadertoy</string>
-   </property>
-  </action>
-  <action name="actionFind">
-   <property name="text">
-    <string>Find...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
-   </property>
-  </action>
-  <action name="actionFind_Previous">
-   <property name="text">
-    <string>Find Previous...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+G</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
-   </property>
-  </action>
-  <action name="actionFind_Next">
-   <property name="text">
-    <string>Find Next...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
-   </property>
-  </action>
-  <action name="actionUse_selection_for_search">
-   <property name="text">
-    <string>Use selection for search</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+E</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

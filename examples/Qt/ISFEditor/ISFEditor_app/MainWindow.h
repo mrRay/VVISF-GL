@@ -26,24 +26,7 @@ public:
 	GLBufferQWidget * bufferView();
 
 private slots:
-	void on_actionNew_triggered();
-
-	void on_actionOpen_triggered();
-
-	void on_actionSave_triggered();
-	
-	void on_actionQuit_triggered();
-	
 	void widgetDrewItsFirstFrame();
-
-	void on_actionImport_from_GLSLSandbox_triggered();
-
-	void on_actionImport_from_Shadertoy_triggered();
-
-	void on_actionFind_triggered();
-	void on_actionFind_Previous_triggered();
-	void on_actionFind_Next_triggered();
-	void on_actionUse_selection_for_search_triggered();
 
 private:
 	Ui::MainWindow *ui;

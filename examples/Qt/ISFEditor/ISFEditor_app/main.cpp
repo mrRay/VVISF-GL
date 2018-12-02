@@ -8,7 +8,7 @@
 #include "DynamicVideoSource.h"
 #include "ISFController.h"
 
-/*
+
 #if defined(Q_OS_WIN)
 extern "C"
 {
@@ -16,7 +16,7 @@ extern "C"
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
-*/
+
 
 int main(int argc, char *argv[])
 {

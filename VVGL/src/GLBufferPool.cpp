@@ -275,13 +275,17 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		glTexParameteri(newBufferDesc.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		GLERRLOG
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//GLERRLOG
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//GLERRLOG
 		glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		GLERRLOG
 		glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		GLERRLOG
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		//GLERRLOG
 		//glTexParameteri(newBufferDesc.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		//GLERRLOG
 		
 //#if !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI)
 #if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
@@ -729,6 +733,10 @@ GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 	
 	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
+	
+#if defined(VVGL_SDK_QT) && defined(Q_OS_WIN)
+	returnMe->preferDeletion = true;
+#endif
 	
 	return returnMe;
 }

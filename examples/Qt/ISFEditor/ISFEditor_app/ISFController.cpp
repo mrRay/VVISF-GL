@@ -299,16 +299,16 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 	
 	//	do audio processing!
 	AudioController			*ac = GetAudioController();
-	if (ac == nullptr)
-		return;
-	ac->updateAudioResults();
+	if (ac != nullptr)	{
+		ac->updateAudioResults();
+	}
 	
 	//	get a "source buffer" from the dynamic video source
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();
-	if (dvs == nullptr)
-		return;
-	GLBufferRef				newSrcBuffer = dvs->getBuffer();
-	
+	GLBufferRef				newSrcBuffer = nullptr;
+	if (dvs != nullptr)
+		newSrcBuffer = dvs->getBuffer();
+
 	lock_guard<recursive_mutex>		tmpLock(sceneLock);
 	
 	//	if there's no scene, display the source buffer and bail

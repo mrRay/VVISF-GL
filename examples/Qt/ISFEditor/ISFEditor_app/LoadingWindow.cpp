@@ -37,6 +37,9 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 	
+	//	disable the close button!
+	setWindowFlags(windowFlags() & (~Qt::WindowCloseButtonHint));
+	
 	globalLoadingWindow = this;
 	
 	ui->setupUi(this);

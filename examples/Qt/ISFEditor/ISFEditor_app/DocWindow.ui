@@ -1,250 +1,355 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>DocWindow</class>
- <widget class="QWidget" name="DocWindow">
+ <widget class="QMainWindow" name="DocWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>610</height>
+    <width>652</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Editor UI</string>
+   <string>MainWindow</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
-    <number>3</number>
-   </property>
-   <item>
-    <widget class="QSplitter" name="errSplitter">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <widget class="QSplitter" name="splitter">
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
+     <number>3</number>
+    </property>
+    <item>
+     <widget class="QSplitter" name="errSplitter">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>ISF Fragment Source Code</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="fragShaderEditor"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="verticalLayoutWidget_2">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>ISF Vertex Source Code</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="vertShaderEditor"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="verticalLayoutWidget_3">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>ISF JSON Editor</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="JSONScrollWidget" name="jsonGUIWidget">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>97</width>
-             <height>249</height>
-            </rect>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>ISF Fragment Source Code</string>
            </property>
-           <property name="autoFillBackground">
+          </widget>
+         </item>
+         <item>
+          <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="fragShaderEditor"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_2">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>ISF Vertex Source Code</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="vertShaderEditor"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>ISF JSON Editor</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="JSONScrollWidget" name="jsonGUIWidget">
+           <property name="widgetResizable">
             <bool>true</bool>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_8">
-            <property name="spacing">
-             <number>2</number>
+           <widget class="QWidget" name="scrollAreaWidgetContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>80</width>
+              <height>232</height>
+             </rect>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
+            <property name="autoFillBackground">
+             <bool>true</bool>
             </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-           </layout>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <property name="spacing">
+              <number>2</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+            </layout>
+           </widget>
           </widget>
-         </widget>
-        </item>
-       </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QTabWidget" name="tabView">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Triangular</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Compiler Errors</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>These errors refer to the compiled shaders (adjacent tabs)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="compilerErrorsTextWidget"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>Comp Vertex Shader</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>This is the compiled vertex shader- it isn't directly editable (edit the ISF instead)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledVertShader"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>Comp Frag Shader</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>This is the compiled fragment shader- it isn't directly editable (edit the ISF instead)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledFragShader"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Parsed JSON</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>This is the parsed JSON blob- it isn't directly editable (edit the ISF instead)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="parsedJSON"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
-     <widget class="QTabWidget" name="tabView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="tabShape">
-       <enum>QTabWidget::Triangular</enum>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Compiler Errors</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
-         <number>2</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>These errors refer to the compiled shaders (adjacent tabs)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="compilerErrorsTextWidget"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Comp Vertex Shader</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
-         <number>2</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>This is the compiled vertex shader- it isn't directly editable (edit the ISF instead)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledVertShader"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_4">
-       <attribute name="title">
-        <string>Comp Frag Shader</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
-         <number>2</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>This is the compiled fragment shader- it isn't directly editable (edit the ISF instead)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="compiledFragShader"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Parsed JSON</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
-         <number>2</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>This is the parsed JSON blob- it isn't directly editable (edit the ISF instead)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SimpleSourceCodeEdit::SimpleSourceCodeEditor" name="parsedJSON"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </widget>
-   </item>
-  </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>652</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSearch">
+    <property name="title">
+     <string>Search</string>
+    </property>
+    <addaction name="actionFind"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind_Previous"/>
+    <addaction name="actionFind_Next"/>
+    <addaction name="separator"/>
+    <addaction name="actionUse_selection_for_next_Find"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport_from_GLSLSandbox"/>
+    <addaction name="actionImport_from_Shadertoy"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSearch"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionFind">
+   <property name="text">
+    <string>Find...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionFind_Previous">
+   <property name="text">
+    <string>Find Previous</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+G</string>
+   </property>
+  </action>
+  <action name="actionFind_Next">
+   <property name="text">
+    <string>Find Next</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionUse_selection_for_next_Find">
+   <property name="text">
+    <string>Use selection for next Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionImport_from_GLSLSandbox">
+   <property name="text">
+    <string>Import from GLSLSandbox</string>
+   </property>
+  </action>
+  <action name="actionImport_from_Shadertoy">
+   <property name="text">
+    <string>Import from Shadertoy</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

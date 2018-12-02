@@ -46,7 +46,11 @@ SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 	QFont		tmpFont;
 	tmpFont.setFamily("Courier");
 	tmpFont.setFixedPitch(true);
+#if defined(Q_OS_MAC)
 	tmpFont.setPointSize(12);
+#else
+	tmpFont.setPixelSize(12);
+#endif
 	setFont(tmpFont);
 	
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))

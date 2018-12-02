@@ -14,6 +14,8 @@
 #include "LoadingWindow.h"
 #include "ISFController.h"
 #include "LevenshteinCalc.h"
+#include "GLSLSandboxConverter.h"
+#include "ShadertoyConverter.h"
 
 
 
@@ -29,7 +31,7 @@ using namespace VVISF;
 
 
 DocWindow::DocWindow(QWidget *parent) :
-	QWidget(parent),
+	QMainWindow(parent),
 	ui(new Ui::DocWindow)
 {
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -506,6 +508,53 @@ QString DocWindow::fragFilePath()	{
 
 
 
+
+void DocWindow::on_actionNew_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	LoadingWindow		*lw = GetLoadingWindow();
+	if (lw != nullptr)
+		lw->on_createNewFile();
+}
+void DocWindow::on_actionSave_triggered()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	saveOpenFile();
+}
+void DocWindow::on_actionImport_from_GLSLSandbox_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+
+	GLSLSandboxConverter		*conv = new GLSLSandboxConverter(GetLoadingWindow());
+	int				returnCode = conv->exec();
+	qDebug() << "returnCode is " << returnCode;
+	if (!returnCode)	{
+		LoadingWindow		*lw = GetLoadingWindow();
+		if (lw != nullptr)	{
+			lw->finishedConversionDisplayFile(conv->exportedISFPath());
+		}
+	}
+	delete conv;
+}
+void DocWindow::on_actionImport_from_Shadertoy_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+
+	ShadertoyConverter		*conv = new ShadertoyConverter(GetLoadingWindow());
+	int				returnCode = conv->exec();
+	qDebug() << "returnCode is " << returnCode;
+	if (!returnCode)	{
+		LoadingWindow		*lw = GetLoadingWindow();
+		if (lw != nullptr)	{
+			lw->finishedConversionDisplayFile(conv->exportedISFPath());
+		}
+	}
+	delete conv;
+}
+void DocWindow::on_actionQuit_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	QCoreApplication::quit();
+}
+
+
+
+
 void DocWindow::on_actionFind_triggered()	{
 	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
 	if (focusedEd == nullptr)
@@ -571,7 +620,11 @@ void DocWindow::showEvent(QShowEvent * event)	{
 	QFont		tmpFont;
 	tmpFont.setFamily("Courier");
 	tmpFont.setFixedPitch(true);
+#if defined(Q_OS_MAC)
 	tmpFont.setPointSize(12);
+#else
+	tmpFont.setPixelSize(12);
+#endif
 	ui->compilerErrorsTextWidget->setFont(tmpFont);
 	
 	//	all of the various error/shader/parsed json widgets are read-only...

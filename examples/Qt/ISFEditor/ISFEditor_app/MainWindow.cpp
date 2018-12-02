@@ -44,59 +44,6 @@ GLBufferQWidget * MainWindow::bufferView()	{
 	return ui->bufferView;
 }
 
-void MainWindow::on_actionNew_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
-	LoadingWindow		*lw = GetLoadingWindow();
-	if (lw != nullptr)
-		lw->on_createNewFile();
-}
-
-void MainWindow::on_actionOpen_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
-}
-
-void MainWindow::on_actionSave_triggered()	{
-	//qDebug() << __PRETTY_FUNCTION__;
-	DocWindow		*dw = GetDocWindow();
-	if (dw != nullptr)
-		dw->saveOpenFile();
-}
-
-void MainWindow::on_actionImport_from_GLSLSandbox_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
-	
-	GLSLSandboxConverter		*conv = new GLSLSandboxConverter(GetLoadingWindow());
-	int				returnCode = conv->exec();
-	qDebug() << "returnCode is " << returnCode;
-	if (!returnCode)	{
-		LoadingWindow		*lw = GetLoadingWindow();
-		if (lw != nullptr)	{
-			lw->finishedConversionDisplayFile(conv->exportedISFPath());
-		}
-	}
-	delete conv;
-}
-
-void MainWindow::on_actionImport_from_Shadertoy_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
-	
-	ShadertoyConverter		*conv = new ShadertoyConverter(GetLoadingWindow());
-	int				returnCode = conv->exec();
-	qDebug() << "returnCode is " << returnCode;
-	if (!returnCode)	{
-		LoadingWindow		*lw = GetLoadingWindow();
-		if (lw != nullptr)	{
-			lw->finishedConversionDisplayFile(conv->exportedISFPath());
-		}
-	}
-	delete conv;
-}
-
-void MainWindow::on_actionQuit_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
-	QCoreApplication::quit();
-}
-
 
 void MainWindow::widgetDrewItsFirstFrame()	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -153,34 +100,6 @@ void FinishLaunching()	{
 	
 	ow->show();
 	
-}
-
-
-
-
-void MainWindow::on_actionFind_triggered()	{
-	DocWindow		*dw = GetDocWindow();
-	if (dw == nullptr)
-		return;
-	dw->on_actionFind_triggered();
-}
-void MainWindow::on_actionFind_Previous_triggered()	{
-	DocWindow		*dw = GetDocWindow();
-	if (dw == nullptr)
-		return;
-	dw->on_actionFind_Previous_triggered();
-}
-void MainWindow::on_actionFind_Next_triggered()	{
-	DocWindow		*dw = GetDocWindow();
-	if (dw == nullptr)
-		return;
-	dw->on_actionFind_Next_triggered();
-}
-void MainWindow::on_actionUse_selection_for_search_triggered()	{
-	DocWindow		*dw = GetDocWindow();
-	if (dw == nullptr)
-		return;
-	dw->on_actionUse_selection_for_search_triggered();
 }
 
 

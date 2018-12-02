@@ -3,7 +3,7 @@
 
 #include <mutex>
 
-#include <QWidget>
+#include <QMainWindow>
 #include <QTimer>
 #include <QFile>
 
@@ -27,7 +27,7 @@ namespace Ui {
 
 
 
-class DocWindow : public QWidget
+class DocWindow : public QMainWindow
 {
 	Q_OBJECT
 
@@ -43,10 +43,16 @@ public:
 	QString fragFilePath();
 	
 public slots:
-	void on_actionFind_triggered();
-	void on_actionFind_Previous_triggered();
-	void on_actionFind_Next_triggered();
-	void on_actionUse_selection_for_search_triggered();
+	Q_SLOT void on_actionNew_triggered();
+	Q_SLOT void on_actionSave_triggered();
+	Q_SLOT void on_actionImport_from_GLSLSandbox_triggered();
+	Q_SLOT void on_actionImport_from_Shadertoy_triggered();
+	Q_SLOT void on_actionQuit_triggered();
+	
+	Q_SLOT void on_actionFind_triggered();
+	Q_SLOT void on_actionFind_Previous_triggered();
+	Q_SLOT void on_actionFind_Next_triggered();
+	Q_SLOT void on_actionUse_selection_for_search_triggered();
 
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;

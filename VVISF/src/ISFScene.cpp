@@ -447,8 +447,9 @@ void ISFScene::_setUpRenderCallback()	{
 		//	configure the attribute pointers to work with the VBO
 		if (_vertexAttrib.loc >= 0)	{
 			glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), BUFFER_OFFSET(0));
-			//glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
 			GLERRLOG
+			//glVertexAttribPointer(_vertexAttrib.loc, 2, GL_FLOAT, GL_FALSE, targetQuad.stride(), (void*)&targetQuad.bl.geo.x);
+			//GLERRLOG
 			_vertexAttrib.enable();
 		}
 		
@@ -989,6 +990,7 @@ void ISFScene::_renderPrep()	{
 			samplerLoc = attribRef->getUniformLocation(0);
 			if (samplerLoc >= 0)	{
 				//glUniform2f(samplerLoc, currentVal.val.pointVal[0], currentVal.val.pointVal[1]);
+				//GLERRLOG
 				double		*pointVals = currentVal.getPointValPtr();
 				if (pointVals == nullptr)	{
 					glUniform2f(samplerLoc, 0., 0.);
@@ -1006,6 +1008,7 @@ void ISFScene::_renderPrep()	{
 			samplerLoc = attribRef->getUniformLocation(0);
 			if (samplerLoc >= 0)	{
 				//glUniform4f(samplerLoc, currentVal.val.colorVal[0], currentVal.val.colorVal[1], currentVal.val.colorVal[2], currentVal.val.colorVal[3]);
+				//GLERRLOG
 				double		*colorVals = currentVal.getColorValPtr();
 				if (colorVals == nullptr)	{
 					glUniform4f(samplerLoc, 0., 0., 0., 0.);
