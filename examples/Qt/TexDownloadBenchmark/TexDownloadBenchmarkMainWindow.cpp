@@ -127,7 +127,7 @@ void TexDownloadBenchmarkMainWindow::prepForWork()
 	std::string		fileContents = fileContentsString.toStdString();
 	tmpFile.close();
 	
-	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, string("/"), nullptr);
 	//cout << "\tisf doc is " << *tmpDoc << endl;
 	renderScene->useDoc(tmpDoc);
 	

@@ -596,6 +596,9 @@ void DocWindow::closeEvent(QCloseEvent * event)	{
 	settings.setValue("DocWindowGeometry", saveGeometry());
 	
 	QWidget::closeEvent(event);
+	
+	//	tell the app to quit!
+	QCoreApplication::quit();
 }
 void DocWindow::showEvent(QShowEvent * event)	{
 	qDebug() << __PRETTY_FUNCTION__;

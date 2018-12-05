@@ -38,7 +38,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//	disable the close button!
-	setWindowFlags(windowFlags() & (~Qt::WindowCloseButtonHint));
+	setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & (~Qt::WindowCloseButtonHint));
 	
 	globalLoadingWindow = this;
 	
@@ -168,6 +168,10 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//	bump the slot to populate the pop-up button with the list of sources.
 	listOfVideoSourcesUpdated(GetDynamicVideoSource());
 	
+	//	select a source in the combo box- let's start rendering a built-in ISF source
+	ui->videoSourceComboBox->setCurrentIndex(ui->videoSourceComboBox->findText("Cellular"));
+	ui->videoSourceComboBox->update();
+	
 	//	figure out what directory's contents we want to display, and use it to set the base directory
 	QString			defaultDirToLoad;
 #ifdef Q_OS_MAC
@@ -229,6 +233,7 @@ void LoadingWindow::loadSystemISFsButtonClicked()	{
 void LoadingWindow::halveRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
+	DynamicVideoSource	*dvs = GetDynamicVideoSource();
 	if (isfc == nullptr)
 		return;
 	Size			origSize = isfc->renderSize();
@@ -247,10 +252,13 @@ void LoadingWindow::halveRenderResClicked()	{
 	ui->renderResHeightWidget->update();
 	
 	isfc->setRenderSize(newSize);
+	if (dvs != nullptr)
+		dvs->setRenderSize(newSize);
 }
 void LoadingWindow::doubleRenderResClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
+	DynamicVideoSource	*dvs = GetDynamicVideoSource();
 	if (isfc == nullptr)
 		return;
 	Size			origSize = isfc->renderSize();
@@ -269,22 +277,30 @@ void LoadingWindow::doubleRenderResClicked()	{
 	ui->renderResHeightWidget->update();
 	
 	isfc->setRenderSize(newSize);
+	if (dvs != nullptr)
+		dvs->setRenderSize(newSize);
 }
 void LoadingWindow::renderResWidthWidgetValueChanged()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
-	if (isfc == nullptr)
-		return;
+	DynamicVideoSource	*dvs = GetDynamicVideoSource();
+	
 	Size			tmpSize(ui->renderResWidthWidget->value(), ui->renderResHeightWidget->value());
-	isfc->setRenderSize(tmpSize);
+	if (isfc != nullptr)
+		isfc->setRenderSize(tmpSize);
+	if (dvs != nullptr)
+		dvs->setRenderSize(tmpSize);
 }
 void LoadingWindow::renderResHeightWidgetValueChanged()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	ISFController		*isfc = GetISFController();
-	if (isfc == nullptr)
-		return;
+	DynamicVideoSource	*dvs = GetDynamicVideoSource();
+	
 	Size			tmpSize(ui->renderResWidthWidget->value(), ui->renderResHeightWidget->value());
-	isfc->setRenderSize(tmpSize);
+	if (isfc != nullptr)
+		isfc->setRenderSize(tmpSize);
+	if (dvs != nullptr)
+		dvs->setRenderSize(tmpSize);
 }
 void LoadingWindow::saveUIValsToDefaultClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
@@ -327,8 +343,46 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	
 	//	get a new list of video source menu items, use them to populate the combo box
 	QList<MediaFile>		newFiles = inSrc->createListOfStaticMediaFiles();
-	//QStandardItemModel		*tmpModel = nullptr;
+	MediaFile::Type			lastType = MediaFile::Type_None;
+	//	run through every media file in the list
 	for (const MediaFile & newFile : newFiles)	{
+		MediaFile::Type			thisType = newFile.type();
+		//	if the file type has changed, add a disabled "label" item to the menu...
+		if (lastType != thisType)	{
+			lastType = thisType;
+			QString					tmpName("    ???");
+			switch (thisType)	{
+			case MediaFile::Type_App:
+				tmpName = QString("    Other Apps:");
+				break;
+			case MediaFile::Type_Mov:
+				tmpName = QString("    Movies:");
+				break;
+			case MediaFile::Type_Img:
+				tmpName = QString("    Images:");
+				break;
+			case MediaFile::Type_Cam:
+				tmpName = QString("    Cameras:");
+				break;
+			case MediaFile::Type_ISF:
+				tmpName = QString("    ISFs:");
+				break;
+			case MediaFile::Type_None:
+			default:
+				tmpName = QString("    ???");
+				break;
+			}
+			ui->videoSourceComboBox->addItem(tmpName, QVariant());
+			QStandardItemModel		*model = qobject_cast<QStandardItemModel*>(ui->videoSourceComboBox->model());
+			if (model != nullptr)	{
+				QStandardItem			*tmpItem = model->item(model->rowCount()-1);
+				if (tmpItem != nullptr)	{
+					tmpItem->setFlags(tmpItem->flags() & ~Qt::ItemIsEnabled);
+				}
+			}
+		}
+		
+		//	add the menu item for the file
 		ui->videoSourceComboBox->addItem(newFile.name(), QVariant::fromValue(newFile));
 		
 		//	manually enable the items- turns out to be unnecessary, doesn't work around that weird bug where items in the pop-up button are not selectable.
@@ -348,22 +402,24 @@ void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
 	
 	//	run through the items in the combo box, select the first item that appears to be playing back
 	int				foundIndex = -1;
-	for (int i=0; i<ui->videoSourceComboBox->count(); ++i)	{
-		QString			tmpItemString = ui->videoSourceComboBox->itemText(i);
-		QVariant		tmpItemVariant = ui->videoSourceComboBox->itemData(i);
-		//qDebug() << "\tcomparing against camera " << tmpInfo.description();
-		if (GetDynamicVideoSource()->playingBackItem(tmpItemVariant.value<MediaFile>()))	{
-			foundIndex = i;
-			break;
+	if (GetDynamicVideoSource()->srcType() != MediaFile::Type_None)	{
+		for (int i=0; i<ui->videoSourceComboBox->count(); ++i)	{
+			QString			tmpItemString = ui->videoSourceComboBox->itemText(i);
+			QVariant		tmpItemVariant = ui->videoSourceComboBox->itemData(i);
+			//qDebug() << "\tcomparing against camera " << tmpInfo.description();
+			//qDebug() << "\tchecking against item name " << tmpItemString << ", which is media file " << tmpItemVariant.value<MediaFile>();
+			if (GetDynamicVideoSource()->playingBackItem(tmpItemVariant.value<MediaFile>()))	{
+				foundIndex = i;
+				break;
+			}
 		}
 	}
-	
 	ui->videoSourceComboBox->setCurrentIndex(foundIndex);
 	ui->videoSourceComboBox->blockSignals(false);
 	//connect(ui->videoSourceComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &LoadingWindow::videoSourceChanged);
 }
 void LoadingWindow::videoSourceChanged(int arg1)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	Q_UNUSED(arg1);
 	
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();

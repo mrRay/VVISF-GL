@@ -22,7 +22,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	//qDebug() << __PRETTY_FUNCTION__;
 
 	//	disable the close button!
-	setWindowFlags(windowFlags() & (~Qt::WindowCloseButtonHint));
+	setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & (~Qt::WindowCloseButtonHint));
 	
 	ui->setupUi(this);
 	

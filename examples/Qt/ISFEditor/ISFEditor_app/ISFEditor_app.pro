@@ -98,6 +98,7 @@ SOURCES += \
     ISFConverter/GLSLSandboxConverter.cpp \
     ISFConverter/ShadertoyConverter.cpp \
 	misc_classes/StringUtilities.cpp \
+    VideoSource/ISFVideoSource.cpp
 
 
 HEADERS += \
@@ -159,6 +160,7 @@ HEADERS += \
     ISFConverter/ShadertoyConverter.h \
     misc_classes/StringUtilities.h \
 	misc_ui/MouseEventISFWidget.h \
+    VideoSource/ISFVideoSource.h
 
 # platform-specific classes
 mac {
@@ -202,7 +204,8 @@ FORMS += \
 RESOURCES += \
 	misc_ui/SimpleSourceCodeEditor/shaderLanguagefiles.qrc \
 	resources.qrc \
-    ISFConverter/shadertoy_textures/shadertoy_textures.qrc
+    ISFConverter/shadertoy_textures/shadertoy_textures.qrc \
+    src_ISFs/src_isfs.qrc
 
 
 

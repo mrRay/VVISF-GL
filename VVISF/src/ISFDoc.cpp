@@ -31,17 +31,22 @@ using namespace VVGL;
 #pragma mark --------------------- constructor/destructor
 
 
-ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene, const bool & throwExcept)	{
+ISFDoc::ISFDoc(const string & inFSContents, const string & inVSContents, const string & inImportsDir, ISFScene * inParentScene, const bool & throwExcept)	{
 	_parentScene = inParentScene;
 	
-	_path = new string("");
+	//_path = new string("");
+	if (inImportsDir.length() < 1)
+		_path = new string("/XXX.fs");
+	else	{
+		_path = new string( FmtString("%s/XXX.fs", StringByDeletingLastSlash(inImportsDir).c_str()) );
+	}
 	_name = new string("");
 	_throwExcept = throwExcept;
 	
-	_initWithRawFragShaderString(inFSContents);
-	
 	//_vertShaderSource = new string(ISFVertPassthru_GL2);
 	_vertShaderSource = new string(inVSContents);
+	
+	_initWithRawFragShaderString(inFSContents);
 }
 ISFDoc::ISFDoc(const string & inPath, ISFScene * inParentScene, const bool & throwExcept) noexcept(false)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -476,8 +481,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of args", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -524,8 +533,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -572,8 +585,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -639,8 +656,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -705,8 +726,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string &		samplerName = varArray[0];
@@ -903,8 +928,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -951,8 +980,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range			fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string			newFuncString("");
@@ -999,8 +1032,12 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				Range		fullFuncRangeToReplace = LexFunctionCall(modSrcString, tmpRange, varArray);
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
-					if (_throwExcept)
-						throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+					if (_throwExcept)	{
+						if (_path != nullptr)
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+						else
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", "");
+					}
 				}
 				else	{
 					string &		samplerName = varArray[0];
@@ -1135,8 +1172,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	auto			openCommentIndex = inRawFile.find("/*");
 	auto			closeCommentIndex = inRawFile.find("*/");
 	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
-		if (_throwExcept)
-			throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *_path);
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *_path);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", "");
+		}
 		else
 			return;
 	}
@@ -1160,23 +1201,39 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	}
 	catch (std::invalid_argument&)	{
 		caughtJSONException = true;
-		if (_throwExcept)
-			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
+		}
 	}
 	catch (const std::exception& /*ex*/) {
 		caughtJSONException = true;
-		if (_throwExcept)
-			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
+		}
 	}
 	catch (const std::string& /*ex*/) {
 		caughtJSONException = true;
-		if (_throwExcept)
-			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
+		}
 	}
 	catch (...) {
 		caughtJSONException = true;
-		if (_throwExcept)
-			throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
+		}
 	}
 	//	if i caught an exception parsing the basic JSON, we can't do anything further
 	if (caughtJSONException)
@@ -1317,7 +1374,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	//	parse the array of imported images
 	anObj = jblob.value("IMPORTED",json());
 	if (anObj != nullptr)	{
-		string			parentDirectory = StringByDeletingLastPathComponent(*_path);
+		string			parentDirectory = (_path==nullptr) ? std::string("") : StringByDeletingLastPathComponent(*_path);
 		
 		//	this is the block that we're going to use to parse an import dict and import its contents.
 		function<void(const json &)>		parseImportedImageDict = [&](const json & importDict)	{
@@ -1336,8 +1393,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					//	the PATH var should have an array of strings with the paths to the six files...
 					json			partialPathsJ = importDict.value("PATH",json());
 					if (partialPathsJ.is_null() || !partialPathsJ.is_array())	{
-						if (_throwExcept)
-							throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", *_path);
+						if (_throwExcept)	{
+							if (_path != nullptr)
+								throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", *_path);
+							else
+								throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or is not an array", "");
+						}
 					}
 					else	{
 						//	assemble an array with the full paths to the files
@@ -1345,8 +1406,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						for (auto it=partialPathsJ.begin(); it!=partialPathsJ.end(); ++it)	{
 							json		tmpPath = it.value();
 							if (!tmpPath.is_string())	{
-								if (_throwExcept)
-									throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", *_path);
+								if (_throwExcept)	{
+									if (_path != nullptr)
+										throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", *_path);
+									else
+										throw ISFErr(ISFErrType_MalformedJSON, "PATH in array for IMPORTED is not a string", "");
+								}
 							}
 							else	{
 								fullPaths.emplace_back(FmtString("%s/%s",parentDirectory.c_str(),tmpPath.get<string>().c_str()));
@@ -1355,8 +1420,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						//	make a cube texture from the array of paths
 						importedBuffer = CreateCubeTexFromImagePaths(fullPaths);
 						if (importedBuffer == nullptr)	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", *_path);
+								else
+									throw ISFErr(ISFErrType_ErrorLoading, "unable to make texture from cube map files", "");
+							}
 						}
 						else	{
 							//	make an attrib from the import and store it
@@ -1372,8 +1441,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					//	if the PATH entry isn't a string, throw an error
 					json			partialPathJ = importDict.value("PATH",json());
 					if (partialPathJ.is_null() || !partialPathJ.is_string())	{
-						if (_throwExcept)
-							throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *_path);
+						if (_throwExcept)	{
+							if (_path != nullptr)
+								throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", *_path);
+							else
+								throw ISFErr(ISFErrType_MalformedJSON, "PATH for IMPORTED is missing or of wrong type", "");
+						}
 					}
 					else	{
 						//	get the full path to the image we need to import
@@ -1425,8 +1498,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	anObj = jblob.value("PASSES",json());
 	if (!anObj.is_null())	{
 		if (!anObj.is_array())	{
-			if (_throwExcept)
-				throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", *_path);
+			if (_throwExcept)	{
+				if (_path != nullptr)
+					throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", *_path);
+				else
+					throw ISFErr(ISFErrType_MalformedJSON, "PASSES entry not an array", "");
+			}
 		}
 		else	{
 			for (auto passIt = anObj.begin(); passIt != anObj.end(); ++passIt)	{
@@ -1702,8 +1779,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					for (auto it=valArrayJ.begin(); it!=valArrayJ.end(); ++it)	{
 						json &		val = it.value();
 						if (!val.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "item in VALUES attrib for a LONG was not a number", "");
+							}
 						}
 						else	{
 							valArray.push_back(val.get<int32_t>());
@@ -1712,8 +1793,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					for (auto it=labelArrayJ.begin(); it!=labelArrayJ.end(); ++it)	{
 						json &		label = it.value();
 						if (!label.is_string())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "item in LABELS attrib for a LONG was not a string", "");
+							}
 						}
 						else	{
 							labelArray.push_back(label.get<string>());
@@ -1762,8 +1847,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
 						json &		val = it.value();
 						if (!val.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "val in DEFAULT array in COLOR input was not a number", "");
+							}
 						}
 						else	{
 							//defVal.val.colorVal[i] = val.get<double>();
@@ -1779,8 +1868,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					for (it=tmpObj.begin(), i=0; it!=tmpObj.end(); ++it, ++i)	{
 						json &		val = it.value();
 						if (!val.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "val in IDENTITY array in COLOR input was not a number", "");
+							}
 						}
 						else	{
 							//idenVal.val.colorVal[i] = val.get<double>();
@@ -1803,8 +1896,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "DEFAULT for point2D input is not a number", "");
+							}
 						}
 					});
 					defVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
@@ -1813,8 +1910,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "IDENTITY for point2D input is not a number", "");
+							}
 						}
 					});
 					idenVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
@@ -1823,8 +1924,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", "");
+							}
 						}
 					});
 					minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
@@ -1833,8 +1938,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
-							if (_throwExcept)
-								throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *_path);
+							if (_throwExcept)	{
+								if (_path != nullptr)
+									throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *_path);
+								else
+									throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", "");
+							}
 						}
 					});
 					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());

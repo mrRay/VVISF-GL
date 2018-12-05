@@ -284,8 +284,11 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 		}
 		break;
 	case ISFValType_Audio:
-		break;
 	case ISFValType_AudioFFT:
+		audioLabel = new QLabel(this);
+		audioLabel->setText("System's default audio input used!");
+		
+		myLayout->addWidget(audioLabel);
 		break;
 	}
 	

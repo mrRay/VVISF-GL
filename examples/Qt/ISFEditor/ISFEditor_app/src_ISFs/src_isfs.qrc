@@ -1,0 +1,51 @@
+<RCC>
+    <qresource prefix="/src_ISFs">
+        <file>52d2a8f514c4fd2d9866587f4d7b2a5bfa1a11a0e772077d7682deb8b3b517e5.jpg</file>
+        <file>3083c722c0c738cad0f468383167a0d246f91af2bfa373e9c5c094fb8c8413e0.png</file>
+        <file>Alien_Cavity.fs</file>
+        <file>Auroras.fs</file>
+        <file>Bechamel.fs</file>
+        <file>BlackCherryCosmos.fs</file>
+        <file>Bubbles.fs</file>
+        <file>Candy_core.fs</file>
+        <file>cbcbb5a6cfb55c36f8f021fbb0e3f69ac96339a39fa85cd96f2017a2192821b5.png</file>
+        <file>Cellular.fs</file>
+        <file>Chanel_Doodle_1.fs</file>
+        <file>Chanel_Doodle_2.fs</file>
+        <file>Chanel_Final.fs</file>
+        <file>Color_palette.fs</file>
+        <file>Demo-Volumetric_Lines.fs</file>
+        <file>Doodling_3-Glass.fs</file>
+        <file>Doodling_8-Penumbra.fs</file>
+        <file>Electric_Field.fs</file>
+        <file>f735bee5b64ef98879dc618b016ecf7939a5756040c2cde21ccb15e69a6e1cfb.png</file>
+        <file>fb918796edc3d2221218db0811e240e72e340350008338b0c07a52bd353666a6.jpg</file>
+        <file>Flower_Orbit_Traps.fs</file>
+        <file>Fractal_Land.fs</file>
+        <file>Geometric_Descent.fs</file>
+        <file>Goto10.fs</file>
+        <file>h_e_e_e_l_i_x.fs</file>
+        <file>hhhzzzsss_Orbit_Traps.fs</file>
+        <file>HyperbolicSpace.fs</file>
+        <file>HyperbolicSpace2.fs</file>
+        <file>hypnosis_rgb_audio.fs</file>
+        <file>Mandala_elevator.fs</file>
+        <file>ngWaves11.fs</file>
+        <file>perlin_noise_in_polar_coordinate.fs</file>
+        <file>Plasma_Globe.fs</file>
+        <file>Rainbow_Worm_0.fs</file>
+        <file>Random_Notes.fs</file>
+        <file>RingsOfFire.fs</file>
+        <file>Shaderdough_fairy.fs</file>
+        <file>solar-vixzion.fs</file>
+        <file>SoundEclipse.fs</file>
+        <file>Spiral_2_(Yellow_Pink).fs</file>
+        <file>Spiral_of_Spirals_2.fs</file>
+        <file>src_isfs.qrc</file>
+        <file>Star_Nest.fs</file>
+        <file>Test Card.fs</file>
+        <file>The_Drive_Home.fs</file>
+        <file>Tunnel_#1.fs</file>
+        <file>Voxel_Edges.fs</file>
+    </qresource>
+</RCC>

@@ -42,6 +42,7 @@ MediaFile::MediaFile(const Type & inType, const QString & inPath) : _type(inType
 		break;
 	case Type_Mov:
 	case Type_Img:
+	case Type_ISF:
 		_name = QFileInfo(resourceLocator.toString()).baseName();
 		break;
 	}
@@ -53,6 +54,7 @@ MediaFile::MediaFile(const QCameraInfo & inCameraInfo) : _type(Type_Cam), resour
 	case Type_App:	//	should never happen
 	case Type_Mov:	//	should never happen
 	case Type_Img:	//	should never happen
+	case Type_ISF:	//	should never happen
 		_name = QString("None");
 	case Type_Cam:
 		_name = resourceLocator.value<QCameraInfo>().description();
@@ -70,6 +72,7 @@ QString MediaFile::StringForType(const MediaFile::Type & n)	{
 	case Type_Mov:		return QString("M");
 	case Type_Img:		return QString("I");
 	case Type_Cam:		return QString("C");
+	case Type_ISF:		return QString("S");
 	}
 	return QString("?");
 }
@@ -81,7 +84,7 @@ QString MediaFile::name() const	{
 	return _name;
 }
 QString MediaFile::path() const	{
-	if (_type==Type_Mov || _type==Type_Img)
+	if (_type==Type_Mov || _type==Type_Img || _type==Type_ISF)
 		return resourceLocator.toString();
 	return QString();
 }
@@ -100,6 +103,7 @@ QCameraInfo MediaFile::cameraInfo() const	{
 
 
 bool MediaFile::operator==(const MediaFile & n) const	{
+	//qDebug() << __PRETTY_FUNCTION__ << "... self is " << *this << ", passed is " << n;
 	if (_type!=n.type())
 		return false;
 	
@@ -110,6 +114,7 @@ bool MediaFile::operator==(const MediaFile & n) const	{
 		return (cameraInfo() == n.cameraInfo());
 	case Type_Mov:
 	case Type_Img:
+	case Type_ISF:
 		return (path() == n.path());
 	case Type_App:
 		return (syphonUUID() == n.syphonUUID());
@@ -130,6 +135,7 @@ bool MediaFile::operator<(const MediaFile & n) const	{
 		return (name() < n.name());
 	case Type_Mov:
 	case Type_Img:
+	case Type_ISF:
 		return (path() < n.path());
 	case Type_App:
 		return (name() < n.name());

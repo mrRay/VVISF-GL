@@ -26,6 +26,11 @@ public:
 	virtual bool playingBackItem(const MediaFile & n) { Q_UNUSED(n); return false; }
 	virtual void loadFile(const MediaFile & n) = 0;
 	
+	//	tells the source to render a buffer- used for source types that have to be explicitly told to render frames
+	virtual void renderABuffer() {}
+	//	sets the size of the source- only really applicable where the size is customizable (ISF sources, for example)
+	virtual void setRenderSize(const VVGL::Size & n) { std::lock_guard<std::recursive_mutex> tmpLock(_lock); _size=n; }
+	
 	virtual bool running() { std::lock_guard<std::recursive_mutex> tmpLock(_lock); return _running; }
 	
 signals:
@@ -36,6 +41,7 @@ protected:
 	std::recursive_mutex	_lock;
 	bool					_running;
 	MediaFile				_file;
+	VVGL::Size				_size = VVGL::Size(640,480);
 };
 
 

@@ -82,11 +82,12 @@ class VVISF_EXPORT ISFDoc	{
 		/*
 		\param inFSContents A string containing the fragment shader portion of the ISF file.  The JSON blob that defines the ISF file must be contained in here.
 		\param inVSContents A string containing the vertex shader portion of the ISF file.  If you don't have a vertex shader to pass, VVISF defines a static string "ISFVertPassthru_GL2", which should work as a "passthru" vertex shader for most purposes.
+		\param inImportsDir A string containing the path to the directory that will contain any related media files (used for IMPORT/etc).
 		\param inParentScene The scene that will be used to render this ISFDoc, or null if no scene is to be used.
 		\param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 		Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 		*/
-		ISFDoc(const string & inFSContents, const string & inVSContents, ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true);
+		ISFDoc(const string & inFSContents, const string & inVSContents, const string & importsDir, ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true);
 		
 		///@}
 		
@@ -232,7 +233,7 @@ inline ISFDocRef CreateISFDocRef(const string & inPath, ISFScene * inParentScene
 \param inThrowExcept Whether or not the ISFDoc should throw any exceptions if it encounters errors parsing anything.
 Throws an ISFErr if there is a problem of some sort parsing the JSON blob from the frag shader string.
 */
-inline ISFDocRef CreateISFDocRefWith(const string & inFSContents, const string & inVSContents=string(ISFVertPassthru_GL2), ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true) { return make_shared<ISFDoc>(inFSContents,inVSContents,inParentScene,inThrowExcept); }
+inline ISFDocRef CreateISFDocRefWith(const string & inFSContents, const string & inImportsDir=string("/"), const string & inVSContents=string(ISFVertPassthru_GL2), ISFScene * inParentScene=nullptr, const bool & inThrowExcept=true) { return make_shared<ISFDoc>(inFSContents,inVSContents,inImportsDir,inParentScene,inThrowExcept); }
 
 
 

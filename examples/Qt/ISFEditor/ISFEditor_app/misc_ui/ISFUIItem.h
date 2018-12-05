@@ -63,6 +63,7 @@ private:
 	QColor			color = QColor(0, 0, 0, 0);
 	QComboBox		*interAppVideoCB = nullptr;
 	QComboBox		*audioSourceCB = nullptr;
+	QLabel			*audioLabel = nullptr;
 	
 	QHash<QString, QVariant>	userInfoDict;	//	used to store float flag and max val for audio-type inputs
 	

@@ -8,6 +8,7 @@
 #include "WebCamVideoSource.h"
 #include "MovieVideoSource.h"
 #include "ImgVideoSource.h"
+#include "ISFVideoSource.h"
 #include "InterAppVideoSource.h"
 #include "MediaFile.h"
 
@@ -35,6 +36,8 @@ public:
 	void loadFile(const MediaFile & n);
 	//	returns true if the receiver is playing back the passed file or a file equivalent to the passed file
 	bool playingBackItem(const MediaFile & n);
+	//	sets the render size (for custom-sized rendering sources like ISF)
+	void setRenderSize(const VVGL::Size & n);
 
 signals:
 	//	this signal is emitted whenever any of the sources update their list of static media files (like if a new webcam is plugged in or a new inter-app source appears)
@@ -53,6 +56,7 @@ private:
 	WebCamVideoSource		camSrc;
 	MovieVideoSource		movSrc;
 	ImgVideoSource			imgSrc;
+	ISFVideoSource			isfSrc;
 	InterAppVideoSource		appSrc;
 	
 	//	the last-rendered buffer and a mutex to lock it

@@ -17,11 +17,13 @@ DynamicVideoSource::DynamicVideoSource(QObject *parent) : QObject(parent)	{
 	connect(&camSrc, &VideoSource::staticSourceUpdated, this, &DynamicVideoSource::staticSourceUpdated);
 	connect(&movSrc, &VideoSource::staticSourceUpdated, this, &DynamicVideoSource::staticSourceUpdated);
 	connect(&imgSrc, &VideoSource::staticSourceUpdated, this, &DynamicVideoSource::staticSourceUpdated);
+	connect(&isfSrc, &VideoSource::staticSourceUpdated, this, &DynamicVideoSource::staticSourceUpdated);
 	connect(&appSrc, &VideoSource::staticSourceUpdated, this, &DynamicVideoSource::staticSourceUpdated);
 	//	video sources emit a signal when they produce new frames...
 	connect(&camSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	connect(&movSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	connect(&imgSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
+	connect(&isfSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	connect(&appSrc, &VideoSource::frameProduced, [&](GLBufferRef n) { { lock_guard<recursive_mutex> tmpLock(lastBufferLock); lastBuffer=n; } emit frameProduced(n); });
 	
 	//	when the app is about to quit we want to stop the sources
@@ -34,9 +36,31 @@ DynamicVideoSource::~DynamicVideoSource()	{
 
 GLBufferRef DynamicVideoSource::getBuffer()	{
 	lock_guard<recursive_mutex>		tmpLock(lastBufferLock);
-	return lastBuffer;
+	switch (srcFile.type())	{
+	case MediaFile::Type_None:
+		return nullptr;
+		break;
+	case MediaFile::Type_Cam:
+	case MediaFile::Type_App:
+		return lastBuffer;
+	
+	//	these source types have to be told to render a buffer!
+	case MediaFile::Type_Mov:
+		movSrc.renderABuffer();
+		return lastBuffer;
+	case MediaFile::Type_Img:
+		imgSrc.renderABuffer();
+		return lastBuffer;
+	case MediaFile::Type_ISF:
+		isfSrc.renderABuffer();
+		return lastBuffer;
+	}
+	
+	//return lastBuffer;
 }
 QList<MediaFile> DynamicVideoSource::createListOfStaticMediaFiles()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
 	QList<MediaFile>		returnMe;
 	QList<MediaFile>		tmpList;
 	
@@ -49,6 +73,10 @@ QList<MediaFile> DynamicVideoSource::createListOfStaticMediaFiles()	{
 		returnMe.append(tmpItem);
 	
 	tmpList = imgSrc.createListOfStaticMediaFiles();
+	for (const MediaFile & tmpItem : tmpList)
+		returnMe.append(tmpItem);
+	
+	tmpList = isfSrc.createListOfStaticMediaFiles();
 	for (const MediaFile & tmpItem : tmpList)
 		returnMe.append(tmpItem);
 	
@@ -85,6 +113,9 @@ void DynamicVideoSource::loadFile(const MediaFile & n)	{
 		case MediaFile::Type_Img:
 			imgSrc.stop();
 			break;
+		case MediaFile::Type_ISF:
+			isfSrc.stop();
+			break;
 		case MediaFile::Type_App:
 			appSrc.stop();
 			break;
@@ -96,13 +127,21 @@ void DynamicVideoSource::loadFile(const MediaFile & n)	{
 	case MediaFile::Type_Cam:		camSrc.loadFile(n);		break;
 	case MediaFile::Type_Mov:		movSrc.loadFile(n);		break;
 	case MediaFile::Type_Img:		imgSrc.loadFile(n);		break;
+	case MediaFile::Type_ISF:		isfSrc.loadFile(n);		break;
 	case MediaFile::Type_App:		appSrc.loadFile(n);		break;
 	}
 	
 	srcFile = n;
 }
 bool DynamicVideoSource::playingBackItem(const MediaFile & n)	{
-	return (camSrc.playingBackItem(n) || movSrc.playingBackItem(n) || imgSrc.playingBackItem(n) || appSrc.playingBackItem(n));
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << n;
+	if (n.type() == MediaFile::Type_None)
+		return false;
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << camSrc.playingBackItem(n) << ", " << movSrc.playingBackItem(n) << ", " << imgSrc.playingBackItem(n) << ", " << isfSrc.playingBackItem(n) << ", " << appSrc.playingBackItem(n);
+	return (camSrc.playingBackItem(n) || movSrc.playingBackItem(n) || imgSrc.playingBackItem(n) || isfSrc.playingBackItem(n) || appSrc.playingBackItem(n));
+}
+void DynamicVideoSource::setRenderSize(const VVGL::Size & n)	{
+	isfSrc.setRenderSize(n);
 }
 
 
@@ -119,6 +158,9 @@ void DynamicVideoSource::stopSources()	{
 		break;
 	case MediaFile::Type_Img:
 		imgSrc.stop();
+		break;
+	case MediaFile::Type_ISF:
+		isfSrc.stop();
 		break;
 	case MediaFile::Type_App:
 		appSrc.stop();

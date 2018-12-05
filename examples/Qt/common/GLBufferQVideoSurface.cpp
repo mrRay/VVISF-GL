@@ -53,7 +53,7 @@ void GLBufferQVideoSurface::generalInit()	{
 			std::string		fileContents = fileContentsAsString.toStdString();
 			tmpFile.close();
 
-			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, string("/"), nullptr);
 			tmpScene->useDoc(tmpDoc);
 		}
 	}
@@ -71,7 +71,7 @@ void GLBufferQVideoSurface::generalInit()	{
 			std::string		fileContents = fileContentsAsString.toStdString();
 			tmpFile.close();
 
-			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, string("/"), nullptr);
 			yuvSwizzleScene->useDoc(tmpDoc);
 		}
 	}
@@ -89,7 +89,7 @@ void GLBufferQVideoSurface::generalInit()	{
 			std::string		fileContents = fileContentsAsString.toStdString();
 			tmpFile.close();
 
-			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+			ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, string("/"), nullptr);
 			bgrSwizzleScene->useDoc(tmpDoc);
 		}
 	}

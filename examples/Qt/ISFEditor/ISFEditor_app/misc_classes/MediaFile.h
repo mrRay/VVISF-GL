@@ -15,7 +15,8 @@ public:
 		Type_Cam,
 		Type_Mov,
 		Type_Img,
-		Type_App
+		Type_App,
+		Type_ISF
 	};
 	
 	MediaFile() : _name(""), resourceLocator() {}
@@ -43,6 +44,7 @@ public:
 		case Type_Mov:
 		case Type_Img:
 		case Type_Cam:
+		case Type_ISF:
 			return QString("<MediaFile %1 %2>").arg(MediaFile::StringForType(_type)).arg(name());
 		}
 	}

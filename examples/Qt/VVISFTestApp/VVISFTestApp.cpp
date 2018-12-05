@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	std::string		fileContents = fileContentsString.toStdString();
 	tmpFile.close();
 	//cout << "fileContents are:\n" << fileContents << endl;
-	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, nullptr);
+	ISFDocRef		tmpDoc = make_shared<ISFDoc>(fileContents, ISFVertPassthru_GL2, string("/"), nullptr);
     //cout << "isf doc is " << *tmpDoc << endl;
 	renderScene->useDoc(tmpDoc);
 	
