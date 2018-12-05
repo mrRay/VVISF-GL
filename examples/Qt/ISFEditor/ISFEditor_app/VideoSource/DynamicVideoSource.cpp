@@ -39,12 +39,19 @@ GLBufferRef DynamicVideoSource::getBuffer()	{
 	switch (srcFile.type())	{
 	case MediaFile::Type_None:
 		return nullptr;
-		break;
 	case MediaFile::Type_Cam:
+		return lastBuffer;
+#if defined(Q_OS_MAC)
 	case MediaFile::Type_App:
 		return lastBuffer;
+#endif
 	
 	//	these source types have to be told to render a buffer!
+#if defined(Q_OS_WIN)
+	case MediaFile::Type_App:
+		appSrc.renderABuffer();
+		return lastBuffer;
+#endif
 	case MediaFile::Type_Mov:
 		movSrc.renderABuffer();
 		return lastBuffer;
@@ -56,7 +63,7 @@ GLBufferRef DynamicVideoSource::getBuffer()	{
 		return lastBuffer;
 	}
 	
-	//return lastBuffer;
+	return nullptr;
 }
 QList<MediaFile> DynamicVideoSource::createListOfStaticMediaFiles()	{
 	//qDebug() << __PRETTY_FUNCTION__;

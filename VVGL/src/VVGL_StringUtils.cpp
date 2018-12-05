@@ -62,7 +62,7 @@ string StringByDeletingLastAndAddingFirstSlash(const string & n)	{
 	if (n.size()<1)
 		return string("");
 	
-	int			tmpLen = n.size();
+	int			tmpLen = int(n.size());
 	bool		hasFirst = (n[0]=='/') ? true : false;
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
 	string		returnMe = n;
@@ -80,7 +80,7 @@ string StringByDeletingLastSlash(const string & n)	{
 		return string("");
 	
 	//bool		hasFirst = (n[0]=='/') ? true : false;
-	int			tmpLen = n.size();
+	int			tmpLen = int(n.size());
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
 	string		returnMe = n;
 	if (hasLast)	{

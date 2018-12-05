@@ -47,6 +47,7 @@ public:
 		case Type_ISF:
 			return QString("<MediaFile %1 %2>").arg(MediaFile::StringForType(_type)).arg(name());
 		}
+		return QString("???");
 	}
 	
 	

@@ -24,6 +24,8 @@ public:
 	virtual bool playingBackItem(const MediaFile & n) override;
 	virtual void loadFile(const MediaFile & n) override;
 
+	virtual void renderABuffer() override;
+
 private:
 	InterAppVideoSource_WinOpaque		*opaque = nullptr;	//	used to store objective-c stuff
 };

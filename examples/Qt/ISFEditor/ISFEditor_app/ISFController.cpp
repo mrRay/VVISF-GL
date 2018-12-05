@@ -388,6 +388,7 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 			ow->drawBuffer(found->second);
 	}
 	
+	GetGlobalBufferPool()->housekeeping();
 }
 
 void ISFController::populateLoadingWindowUI()	{

@@ -31,6 +31,7 @@ public:
 	virtual void loadFile(const MediaFile & n) override;
 	
 	virtual bool running() override;
+	virtual void renderABuffer() override;
 	
 private:
 #if defined(Q_OS_MAC)

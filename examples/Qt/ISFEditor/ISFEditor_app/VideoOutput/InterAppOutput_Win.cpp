@@ -10,6 +10,7 @@
 #include <QDebug>
 
 #include "VVGL.hpp"
+#include "SpoutSender.h"
 
 
 
@@ -30,11 +31,16 @@ public:
 		if (bp != nullptr)	{
 			ctx = bp->context()->newContextSharingMe();
 		}
+
+		if (!txr.CreateSender("ISF Editor", 1920, 1080))
+			qDebug() << "ERR: could not create spout sender, " << __PRETTY_FUNCTION__;
 	}
 	~InterAppOutput_WinOpaque()	{
+		txr.ReleaseSender();
 	}
 
 	GLContextRef			ctx = nullptr;
+	SpoutSender				txr;
 };
 
 
@@ -69,5 +75,8 @@ void InterAppOutput_Win::publishBuffer(const GLBufferRef & inBuffer)	{
 		return;
 	}
 
-	opaque->ctx->makeCurrent();
+	//opaque->ctx->makeCurrent();
+
+	//cout << "\tspout should be publishing buffer " << *inBuffer << endl;
+	opaque->txr.SendTexture(inBuffer->name, inBuffer->desc.target, inBuffer->srcRect.size.width, inBuffer->srcRect.size.height, !inBuffer->flipped);
 }

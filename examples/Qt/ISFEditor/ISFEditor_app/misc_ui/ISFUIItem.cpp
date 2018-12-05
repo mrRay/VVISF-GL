@@ -57,8 +57,8 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			
 			vector<string>		labelArray = inAttr->labelArray();
 			vector<int32_t>		valArray = inAttr->valArray();
-			int					labelArraySize = labelArray.size();
-			int					valArraySize = valArray.size();
+			int					labelArraySize = int(labelArray.size());
+			int					valArraySize = int(valArray.size());
 			long				defaultValAsLong = inAttr->defaultVal().getLongVal();
 			int					defaultValIndex = -1;
 			int					tmpIndex = 0;
@@ -418,6 +418,10 @@ ISFVal ISFUIItem::getISFVal()	{
 		return ISFColorVal(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 	case ISFValType_Image:
 		{
+#if defined(Q_OS_WIN)
+			interAppSrc->renderABuffer();
+#else
+#endif
 			return ISFVal(ISFValType_Image, interAppBuffer);
 		}
 		break;

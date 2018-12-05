@@ -5,6 +5,7 @@
 #include <QPointer>
 class QLabel;
 class QComboBox;
+class QCheckBox;
 class QLineEdit;
 class QLabelClickable;
 class QLabelDrag;
@@ -28,7 +29,7 @@ class JSONGUIPassWidget : public QWidget
 public:
 	//	my parent is the JSONScrollView that created me!
 	explicit JSONGUIPassWidget(const JGMPassRef & inRef, JSONScrollWidget * inScrollWidget, QWidget *parent = nullptr);
-	~JSONGUIPassWidget();
+	~JSONGUIPassWidget() override;
 	
 	virtual void prepareToBeDeleted();
 	
@@ -52,7 +53,7 @@ protected:
 	void prepareFBufferCBox(QCheckBox * fbufferCBox);
 	void prepareCustWidthEdit(QLineEdit * custWidthEdit);
 	void prepareCustHeightEdit(QLineEdit * custHeightEdit);
-	
+
 	void refreshPassTitleLabel(QLabel * passNameLabel);
 	void refreshBufferNameEdit(QLineEdit * bufferNameEdit);
 	void refreshPBufferCBox(QCheckBox * pbufferCBox);

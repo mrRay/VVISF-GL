@@ -226,19 +226,24 @@ void JSONGUIPassWidget::prepareDeleteLabel(QLabelClickable * deleteLabel)	{
 }
 void JSONGUIPassWidget::prepareBufferNameEdit(QLineEdit * bufferNameEdit)	{
 	QObject::disconnect(bufferNameEdit, 0, 0, 0);
-	
-	QObject::connect(bufferNameEdit, &QLineEdit::editingFinished, [&]()	{
+
+	QPointer<QLineEdit>			bufferNameEditPtr(bufferNameEdit);
+	QObject::connect(bufferNameEdit, &QLineEdit::editingFinished, [&, bufferNameEditPtr]()	{
+		QLineEdit		*origBufferNameEdit = bufferNameEditPtr.data();
+		if (origBufferNameEdit == nullptr)
+			return;
+
 		//	if the name hasn't changed, bail
 		QJsonValue		origNameValue = _pass->value("TARGET");
 		QString			origName = (origNameValue.isString()) ? origNameValue.toString() : QString("");
-		QString			proposedName = bufferNameEdit->text();
+		QString			proposedName = origBufferNameEdit->text();
 		if (proposedName == origName)
 			return;
 		//	if there is already a buffer with that name, restore the original name and bail
 		JGMTop			*top = _pass->top();
 		QVector<JGMPassRef>		matchingPasses = top->getPassesRenderingToBufferNamed(proposedName);
 		if (matchingPasses.size() > 0)	{
-			bufferNameEdit->setText(origName);
+			origBufferNameEdit->setText(origName);
 			return;
 		}
 		//	update the attribute
@@ -247,11 +252,12 @@ void JSONGUIPassWidget::prepareBufferNameEdit(QLineEdit * bufferNameEdit)	{
 		else
 			_pass->setValue("TARGET", QJsonValue(proposedName));
 		//	deselect the text, remove focus from the widget
-		bufferNameEdit->deselect();
-		bufferNameEdit->clearFocus();
+		origBufferNameEdit->deselect();
+		origBufferNameEdit->clearFocus();
 		//	recreate the json & export the file
 		RecreateJSONAndExport();
 	});
+
 }
 void JSONGUIPassWidget::preparePBufferCBox(QCheckBox * pbufferCBox)	{
 	QObject::disconnect(pbufferCBox, 0, 0, 0);
@@ -288,11 +294,16 @@ void JSONGUIPassWidget::prepareFBufferCBox(QCheckBox * fbufferCBox)	{
 void JSONGUIPassWidget::prepareCustWidthEdit(QLineEdit * custWidthEdit)	{
 	QObject::disconnect(custWidthEdit, 0, 0, 0);
 	
-	QObject::connect(custWidthEdit, &QLineEdit::editingFinished, [&]()	{
+	QPointer<QLineEdit>			custWidthEditPtr(custWidthEdit);
+	QObject::connect(custWidthEdit, &QLineEdit::editingFinished, [&, custWidthEditPtr]()	{
+		QLineEdit		*origCustWidthEdit = custWidthEditPtr.data();
+		if (origCustWidthEdit == nullptr)
+			return;
+
 		//	if the width string hasn't changed, bail
 		QJsonValue		origWidthVal = _pass->value("WIDTH");
 		QString			origWidth = (origWidthVal.isUndefined()) ? QString("") : origWidthVal.toString();
-		QString			proposedWidth = custWidthEdit->text();
+		QString			proposedWidth = origCustWidthEdit->text();
 		if (origWidth == proposedWidth)
 			return;
 		//	update the value
@@ -301,8 +312,8 @@ void JSONGUIPassWidget::prepareCustWidthEdit(QLineEdit * custWidthEdit)	{
 		else
 			_pass->setValue("WIDTH", proposedWidth);
 		//	deselect the text, remove focus from the widget
-		custWidthEdit->deselect();
-		custWidthEdit->clearFocus();
+		origCustWidthEdit->deselect();
+		origCustWidthEdit->clearFocus();
 		//	recreate the json & export the file
 		RecreateJSONAndExport();
 	});
@@ -310,11 +321,16 @@ void JSONGUIPassWidget::prepareCustWidthEdit(QLineEdit * custWidthEdit)	{
 void JSONGUIPassWidget::prepareCustHeightEdit(QLineEdit * custHeightEdit)	{
 	QObject::disconnect(custHeightEdit, 0, 0, 0);
 	
-	QObject::connect(custHeightEdit, &QLineEdit::editingFinished, [&]()	{
+	QPointer<QLineEdit>			custHeightEditPtr(custHeightEdit);
+	QObject::connect(custHeightEdit, &QLineEdit::editingFinished, [&, custHeightEditPtr]()	{
+		QLineEdit		*origCustHeightEdit = custHeightEditPtr.data();
+		if (origCustHeightEdit == nullptr)
+			return;
+
 		//	if the height string hasn't changed, bail
 		QJsonValue		origHeightVal = _pass->value("HEIGHT");
 		QString			origHeight = (origHeightVal.isUndefined()) ? QString("") : origHeightVal.toString();
-		QString			proposedHeight = custHeightEdit->text();
+		QString			proposedHeight = origCustHeightEdit->text();
 		if (origHeight == proposedHeight)
 			return;
 		//	update the value
@@ -323,12 +339,14 @@ void JSONGUIPassWidget::prepareCustHeightEdit(QLineEdit * custHeightEdit)	{
 		else
 			_pass->setValue("HEIGHT", proposedHeight);
 		//	deselect the text, remove focus from the widget
-		custHeightEdit->deselect();
-		custHeightEdit->clearFocus();
+		origCustHeightEdit->deselect();
+		origCustHeightEdit->clearFocus();
 		//	recreate the json & export the file
 		RecreateJSONAndExport();
 	});
 }
+
+
 
 
 void JSONGUIPassWidget::refreshPassTitleLabel(QLabel * passNameLabel)	{

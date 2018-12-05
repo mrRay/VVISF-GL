@@ -221,27 +221,32 @@ void JSONGUIInputWidget::prepareInputNameEdit(QLineEdit * inputNameEdit)	{
 	QObject::disconnect(inputNameEdit, 0, 0, 0);
 	
 	//	pressing enter on a line
-	QObject::connect(inputNameEdit, &QLineEdit::editingFinished, [&]()	{
+	QPointer<QLineEdit>		inputNameEditPtr(inputNameEdit);
+	QObject::connect(inputNameEdit, &QLineEdit::editingFinished, [&, inputNameEditPtr]()	{
 		//qDebug() << __FUNCTION__ << " QLineEdit::editingFinished";
 		
 		JGMTop		*top = (_input==nullptr) ? nullptr : _input->top();
 		if (top == nullptr)
 			return;
 		
+		QLineEdit	*origEdit = inputNameEditPtr.data();
+		if (origEdit == nullptr)
+			return;
+
 		QString		origAttrName = _input->value("NAME").toString();
-		QString		newString = inputNameEdit->text();
+		QString		newString = origEdit->text();
 		//	if the new input name isn't valid (because an input by that name already exists)
 		if (top->inputNamed(newString)!=nullptr)	{
 			//	if the new input name is the same as the existing name
 			if (origAttrName == newString)	{
 				//	deselect the text, remove focus from the widget
-				inputNameEdit->deselect();
-				inputNameEdit->clearFocus();
+				origEdit->deselect();
+				origEdit->clearFocus();
 			}
 			//	else the new input name is different- just...not valid (probably a dupe)
 			else	{
 				//	reset the displayed text and return (should still be editing)
-				inputNameEdit->setText(origAttrName);
+				origEdit->setText(origAttrName);
 			}
 		}
 		//	else the new input name is valid
@@ -249,8 +254,8 @@ void JSONGUIInputWidget::prepareInputNameEdit(QLineEdit * inputNameEdit)	{
 			//	update the attribute
 			_input->setValue("NAME", QJsonValue(newString));
 			//	deselect the text, remove focus from the widget
-			inputNameEdit->deselect();
-			inputNameEdit->clearFocus();
+			origEdit->deselect();
+			origEdit->clearFocus();
 			//	recreate the json & export the file
 			RecreateJSONAndExport();
 		}
@@ -260,10 +265,14 @@ void JSONGUIInputWidget::prepareInputNameEdit(QLineEdit * inputNameEdit)	{
 void JSONGUIInputWidget::prepareLabelField(QLineEdit * labelField)	{
 	QObject::disconnect(labelField, 0, 0, 0);
 	
-	QObject::connect(labelField, &QLineEdit::editingFinished, [&]()	{
+	QPointer<QLineEdit>		labelFieldPtr(labelField);
+	QObject::connect(labelField, &QLineEdit::editingFinished, [&, labelFieldPtr]()	{
 		if (_input == nullptr)
 			return;
-		QString		tmpString = labelField->text();
+		QLineEdit	*origLabelField = labelFieldPtr.data();
+		if (origLabelField == nullptr)
+			return;
+		QString		tmpString = origLabelField->text();
 		if (tmpString.length() < 1)
 			_input->setValue("LABEL", QJsonValue::Undefined);
 		else

@@ -98,7 +98,8 @@ SOURCES += \
     ISFConverter/GLSLSandboxConverter.cpp \
     ISFConverter/ShadertoyConverter.cpp \
 	misc_classes/StringUtilities.cpp \
-    VideoSource/ISFVideoSource.cpp
+	VideoSource/ISFVideoSource.cpp
+
 
 
 HEADERS += \
@@ -160,7 +161,8 @@ HEADERS += \
     ISFConverter/ShadertoyConverter.h \
     misc_classes/StringUtilities.h \
 	misc_ui/MouseEventISFWidget.h \
-    VideoSource/ISFVideoSource.h
+	VideoSource/ISFVideoSource.h
+
 
 # platform-specific classes
 mac {
@@ -173,9 +175,33 @@ mac {
 }
 win32	{
 	SOURCES += VideoSource/InterAppVideoSource_Win.cpp \
-		VideoOutput/InterAppOutput_Win.cpp
+		VideoOutput/InterAppOutput_Win.cpp \
+		Spout/SpoutCopy.cpp \
+		Spout/SpoutDirectX.cpp \
+		Spout/SpoutGLDXinterop.cpp \
+		Spout/SpoutGLextensions.cpp \
+		Spout/SpoutMemoryShare.cpp \
+		Spout/SpoutReceiver.cpp \
+		Spout/SpoutSDK.cpp \
+		Spout/SpoutSender.cpp \
+		Spout/SpoutSenderNames.cpp \
+		Spout/SpoutSharedMemory.cpp \
+		VideoSource/SpoutSourcesWatcher.cpp
 	HEADERS += VideoSource/InterAppVideoSource_Win.h \
-		VideoOutput/InterAppOutput_Win.h
+		VideoOutput/InterAppOutput_Win.h \
+		Spout/Spout.h \
+		Spout/SpoutCommon.h \
+		Spout/SpoutCopy.h \
+		Spout/SpoutDirectX.h \
+		Spout/SpoutGLDXinterop.h \
+		Spout/SpoutGLextensions.h \
+		Spout/SpoutMemoryShare.h \
+		Spout/SpoutReceiver.h \
+		Spout/SpoutSDK.h \
+		Spout/SpoutSender.h \
+		Spout/SpoutSenderNames.h \
+		Spout/SpoutSharedMemory.h \
+		VideoSource/SpoutSourcesWatcher.h
 }
 
 
@@ -233,6 +259,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/misc_classes
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui
 INCLUDEPATH += $$_PRO_FILE_PWD_/misc_ui/SimpleSourceCodeEditor
 INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
+INCLUDEPATH += $$_PRO_FILE_PWD_/Spout
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
 INCLUDEPATH += $$_PRO_FILE_PWD_/ISFConverter
 
@@ -274,6 +301,12 @@ mac {
 
 	# syphon needs a CGLContextObj, which means we need to get an NSOpenGLContext from a QOpenGLContext, the headers for which are only accessible by manually including this path so the QtPlatformHeaders directory is picked up.
 	INCLUDEPATH += $$QMAKESPEC/../../include/
+}
+
+# win-only additions for spout
+win32	{
+	LIBS += -luser32
+	LIBS += -lGdi32
 }
 
 

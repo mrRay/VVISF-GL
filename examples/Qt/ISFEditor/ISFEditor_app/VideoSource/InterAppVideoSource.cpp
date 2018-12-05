@@ -47,3 +47,6 @@ void InterAppVideoSource::loadFile(const MediaFile & n)	{
 bool InterAppVideoSource::running()	{
 	return src.running();
 }
+void InterAppVideoSource::renderABuffer()	{
+	src.renderABuffer();
+}
