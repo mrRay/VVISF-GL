@@ -340,6 +340,7 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 	if (tmpDoc == nullptr)
 		return nullptr;
 	//cout << "\ttmpDoc is " << *tmpDoc << endl;
+	
 	GLBufferRef			returnMe = nullptr;
 	vector<string>			passNames = tmpDoc->renderPasses();
 	ISFPassTargetRef		lastPass = nullptr;
@@ -348,12 +349,11 @@ GLBufferRef ISFScene::createAndRenderABuffer(const VVGL::Size & inSize, const do
 		lastPass = tmpDoc->passTargetForKey(lastPassName);
 	}
 	
-	GLBufferPoolRef		bp = inPoolRef;
-	if (bp == nullptr && _privatePool!=nullptr)
-		bp = _privatePool;
-	if (bp == nullptr)
-		bp = GetGlobalBufferPool();
-	
+	GLBufferPoolRef		bp = nullptr;
+	if (inPoolRef != nullptr)
+		bp = inPoolRef;
+	else
+		bp = (_privatePool != nullptr) ? _privatePool : GetGlobalBufferPool();
 	if (bp==nullptr)	{
 		cout << "\tERR: bailing, pool null, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
@@ -424,11 +424,12 @@ void ISFScene::_setUpRenderCallback()	{
 		
 		//	get the VBO
 		GLBufferRef		myVBO = vbo();
+		GLBufferPoolRef	bp = (s.privatePool() != nullptr) ? s.privatePool() : GetGlobalBufferPool();
 		
 		//	if there's no VBO, or the target quad doesn't match the VBO's contents
 		if (myVBO==nullptr || targetQuad!=_vboContents)	{
 			//	make the VBO, populate it with vertex data
-			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
+			myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true, bp);
 			//	update the instance's copy of the VBO
 			setVBO(myVBO);
 			//	update the contents of the VBO
@@ -478,11 +479,12 @@ void ISFScene::_setUpRenderCallback()	{
 		
 			//	get the VBO
 			GLBufferRef		myVBO = vbo();
+			GLBufferPoolRef	bp = (s.privatePool() != nullptr) ? s.privatePool() : GetGlobalBufferPool();
 		
 			//	if there's no VBO, or the target quad doesn't match the VBO's contents
 			if (myVBO==nullptr || targetQuad!=_vboContents)	{
 				//	make the VBO, populate it with vertex data
-				myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true);
+				myVBO = CreateVBO((void*)&targetQuad, sizeof(targetQuad), GL_STATIC_DRAW, true, bp);
 				//	update the instance's copy of the VBO
 				setVBO(myVBO);
 				//	update the contents of the VBO
@@ -1121,9 +1123,12 @@ void ISFScene::_initialize()	{
 		return;
 	
 	GLScene::_initialize();
-	
-	glDisable(GL_BLEND);
-	GLERRLOG
+#if defined(VVGL_TARGETENV_GL2)
+	if (glVersion() < GLVersion_2)	{
+		glDisable(GL_BLEND);
+		GLERRLOG
+	}
+#endif
 	
 	//if (_context == nullptr)	{
 	//	cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
@@ -1167,13 +1172,6 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 		_renderTimeDelta = (inTime<=0.) ? 0. : fabs(inTime-_renderTime);
 		_renderTime = inTime;
 		
-		//	tell the doc to evaluate its buffers with the passed render size
-		tmpDoc->evalBufferDimensionsWithRenderSize(_renderSize);
-		
-		//	clear the passed dict of render passes (we'll be placing the rendered content from each pass in it as we progress)
-		if (outPassDict != nullptr)
-			outPassDict->clear();
-		
 		//	get the buffer pool we're going to use to generate the buffers
 		GLBufferPoolRef		bp = _privatePool;
 		if (bp==nullptr && inTargetBuffer!=nullptr)
@@ -1185,11 +1183,27 @@ void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & in
 			return;
 		}
 		
+		GLBufferRef				tmpFBO = CreateFBO(false, bp);
+		
+		_context->makeCurrentIfNotCurrent();
+		
+		//	tell the doc to evaluate its buffers with the passed render size
+		tmpDoc->evalBufferDimensionsWithRenderSize(_renderSize);
+		
+		//	clear the passed dict of render passes (we'll be placing the rendered content from each pass in it as we progress)
+		if (outPassDict != nullptr)
+			outPassDict->clear();
+		
+		
+
+
+		
 		bool					shouldBeFloat = _alwaysRenderToFloat;
 		bool					shouldBeIOSurface;
 		shouldBeIOSurface = _persistentToIOSurface;
-		
-		GLBufferRef				tmpFBO = CreateFBO(true, bp);
+
+		//_context->makeCurrentIfNotCurrent();
+
 		//	run through the array of passes, rendering each of them
 		vector<string>			passes = tmpDoc->renderPasses();
 		_passIndex = 1;

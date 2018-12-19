@@ -19,6 +19,7 @@ public:
 	~InterAppOutput_Win();
 
 	virtual void publishBuffer(const VVGL::GLBufferRef & inBuffer) override;
+	virtual void moveGLToThread(const QThread * n) override;
 
 private:
 	InterAppOutput_WinOpaque		*opaque = nullptr;	//	used to store objective-c stuff

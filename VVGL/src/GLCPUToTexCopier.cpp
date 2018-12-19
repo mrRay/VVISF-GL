@@ -28,7 +28,7 @@ using namespace std;
 
 
 GLCPUToTexCopier::GLCPUToTexCopier()	{
-	GLBufferPoolRef		bp = GetGlobalBufferPool();
+	GLBufferPoolRef		bp = (_privatePool==nullptr) ? GetGlobalBufferPool() : _privatePool;
 	if (bp != nullptr)
 		_queueCtx = bp->context()->newContextSharingMe();
 }
@@ -117,7 +117,7 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	/*
 	if (inCPUBuffer==nullptr || inPBOBuffer==nullptr || inTexBuffer==nullptr)
 		return;
-	GLBufferPoolRef		bp = GetGlobalBufferPool();
+	GLBufferPoolRef		bp = (_privatePool==nullptr) ? GetGlobalBufferPool() : _privatePool;
 	if (bp == nullptr)
 		return;
 	bp->timestampThisBuffer(inTexBuffer);
@@ -131,7 +131,6 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		return;
 	
 	GLVersion		myVers = _queueCtx->version;
-	
 	//	bind the PBO and texture
 	glBindBuffer(inPBOBuffer->desc.target, inPBOBuffer->name);
 	GLERRLOG
@@ -146,8 +145,10 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	//	set up some pixel transfer modes
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
 	GLERRLOG
+#if !defined(Q_OS_WIN)
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
 	GLERRLOG
+#endif
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, (_swapBytes) ? GL_TRUE : GL_FALSE);
 	GLERRLOG
 	
@@ -164,7 +165,13 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	GLERRLOG
 	
 	//	tear down pixel transfer modes
+	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+	GLERRLOG
+#if !defined(Q_OS_WIN)
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_FALSE);
+	GLERRLOG
+#endif
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	GLERRLOG
 	
 	//	unbind the PBO and texture
@@ -177,13 +184,12 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	
 	glBindBuffer(inPBOBuffer->desc.target, 0);
 	GLERRLOG
-	
 	//	flush- start the DMA transfer.  the CPU doesn't wait for this to complete, and returns immediately.
 	glFlush();
 	GLERRLOG
 	
 	//	timestamp the buffer...
-	GLBufferPoolRef		bp = GetGlobalBufferPool();
+	GLBufferPoolRef		bp = (_privatePool==nullptr) ? GetGlobalBufferPool() : _privatePool;
 	if (bp == nullptr)
 		return;
 	bp->timestampThisBuffer(inTexBuffer);
@@ -209,25 +215,26 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 			_queueCtx->makeCurrentIfNotCurrent();
 	
 		//	create a PBO and a texture for the CPU buffer
+		GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, true);
+				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			else	{
-				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
+				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				texBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, true);
+				texBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			else	{
-				texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, true);
+				texBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
+			texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			break;
 		default:
 			break;
@@ -245,6 +252,7 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 	
 	lock_guard<recursive_mutex>		lock(_queueLock);
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
 		_queueCtx->makeCurrentIfNotCurrent();
@@ -265,7 +273,8 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				true);
+				createInCurrentContext,
+				bp);
 		}
 		else	{
 			pboBuffer = CreateRGBAPBO(
@@ -277,7 +286,8 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				true);
+				createInCurrentContext,
+				bp);
 		}
 		break;
 	case GLBuffer::PF_BGRA:
@@ -291,7 +301,8 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				true);
+				createInCurrentContext,
+				bp);
 		}
 		else	{
 			pboBuffer = CreateBGRAPBO(
@@ -303,7 +314,8 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				true);
+				createInCurrentContext,
+				bp);
 		}
 		break;
 	case GLBuffer::PF_YCbCr_422:
@@ -316,7 +328,8 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 			NULL,	//	this will delete-initialize the buffer
 #endif
-			true);
+			createInCurrentContext,
+			bp);
 		break;
 	default:
 		break;
@@ -335,6 +348,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	
 	lock_guard<recursive_mutex>		lock(_queueLock);
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
 		_queueCtx->makeCurrentIfNotCurrent();
@@ -361,22 +375,22 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 		switch (inCPUBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, true);
+				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			else	{
-				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, true);
+				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
-				inTexBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, true);
+				inTexBuffer = CreateBGRAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			else	{
-				inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, true);
+				inTexBuffer = CreateBGRATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, true);
+			inTexBuffer = CreateYCbCrTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			break;
 		default:
 			break;
@@ -400,6 +414,7 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 	
 	lock_guard<recursive_mutex>		lock(_queueLock);
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
 		_queueCtx->makeCurrentIfNotCurrent();
@@ -436,7 +451,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					true);
+					createInCurrentContext,
+					bp);
 			}
 			else	{
 				inPBOBuffer = CreateRGBAPBO(
@@ -448,7 +464,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					true);
+					createInCurrentContext,
+					bp);
 			}
 			break;
 		case GLBuffer::PF_BGRA:
@@ -462,7 +479,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					true);
+					createInCurrentContext,
+					bp);
 			}
 			else	{
 				inPBOBuffer = CreateBGRAPBO(
@@ -474,7 +492,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 					NULL,	//	this will delete-initialize the buffer
 #endif
-					true);
+					createInCurrentContext,
+					bp);
 			}
 			break;
 		case GLBuffer::PF_YCbCr_422:
@@ -487,7 +506,8 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 #elif PATHTYPE==1
 				NULL,	//	this will delete-initialize the buffer
 #endif
-				true);
+				createInCurrentContext,
+				bp);
 			break;
 		default:
 			break;

@@ -60,6 +60,7 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 	
 	//	make the global buffer pool, using a newly-created context that shares the base global context
 	CreateGlobalBufferPool(widgetCtx->newContextSharingMe());
+	cout << "global buffer pool is " << GetGlobalBufferPool() << endl;
 	
 	//	don't tell the widget to start rendering- doing so will cause it to start rendering at 60fps
 	//ui->bufferView->startRendering();
@@ -80,15 +81,20 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 void FinishLaunching()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	
+	ISFController	*isfc = GetISFController();
+	VVGLRenderQThread		*renderThread = isfc->renderThread();
+	GLBufferPoolRef			renderPool = isfc->renderThreadBufferPool();
+	GLTexToTexCopierRef		renderTexCopier = isfc->renderThreadTexCopier();
+	
 	DynamicVideoSource		*dvs = new DynamicVideoSource();
-	Q_UNUSED(dvs);
+	//	move the dynamic video source to the render thread, so it loads files on the render thread (use signals to load files)
+	dvs->moveToThread(renderThread);
 	
-	GetAudioController();
+	AudioController		*ac = GetAudioController();
+	if (ac != nullptr)
+		ac->moveToThread(renderThread, renderPool, renderTexCopier);
 	
-	OutputWindow		*ow = new OutputWindow();;
-	
-	//	ISF controller has to be created after OutputWindow (it connects to a signal from the window)
-	GetISFController();
+	OutputWindow		*ow = new OutputWindow();
 	
 	DocWindow			*dw = new DocWindow();;
 	
@@ -97,6 +103,16 @@ void FinishLaunching()	{
 	dw->show();
 	lw->show();
 	lw->on_createNewFile();
+	
+	
+	//	connect the output window's buffer view's signal to the ISFController's redraw slot
+	ISFGLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
+	if (bufferView == nullptr)
+		qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
+	else	{
+		QObject::connect(bufferView, &QOpenGLWidget::frameSwapped, GetISFController(), &ISFController::widgetRedrawSlot);
+	}
+	
 	
 	ow->show();
 	

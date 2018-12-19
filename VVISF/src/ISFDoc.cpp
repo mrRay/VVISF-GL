@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "ISFPassTarget.hpp"
+#include "ISFScene.hpp"
 
 #include "nlohmann_json/json.hpp"
 using json = nlohmann::json;
@@ -1452,7 +1453,15 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						//	get the full path to the image we need to import
 						string			fullPath = FmtString("%s/%s", parentDirectory.c_str(), partialPathJ.get<string>().c_str());
 						//	import the image to an GLBufferRef
-						importedBuffer = CreateTexFromImage(fullPath);
+						GLBufferPoolRef		bp = nullptr;
+						if (_parentScene == nullptr)
+							bp = GetGlobalBufferPool();
+						else	{
+							bp = _parentScene->privatePool();
+							if (bp == nullptr)
+								bp = GetGlobalBufferPool();
+						}
+						importedBuffer = CreateTexFromImage(fullPath, false, bp);
 						if (importedBuffer == nullptr)	{
 							if (_throwExcept)
 								throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);

@@ -179,6 +179,8 @@ class VVGL_EXPORT GLContext	{
 		void swap();
 		void moveToThread(QThread * inThread);
 		QOpenGLContext * context();
+		QObject * contextAsObject();
+		QThread * contextThread();
 		QVariant nativeHandle();
 		
 		/*

@@ -293,6 +293,7 @@ void JSONGUIInputWidget::prepareTypeCBox(QComboBox * typeCB)	{
 	typeCB->addItem( "image" );
 	typeCB->addItem( "audio" );
 	typeCB->addItem( "audioFFT" );
+	typeCB->setFocusPolicy(Qt::StrongFocus);
 	
 	QObject::connect(typeCB, QOverload<const QString &>::of(&QComboBox::activated), [&](const QString & inText)	{
 		if (_input == nullptr)

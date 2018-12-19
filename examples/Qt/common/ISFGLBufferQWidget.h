@@ -20,7 +20,7 @@ public:
 	void startRendering();
 	void stopRendering();
 	
-	QThread * getRenderThread();
+	//QThread * getRenderThread();
 	
 	inline VVGL::GLContextRef glContextRef() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return ctx; }
 	inline VVISF::ISFSceneRef getScene() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return scene; }
@@ -33,7 +33,6 @@ public slots:
 	Q_SLOT void aboutToQuit();
 	
 signals:
-	Q_SIGNAL void aboutToRedraw(ISFGLBufferQWidget * n);
 	
 protected:
 	//bool event(QEvent * inEvent) Q_DECL_OVERRIDE;

@@ -94,16 +94,26 @@ GLScene::~GLScene()	{
 
 GLBufferRef GLScene::createAndRenderABuffer(const Size & inSize, const GLBufferPoolRef & inPool)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
-	if (inPool == nullptr || inSize.width <= 0. || inSize.height <= 0.)
+	if (inSize.width <= 0. || inSize.height <= 0.)
+		return nullptr;
+	
+	GLBufferPoolRef		bp = inPool;
+	if (bp == nullptr)	{
+		if (_privatePool != nullptr)
+			bp = _privatePool;
+		else
+			bp = GetGlobalBufferPool();
+	}
+	if (bp == nullptr)
 		return nullptr;
 	
 	//	set the orthogonal size
 	setOrthoSize(inSize);
 	//	make the buffers i'll be rendering into
 #if defined(VVGL_SDK_RPI)
-	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(_orthoSize, false, inPool), nullptr);
+	RenderTarget		tmpTarget(CreateFBO(false, bp), CreateRGBATex(_orthoSize, false, bp), nullptr);
 #else
-	RenderTarget		tmpTarget(CreateFBO(false, inPool), CreateRGBATex(_orthoSize, false, inPool), CreateDepthBuffer(_orthoSize, false, inPool));
+	RenderTarget		tmpTarget(CreateFBO(false, bp), CreateRGBATex(_orthoSize, false, bp), CreateDepthBuffer(_orthoSize, false, bp));
 #endif
 	//	render
 	render(tmpTarget);
@@ -112,14 +122,22 @@ GLBufferRef GLScene::createAndRenderABuffer(const Size & inSize, const GLBufferP
 }
 void GLScene::renderToBuffer(const GLBufferRef & inBuffer)	{
 	//cout << __PRETTY_FUNCTION__ << ", passed buffer is " << inBuffer << endl;
+	
+	GLBufferPoolRef		bp = _privatePool;
+	if (bp == nullptr)
+		bp = GetGlobalBufferPool();
+	
+	if (bp == nullptr)
+		return;
+	
 	//	set the orthogonal size
 	if (inBuffer != nullptr)
 		setOrthoSize(inBuffer->srcRect.size);
 	//	make the buffers i'll be rendering into
 #if defined(VVGL_SDK_RPI)
-	RenderTarget		tmpTarget(CreateFBO(), inBuffer, nullptr);
+	RenderTarget		tmpTarget(CreateFBO(false, bp), inBuffer, nullptr);
 #else
-	RenderTarget		tmpTarget(CreateFBO(), inBuffer, CreateDepthBuffer(_orthoSize));
+	RenderTarget		tmpTarget(CreateFBO(false, bp), inBuffer, CreateDepthBuffer(_orthoSize, false, bp));
 #endif
 	//	render
 	render(tmpTarget);

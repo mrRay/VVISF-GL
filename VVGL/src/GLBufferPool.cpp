@@ -734,7 +734,7 @@ GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
-#if defined(VVGL_SDK_QT) && defined(Q_OS_WIN)
+#if defined(VVGL_SDK_QT)
 	returnMe->preferDeletion = true;
 #endif
 	
@@ -1617,8 +1617,8 @@ GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCur
 	GLBufferRef		returnMe = nullptr;
 	if (newImg != nullptr)	{
 		returnMe = CreateBufferForQImage(newImg, inCreateInCurrentContext, inPoolRef);
-		//delete newImg;
-		//newImg = nullptr;
+		delete newImg;
+		newImg = nullptr;
 	}
 	return returnMe;
 }

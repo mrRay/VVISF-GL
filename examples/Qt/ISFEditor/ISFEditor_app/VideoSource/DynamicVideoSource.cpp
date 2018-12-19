@@ -35,7 +35,58 @@ DynamicVideoSource::~DynamicVideoSource()	{
 
 
 GLBufferRef DynamicVideoSource::getBuffer()	{
+	
 	lock_guard<recursive_mutex>		tmpLock(lastBufferLock);
+	
+	
+	
+	
+	//	if there's a file to load, do so
+	if (!fileToLoad.isNull())	{
+		MediaFile			tmpFile = *fileToLoad.data();
+		MediaFile::Type		origType = srcFile.type();
+		MediaFile::Type		newType = tmpFile.type();
+	
+		if (origType != newType)	{
+			switch (origType)	{
+			case MediaFile::Type_None:
+				break;
+			case MediaFile::Type_Cam:
+				camSrc.stop();
+				break;
+			case MediaFile::Type_Mov:
+				movSrc.stop();
+				break;
+			case MediaFile::Type_Img:
+				imgSrc.stop();
+				break;
+			case MediaFile::Type_ISF:
+				isfSrc.stop();
+				break;
+			case MediaFile::Type_App:
+				appSrc.stop();
+				break;
+			}
+		}
+	
+		switch (newType)	{
+		case MediaFile::Type_None:		break;
+		case MediaFile::Type_Cam:		camSrc.loadFile(tmpFile);		break;
+		case MediaFile::Type_Mov:		movSrc.loadFile(tmpFile);		break;
+		case MediaFile::Type_Img:		imgSrc.loadFile(tmpFile);		break;
+		case MediaFile::Type_ISF:		isfSrc.loadFile(tmpFile);		break;
+		case MediaFile::Type_App:		appSrc.loadFile(tmpFile);		break;
+		}
+	
+		//srcFile = n;
+		srcFile = tmpFile;
+		
+		fileToLoad = nullptr;
+	}
+	
+	
+	
+	
 	switch (srcFile.type())	{
 	case MediaFile::Type_None:
 		return nullptr;
@@ -100,45 +151,12 @@ MediaFile::Type DynamicVideoSource::srcType()	{
 
 
 void DynamicVideoSource::loadFile(const MediaFile & n)	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__ << "... " << n.name();
 	
 	lock_guard<recursive_mutex>		tmpLock(srcLock);
 	
-	MediaFile::Type		origType = srcFile.type();
-	MediaFile::Type		newType = n.type();
+	fileToLoad = QSharedPointer<MediaFile>(new MediaFile(n));
 	
-	if (origType != newType)	{
-		switch (origType)	{
-		case MediaFile::Type_None:
-			break;
-		case MediaFile::Type_Cam:
-			camSrc.stop();
-			break;
-		case MediaFile::Type_Mov:
-			movSrc.stop();
-			break;
-		case MediaFile::Type_Img:
-			imgSrc.stop();
-			break;
-		case MediaFile::Type_ISF:
-			isfSrc.stop();
-			break;
-		case MediaFile::Type_App:
-			appSrc.stop();
-			break;
-		}
-	}
-	
-	switch (newType)	{
-	case MediaFile::Type_None:		break;
-	case MediaFile::Type_Cam:		camSrc.loadFile(n);		break;
-	case MediaFile::Type_Mov:		movSrc.loadFile(n);		break;
-	case MediaFile::Type_Img:		imgSrc.loadFile(n);		break;
-	case MediaFile::Type_ISF:		isfSrc.loadFile(n);		break;
-	case MediaFile::Type_App:		appSrc.loadFile(n);		break;
-	}
-	
-	srcFile = n;
 }
 bool DynamicVideoSource::playingBackItem(const MediaFile & n)	{
 	//qDebug() << __PRETTY_FUNCTION__ << ", " << n;

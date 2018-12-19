@@ -217,6 +217,7 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 	
 	lock_guard<recursive_mutex>		lock(_queueLock);
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
 		_queueCtx->makeCurrentIfNotCurrent();
@@ -224,18 +225,18 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 	//Size			gpuBufferDims = inTexBuffer->srcRect.size;
 	
 	//	make an FBO
-	GLBufferRef			tmpFBO = CreateFBO(createInCurrentContext);
+	GLBufferRef			tmpFBO = CreateFBO(createInCurrentContext, bp);
 	//	create a PBO for the texture
 	GLBufferRef			inPBOBuffer = nullptr;
 	switch (inTexBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_RGBA:
-		inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext);
+		inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
 		break;
 	case GLBuffer::PF_BGRA:
-		inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext);
+		inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
 		break;
 	case GLBuffer::PF_YCbCr_422:
-		inPBOBuffer = CreateYCbCrPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext);
+		inPBOBuffer = CreateYCbCrPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
 		break;
 	default:
 		break;
@@ -258,6 +259,7 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 	
 	lock_guard<recursive_mutex>		lock(_queueLock);
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	//	make the queue context current if appropriate- otherwise we are to assume that a GL context is current in this thread
 	if (!createInCurrentContext)
 		_queueCtx->makeCurrentIfNotCurrent();
@@ -284,16 +286,16 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 	//	if we're safe to push, we need to create a PBO
 	GLBufferRef		inPBOBuffer = nullptr;
 	if (safeToPush)	{
-		tmpFBO = CreateFBO(createInCurrentContext);
+		tmpFBO = CreateFBO(createInCurrentContext, bp);
 		switch (inTexBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
-			inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext);
+			inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
 			break;
 		case GLBuffer::PF_BGRA:
-			inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext);
+			inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
 			break;
 		case GLBuffer::PF_YCbCr_422:
-			inPBOBuffer = CreateYCbCrPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext);
+			inPBOBuffer = CreateYCbCrPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
 			break;
 		default:
 			break;

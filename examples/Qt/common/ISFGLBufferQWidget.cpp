@@ -154,12 +154,12 @@ void ISFGLBufferQWidget::stopRenderingImmediately()	{
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-
+/*
 QThread * ISFGLBufferQWidget::getRenderThread()	{
 	lock_guard<recursive_mutex>		lock(ctxLock);
 	return ctxThread;
 }
-
+*/
 
 
 
@@ -231,8 +231,6 @@ void ISFGLBufferQWidget::paintGL()
 {
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//qDebug() << "\t" << QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
-	
-	emit aboutToRedraw(this);
 	
 	QOpenGLWidget::paintGL();
 	makeCurrent();

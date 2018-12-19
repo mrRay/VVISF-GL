@@ -35,6 +35,8 @@ public:
 	void updateAudioResults();
 	GLBufferRef getAudioImageBuffer(const int & inWidth = 0);
 	GLBufferRef getAudioFFTBuffer(const int & inWidth = 0);
+	
+	void moveToThread(QThread * inTargetThread, GLBufferPoolRef inThreadBufferPool=nullptr, GLTexToTexCopierRef inThreadTexCopier=nullptr);
 
 signals:
 	Q_SIGNAL void listOfAudioDevicesUpdated();

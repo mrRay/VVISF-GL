@@ -11,6 +11,7 @@
 #include "VVISF.hpp"
 #include "ISFUIItem.h"
 #include "ISFGLBufferQWidget.h"
+#include "VVGLRenderQThread.h"
 
 
 
@@ -38,10 +39,17 @@ public:
 	QString getCompiledFragmentShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->fragmentShaderString() ); }
 	vector<pair<int,string>> getSceneVertErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneVertErrors; }
 	vector<pair<int,string>> getSceneFragErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneFragErrors; }
+	
+	void threadedRenderCallback();
+	VVGLRenderQThread * renderThread() {
+		return _renderThread;
+	}
+	GLBufferPoolRef renderThreadBufferPool() { return (_renderThread==nullptr)?nullptr:_renderThread->bufferPool(); }
+	GLTexToTexCopierRef renderThreadTexCopier() { return (_renderThread==nullptr)?nullptr:_renderThread->texCopier(); }
 
 public slots:
 	//	the widget sends a signal to this slot every time it's about to redraw
-	Q_SLOT void widgetRedrawSlot(ISFGLBufferQWidget * n);
+	Q_SLOT void widgetRedrawSlot();
 	
 private:
 	Size			_renderSize = Size(640.0,480.0);
@@ -53,12 +61,19 @@ private:
 	bool					sceneIsFilter = false;
 	vector<pair<int,string>>		sceneVertErrors;
 	vector<pair<int,string>>		sceneFragErrors;
+	bool					needToLoadFiles = false;	//	this is how we pass contexts between threads: we check this and move the ctx on the relevant thread.
+	bool					loadingFiles = false;
 	
 	QString					targetFile;
 	
 	QList<QPointer<ISFUIItem>>		sceneItemArray;
 	
 	QSpacerItem				*spacerItem = nullptr;	//	must be explicitly freed!
+	
+	VVGLRenderQThread		*_renderThread = nullptr;
+	//GLContextRef			_renderThreadCtx = nullptr;
+	//GLBufferPoolRef			_renderThreadBufferPool = nullptr;
+	//GLTexToTexCopierRef		_renderThreadTexCopier = nullptr;
 
 private:
 	void populateLoadingWindowUI();

@@ -98,7 +98,9 @@ SOURCES += \
     ISFConverter/GLSLSandboxConverter.cpp \
     ISFConverter/ShadertoyConverter.cpp \
 	misc_classes/StringUtilities.cpp \
-	VideoSource/ISFVideoSource.cpp
+	VideoSource/ISFVideoSource.cpp \
+    ../../common/VVGLRenderQThread.cpp \
+    misc_ui/QPassiveWheelComboBox.cpp
 
 
 
@@ -161,7 +163,9 @@ HEADERS += \
     ISFConverter/ShadertoyConverter.h \
     misc_classes/StringUtilities.h \
 	misc_ui/MouseEventISFWidget.h \
-	VideoSource/ISFVideoSource.h
+	VideoSource/ISFVideoSource.h \
+    ../../common/VVGLRenderQThread.h \
+    misc_ui/QPassiveWheelComboBox.h
 
 
 # platform-specific classes

@@ -3,13 +3,24 @@
 #include <QFile>
 
 #include "AudioController.h"
+#include "ISFController.h"
 
 
 
 
 ISFVideoSource::ISFVideoSource(QObject *parent)	{
 	Q_UNUSED(parent);
-	scene = nullptr;
+	//scene = nullptr;
+	
+	ISFController	*isfc = GetISFController();
+	QThread			*renderThread = isfc->renderThread();
+	GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+	GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+	
+	scene = CreateISFSceneRef();
+	scene->context()->moveToThread(renderThread);
+	scene->setPrivatePool(isfPool);
+	scene->setPrivateCopier(isfCopier);
 }
 ISFVideoSource::~ISFVideoSource()	{
 	scene = nullptr;
@@ -72,16 +83,35 @@ QList<MediaFile> ISFVideoSource::createListOfStaticMediaFiles()	{
 	return returnMe;
 }
 void ISFVideoSource::start()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	if (_running)
 		return;
 	
 	_running=true;
-	
-	if (scene == nullptr)
+	/*
+	if (scene == nullptr)	{
 		scene = CreateISFSceneRef();
+	}
+	
+	GLContextRef		sceneCtx = (scene==nullptr) ? nullptr : scene->context();
+	ISFController		*isfc = GetISFController();
+	VVGLRenderQThread	*isfRenderThread = (isfc==nullptr) ? nullptr : isfc->renderThread();
+	
+	GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+	scene->setPrivatePool(isfPool);
+	GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+	scene->setPrivateCopier(isfCopier);
+	
+	if (sceneCtx!=nullptr && isfRenderThread!=nullptr)	{
+		sceneCtx->moveToThread(isfRenderThread);
+//		qDebug() << "just moved Dynamic ISFVideoSource to render thread...";
+	}
+//	else	{
+//		qDebug() << "ERR: scene or isf render thread NULL, " << __PRETTY_FUNCTION__;
+//	}
+	*/
 	
 	if (_file.type()==MediaFile::Type_ISF)	{
 		
@@ -90,7 +120,7 @@ void ISFVideoSource::start()	{
 			QTextStream		rStream(&tmpFile);
 			QString			rawSrc = rStream.readAll();
 			std::string		pathToDir(":/src_ISFs");
-			ISFDocRef		tmpDoc = CreateISFDocRefWith(rawSrc.toStdString(), pathToDir, ISFVertPassthru_GL2, nullptr, false);
+			ISFDocRef		tmpDoc = CreateISFDocRefWith(rawSrc.toStdString(), pathToDir, ISFVertPassthru_GL2, &(*scene), false);
 			scene->useDoc(tmpDoc);
 			
 			tmpFile.close();
@@ -101,13 +131,14 @@ void ISFVideoSource::start()	{
 	}
 }
 void ISFVideoSource::stop()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	
 	VideoSource::stop();
-	
+	/*
 	scene = nullptr;
+	*/
 }
 bool ISFVideoSource::playingBackItem(const MediaFile & n)	{
 	if (n.type()==MediaFile::Type_ISF		&&
@@ -143,11 +174,22 @@ void ISFVideoSource::renderABuffer()	{
 	
 	std::lock_guard<std::recursive_mutex> tmpLock(_lock);
 	
+	//	the scene needs a private pool & copier (it's being rendered on the dedicated rendering thread)
+	if (scene->privatePool() == nullptr)	{
+		ISFController			*isfc = GetISFController();
+		GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+		GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+		if (isfPool == nullptr || isfCopier == nullptr)
+			return;
+		scene->setPrivatePool(isfPool);
+		scene->setPrivateCopier(isfCopier);
+	}
+	
 	ISFDocRef		sceneDoc = scene->doc();
 	if (sceneDoc == nullptr)
 		return;
-	GLBufferRef		audioBuffer = ac->getAudioImageBuffer();
-	GLBufferRef		audioFFTBuffer = ac->getAudioFFTBuffer();
+	GLBufferRef		audioBuffer = (ac==nullptr) ? nullptr : ac->getAudioImageBuffer();
+	GLBufferRef		audioFFTBuffer = (ac==nullptr) ? nullptr : ac->getAudioFFTBuffer();
 	
 	for (const ISFAttrRef & audioInput : sceneDoc->audioInputs())	{
 		if (audioInput == nullptr)

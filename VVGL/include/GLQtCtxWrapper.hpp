@@ -68,6 +68,8 @@ public:
 public:
 	void setShareContext(QOpenGLContext * inCtx);
 	QOpenGLContext * context();
+	QObject * contextAsObject();
+	QThread * contextThread();
 	QVariant nativeHandle();
 	bool isSharingWith(QOpenGLContext * inCtx);
 	QSurfaceFormat format();

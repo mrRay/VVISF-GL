@@ -29,10 +29,12 @@ DEFINES += VVGL_SDK_QT
 
 SOURCES += \
 	../common/GLBufferQWindow.cpp \
+	../common/VVGLRenderQThread.cpp \
     VVISFTestApp.cpp
 
 HEADERS += \
-	../common/GLBufferQWindow.h
+	../common/GLBufferQWindow.h \
+	../common/VVGLRenderQThread.h
 
 
 

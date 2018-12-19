@@ -178,7 +178,7 @@ GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCur
 	CGImageRef			img = [tmpImg CGImage];
 #endif
 	//	make an GLBufferRef from the image
-	GLBufferRef		returnMe = CreateTexFromCGImageRef(img);
+	GLBufferRef		returnMe = CreateTexFromCGImageRef(img, inCreateInCurrentContext, inPoolRef);
 	
 	//	release the various resources
 	if (img != NULL)	{

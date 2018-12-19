@@ -13,6 +13,7 @@
 #include "VVGL.hpp"
 #include "Spout.h"
 #include "SpoutSourcesWatcher.h"
+#include "ISFController.h"
 
 
 
@@ -195,7 +196,9 @@ void InterAppVideoSource_Win::renderABuffer()	{
 	DWORD			tmpFormat;
 	opaque->rxr.GetSenderInfo(opaque->_name, tmpWidth, tmpHeight, tmpHandle, tmpFormat);
 	//	make a new buffer
-	GLBufferRef		newBuffer = CreateBGRATex(VVGL::Size(tmpWidth,tmpHeight));
+	ISFController	*isfc = GetISFController();
+	GLBufferPoolRef		bp = isfc->renderThreadBufferPool();
+	GLBufferRef		newBuffer = CreateBGRATex(VVGL::Size(tmpWidth,tmpHeight), false, bp);
 	newBuffer->flipped = true;
 	//	receive into the new buffer
 	if ( !opaque->rxr.ReceiveTexture(opaque->_name, tmpWidth, tmpHeight, newBuffer->name, newBuffer->desc.target, false, 0) )

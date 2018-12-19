@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QThread>
 
 #include <mutex>
 
@@ -18,6 +19,8 @@ public:
 	explicit VideoOutput(QObject *parent = nullptr) : QObject(parent) {}
 	
 	virtual void publishBuffer(const VVGL::GLBufferRef & inBuffer) = 0;
+	
+	virtual void moveGLToThread(const QThread * n) = 0;
 
 protected:
 	std::recursive_mutex	_lock;

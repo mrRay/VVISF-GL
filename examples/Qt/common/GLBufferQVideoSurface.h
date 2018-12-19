@@ -45,6 +45,8 @@ public:
 	
 	GLBufferRef getLatestFrame() const;
 	
+	void moveToThread(QThread * inTargetThread, GLBufferPoolRef inThreadBufferPool=nullptr, GLTexToTexCopierRef inThreadTexCopier=nullptr);
+	
 signals:
 	Q_SIGNAL void frameProduced(GLBufferRef n);
 	

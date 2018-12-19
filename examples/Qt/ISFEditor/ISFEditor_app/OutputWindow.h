@@ -49,7 +49,7 @@ private slots:
 private:
 	Ui::OutputWindow			*ui;
 	bool			freezeOutputFlag = false;
-	InterAppOutput		interAppOutput;
+	InterAppOutput		*interAppOutput = nullptr;
 };
 
 

@@ -216,13 +216,14 @@ GLBufferRef GLTexToTexCopier::copyToNewBuffer(const GLBufferRef & n)	{
 		setOrthoSize(n->srcRect.size);
 	
 	//	make the buffers i'll be rendering into
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 #if defined(VVGL_SDK_MAC)
-	GLBufferRef		color = (_copyToIOSurface) ? CreateRGBATexIOSurface(_orthoSize) : CreateRGBATex(_orthoSize);
+	GLBufferRef		color = (_copyToIOSurface) ? CreateRGBATexIOSurface(_orthoSize, false, bp) : CreateRGBATex(_orthoSize, false, bp);
 #else
-	GLBufferRef		color = CreateRGBATex(_orthoSize);
+	GLBufferRef		color = CreateRGBATex(_orthoSize, false, bp);
 #endif
 	//	create a render target using the buffers i'm rendering into
-	_renderTarget = RenderTarget(CreateFBO(), color, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(false, bp), color, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
 	lock_guard<recursive_mutex>		lock(_renderLock);
@@ -261,10 +262,12 @@ bool GLTexToTexCopier::copyFromTo(const GLBufferRef & a, const GLBufferRef & b)	
 		return false;
 	}
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
+	
 	setOrthoSize(_copyAndResize ? _copySize : b->srcRect.size);
 	
 	//	create a render target using the buffers i'm rendering into
-	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(false, bp), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
 	lock_guard<recursive_mutex>		lock(_renderLock);
@@ -303,10 +306,11 @@ void GLTexToTexCopier::sizeVariantCopy(const GLBufferRef & a, const GLBufferRef 
 	if (a==nullptr || b==nullptr)
 		return;
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	setOrthoSize(b->srcRect.size);
 	
 	//	create a render target using the buffers i'm rendering into
-	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(false, bp), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
 	lock_guard<recursive_mutex>		lock(_renderLock);
@@ -343,10 +347,11 @@ void GLTexToTexCopier::ignoreSizeCopy(const GLBufferRef & a, const GLBufferRef &
 	if (a==nullptr || b==nullptr)
 		return;
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	setOrthoSize(b->size);
 	
 	//	create a render target using the buffers i'm rendering into
-	_renderTarget = RenderTarget(CreateFBO(), b, nullptr);
+	_renderTarget = RenderTarget(CreateFBO(false, bp), b, nullptr);
 	
 	//	lock, then prep for render (this creates the ctx).
 	lock_guard<recursive_mutex>		lock(_renderLock);
@@ -383,10 +388,11 @@ void GLTexToTexCopier::copyBlackFrameTo(const GLBufferRef & n)	{
 	if (n == nullptr)
 		return;
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	setOrthoSize(n->size);
 	
 	//	make a render target, populated with buffers to render into
-	RenderTarget		newTarget = RenderTarget(CreateFBO(), n, nullptr);
+	RenderTarget		newTarget = RenderTarget(CreateFBO(false, bp), n, nullptr);
 	
 	renderBlackFrame(newTarget);
 	
@@ -397,10 +403,11 @@ void GLTexToTexCopier::copyOpaqueBlackFrameTo(const GLBufferRef & n)	{
 	if (n == nullptr)
 		return;
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	setOrthoSize(n->size);
 	
 	//	make a render target, populated with buffers to render into
-	RenderTarget		newTarget = RenderTarget(CreateFBO(), n, nullptr);
+	RenderTarget		newTarget = RenderTarget(CreateFBO(false, bp), n, nullptr);
 	
 	renderOpaqueBlackFrame(newTarget);
 	
@@ -411,21 +418,23 @@ void GLTexToTexCopier::copyRedFrameTo(const GLBufferRef & n)	{
 	if (n == nullptr)
 		return;
 	
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	setOrthoSize(n->size);
 	
 	//	make a render target, populated with buffers to render into
-	RenderTarget		newTarget = RenderTarget(CreateFBO(), n, nullptr);
+	RenderTarget		newTarget = RenderTarget(CreateFBO(false, bp), n, nullptr);
 	
 	renderRedFrame(newTarget);
 	
 }
 void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<VertXYZST> & inVertexStruct)	{
-	GLVersion		myVers = glVersion();
+	GLVersion			myVers = glVersion();
+	GLBufferPoolRef		bp = (_privatePool!=nullptr) ? _privatePool : GetGlobalBufferPool();
 	if (myVers==GLVersion_ES3 || myVers==GLVersion_33 || myVers==GLVersion_4)	{
 #if defined(VVGL_TARGETENV_GL3PLUS) || defined(VVGL_TARGETENV_GLES3)
 		//	make the VAO if we don't already have one
 		if (_vao == nullptr)
-			_vao = CreateVAO(true);
+			_vao = CreateVAO(true, bp);
 	
 		//	if the target quad doesn't match what's in the VAO now, we have to update the VAO now
 		if (inVertexStruct != _vboContents)	{
@@ -535,7 +544,7 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 		//	if there's no VBO, or the passed vertex struct doesn't match the current VBO contents...
 		//if (_vbo==nullptr || inVertexStruct!=_vboContents)	{
 			//	create a new VBO with the passed vertex data
-		//	_vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true);
+		//	_vbo = CreateVBO((void*)&inVertexStruct, sizeof(inVertexStruct), GL_STATIC_DRAW, true, bp);
 		
 		//	_vboContents = inVertexStruct;
 		//}

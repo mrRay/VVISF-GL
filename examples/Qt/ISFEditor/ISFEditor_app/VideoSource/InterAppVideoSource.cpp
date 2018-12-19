@@ -3,8 +3,8 @@
 
 
 
-InterAppVideoSource::InterAppVideoSource(QObject *parent) :
-	src()
+InterAppVideoSource::InterAppVideoSource(QObject *parent)
+	: src()
 {
 	Q_UNUSED(parent);
 	QObject::connect(&src, &VideoSource::staticSourceUpdated, [&](VideoSource * n)	{
@@ -25,6 +25,7 @@ InterAppVideoSource::~InterAppVideoSource()	{
 //}
 QList<MediaFile> InterAppVideoSource::createListOfStaticMediaFiles()	{
 	return src.createListOfStaticMediaFiles();
+	//return QList<MediaFile>();
 }
 void InterAppVideoSource::start()	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -36,6 +37,7 @@ void InterAppVideoSource::stop()	{
 }
 bool InterAppVideoSource::playingBackItem(const MediaFile & n)	{
 	return src.playingBackItem(n);
+	//return false;
 }
 void InterAppVideoSource::loadFile(const MediaFile & n)	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -46,6 +48,7 @@ void InterAppVideoSource::loadFile(const MediaFile & n)	{
 
 bool InterAppVideoSource::running()	{
 	return src.running();
+	//return false;
 }
 void InterAppVideoSource::renderABuffer()	{
 	src.renderABuffer();

@@ -2,13 +2,46 @@
 
 #include <QDebug>
 
+#include "ISFController.h"
+
 
 
 
 WebCamVideoSource::WebCamVideoSource(QObject *parent) : VideoSource(parent)	{
 	//qDebug() << __PRETTY_FUNCTION__;
+	ISFController	*isfc = GetISFController();
+	QThread			*renderThread = isfc->renderThread();
+	GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+	GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+	
+	if (_sfc == nullptr)	{
+		//GLContextRef		sceneCtx = (scene==nullptr) ? nullptr : scene->context();
+		GLContextRef		tmpCtx = CreateNewGLContextRef();
+		//tmpCtx->moveToThread(isfRenderThread);
+	
+		//GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+		//scene->setPrivatePool(isfPool);
+		//GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+		//scene->setPrivateCopier(isfCopier);
+		
+		//_sfc = new GLBufferQVideoSurface(this);
+		//_sfc = new GLBufferQVideoSurface(tmpCtx, this);
+		_sfc = new GLBufferQVideoSurface(tmpCtx);
+		_sfc->moveToThread(renderThread, isfPool, isfCopier);
+		//connect(_sfc, SIGNAL(frameProduced()), this, SLOT());
+		
+		
+		connect(_sfc, &GLBufferQVideoSurface::frameProduced, [&](GLBufferRef n)	{
+			//qDebug() << "GLBufferQVideoSurface produced a frame...";
+			emit frameProduced(n);
+		});
+	}
 }
 WebCamVideoSource::~WebCamVideoSource()	{
+	if (_sfc != nullptr)	{
+		delete _sfc;
+		_sfc = nullptr;
+	}
 }
 
 
@@ -37,8 +70,14 @@ void WebCamVideoSource::start()	{
 	
 	_running=true;
 	
+	ISFController		*isfc = GetISFController();
+	VVGLRenderQThread	*isfRenderThread = (isfc==nullptr) ? nullptr : isfc->renderThread();
+	
 	if (_cam == nullptr && _file.type()==MediaFile::Type_Cam)	{
-		_cam = new QCamera(_file.cameraInfo(), this);
+		//_cam = new QCamera(_file.cameraInfo(), this);
+		_cam = new QCamera(_file.cameraInfo());
+		//if (isfRenderThread != nullptr)
+		//	_cam->moveToThread(isfRenderThread);
 		
 		connect(_cam, &QCamera::captureModeChanged, [&](QCamera::CaptureModes inMode)	{
 			qDebug() << "QCamera::captureModeChanged ... " << inMode;
@@ -54,15 +93,30 @@ void WebCamVideoSource::start()	{
 		});
 		
 	}
-	
+	/*
 	if (_sfc == nullptr)	{
-		_sfc = new GLBufferQVideoSurface(this);
+		//GLContextRef		sceneCtx = (scene==nullptr) ? nullptr : scene->context();
+		GLContextRef		tmpCtx = CreateNewGLContextRef();
+		//tmpCtx->moveToThread(isfRenderThread);
+	
+		GLBufferPoolRef			isfPool = isfc->renderThreadBufferPool();
+		//scene->setPrivatePool(isfPool);
+		GLTexToTexCopierRef		isfCopier = isfc->renderThreadTexCopier();
+		//scene->setPrivateCopier(isfCopier);
+		
+		//_sfc = new GLBufferQVideoSurface(this);
+		//_sfc = new GLBufferQVideoSurface(tmpCtx, this);
+		_sfc = new GLBufferQVideoSurface(tmpCtx);
+		_sfc->moveToThread(isfRenderThread, isfPool, isfCopier);
 		//connect(_sfc, SIGNAL(frameProduced()), this, SLOT());
+		
+		
 		connect(_sfc, &GLBufferQVideoSurface::frameProduced, [&](GLBufferRef n)	{
+			//qDebug() << "GLBufferQVideoSurface produced a frame...";
 			emit frameProduced(n);
 		});
 	}
-	
+	*/
 	if (_cam==nullptr || _sfc==nullptr)	{
 		qDebug() << "ERR: cam or sfc nil, " << __PRETTY_FUNCTION__;
 		return;
@@ -86,12 +140,12 @@ void WebCamVideoSource::stop()	{
 		delete _cam;
 		_cam = nullptr;
 	}
-	
+	/*
 	if (_sfc != nullptr)	{
 		delete _sfc;
 		_sfc = nullptr;
 	}
-	
+	*/
 }
 bool WebCamVideoSource::playingBackItem(const MediaFile & n)	{
 	if (n.type()==MediaFile::Type_Cam		&&

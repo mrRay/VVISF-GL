@@ -21,6 +21,8 @@ OutputWindow::OutputWindow(QWidget *parent) :
 {
 	//qDebug() << __PRETTY_FUNCTION__;
 
+	interAppOutput = new InterAppOutput();
+
 	//	disable the close button!
 	setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & (~Qt::WindowCloseButtonHint));
 	
@@ -68,7 +70,10 @@ void OutputWindow::drawBuffer(const VVGL::GLBufferRef & n)	{
 			ui->imageResLabel->setText(resText);
 		//}, ui->imageResLabel);
 	}
-	interAppOutput.publishBuffer(n);
+	
+	if (interAppOutput != nullptr)
+		interAppOutput->publishBuffer(n);
+	
 }
 void OutputWindow::updateContentsFromISFController()	{
 	//	get the ISFController, and from it retrieve the doc that is currently loaded

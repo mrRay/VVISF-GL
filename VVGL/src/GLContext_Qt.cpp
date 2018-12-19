@@ -4,6 +4,7 @@
 #if defined(VVGL_SDK_QT)
 
 #include <QDebug>
+#include <QThread>
 
 #include <iostream>
 //#include <cassert>
@@ -126,6 +127,9 @@ void GLContext::generalInit()	{
 		ctx->makeCurrentIfNotCurrent();
 		calculateVersion();
 	}
+	if (QThread::currentThread() != qApp->thread())	{
+		qDebug() << "ERR: creating GL contexts outside main thread";
+	}
 }
 
 /*	========================================	*/
@@ -154,6 +158,20 @@ QOpenGLContext * GLContext::context()	{
 	}
 	return returnMe;
 }
+QObject * GLContext::contextAsObject()	{
+	QObject		*returnMe = nullptr;
+	if (ctx != nullptr)	{
+		returnMe = ctx->contextAsObject();
+	}
+	return returnMe;
+}
+QThread * GLContext::contextThread()	{
+	QThread		*returnMe = nullptr;
+	if (ctx != nullptr)	{
+		returnMe = ctx->contextThread();
+	}
+	return returnMe;
+}
 QVariant GLContext::nativeHandle()	{
 	if (ctx != nullptr)
 		return ctx->nativeHandle();
@@ -167,7 +185,8 @@ void GLContext::makeCurrent()	{
 			GLenum			err = glewInit();
 			if (err != GLEW_OK)
 				cout << "\tERR: failed to initialize GLEW\n";
-			initializedFuncs = true;
+			else
+				initializedFuncs = true;
 		}
 	}
 }
@@ -179,7 +198,8 @@ void GLContext::makeCurrentIfNotCurrent()	{
 			GLenum			err = glewInit();
 			if (err != GLEW_OK)
 				cout << "\tERR: failed to initialize GLEW\n";
-			initializedFuncs = true;
+			else
+				initializedFuncs = true;
 		}
 	}
 }
@@ -191,7 +211,8 @@ void GLContext::makeCurrentIfNull()	{
 			GLenum			err = glewInit();
 			if (err != GLEW_OK)
 				cout << "\tERR: failed to initialize GLEW\n";
-			initializedFuncs = true;
+			else
+				initializedFuncs = true;
 		}
 	}
 }

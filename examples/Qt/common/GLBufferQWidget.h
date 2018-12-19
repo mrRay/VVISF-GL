@@ -19,7 +19,7 @@ public:
 	void startRendering();
 	void stopRendering();
 	
-	QThread * getRenderThread();
+	//QThread * getRenderThread();
 	
 	VVGL::GLContextRef glContextRef() { std::lock_guard<std::recursive_mutex> lock(ctxLock); return ctx; }
 	void drawBuffer(const VVGL::GLBufferRef & inBuffer);
@@ -31,7 +31,6 @@ public slots:
 	Q_SLOT void aboutToQuit();
 	
 signals:
-	Q_SIGNAL void aboutToRedraw(GLBufferQWidget * n);
 	
 protected:
 	//bool event(QEvent * inEvent) Q_DECL_OVERRIDE;

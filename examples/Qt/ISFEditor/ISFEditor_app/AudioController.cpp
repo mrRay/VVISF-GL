@@ -4,6 +4,8 @@
 #include <QTime>
 #include <algorithm>
 
+#include "ISFController.h"
+
 
 
 
@@ -18,7 +20,11 @@ AudioController::AudioController(QObject *parent) :
 	//m_input(fftQuality*2, 0.0),
 	m_output(fftQuality*2, 0.0)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	//	get the ISFController's render thread, which we need to move stuff to
+	ISFController	*isfc = GetISFController();
+	QThread			*rt = (isfc==nullptr) ? nullptr : isfc->renderThread();
 	
 	_audioUploader = CreateGLCPUToTexCopierRef();
 	_audioUploader->setQueueSize(1);
@@ -114,8 +120,11 @@ void AudioController::updateAudioResults()	{
 	//	make a single ISFAudioBufferList by combining two- this is what we're going to be working with (uploading, and running an FFT on)
 	ISFAudioBufferList		ablToProcess(ablsToProcess);
 	
+	//	get the ISFController's buffer pool, which is what we need to use to create resources on this thread
+	ISFController	*isfc = GetISFController();
+	GLBufferPoolRef	bp = (isfc==nullptr) ? nullptr : isfc->renderThreadBufferPool();
 	//	make a CPU-based buffer, copy the single ISFAudioBufferList's values to it, start uploading it to a texture
-	GLBufferRef		tmpAudioBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality*2,1));
+	GLBufferRef		tmpAudioBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality*2,1), bp);
 	float			*rPtr = ablToProcess.floatPtr();
 	float			*wPtr = reinterpret_cast<float*>( tmpAudioBuffer->cpuBackingPtr );
 	GLBufferRef		newAudioBuffer = nullptr;
@@ -200,7 +209,7 @@ void AudioController::updateAudioResults()	{
 	}
 	
 	//	make a CPU-based buffer, copy the FFT result's values to it, start uploading it, update the local fft audio buffer
-	GLBufferRef		tmpFFTBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality,1));
+	GLBufferRef		tmpFFTBuffer = CreateBGRAFloatCPUBuffer(VVGL::Size(fftQuality,1), bp);
 	rPtr = m_output.data();
 	wPtr = reinterpret_cast<float*>( tmpFFTBuffer->cpuBackingPtr );
 	GLBufferRef		newFFTBuffer = nullptr;
@@ -236,6 +245,9 @@ GLBufferRef AudioController::getAudioImageBuffer(const int & inWidth)	{
 	GLBufferRef		cpuBuffer = nullptr;
 	{
 		std::lock_guard<recursive_mutex>		tmpLock(_lock);
+		//	get the ISFController's buffer pool, which is what we need to use to create resources on this thread
+		ISFController		*isfc = GetISFController();
+		GLBufferPoolRef		bp = (isfc==nullptr) ? nullptr : isfc->renderThreadBufferPool();
 		//	if the width is 0 or less, just return _audioBuffer, which is being automatically calculated anyway
 		if (inWidth < 1)
 			return _audioBuffer;
@@ -247,7 +259,7 @@ GLBufferRef AudioController::getAudioImageBuffer(const int & inWidth)	{
 	
 		int				rawResultsCount = fftQuality * 2;
 		VVGL::Size		newBufferSize(std::max(1, std::min(inWidth, rawResultsCount)), _lastABL.numberOfChannels);
-		cpuBuffer = CreateBGRAFloatCPUBuffer(newBufferSize);
+		cpuBuffer = CreateBGRAFloatCPUBuffer(newBufferSize, bp);
 		if (cpuBuffer == nullptr)
 			return _audioBuffer;
 		//	figure out how many vals from the buffer we need to combine to create every result val
@@ -293,6 +305,9 @@ GLBufferRef AudioController::getAudioFFTBuffer(const int & inWidth)	{
 	GLBufferRef		cpuBuffer = nullptr;
 	{
 		std::lock_guard<recursive_mutex>		tmpLock(_lock);
+		//	get the ISFController's buffer pool, which is what we need to use to create resources on this thread
+		ISFController	*isfc = GetISFController();
+		GLBufferPoolRef	bp = (isfc==nullptr) ? nullptr : isfc->renderThreadBufferPool();
 		//	if the width is 0 or less, just return _audioBuffer, which is being automatically calculated anyway
 		if (inWidth < 1)
 			return _fftBuffer;
@@ -304,7 +319,7 @@ GLBufferRef AudioController::getAudioFFTBuffer(const int & inWidth)	{
 		
 		int				rawResultsCount = fftQuality;
 		VVGL::Size		newBufferSize(std::max(1, std::min(inWidth, rawResultsCount)), _lastABL.numberOfChannels);
-		cpuBuffer = CreateBGRAFloatCPUBuffer(newBufferSize);
+		cpuBuffer = CreateBGRAFloatCPUBuffer(newBufferSize, bp);
 		if (cpuBuffer == nullptr)
 			return _fftBuffer;
 		//	figure out how many vals from the buffer we need to combine to create every result val
@@ -347,6 +362,30 @@ GLBufferRef AudioController::getAudioFFTBuffer(const int & inWidth)	{
 	}
 	//	upload the cpu buffer to a gl texture immediately (don't stream), return the GL texture
 	return _fftUploader->uploadCPUToTex(cpuBuffer);
+}
+
+
+
+
+void AudioController::moveToThread(QThread * inTargetThread, GLBufferPoolRef inThreadBufferPool, GLTexToTexCopierRef inThreadTexCopier)	{
+	QThread		*targetThread = (inTargetThread==nullptr) ? qApp->thread() : inTargetThread;
+	if (targetThread == nullptr)
+		return;
+	
+	GLContextRef		tmpCtx;
+	
+	tmpCtx = _audioUploader->context();
+	tmpCtx->moveToThread(inTargetThread);
+	
+	tmpCtx = _fftUploader->context();
+	tmpCtx->moveToThread(inTargetThread);
+	
+	if (inThreadBufferPool != nullptr)	{
+		_audioUploader->setPrivatePool(inThreadBufferPool);
+		_fftUploader->setPrivatePool(inThreadBufferPool);
+	}
+	if (inThreadTexCopier != nullptr)	{
+	}
 }
 
 

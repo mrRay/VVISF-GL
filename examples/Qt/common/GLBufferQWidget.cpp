@@ -151,12 +151,12 @@ void GLBufferQWidget::stopRenderingImmediately()	{
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-
+/*
 QThread * GLBufferQWidget::getRenderThread()	{
 	lock_guard<recursive_mutex>		lock(ctxLock);
 	return ctxThread;
 }
-
+*/
 
 
 
@@ -229,7 +229,6 @@ void GLBufferQWidget::paintGL()
 	//cout << __PRETTY_FUNCTION__ << endl;
 	//qDebug() << "\t" << QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
 	
-	emit aboutToRedraw(this);
 	makeCurrent();
 	_renderNow();
 }

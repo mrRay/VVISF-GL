@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include <QObject>
+#include <QSharedPointer>
 
 #include "WebCamVideoSource.h"
 #include "MovieVideoSource.h"
@@ -51,6 +52,7 @@ private:
 	//	the file that's currently loaded (will be an "empty file"/MediaFile::Type_None if no file is playing back)
 	std::recursive_mutex	srcLock;
 	MediaFile				srcFile;
+	QSharedPointer<MediaFile>		fileToLoad = nullptr;
 	
 	//	these are the actual video sources
 	WebCamVideoSource		camSrc;

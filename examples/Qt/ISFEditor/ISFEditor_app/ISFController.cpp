@@ -37,15 +37,35 @@ ISFController::ISFController()	{
 	globalISFController = this;
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 	
-	//	the output window has a buffer view which emits a signal every redraw- use that to drive rendering
-	OutputWindow		*ow = GetOutputWindow();
-	ISFGLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
-	if (bufferView == nullptr)
-		qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
-	else
-		connect(bufferView, &ISFGLBufferQWidget::aboutToRedraw, this, &ISFController::widgetRedrawSlot);
+	GLContextRef			renderThreadCtx = GetGlobalBufferPool()->context()->newContextSharingMe();
+	_renderThread = new VVGLRenderQThread(renderThreadCtx);
+	_renderThread->setRenderCallback([&](VVGLRenderQThread * inRenderThread){
+		threadedRenderCallback();
+	});
+	
+	//	create the scene- we're creating it with a ctx that will run on this (the main) thread
+	GLContextRef			sceneCtx = renderThreadCtx->newContextSharingMe();
+	scene = CreateISFSceneRefUsing(sceneCtx);
+	sceneCtx->moveToThread(_renderThread);
+	
+	//	set the scene up to use the render thread's pool and copier
+	GLBufferPoolRef			tmpPool = _renderThread->bufferPool();
+	GLTexToTexCopierRef		tmpCopier = _renderThread->texCopier();
+	scene->setPrivatePool(tmpPool);
+	scene->setPrivateCopier(tmpCopier);
+	
+	//	start the render thread- this moves the render thread context to the thread...
+	if (_renderThread != nullptr)
+		_renderThread->start();
 }
 ISFController::~ISFController()	{
+	//	kill the render thread, wait for it to finish
+	if (_renderThread != nullptr)	{
+		_renderThread->requestInterruption();
+		while (_renderThread->isRunning())	{
+		}
+	}
+	
 	//	we have to explicitly free the spacer item
 	if (spacerItem != nullptr)	{
 		LoadingWindow			*lw = GetLoadingWindow();
@@ -64,8 +84,6 @@ ISFController::~ISFController()	{
 
 void ISFController::aboutToQuit()	{
 	std::lock_guard<std::recursive_mutex>		tmpLock(sceneLock);
-	scene = nullptr;
-	currentDoc = nullptr;
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
 	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
@@ -75,18 +93,51 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		return;
 	}
 	
-	std::lock_guard<std::recursive_mutex>		tmpLock(sceneLock);
+	//	lock manually- we have to handoff vars between threads, so we need to do a little manual locking at the start here...
+	sceneLock.lock();
 	
-	if (scene == nullptr)
-		scene = CreateISFSceneRef();
+	if (scene != nullptr)	{
+		
+		//GLContextRef		renderThreadCtx = (_renderThread==nullptr) ? nullptr : _renderThread->renderContext();
+		GLContextRef		sceneCtx = (scene==nullptr) ? nullptr : scene->context();
+		//if (renderThreadCtx != nullptr)	{
+			
+			//	check this in the rendering loop- if it's true, move the ctx to the main thread, and then prevent rendering until they're both false again
+			needToLoadFiles = true;
+			loadingFiles = false;
+			
+			//	unlock so the render thread can grab a scene lock
+			sceneLock.unlock();
+			
+			//while (renderThreadCtx->contextAsObject()->thread() != qApp->thread())
+			while (sceneCtx->contextAsObject()->thread() != qApp->thread())
+			{
+				//cout << "\twaiting, render thread ctx not current thread...\n";
+				//	wake the thread up- it checks 'needToLoadFiles'
+				if (_renderThread != nullptr)	{
+					_renderThread->performRender();
+				}
+			}
+			//cout << "\tdone waiting, render thread ctx now on current thread!\n";
+			
+			//	lock again manually before we start doing anything...
+			sceneLock.lock();
+
+			//	if we're using the scene on the main thread, it can't be using the render thread's buffer pool/tex copier...
+			scene->setPrivateCopier(nullptr);
+			scene->setPrivatePool(nullptr);
+		//}
+	}
+	
 	if (scene == nullptr)	{
 		qDebug() << "\terr: couldn't create scene, " << __PRETTY_FUNCTION__;
+		//	unlock the scene manually!
+		sceneLock.unlock();
 		return;
 	}
 	
 	sceneVertErrors.clear();
 	sceneFragErrors.clear();
-	
 	
 	
 	//	start watching the file- reload the file if it changes...
@@ -102,10 +153,8 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	try	{
 		sceneIsFilter = false;
 		
-		//scene->useFile(inPathToLoad.toStdString());
-		
 		//	make a doc for the file
-		currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), nullptr, true);
+		currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), &(*scene), true);
 		scene->useDoc(currentDoc);
 	}
 	catch (ISFErr & exc)	{
@@ -117,12 +166,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 	
 	
 	
-	/*
-	if (QThread::currentThread() == qApp->thread())
-		qDebug() << "\tcurrent thread in load file is main thread";
-	else
-		qDebug() << "\tcurrent thread in load file is NOT main thread!";
-	*/
+	
 	//	tell the scene to render a frame, so the ISFController can pull its compiled shaders and populate its UI items
 	try	{
 		scene->createAndRenderABuffer();
@@ -134,7 +178,6 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		//QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));
 		//QMessageBox::warning(GetLoadingWindow(), "", errString, QMessageBox::Ok);
 		//qDebug() << "\tERR: caught exception rendering first frame, " << __PRETTY_FUNCTION__;
-		
 		
 		
 		//	this block finds the "line number" in the pased string, addes "line delta" to it, and optionally adds both to a vector of syntax errors
@@ -178,8 +221,6 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 			//cout << "\terrString is \"" << errString << "\"" << endl;
 			return errString;
 		};
-		
-		
 		
 		
 		string					errString("");
@@ -233,8 +274,6 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		}
 		
 		
-		
-		
 		//	if there's a fragment error log, parse it line-by-line, adjusting the line numbers to cmpensate for changes to the shader
 		tmpLogIt = details->find("fragErrLog");
 		if (tmpLogIt != details->end())	{
@@ -266,13 +305,39 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 				string		modString = GLSLErrLogLineNumberChanger(&tmpLine, lineDelta, &sceneFragErrors);
 				//cout << "\tmod frag err log is " << modString << endl;
 			}
-			
 		}
-		
-		
-		
 	}
 	catch (...)	{
+	}
+	
+	//	move the scene back to the render thread
+
+	needToLoadFiles = false;
+	loadingFiles = false;
+	
+	//GLContextRef		renderThreadCtx = (_renderThread==nullptr) ? nullptr : _renderThread->renderContext();
+	GLContextRef		sceneCtx = (scene==nullptr) ? nullptr : scene->context();
+	//if (renderThreadCtx != nullptr)
+	if (sceneCtx != nullptr)
+	{
+		//renderThreadCtx->moveToThread(_renderThread);
+		sceneCtx->moveToThread(_renderThread);
+		GLBufferPoolRef			tmpPool = _renderThread->bufferPool();
+		GLTexToTexCopierRef		tmpCopier = _renderThread->texCopier();
+		scene->setPrivateCopier(tmpCopier);
+		scene->setPrivatePool(tmpPool);
+	}
+
+	//	unlock the scene manually!
+	sceneLock.unlock();
+	
+	//while (renderThreadCtx->contextAsObject()->thread() != _renderThread)
+	while (sceneCtx->contextAsObject()->thread() != _renderThread)
+	{
+		//	do nothing, wait for thread to context to finish getting moved to thread
+		if (_renderThread != nullptr)	{
+			_renderThread->performRender();
+		}
 	}
 	
 	
@@ -289,9 +354,50 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		GetOutputWindow()->updateContentsFromISFController();
 }
 
-void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
+void ISFController::widgetRedrawSlot()	{
 	//qDebug() << __PRETTY_FUNCTION__;
-	Q_UNUSED(n);
+	
+	_renderThread->performRender();
+	
+	GetGlobalBufferPool()->housekeeping();
+}
+void ISFController::threadedRenderCallback()	{
+	
+	lock_guard<recursive_mutex>		tmpLock(sceneLock);
+	
+	//	if i need to load files, push the context to the main thread and return immediately!
+	GLContextRef		renderThreadCtx = nullptr;
+	GLContextRef		sceneCtx = nullptr;
+	GLBufferPoolRef		renderThreadBufferPool = nullptr;
+	if (_renderThread != nullptr)	{
+		renderThreadCtx = _renderThread->renderContext();
+		renderThreadBufferPool = _renderThread->bufferPool();
+	}
+	if (scene != nullptr)
+		sceneCtx = scene->context();
+	
+	if (needToLoadFiles)	{
+		qDebug() << "need to load, moving ctx to main thread...";
+		//renderThreadCtx->moveToThread(qApp->thread());
+		sceneCtx->moveToThread(qApp->thread());
+		needToLoadFiles = false;
+		loadingFiles = true;
+		return;
+	}
+	if (loadingFiles)	{
+		qDebug() << "loading files- killing time, waiting for main thread...";
+		return;
+	}
+	
+	//	if the render thread context isn't this thread, bail immediately- we're probably loading files on the main thread
+	//if (renderThreadCtx==nullptr || renderThreadCtx->contextThread()!=QThread::currentThread())
+	if (sceneCtx==nullptr || sceneCtx->contextThread()!=QThread::currentThread())
+	{
+		cout << "no render ctx or ctx isnt attached to current thread, bailing, " << __PRETTY_FUNCTION__ << endl;
+		return;
+	}
+
+	renderThreadCtx->makeCurrent();
 	
 	OutputWindow		*ow = GetOutputWindow();
 	if (ow == nullptr)
@@ -303,13 +409,13 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 		ac->updateAudioResults();
 	}
 	
+	renderThreadCtx->makeCurrent();
+
 	//	get a "source buffer" from the dynamic video source
 	DynamicVideoSource		*dvs = GetDynamicVideoSource();
 	GLBufferRef				newSrcBuffer = nullptr;
 	if (dvs != nullptr)
 		newSrcBuffer = dvs->getBuffer();
-
-	lock_guard<recursive_mutex>		tmpLock(sceneLock);
 	
 	//	if there's no scene, display the source buffer and bail
 	if (scene == nullptr)	{
@@ -328,7 +434,7 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 		ow->drawBuffer(newSrcBuffer);
 		return;
 	}
-	
+
 	//	if the user has chosen to freeze the output via the toggle in the output window, we can bail now
 	if (ow->getFreezeOutputFlag())	{
 		return;
@@ -364,7 +470,9 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 			tmpSize = newSrcBuffer->srcRect.size;
 		//if (newSrcBuffer != nullptr)
 		//	cout << "newSrcBuffer size is " << newSrcBuffer->srcRect.size << ", rendering at size " << tmpSize << endl;
-		newBuffer = scene->createAndRenderABuffer(tmpSize, &tmpPassDict, GetGlobalBufferPool());
+		//newBuffer = scene->createAndRenderABuffer(tmpSize, &tmpPassDict, GetGlobalBufferPool());
+		newBuffer = scene->createAndRenderABuffer(tmpSize, &tmpPassDict, renderThreadBufferPool);
+		//newBuffer = scene->createAndRenderABuffer(tmpSize, scene->getTimestamp().getTimeInSeconds(), true, &tmpPassDict, GetGlobalBufferPool());
 	}
 	catch (ISFErr & exc)	{
 		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;
@@ -388,7 +496,8 @@ void ISFController::widgetRedrawSlot(ISFGLBufferQWidget * n)	{
 			ow->drawBuffer(found->second);
 	}
 	
-	GetGlobalBufferPool()->housekeeping();
+	
+	renderThreadBufferPool->housekeeping();
 }
 
 void ISFController::populateLoadingWindowUI()	{

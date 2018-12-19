@@ -116,6 +116,10 @@ class VVGL_EXPORT GLScene	{
 		mutex				_errLock;
 		mutex				_errDictLock;
 		map<string,string>		_errDict;
+		
+		//	this class- and subclasses of it- often need to create GPU resources.  by default the global buffer pool (GetGlobalBufferPool()) will be used- unless this var is non-null...
+		GLBufferPoolRef		_privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
+		GLTexToTexCopierRef	_privateCopier = nullptr;	//	by default this is null and the scene will try to use the global buffer copier to create interim resources.  if non-null, the scene will use this copier to create interim resources.
 	
 	
 	//	functions
@@ -136,7 +140,7 @@ class VVGL_EXPORT GLScene	{
 		///@{
 		
 		//!	Creates an 8 bit per channel GL texture, uses it as a color attachment to the GL context and then renders into it.  Calls setOrthoSize() with the size of the image in the passed buffer.
-		virtual GLBufferRef createAndRenderABuffer(const Size & inSize=Size(640.,480.), const GLBufferPoolRef & inPool=GetGlobalBufferPool());
+		virtual GLBufferRef createAndRenderABuffer(const Size & inSize=Size(640.,480.), const GLBufferPoolRef & inPool=nullptr);
 		//!	Uses the passed buffer as a color attachment to the GL context and then renders into it.  Calls setOrthoSize() with the size of the image in the passed buffer.
 		virtual void renderToBuffer(const GLBufferRef & inBuffer);
 		//!	Renders the GL scene, uses whatever attachments are present in the passed RenderTarget.  Doesn't call setOrthoSize() before rendering!
@@ -237,6 +241,15 @@ class VVGL_EXPORT GLScene	{
 		
 		//!	Returns the version of OpenGL currently being used by this scene's GL context.
 		inline GLVersion glVersion() const { if (_context==nullptr) return GLVersion_Unknown; return _context->version; }
+		
+		//!	Sets the receiver's private buffer pool (default is null).  If non-null, this buffer pool will be used to generate any GL resources required by this scene.  Handy if you have a variety of GL contexts that aren't shared and you have to switch between them rapidly on a per-frame basis.
+		void setPrivatePool(const GLBufferPoolRef & n) { _privatePool=n; }
+		//!	Gets the receiver's private buffer pool- null by default, only non-null if something called setPrivatePool().
+		GLBufferPoolRef privatePool() const { return _privatePool; }
+		//!	Sets the receiver's private buffer copier (which should default to null).  If non-null, this copier will be used to copy any resources that need to be copied- like setPrivatePool(), handy if you have a variety of GL contexts that aren't shared and you have to switch between them rapidly on a per-frame basis.
+		void setPrivateCopier(const GLTexToTexCopierRef & n) { _privateCopier=n; }
+		//!	Gets the receiver's private buffer copier- null by default, only non-null if something called setPrivateCopier().
+		GLTexToTexCopierRef privateCopier() const { return _privateCopier; }
 		
 	protected:
 		//	assumed that _renderLock was obtained before calling.  assumed that context is non-null and has been set as current GL context before calling.

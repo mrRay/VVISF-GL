@@ -43,6 +43,8 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 		queue<GLBufferRef>		_texQueue;	//	queue of textures
 		queue<GLBufferRef>		_fboQueue;	//	queue of FBOs.  the fastest texture download pipeline involves attaching the texture to an FBO so we can use glReadPixels() instead of glGetTexImage().
 		
+		GLBufferPoolRef			_privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
+		
 	private:
 		//	before calling either of these functions, _queueLock should be locked and a GL context needs to be made current on this thread.
 		void _beginProcessing(const GLBufferRef & inCPUBuffer, const GLBufferRef & inPBOBuffer, const GLBufferRef & inTexBuffer, const GLBufferRef & inFBOBuffer);
@@ -76,6 +78,11 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 		This function is more efficient than downloadTexToCPU()- CPU use will probably be lower and execution will return to the calling thread more rapidly, though the queue means that there's more latency (it won't start returning buffers until you submit one or two- depending on the size of the queue).
 		*/
 		GLBufferRef streamTexToCPU(const GLBufferRef & inTexBuffer, const GLBufferRef & inCPUBuffer=nullptr, const bool & createInCurrentContext=false);
+		
+		//!	Sets the receiver's private buffer pool (which should default to null).  If non-null, this buffer pool will be used to generate any GL resources required by this scene.  Handy if you have a variety of GL contexts that aren't shared and you have to switch between them rapidly on a per-frame basis.
+		void setPrivatePool(const GLBufferPoolRef & n) { _privatePool=n; }
+		//!	Gets the receiver's private buffer pool- null by default, only non-null if something called setPrivatePool().
+		GLBufferPoolRef privatePool() { return _privatePool; }
 };
 
 

@@ -431,6 +431,8 @@ void LoadingWindow::videoSourceChanged(int arg1)	{
 			dvs->loadFile(selectedMediaFile);
 		}
 	}
+	else
+		qDebug() << "ERR: DVS null in " << __PRETTY_FUNCTION__;
 }
 
 

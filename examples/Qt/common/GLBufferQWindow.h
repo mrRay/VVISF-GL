@@ -21,7 +21,7 @@ class GLBufferQWindow : public QWindow	{
 public:
 	explicit GLBufferQWindow(GLContextRef & inSharedContext, QWindow * inParent=nullptr);
 	explicit GLBufferQWindow(QWindow * inParent = nullptr);
-	~GLBufferQWindow();
+	~GLBufferQWindow() Q_DECL_OVERRIDE;
 	
 	void startRendering();
 	void stopRendering();
@@ -29,9 +29,9 @@ public:
 	
 	void setContext(const GLContextRef & inCtx);
 	
-	QThread * getRenderThread();
+	//QThread * getRenderThread();
 	
-	inline void drawBuffer(GLBufferRef & inBuffer) { lock_guard<recursive_mutex> lock(ctxLock); buffer = inBuffer; }
+	inline void drawBuffer(const GLBufferRef & inBuffer) { lock_guard<recursive_mutex> lock(ctxLock); buffer = inBuffer; requestUpdate(); }
 	inline GLBufferRef getBuffer() { lock_guard<recursive_mutex> lock(ctxLock); return _getBuffer(); }
 	
 signals:

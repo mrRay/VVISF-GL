@@ -51,14 +51,17 @@ void GLBufferQWindow::_renderNow()	{
 			}
 			if (isExposed())	{
 				if (scene != nullptr)	{
+
 					//double		ltbbm = devicePixelRatio();
 					//Size		tmpSize(width()*ltbbm,height()*ltbbm);
 					//scene->setOrthoSize(tmpSize);
 					scene->render();
 
 					//	swap the context
-					if (ctx != nullptr)
+					if (ctx != nullptr)	{
+						ctx->makeCurrent();
 						ctx->swap();
+					}
 
 				}
 
@@ -146,12 +149,12 @@ void GLBufferQWindow::stopRenderingImmediately()	{
 	QMetaObject::invokeMethod(this, "stopRenderingSlot", Qt::BlockingQueuedConnection);
 }
 
-
+/*
 QThread * GLBufferQWindow::getRenderThread()	{
 	lock_guard<recursive_mutex>		lock(ctxLock);
 	return ctxThread;
 }
-
+*/
 
 void GLBufferQWindow::setContext(const GLContextRef & inCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;

@@ -100,7 +100,7 @@ void GLBufferQVideoSurface::generalInit()	{
 
 
 bool GLBufferQVideoSurface::isFormatSupported(const QVideoSurfaceFormat & inFmt) const	{
-	qDebug() << __PRETTY_FUNCTION__ << "... " << inFmt;
+	//qDebug() << __PRETTY_FUNCTION__ << "... " << inFmt;
 
 	//	check the handle type
 	switch (inFmt.handleType())	{
@@ -176,13 +176,14 @@ QVideoSurfaceFormat GLBufferQVideoSurface::nearestFormat(const QVideoSurfaceForm
 }
 */
 bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
-	//qDebug() << __PRETTY_FUNCTION__ << "... " << inFrame << endl;
+	//qDebug() << __PRETTY_FUNCTION__ << "... " << inFrame;
 	
 	if (uploader == nullptr)	{
 		cout << "ERR: no uploader, " << __PRETTY_FUNCTION__ << endl;
 		return false;
 	}
-	auto			bp = GetGlobalBufferPool();
+	//auto			bp = GetGlobalBufferPool();
+	GLBufferPoolRef		bp = yuvSwizzleScene->privatePool();
 	if (bp == nullptr)	{
 		cout << "ERR: no global buffer pool, " << __PRETTY_FUNCTION__ << endl;
 		return false;
@@ -202,6 +203,7 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 	GLBufferRef		texToEmit = nullptr;
 	switch(cpuBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_YCbCr_422:
+		//qDebug() << "\tYUV frame...";
 		uploader->setSwapBytes(false);
 		//	if we're uploading the YCbCr tex as RGBA and then swizzling it on the GPU, adjust the cpu buffer accordingly
 		if (!native2vuySupport)	{
@@ -214,8 +216,9 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 			fauxCPUBuffer->desc.pixelType = GLBuffer::PT_UByte;
 			freshTexture = uploader->streamCPUToTex(fauxCPUBuffer,false);
 		}
-		else
+		else	{
 			freshTexture = uploader->streamCPUToTex(cpuBuffer,false);
+		}
 		if (freshTexture != nullptr)	{
 			if (!native2vuySupport)	{
 				yuvSwizzleScene->setFilterInputBuffer(freshTexture);
@@ -232,6 +235,7 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 		break;
 	case GLBuffer::PF_RGBA:	//	not really RGBA- Qt vends xRGB, which we upload as BGRA and then swizzle to RGBA in a shader
 		{
+			//qDebug() << "\tRGB frame...";
 			uploader->setSwapBytes(false);
 			//GLBufferRef		fauxCPUBuffer = GLBufferCopy(cpuBuffer);
 			//fauxCPUBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
@@ -254,12 +258,37 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 			}
 		}
 		break;
-	default:
+	case GLBuffer::PF_BGRA:
+		{
+			//qDebug() << "\tBGR frame...";
 #if defined(Q_OS_WIN)
-		uploader->setSwapBytes(false);
+			uploader->setSwapBytes(false);
 #elif defined(Q_OS_MAC)
-		uploader->setSwapBytes(true);
+			uploader->setSwapBytes(true);
 #endif
+			//GLBufferRef		fauxCPUBuffer = GLBufferCopy(cpuBuffer);
+			//fauxCPUBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
+			//fauxCPUBuffer->desc.pixelFormat = GLBuffer::PF_BGRA;
+			//fauxCPUBuffer->desc.pixelType = GLBuffer::PT_UByte;
+			cpuBuffer->desc.internalFormat = GLBuffer::IF_RGBA8;
+			cpuBuffer->desc.pixelFormat = GLBuffer::PF_BGRA;
+			cpuBuffer->desc.pixelType = GLBuffer::PT_UByte;
+			freshTexture = uploader->streamCPUToTex(cpuBuffer,false);
+			if (freshTexture != nullptr)	{
+				//cout << "\tfreshTexture is " << *freshTexture << endl;
+				//cout << "\tcpuBuffer flipped is " << cpuBuffer->flipped << ", freshTexture flipped is " << freshTexture->flipped << endl;
+				//bgrSwizzleScene->setFilterInputBuffer(freshTexture);
+				//GLBufferRef		swizzledTexture = bgrSwizzleScene->createAndRenderABuffer(freshTexture->size);
+				//cout << "\tswizzledTexture is " << *swizzledTexture << endl;
+				lastUploadedFrame = freshTexture;
+			}
+			else	{
+				//cout << "\tfreshTexture was null\n";
+			}
+		}
+		break;
+	default:
+		qDebug() << "ERR: unhandled case in " << __PRETTY_FUNCTION__;
 		break;
 	}
 
@@ -274,10 +303,15 @@ bool GLBufferQVideoSurface::present(const QVideoFrame & inFrame)	{
 QList<QVideoFrame::PixelFormat> GLBufferQVideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType inType) const	{
 	Q_UNUSED(inType);
 	QList<QVideoFrame::PixelFormat>		returnMe;
+#if !defined(Q_OS_MAC)
 	returnMe.append(QVideoFrame::Format_UYVY);
+#endif
 	returnMe.append(QVideoFrame::Format_BGRA32);
 	returnMe.append(QVideoFrame::Format_BGR32);
 	returnMe.append(QVideoFrame::Format_RGB32);
+#if defined(Q_OS_MAC)
+	returnMe.append(QVideoFrame::Format_UYVY);	//	listed last on macs b/c there's some issue that causes it to vend blue frames if usesd on a non-GUI thread on macs
+#endif
 	
 	//returnMe.append(QVideoFrame::Format_ARGB32);
 	//returnMe.append(QVideoFrame::Format_RGB24);
@@ -290,4 +324,20 @@ QList<QVideoFrame::PixelFormat> GLBufferQVideoSurface::supportedPixelFormats(QAb
 
 GLBufferRef GLBufferQVideoSurface::getLatestFrame() const	{
 	return lastUploadedFrame;
+}
+void GLBufferQVideoSurface::moveToThread(QThread * inTargetThread, GLBufferPoolRef inThreadBufferPool, GLTexToTexCopierRef inThreadTexCopier)	{
+	QThread		*targetThread = (inTargetThread==nullptr) ? qApp->thread() : inTargetThread;
+	if (targetThread == nullptr)
+		return;
+	if (ctxToUse != nullptr)
+		ctxToUse->moveToThread(targetThread);
+	if (inThreadBufferPool != nullptr)	{
+		uploader->setPrivatePool(inThreadBufferPool);
+		yuvSwizzleScene->setPrivatePool(inThreadBufferPool);
+		bgrSwizzleScene->setPrivatePool(inThreadBufferPool);
+	}
+	if (inThreadTexCopier != nullptr)	{
+		yuvSwizzleScene->setPrivateCopier(inThreadTexCopier);
+		bgrSwizzleScene->setPrivateCopier(inThreadTexCopier);
+	}
 }

@@ -22,6 +22,8 @@ public:
 	explicit InterAppOutput(QObject *parent = nullptr);
 	
 	virtual void publishBuffer(const VVGL::GLBufferRef & inBuffer) override;
+	
+	virtual void moveGLToThread(const QThread * n) override;
 
 private:
 #if defined(Q_OS_MAC)

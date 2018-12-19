@@ -52,6 +52,8 @@ public:
 	//	accessors
 	void setShareContext(QOpenGLContext * inCtx);
 	QOpenGLContext * context();
+	QObject * contextAsObject();
+	QThread * contextThread();
 	QVariant nativeHandle();
 	QSurfaceFormat format();
 	bool isSharingWith(QOpenGLContext * inCtx);
@@ -209,6 +211,20 @@ QOpenGLContext * GLQtCtxHidden::context()	{
 		return &(*strongCtx);
 	return nullptr;
 }
+QObject * GLQtCtxHidden::contextAsObject()	{
+	if (weakCtx != nullptr)
+		return qobject_cast<QObject*>(weakCtx.data());
+	if (strongCtx != nullptr)
+		return qobject_cast<QObject*>(strongCtx.data());
+	return nullptr;
+}
+QThread * GLQtCtxHidden::contextThread()	{
+	if (weakCtx != nullptr)
+		return weakCtx->thread();
+	if (strongCtx != nullptr)
+		return strongCtx->thread();
+	return nullptr;
+}
 QVariant GLQtCtxHidden::nativeHandle()	{
 	if (weakCtx != nullptr)
 		return weakCtx->nativeHandle();
@@ -267,7 +283,10 @@ void GLQtCtxHidden::moveToThread(QThread * inThread)	{
 	if (ctxToUse != nullptr)	{
 		ctxToUse->moveToThread(inThread);
 	}
-	qDebug()<<"ctx "<<this<<" is now on thread "<<inThread;
+	//if (ctxToUse->thread() == inThread)
+	//	qDebug()<<"ctx "<<this<<" is now on thread "<<inThread;
+	//else
+	//	qDebug()<<"ERR: could not move ctx "<<this<<" to thread "<<inThread;
 }
 void GLQtCtxHidden::makeCurrent()	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -485,10 +504,20 @@ void GLQtCtxWrapper::setShareContext(QOpenGLContext * inCtx)	{
 		return;
 	_hidden->setShareContext(inCtx);
 }
+QObject * GLQtCtxWrapper::contextAsObject()	{
+	if (_hidden==nullptr)
+		return nullptr;
+	return _hidden->contextAsObject();
+}
 QOpenGLContext * GLQtCtxWrapper::context()	{
 	if (_hidden==nullptr)
 		return nullptr;
 	return _hidden->context();
+}
+QThread * GLQtCtxWrapper::contextThread()	{
+	if (_hidden==nullptr)
+		return nullptr;
+	return _hidden->contextThread();
 }
 QVariant GLQtCtxWrapper::nativeHandle()	{
 	if (_hidden == nullptr)

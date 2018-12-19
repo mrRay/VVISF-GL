@@ -53,6 +53,10 @@ public:
 	}
 	~InterAppOutput_MacOpaque()	{
 	}
+	void moveGLToThread(const QThread * n)	{
+		if (n!=nullptr && ctx!=nullptr)
+			ctx->moveToThread(const_cast<QThread*>(n));
+	}
 	
 	GLContextRef			ctx = nullptr;
 	__block SyphonServer			*server = nil;
@@ -100,4 +104,9 @@ void InterAppOutput_Mac::publishBuffer(const GLBufferRef & inBuffer)	{
 			flipped:inBuffer->flipped];
 	}
 }
+
+void InterAppOutput_Mac::moveGLToThread(const QThread * n)	{
+	opaque->moveGLToThread(n);
+}
+
 

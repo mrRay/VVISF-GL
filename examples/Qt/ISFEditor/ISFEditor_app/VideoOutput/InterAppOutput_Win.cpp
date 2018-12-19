@@ -38,6 +38,10 @@ public:
 	~InterAppOutput_WinOpaque()	{
 		txr.ReleaseSender();
 	}
+	void moveGLToThread(const QThread * n)	{
+		if (n!=nullptr && ctx!=nullptr)
+			ctx->moveToThread(const_cast<QThread*>(n));
+	}
 
 	GLContextRef			ctx = nullptr;
 	SpoutSender				txr;
@@ -80,3 +84,8 @@ void InterAppOutput_Win::publishBuffer(const GLBufferRef & inBuffer)	{
 	//cout << "\tspout should be publishing buffer " << *inBuffer << endl;
 	opaque->txr.SendTexture(inBuffer->name, inBuffer->desc.target, inBuffer->srcRect.size.width, inBuffer->srcRect.size.height, !inBuffer->flipped);
 }
+
+void InterAppOutput_Win::moveGLToThread(const QThread * n)	{
+	opaque->moveGLToThread(n);
+}
+
