@@ -61,10 +61,6 @@ SOURCES += \
 	../../../VVGL/src/GLBufferPool.cpp \
 	../../../VVGL/src/GLCachedProperty.cpp \
 	../../../VVGL/src/GLContext.cpp \
-	../../../VVGL/src/GLContext_GLFW.cpp \
-	../../../VVGL/src/GLContext_Mac.cpp \
-	../../../VVGL/src/GLContext_Qt.cpp \
-	../../../VVGL/src/GLContext_RPI.cpp \
 	../../../VVGL/src/GLCPUToTexCopier.cpp \
 	../../../VVGL/src/GLQtCtxWrapper.cpp \
 	../../../VVGL/src/GLScene.cpp \

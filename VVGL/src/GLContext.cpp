@@ -7,13 +7,13 @@
 
 
 #if defined(VVGL_SDK_MAC)
-#include "GLContext_Mac.cpp"
+#include "GLContext_Mac.txt"
 #elif defined(VVGL_SDK_GLFW)
-#include "GLContext_GLFW.cpp"
+#include "GLContext_GLFW.txt"
 #elif defined(VVGL_SDK_RPI)
-#include "GLContext_RPI.cpp"
+#include "GLContext_RPI.txt"
 #elif defined(VVGL_SDK_QT)
-#include "GLContext_Qt.cpp"
+#include "GLContext_Qt.txt"
 #endif
 
 

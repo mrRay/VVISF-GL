@@ -9,11 +9,11 @@
 #define VVISF_EXPORT 
 #endif
 
-#if defined(VVGL_SDK_MAC)
-#include <VVGL/VVGL.hpp>
-#else
+//#if defined(VVGL_SDK_MAC)
+//#include <VVGL/VVGL.hpp>
+//#else
 #include "VVGL.hpp"
-#endif
+//#endif
 
 using namespace VVGL;
 
