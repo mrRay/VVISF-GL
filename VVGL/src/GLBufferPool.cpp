@@ -113,6 +113,10 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 	IOSurfaceRef		newSurfaceRef = nullptr;
 	uint32_t			cpuBackingSize = returnMe->backingLengthForSize(bs);
 	uint32_t			bytesPerRow = cpuBackingSize/bs.height;
+	if (bs == VVGL::Size(0,0))	{
+		cpuBackingSize = returnMe->backingLengthForSize(s);
+		bytesPerRow = cpuBackingSize/s.height;
+	}
 #endif
 	uint32_t			pixelFormat = 0x00;
 	bool				compressedTex = false;
@@ -2536,13 +2540,17 @@ GLBufferRef CreateRGBAFloatTexIOSurface(const Size & inSize, const bool & inCrea
 	return returnMe;
 }
 GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
-	if (inPoolRef == nullptr)
+	if (inPoolRef == nullptr)	{
+		cout << "ERR: bailing, pool is null, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
+	}
 	
 	//	look up the surface for the ID i was passed, bail if i can't
 	IOSurfaceRef		newSurface = IOSurfaceLookup(inID);
-	if (newSurface == NULL)
+	if (newSurface == NULL)	{
+		cout << "ERR: bailing, surface could not be looked up, " << __PRETTY_FUNCTION__ << endl;
 		return nullptr;
+	}
 	
 	//	figure out how big the IOSurface is and what its pixel format is
 	Size			newAssetSize(IOSurfaceGetWidth(newSurface), IOSurfaceGetHeight(newSurface));

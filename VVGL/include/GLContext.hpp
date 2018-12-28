@@ -151,6 +151,13 @@ class VVGL_EXPORT GLContext	{
 		GLContext(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFm=CreateDefaultPixelFormat());
 		//	this function creates a context using the passed pixel format and share context
 		GLContext(const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt=CreateDefaultPixelFormat());
+		
+		//	this function returns the underlying CGLContextObj
+		CGLContextObj contextObj() { return ctx; }
+		//	this function returns the underlyihng shared context as a CGLContextObj
+		CGLContextObj sharedContextObj() { return sharedCtx; }
+		//	this function returns the pixel format object
+		CGLPixelFormatObj pixelFormatObj() { return pxlFmt; }
 #elif defined(VVGL_SDK_IOS)
 		//	"inCtx" is an EAGLContext! this function doesn't create anything- it just retains the passed ctx
 		GLContext(const void * inEAGLContext);

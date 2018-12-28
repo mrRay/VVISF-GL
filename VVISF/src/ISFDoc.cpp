@@ -1464,7 +1464,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						importedBuffer = CreateTexFromImage(fullPath, false, bp);
 						if (importedBuffer == nullptr)	{
 							if (_throwExcept)
-								throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded", fullPath);
+								throw ISFErr(ISFErrType_ErrorLoading, "IMPORTED file cannot be loaded: ", fullPath);
 						}
 						else	{
 							//	make an attrib for the import and store it

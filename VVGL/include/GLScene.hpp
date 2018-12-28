@@ -103,9 +103,9 @@ class VVGL_EXPORT GLScene	{
 		bool				_clearColorUpdated = false;
 		
 		//	these vars pertain to the program being used by the GL context
-		string				_vsString = string("");
-		string				_gsString = string("");
-		string				_fsString = string("");
+		string				*_vsString = nullptr;
+		string				*_gsString = nullptr;
+		string				*_fsString = nullptr;
 		bool				_vsStringUpdated = false;
 		bool				_gsStringUpdated = false;
 		bool				_fsStringUpdated = false;

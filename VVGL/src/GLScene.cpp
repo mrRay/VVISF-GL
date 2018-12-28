@@ -54,9 +54,18 @@ void GLScene::prepareToBeDeleted()	{
 				GLERRLOG
 			}
 		}
-		_vsString = string("");
-		_gsString = string("");
-		_fsString = string("");
+		if (_vsString != nullptr)	{
+			delete _vsString;
+			_vsString = nullptr;
+		}
+		if (_gsString != nullptr)	{
+			delete _gsString;
+			_gsString = nullptr;
+		}
+		if (_fsString != nullptr)	{
+			delete _fsString;
+			_fsString = nullptr;
+		}
 		_vsStringUpdated = true;
 		_gsStringUpdated = true;
 		_fsStringUpdated = true;
@@ -161,7 +170,7 @@ void GLScene::render(const RenderTarget & inRenderTarget)	{
 	_renderPrep();
 	
 	//	if there isn't a valid program then we shouldn't execute the client-provided render callback
-	bool		looksLikeItShouldHaveAProgram = (_vsString.size()>0 || _gsString.size()>0 || _fsString.size()>0);
+	bool		looksLikeItShouldHaveAProgram = ((_vsString!=nullptr && _vsString->size()>0) || (_gsString!=nullptr && _gsString->size()>0) || (_fsString!=nullptr && _fsString->size()>0));
 	if ((_program==0 && !looksLikeItShouldHaveAProgram) ||	(_program!=0 && looksLikeItShouldHaveAProgram))	{
 		//	execute the render callback
 		if (_renderCallback != nullptr)
@@ -339,14 +348,18 @@ void GLScene::setVertexShaderString(const string & n)	{
 	
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	_vsString = string(n);
+	if (_vsString != nullptr)
+		delete _vsString;
+	_vsString = new string(n);
 	_vsStringUpdated = true;
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
 string GLScene::vertexShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
-	return _vsString;
+	if (_vsString == nullptr)
+		return string("");
+	return string(*_vsString);
 }
 void GLScene::setGeometryShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -359,14 +372,18 @@ void GLScene::setGeometryShaderString(const string & n)	{
 	
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	_gsString = string(n);
+	if (_gsString != nullptr)
+		delete _gsString;
+	_gsString = new string(n);
 	_gsStringUpdated = true;
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
 string GLScene::geometryShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
-	return _gsString;
+	if (_gsString == nullptr)
+		return string("");
+	return string(*_gsString);
 }
 void GLScene::setFragmentShaderString(const string & n)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
@@ -379,14 +396,18 @@ void GLScene::setFragmentShaderString(const string & n)	{
 	
 	lock_guard<recursive_mutex>		lock(_renderLock);
 	
-	_fsString = string(n);
+	if (_fsString != nullptr)
+		delete _fsString;
+	_fsString = new string(n);
 	_fsStringUpdated = true;
 	_needsReshape = true;
 	_orthoUni.purgeCache();
 }
 string GLScene::fragmentShaderString()	{
 	lock_guard<recursive_mutex>		lock(_renderLock);
-	return _fsString;
+	if (_fsString == nullptr)
+		return string("");
+	return string(*_fsString);
 }
 
 
@@ -444,10 +465,10 @@ void GLScene::_renderPrep()	{
 		}
 		
 		bool			encounteredError = false;
-		if (_vsString.size() > 0)	{
+		if (_vsString!=nullptr && _vsString->size() > 0)	{
 			_vs = glCreateShader(GL_VERTEX_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = _vsString.c_str();
+			const char		*shaderSrc = _vsString->c_str();
 			glShaderSource(_vs, 1, &shaderSrc, NULL);
 			GLERRLOG
 			glCompileShader(_vs);
@@ -465,13 +486,13 @@ void GLScene::_renderPrep()	{
 				GLERRLOG
 				cout << "\terr compiling vertex shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << _vsString << endl;
+				//cout << "\traw shader is:\n" << *_vsString << endl;
 				encounteredError = true;
 				
 				{
 					lock_guard<mutex>		lock(_errDictLock);
 					_errDict.insert(pair<string,string>(string("vertErrLog"), string(log)));
-					_errDict.insert(pair<string,string>(string("vertSrc"), string(_vsString)));
+					_errDict.insert(pair<string,string>(string("vertSrc"), string(*_vsString)));
 				}
 				
 				delete [] log;
@@ -480,11 +501,11 @@ void GLScene::_renderPrep()	{
 				_vs = 0;
 			}
 		}
-		if (_gsString.size() > 0)	{
+		if (_gsString!=nullptr && _gsString->size() > 0)	{
 #if !defined(VVGL_TARGETENV_GLES) && !defined(VVGL_TARGETENV_GLES3)
 			_gs = glCreateShader(GL_GEOMETRY_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = _gsString.c_str();
+			const char		*shaderSrc = _gsString->c_str();
 			glShaderSource(_gs, 1, &shaderSrc, NULL);
 			GLERRLOG
 			glCompileShader(_gs);
@@ -502,13 +523,13 @@ void GLScene::_renderPrep()	{
 				GLERRLOG
 				cout << "\terr compiling geo shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << _gsString << endl;
+				//cout << "\traw shader is:\n" << *_gsString << endl;
 				encounteredError = true;
 				
 				{
 					lock_guard<mutex>		lock(_errDictLock);
 					_errDict.insert(pair<string,string>(string("geoErrLog"), string(log)));
-					_errDict.insert(pair<string,string>(string("geoSrc"), string(_gsString)));
+					_errDict.insert(pair<string,string>(string("geoSrc"), string(*_gsString)));
 				}
 				
 				delete [] log;
@@ -518,10 +539,10 @@ void GLScene::_renderPrep()	{
 			}
 #endif
 		}
-		if (_fsString.size() > 0)	{
+		if (_fsString!=nullptr && _fsString->size() > 0)	{
 			_fs = glCreateShader(GL_FRAGMENT_SHADER);
 			GLERRLOG
-			const char		*shaderSrc = _fsString.c_str();
+			const char		*shaderSrc = _fsString->c_str();
 			glShaderSource(_fs, 1, &shaderSrc, NULL);
 			GLERRLOG
 			glCompileShader(_fs);
@@ -539,13 +560,13 @@ void GLScene::_renderPrep()	{
 				GLERRLOG
 				cout << "\terr compiling fragment shader in " << __PRETTY_FUNCTION__ << endl;
 				//cout << "\terr: " << log << endl;
-				//cout << "\traw shader is:\n" << _fsString << endl;
+				//cout << "\traw shader is:\n" << *_fsString << endl;
 				encounteredError = true;
 				
 				{
 					lock_guard<mutex>		lock(_errDictLock);
 					_errDict.insert(pair<string,string>(string("fragErrLog"), string(log)));
-					_errDict.insert(pair<string,string>(string("fragSrc"), string(_fsString)));
+					_errDict.insert(pair<string,string>(string("fragSrc"), string(*_fsString)));
 				}
 				
 				delete [] log;
@@ -589,12 +610,26 @@ void GLScene::_renderPrep()	{
 				cout << "\terr linking _program in " << __PRETTY_FUNCTION__ << endl;
 				cout << "\terr: " << log << endl;
 				cout << "********************\n";
-				cout << "\traw vert shader is:\n" << _vsString << endl;
+				/*
+				cout << "\traw vert shader is:\n";
+				if (_vsString == nullptr)
+					cout << "<empty>\n";
+				else
+					cout << *_vsString << endl;
 				cout << "********************\n";
-				cout << "\traw geo shader is:\n" << _gsString << endl;
+				cout << "\traw geo shader is:\n";
+				if (_gsString == nullptr)
+					cout << "<empty>\n";
+				else
+					cout << *_gsString << endl;
 				cout << "********************\n";
-				cout << "\traw frag shader is:\n" << _fsString << endl;
+				cout << "\traw frag shader is:\n";
+				if (_fsString == nullptr)
+					cout << "<empty>\n";
+				else
+					cout << *_fsString << endl;
 				cout << "********************\n";
+				*/
 				encounteredError = true;
 				
 				{
@@ -790,7 +825,7 @@ void GLScene::_reshape()	{
 				}
 				else	{
 					//cout << "\tERR: need to reshape, but no orthogonal uniform! " << __PRETTY_FUNCTION__ << endl;
-					//cout << "************* _vsString is:\n" << _vsString << endl;
+					//cout << "************* _vsString is:\n" << *_vsString << endl;
 				}
 			}
 			else	{
