@@ -39,6 +39,9 @@ class VVISF_EXPORT ISFAttr	{
 		vector<int32_t>		_valArray;	//	only used if it's a LONG. vector containing ints with the values that correspond to the accompanying labels
 		
 		bool				_isFilterInputImage = false;	//	if true, this is an image-type input and is the main input for an image filter
+		bool				_isTransStartImage = false;	//	if true, this is an image-type input and is named "startImage"
+		bool				_isTransEndImage = false;	//	if true, this is an image-type input and is named "endImage"
+		bool				_isTransProgressFloat = false;	//	if true, this is a float-type input and is named "progress"
 		int32_t				_uniformLocation[4] = { -1, -1, -1, -1 };	//	the location of this attribute in the compiled GLSL program. cached here because lookup times are costly when performed every frame.  there are 4 because images require four uniforms (one of the texture name, one for the size, one for the img rect, and one for the flippedness)
 		
 		double				_evalVariable = 1.0;	//	attribute values are available in expression evaluation- to support this, each attribute needs to maintain a double which it populates with its current value
@@ -86,9 +89,9 @@ class VVISF_EXPORT ISFAttr	{
 		//!	Returns a true if this attribute's value is expressed with an image buffer
 		inline bool shouldHaveImageBuffer() const { return ISFValTypeUsesImage(_type); }
 		//!	Returns the receiver's image buffer
-		inline GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return _currentVal.imageBuffer(); }
+		inline VVGL::GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return _currentVal.imageBuffer(); }
 		//!	Sets the receiver's current value with the passed image buffer
-		inline void setCurrentImageBuffer(const GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) _currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << _name << ")\n"; /*cout<<"\tcurrentVal is now "<<_currentVal<<endl;*/ }
+		inline void setCurrentImageBuffer(const VVGL::GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) _currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << _name << ")\n"; /*cout<<"\tcurrentVal is now "<<_currentVal<<endl;*/ }
 		//!	Gets the attribute's min val
 		inline ISFVal & minVal() { return _minVal; }
 		//!	Gets the attribute's max val
@@ -104,6 +107,16 @@ class VVISF_EXPORT ISFAttr	{
 		//!	Returns a true if this attribute is used to send the input image to the filter.
 		inline bool isFilterInputImage() { return _isFilterInputImage; }
 		inline void setIsFilterInputImage(const bool & n) { _isFilterInputImage=n; }
+		//!	Returns a true if this attribute is used to send the start image to the transition
+		inline bool isTransStartImage() { return _isTransStartImage; }
+		inline void setIsTransStartImage(const bool & n) { _isTransStartImage=n; }
+		//!	Returns a true if this attribute is used to send the end image to the transition
+		inline bool isTransEndImage() { return _isTransEndImage; }
+		inline void setIsTransEndImage(const bool & n) { _isTransEndImage=n; }
+		//!	Returns a true if this attribute is used to send the progress value to the transition
+		inline bool isTransProgressFloat() { return _isTransProgressFloat; }
+		inline void setIsTransProgressFloat(const bool & n) { _isTransProgressFloat=n; }
+		
 		inline void clearUniformLocations() { for (int i=0; i<4; ++i) _uniformLocation[i]=0; }
 		inline void setUniformLocation(const int & inIndex, const int32_t & inNewVal) { if (inIndex<0 || inIndex>3) return; _uniformLocation[inIndex] = inNewVal; }
 		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return _uniformLocation[inIndex]; }

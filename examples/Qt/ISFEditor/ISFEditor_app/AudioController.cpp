@@ -9,6 +9,9 @@
 
 
 
+using namespace VVGL;
+
+
 static AudioController * globalAudioController = nullptr;
 //static int					fftQuality = 512;
 

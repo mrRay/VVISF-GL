@@ -22,6 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
+VERSION = 2.9.7.3
+
 
 
 
@@ -100,7 +102,8 @@ SOURCES += \
 	misc_classes/StringUtilities.cpp \
 	VideoSource/ISFVideoSource.cpp \
     ../../common/VVGLRenderQThread.cpp \
-    misc_ui/QPassiveWheelComboBox.cpp
+    misc_ui/QPassiveWheelComboBox.cpp \
+    AutoUpdater/AutoUpdater.cpp
 
 
 
@@ -165,7 +168,8 @@ HEADERS += \
 	misc_ui/MouseEventISFWidget.h \
 	VideoSource/ISFVideoSource.h \
     ../../common/VVGLRenderQThread.h \
-    misc_ui/QPassiveWheelComboBox.h
+    misc_ui/QPassiveWheelComboBox.h \
+    AutoUpdater/AutoUpdater.h
 
 
 # platform-specific classes
@@ -266,6 +270,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
 INCLUDEPATH += $$_PRO_FILE_PWD_/Spout
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
 INCLUDEPATH += $$_PRO_FILE_PWD_/ISFConverter
+INCLUDEPATH += $$_PRO_FILE_PWD_/AutoUpdater
 
 
 
@@ -388,7 +393,11 @@ mac {
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../../VVISF/libVVISF*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../fftreal/fftreal.framework $$framework_dir;
-		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
+		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
 	}
 }
 win32	{

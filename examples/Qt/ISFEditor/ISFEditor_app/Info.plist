@@ -8,6 +8,8 @@
 	<string>${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
+	<key>CFBundleVersion</key>
+	<string>${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleIdentifier</key>
 	<string>${PRODUCT_BUNDLE_IDENTIFIER}</string>
 	<key>CFBundlePackageType</key>

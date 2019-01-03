@@ -10,6 +10,9 @@ namespace VVISF
 {
 
 
+using namespace VVGL;
+
+
 /*	========================================	*/
 #pragma mark --------------------- static functions
 

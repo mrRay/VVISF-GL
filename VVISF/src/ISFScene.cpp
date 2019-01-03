@@ -9,6 +9,7 @@ namespace VVISF
 {
 
 
+using namespace VVGL;
 
 
 /*	========================================	*/

@@ -32,7 +32,7 @@ Stores the GLBuffer (the GL resource) which this pass will render into, as well 
 class VVISF_EXPORT ISFPassTarget	{
 	private:
 		string			_name;
-		GLBufferRef		_buffer = nullptr;
+		VVGL::GLBufferRef		_buffer = nullptr;
 		ISFDoc			*_parentDoc;	//	weak ref to the parent doc (ISFDoc*) that created and owns me
 		
 		mutex			_targetLock;
@@ -48,7 +48,7 @@ class VVISF_EXPORT ISFPassTarget	{
 		double			_heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
 
 		bool			_floatFlag = false;	//	NO by default, if YES makes float texutres
-		GLCachedUniRef	_cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
+		VVGL::GLCachedUniRef	_cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
 	public:
 		//	"class method" that creates a buffer ref
 		static ISFPassTargetRef Create(const string & inName, const ISFDoc * inParentDoc);
@@ -83,9 +83,9 @@ class VVISF_EXPORT ISFPassTarget	{
 		//!	Returns the receiver's name.
 		string & name() { return _name; }
 		//!	Returns the GLBuffer currently cached with this pass, or null.
-		GLBufferRef & buffer() { return _buffer; }
+		VVGL::GLBufferRef & buffer() { return _buffer; }
 		//!	Sets the GLBuffer currently cached with this pass.
-		void setBuffer(const GLBufferRef & n) { _buffer=n; }
+		void setBuffer(const VVGL::GLBufferRef & n) { _buffer=n; }
 		
 		//!	Returns the last-calculated target size for this pass.
 		VVGL::Size targetSize() { return { _targetWidth, _targetHeight }; }

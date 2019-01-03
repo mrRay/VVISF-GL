@@ -83,7 +83,7 @@ $(OUTPUT) : $(OBJS)
 
 
 #administrative targets
-.PHONY : all clean clean_all
+.PHONY : all clean clean_all install
 
 all : $(OUTPUT)
 
@@ -93,6 +93,8 @@ clean:
 
 clean_all : clean
 
+install : all
+	
 
 
 

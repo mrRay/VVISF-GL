@@ -20,11 +20,6 @@ class JGMTop;
 
 
 
-using namespace VVISF;
-
-
-
-
 class JSONScrollWidget : public QScrollArea
 {
 	Q_OBJECT
@@ -47,7 +42,7 @@ protected:
 	
 private:
 	std::recursive_mutex	itemLock;
-	ISFDocRef				doc = nullptr;
+	VVISF::ISFDocRef		doc = nullptr;
 	QSharedPointer<JGMTop>	top = nullptr;	//	JSON GUI model- top
 	//JGMTopRef				top = nullptr;
 	QTimer					*scrollTimer = nullptr;

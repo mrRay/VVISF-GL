@@ -16,8 +16,7 @@
 
 
 
-using namespace VVGL;
-using namespace VVISF;
+using namespace std;
 
 
 
@@ -30,11 +29,11 @@ public:
 	~ISFController();
 	
 	void loadFile(const QString & inPathToLoad);
-	void setRenderSize(const Size & inSize) { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); _renderSize=inSize; }
-	Size renderSize() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return _renderSize; }
+	void setRenderSize(const VVGL::Size & inSize) { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); _renderSize=inSize; }
+	VVGL::Size renderSize() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return _renderSize; }
 	//ISFSceneRef getScene() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return scene; }
 	//ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr)?nullptr:scene->doc(); }
-	ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return currentDoc; }
+	VVISF::ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return currentDoc; }
 	QString getCompiledVertexShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->vertexShaderString() ); }
 	QString getCompiledFragmentShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->fragmentShaderString() ); }
 	vector<pair<int,string>> getSceneVertErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneVertErrors; }
@@ -44,20 +43,20 @@ public:
 	VVGLRenderQThread * renderThread() {
 		return _renderThread;
 	}
-	GLBufferPoolRef renderThreadBufferPool() { return (_renderThread==nullptr)?nullptr:_renderThread->bufferPool(); }
-	GLTexToTexCopierRef renderThreadTexCopier() { return (_renderThread==nullptr)?nullptr:_renderThread->texCopier(); }
+	VVGL::GLBufferPoolRef renderThreadBufferPool() { return (_renderThread==nullptr)?nullptr:_renderThread->bufferPool(); }
+	VVGL::GLTexToTexCopierRef renderThreadTexCopier() { return (_renderThread==nullptr)?nullptr:_renderThread->texCopier(); }
 
 public slots:
 	//	the widget sends a signal to this slot every time it's about to redraw
 	Q_SLOT void widgetRedrawSlot();
 	
 private:
-	Size			_renderSize = Size(640.0,480.0);
+	VVGL::Size			_renderSize = VVGL::Size(640.0,480.0);
 	
 	std::recursive_mutex	sceneLock;	//	used to lock the 'scene'-related vars below
 	QFileSystemWatcher		*sceneFileWatcher = nullptr;
-	ISFDocRef				currentDoc = nullptr;
-	ISFSceneRef				scene = nullptr;	//	this is the main scene doing all the rendering!
+	VVISF::ISFDocRef				currentDoc = nullptr;
+	VVISF::ISFSceneRef				scene = nullptr;	//	this is the main scene doing all the rendering!
 	bool					sceneIsFilter = false;
 	vector<pair<int,string>>		sceneVertErrors;
 	vector<pair<int,string>>		sceneFragErrors;

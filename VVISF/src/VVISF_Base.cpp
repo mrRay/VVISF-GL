@@ -15,7 +15,6 @@ using namespace std;
 
 
 
-
 /*	========================================	*/
 #pragma mark --------------------- ISF file management methods
 

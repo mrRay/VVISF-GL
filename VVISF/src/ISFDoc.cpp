@@ -1663,6 +1663,9 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 		bool				isImageInput = false;
 		bool				isAudioInput = false;
 		bool				isFilterImageInput = false;
+		bool				isTransStartImageInput = false;
+		bool				isTransEndImageInput = false;
+		bool				isTransProgressFloatInput = false;
 		
 		//	run through the array of inputs
 		for (auto it=inputsArray.begin(); it!=inputsArray.end(); ++it)	{
@@ -1692,6 +1695,9 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 			isImageInput = false;
 			isAudioInput = false;
 			isFilterImageInput = false;
+			isTransStartImageInput = false;
+			isTransEndImageInput = false;
+			isTransProgressFloatInput = false;
 			
 			//	update state vars based on the type and further parsing of the input dict
 			if (typeStringJ == "image")	{
@@ -1700,6 +1706,12 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				if (inputKeyJ == "inputImage")	{
 					isFilterImageInput = true;
 					_type = ISFFileType_Filter;
+				}
+				else if (inputKeyJ == "startImage")	{
+					isTransStartImageInput = true;
+				}
+				else if (inputKeyJ == "endImage")	{
+					isTransEndImageInput = true;
 				}
 			}
 			else if (typeStringJ == "audio")	{
@@ -1757,6 +1769,11 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						defVal = minVal;
 					else if (defVal.getDoubleVal()>maxVal.getDoubleVal())
 						defVal = maxVal;
+				}
+				
+				//	if this is 'progress' then it's probably the progress input for the transition
+				if (inputKeyJ == "progress")	{
+					isTransProgressFloatInput = true;
 				}
 			}
 			else if (typeStringJ == "bool")	{
@@ -1980,6 +1997,9 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				&labelArray,
 				&valArray);
 			newAttribRef->setIsFilterInputImage(isFilterImageInput);
+			newAttribRef->setIsTransStartImage(isTransStartImageInput);
+			newAttribRef->setIsTransEndImage(isTransEndImageInput);
+			newAttribRef->setIsTransProgressFloat(isTransProgressFloatInput);
 			_inputs.push_back(newAttribRef);
 			if (isImageInput)
 				_imageInputs.push_back(newAttribRef);

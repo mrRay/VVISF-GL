@@ -2,11 +2,10 @@
 #include <QApplication>
 #include <QDebug>
 
-#include "LoadingWindow.h"
 #include "OutputWindow.h"
-#include "DocWindow.h"
-#include "DynamicVideoSource.h"
-#include "ISFController.h"
+
+
+
 
 
 #if defined(Q_OS_WIN)
@@ -30,9 +29,9 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("com.yourcompanyname");
 	QCoreApplication::setApplicationName("ISFEditor");
 	
-	QSurfaceFormat::setDefaultFormat(CreateCompatibilityGLSurfaceFormat());
-	//QSurfaceFormat::setDefaultFormat(CreateGL4SurfaceFormat());
-	//QSurfaceFormat::setDefaultFormat(CreateGL3SurfaceFormat());
+	//QSurfaceFormat::setDefaultFormat(VVGL::CreateCompatibilityGLSurfaceFormat());
+	QSurfaceFormat::setDefaultFormat(VVGL::CreateGL4SurfaceFormat());
+	//QSurfaceFormat::setDefaultFormat(VVGL::CreateGL3SurfaceFormat());
 	
 	QApplication a(argc, argv);
 	

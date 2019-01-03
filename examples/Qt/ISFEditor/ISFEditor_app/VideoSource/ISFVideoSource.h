@@ -10,11 +10,6 @@
 
 
 
-using namespace VVISF;
-
-
-
-
 class ISFVideoSource : public VideoSource
 {
 	Q_OBJECT
@@ -33,7 +28,7 @@ public:
 	virtual void renderABuffer() override;
 	
 private:
-	ISFSceneRef			scene = nullptr;
+	VVISF::ISFSceneRef			scene = nullptr;
 };
 
 

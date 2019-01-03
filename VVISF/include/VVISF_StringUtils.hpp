@@ -14,7 +14,6 @@ namespace VVISF
 
 
 using namespace std;
-using namespace VVGL;
 
 
 struct ISFVal;
@@ -28,7 +27,7 @@ VVISF_EXPORT ISFVal ISFValByEvaluatingString(const string & n, const map<string,
 //	this function parses a function call from a string, dumping the strings of the function arguments 
 //	to the provided array.  returns the size of the function string (from first char of function call 
 //	to the closing parenthesis of the function call)
-VVISF_EXPORT Range LexFunctionCall(const string & inBaseStr, const Range & inFuncNameRange, vector<string> & outVarArray);
+VVISF_EXPORT VVGL::Range LexFunctionCall(const string & inBaseStr, const VVGL::Range & inFuncNameRange, vector<string> & outVarArray);
 
 VVISF_EXPORT string TrimWhitespace(const string & inBaseStr);
 

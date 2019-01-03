@@ -108,7 +108,8 @@ clean:
 clean_all : clean
 	$(MAKE) -C ./../VVGL clean_all
 
-
+install : all
+	
 
 
 

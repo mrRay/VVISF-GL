@@ -13,6 +13,12 @@
 
 
 
+using namespace VVGL;
+using namespace VVISF;
+
+
+
+
 ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(inParent)	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	

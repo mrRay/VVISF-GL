@@ -83,8 +83,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>80</width>
-              <height>232</height>
+              <width>100</width>
+              <height>227</height>
              </rect>
             </property>
             <property name="autoFillBackground">
@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>652</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSearch">
@@ -280,8 +280,15 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionCheck_for_Updates"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSearch"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionFind">
@@ -348,6 +355,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates...</string>
    </property>
   </action>
  </widget>

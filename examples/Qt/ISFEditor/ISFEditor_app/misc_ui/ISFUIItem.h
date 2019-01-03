@@ -20,8 +20,8 @@
 
 
 
-using namespace VVGL;
-using namespace VVISF;
+//using namespace VVGL;
+//using namespace VVISF;
 
 
 
@@ -30,11 +30,11 @@ class ISFUIItem : public QGroupBox
 {
 	Q_OBJECT
 public:
-	explicit ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent=nullptr);
+	explicit ISFUIItem(const VVISF::ISFAttrRef & inAttr, QWidget * inParent=nullptr);
 	~ISFUIItem();
 
 	QString name() { return _name; }
-	ISFVal getISFVal();
+	VVISF::ISFVal getISFVal();
 
 private slots:
 	void outputWindowMouseUsed(VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc);
@@ -45,8 +45,8 @@ private slots:
 private:
 	QString			_name;
 	
-	ISFValType		type = ISFValType_None;
-	ISFAttrRef		attr = nullptr;
+	VVISF::ISFValType		type = VVISF::ISFValType_None;
+	VVISF::ISFAttrRef		attr = nullptr;
 	
 	//	all of these widgets are owned by my layout
 	QPushButton		*eventWidget = nullptr;
@@ -57,7 +57,7 @@ private:
 	
 	QDoubleSpinBox	*xFieldWidget = nullptr;
 	QDoubleSpinBox	*yFieldWidget = nullptr;
-	Point			pointVal = Point(0.0, 0.0);
+	VVGL::Point			pointVal = VVGL::Point(0.0, 0.0);
 	QPushButton		*colorButton = nullptr;
 	QLabel			*colorLabel = nullptr;
 	QColor			color = QColor(0, 0, 0, 0);
@@ -68,7 +68,7 @@ private:
 	QHash<QString, QVariant>	userInfoDict;	//	used to store float flag and max val for audio-type inputs
 	
 	InterAppVideoSource		*interAppSrc = nullptr;
-	GLBufferRef				interAppBuffer = nullptr;
+	VVGL::GLBufferRef				interAppBuffer = nullptr;
 	
 	void refreshInterAppVideoCB();
 	void refreshAudioSourceCB();

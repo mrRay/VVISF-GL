@@ -18,7 +18,6 @@
 
 
 
-using namespace VVGL;
 #define fftQuality 512
 
 
@@ -33,10 +32,10 @@ public:
 	QList<QAudioDeviceInfo> getListOfDevices();
 	QAudioDeviceInfo * currentDeviceInfo();
 	void updateAudioResults();
-	GLBufferRef getAudioImageBuffer(const int & inWidth = 0);
-	GLBufferRef getAudioFFTBuffer(const int & inWidth = 0);
+	VVGL::GLBufferRef getAudioImageBuffer(const int & inWidth = 0);
+	VVGL::GLBufferRef getAudioFFTBuffer(const int & inWidth = 0);
 	
-	void moveToThread(QThread * inTargetThread, GLBufferPoolRef inThreadBufferPool=nullptr, GLTexToTexCopierRef inThreadTexCopier=nullptr);
+	void moveToThread(QThread * inTargetThread, VVGL::GLBufferPoolRef inThreadBufferPool=nullptr, VVGL::GLTexToTexCopierRef inThreadTexCopier=nullptr);
 
 signals:
 	Q_SIGNAL void listOfAudioDevicesUpdated();
@@ -46,8 +45,8 @@ public slots:
 private:
 	std::recursive_mutex			_lock;
 	
-	GLCPUToTexCopierRef				_audioUploader;
-	GLCPUToTexCopierRef				_fftUploader;
+	VVGL::GLCPUToTexCopierRef				_audioUploader;
+	VVGL::GLCPUToTexCopierRef				_fftUploader;
 	
 	QScopedPointer<QAudioDeviceInfo>	_device;
 	QAudioFormat					_format;
@@ -55,8 +54,8 @@ private:
 	
 	QLinkedList<ISFAudioBufferList>		_bufferList;
 	ISFAudioBufferList				_lastABL;	//	the last ABL we processed
-	GLBufferRef						_audioBuffer = nullptr;
-	GLBufferRef						_fftBuffer = nullptr;
+	VVGL::GLBufferRef						_audioBuffer = nullptr;
+	VVGL::GLBufferRef						_fftBuffer = nullptr;
 	
 	typedef FFTRealFixLenParam::DataType        DataType;
 	FFTRealWrapper								m_fft;

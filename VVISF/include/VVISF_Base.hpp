@@ -15,8 +15,6 @@
 #include "VVGL.hpp"
 //#endif
 
-using namespace VVGL;
-
 /*!
 \file
 */

@@ -10,6 +10,8 @@
 
 
 
+using namespace VVGL;
+using namespace VVISF;
 static OutputWindow * globalOutputWindow = nullptr;
 
 

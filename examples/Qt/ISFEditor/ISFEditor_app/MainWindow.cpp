@@ -13,6 +13,7 @@
 #include "LoadingWindow.h"
 #include "GLSLSandboxConverter.h"
 #include "ShadertoyConverter.h"
+#include "AutoUpdater.h"
 
 
 
@@ -116,6 +117,14 @@ void FinishLaunching()	{
 	
 	ow->show();
 	
+	
+	//	make the auto-updater now, tell it to check for an update
+	AutoUpdater		*aa = GetGlobalAutoUpdater();
+	if (aa == nullptr)
+		cout << "ERR: auto updater nil in main()\n";
+	else	{
+		aa->checkForUpdates();
+	}
 }
 
 

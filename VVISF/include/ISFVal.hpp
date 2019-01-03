@@ -66,7 +66,7 @@ struct VVISF_EXPORT ISFVal	{
 		};
 		ISFValType		_type = ISFValType_None;
 		ISFValUnion		_val = { false };
-		GLBufferRef		_imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
+		VVGL::GLBufferRef		_imageVal = nullptr;	//	we store the GLBufferRef as a member of the struct because storing it in the union didn't work out (a variant might work, but that has to wait to c++17)
 	
 	public:
 		
@@ -92,7 +92,7 @@ struct VVISF_EXPORT ISFVal	{
 		//	Returns an ISFVal of the passed type populated with the four passed values.  Works well for colors.
 		ISFVal(const ISFValType & inType, const double & inR, const double & inG, const double & inB, const double & inA);
 		//	Returns an ISFVal of the passed type with the passed image value.  Works well for image-, audio-, and audioFFT-type values.
-		ISFVal(const ISFValType & inType, const GLBufferRef & inImage);
+		ISFVal(const ISFValType & inType, const VVGL::GLBufferRef & inImage);
 		
 		///@}
 		
@@ -125,9 +125,9 @@ struct VVISF_EXPORT ISFVal	{
 		//!	Does nothing if the receiver's value type isn't color or the passed index is out of bounds, otherwise it sets the value of the color channel at the passed index.
 		inline void setColorValByChannel(const int & inIndex, const double & inVal) { if (_type!=ISFValType_Color || inIndex<0 || inIndex>3) return; _val.colorVal[inIndex]=inVal; }
 		//!	Returns null if the receiver's value type cannot be represented as an image, otherwise it returns the image buffer (almost certainly a GL texture) that is the receiver's value.
-		GLBufferRef imageBuffer() const;
+		VVGL::GLBufferRef imageBuffer() const;
 		//!	Does nothing if the receiver's value type cannot be represented as an image, otherwise it sets the receiver's image value with the passed buffer.  This buffer will be "retained" for the duration of the receiver's lifetime.
-		void setImageBuffer(const GLBufferRef & n);
+		void setImageBuffer(const VVGL::GLBufferRef & n);
 		//!	Returns a string describing the type of the receiver.
 		string getTypeString() const;
 		//!	Returns a string describing the value of the receiver.
@@ -167,7 +167,7 @@ struct VVISF_EXPORT ISFVal	{
 		
 		///@}
 		
-		friend ostream & operator<<(ostream & os, const ISFVal & n) { os << FmtString("<ISFVal %s/%s>", n.getTypeString().c_str(), n.getValString().c_str()); return os; }
+		friend ostream & operator<<(ostream & os, const ISFVal & n) { os << VVGL::FmtString("<ISFVal %s/%s>", n.getTypeString().c_str(), n.getValString().c_str()); return os; }
 };
 
 
@@ -216,7 +216,7 @@ VVISF_EXPORT ISFVal ISFColorVal(const double & inR, const double & inG, const do
 \relatesalso VVISF::ISFVal
 \brief Creates and returns an image-type ISFVal with the passed buffer.
 */
-VVISF_EXPORT ISFVal ISFImageVal(const GLBufferRef & n);
+VVISF_EXPORT ISFVal ISFImageVal(const VVGL::GLBufferRef & n);
 
 ///@}
 

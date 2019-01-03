@@ -8,6 +8,12 @@
 
 
 
+using namespace VVGL;
+using namespace VVISF;
+
+
+
+
 ISFVideoSource::ISFVideoSource(QObject *parent)	{
 	Q_UNUSED(parent);
 	//scene = nullptr;

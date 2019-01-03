@@ -151,11 +151,11 @@ class VVISF_EXPORT ISFDoc	{
 		//!	Returns a vector of std::string instances describing the names of the render passes, in order.  If the names were not specified properly in the JSON blob, this array will be incomplete or inaccurate and rendering won't work!
 		vector<string> & renderPasses() { return _renderPasses; }
 		//!	Returns the GLBufferRef for the passed key.  Checks all attributes/inputs as well as persistent and temp buffers.
-		const GLBufferRef getBufferForKey(const string & n);
+		const VVGL::GLBufferRef getBufferForKey(const string & n);
 		//!	Returns the persistent buffer for the render pass with the passed key.
-		const GLBufferRef getPersistentBufferForKey(const string & n);
+		const VVGL::GLBufferRef getPersistentBufferForKey(const string & n);
 		//!	Returns the temp buffer for the render pass with the passed key.
-		const GLBufferRef getTempBufferForKey(const string & n);
+		const VVGL::GLBufferRef getTempBufferForKey(const string & n);
 		//!	Returns the ISFPassTarget that matches the passed key.  Returns null if no pass could be found.
 		const ISFPassTargetRef passTargetForKey(const string & n);
 		//!	Returns the ISFPassTarget that matches the passed key.  Returns null if no pass could be found or if the pass found wasn't flagged as requiring a persistent buffer.

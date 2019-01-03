@@ -29,6 +29,7 @@
 
 
 using namespace std;
+using namespace VVISF;
 
 static JSONScrollWidget * globalScrollWidget = nullptr;
 

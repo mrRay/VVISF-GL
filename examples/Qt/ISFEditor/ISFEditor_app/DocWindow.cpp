@@ -16,6 +16,7 @@
 #include "LevenshteinCalc.h"
 #include "GLSLSandboxConverter.h"
 #include "ShadertoyConverter.h"
+#include "AutoUpdater.h"
 
 
 
@@ -582,6 +583,24 @@ void DocWindow::on_actionUse_selection_for_search_triggered()	{
 		return;
 	
 	focusedEd->setFindStringFromCursor();
+}
+
+
+
+
+
+
+
+
+void DocWindow::on_actionCheck_for_Updates_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	AutoUpdater		*aa = GetGlobalAutoUpdater();
+	if (aa != nullptr)	{
+		aa->checkForUpdates();
+	}
+	else	{
+		qDebug() << "ERR: global auto updater nil!";
+	}
 }
 
 
