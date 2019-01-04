@@ -106,7 +106,6 @@ SOURCES += \
     AutoUpdater/AutoUpdater.cpp
 
 
-
 HEADERS += \
 	../../common/GLBufferQVideoSurface.h \
 	../../common/GLBufferQWidget.h \
@@ -310,6 +309,10 @@ mac {
 
 	# syphon needs a CGLContextObj, which means we need to get an NSOpenGLContext from a QOpenGLContext, the headers for which are only accessible by manually including this path so the QtPlatformHeaders directory is picked up.
 	INCLUDEPATH += $$QMAKESPEC/../../include/
+	
+	QMAKE_TARGET_BUNDLE_PREFIX = com.vidvox
+	#QMAKE_DEVELOPMENT_TEAM = XXXX
+	#QMAKE_PROVISIONING_PROFILE = XXXXX
 }
 
 # win-only additions for spout
@@ -393,11 +396,19 @@ mac {
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../../VVISF/libVVISF*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../fftreal/fftreal.framework $$framework_dir;
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
-		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
+		
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
+		
+		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
+		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+		
+		# copy the built app to the appropriate 'packages' directory in the ISFEditor_installer project directory
+		QMAKE_POST_LINK += rm -Rf "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data/$$TARGET\.app";
+		QMAKE_POST_LINK += mkdir -v "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data"
+		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data/$$TARGET\.app";
 	}
 }
 win32	{

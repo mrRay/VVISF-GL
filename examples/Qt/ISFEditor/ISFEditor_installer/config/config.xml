@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>ISF Editor</Name>
+    <Version>1.0.0</Version>
+    <Title>ISF Editor Installer</Title>
+    <Publisher>Vidvox</Publisher>
+    <StartMenuDir>ISF</StartMenuDir>
+    <TargetDir>/Applications/ISF Editor</TargetDir>
+    <RemoteRepositories>
+    	<Repository>
+    		<Url>https://www.vidvox.net/version/testVsn</Url>
+    	</Repository>
+    </RemoteRepositories>
+</Installer>
