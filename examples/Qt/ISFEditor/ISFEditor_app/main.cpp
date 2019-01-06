@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include "OutputWindow.h"
-
+#include "AutoUpdater.h"
 
 
 
@@ -33,11 +33,22 @@ int main(int argc, char *argv[])
 	QSurfaceFormat::setDefaultFormat(VVGL::CreateGL4SurfaceFormat());
 	//QSurfaceFormat::setDefaultFormat(VVGL::CreateGL3SurfaceFormat());
 	
+	//			from sample code for QtAutoUpdater:
+	//	"Since there is no mainwindow, the various dialogs should not quit the app"
+	QApplication::setQuitOnLastWindowClosed(false);
+	
+	
+	//	make the qApp
 	QApplication a(argc, argv);
+	
+	//	make the auto updater (by default, its parent will be qApp)
+	//GetGlobalAutoUpdater();
+	AutoUpdater		*aa = new AutoUpdater(&a);
 	
 	//	make the main window, which has a GL view in it and will create the GL backend, and then finish launching.
 	MainWindow		w;
 	
+	//	open the window after a slight delay, we want to give the app a chance to start all the other stuff
 	QTimer::singleShot(500, [&]()	{
 		w.show();
 	});

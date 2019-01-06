@@ -666,6 +666,13 @@ void DocWindow::showEvent(QShowEvent * event)	{
 	if (settings.contains("DocWindowGeometry"))	{
 		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
 	}
+	
+	//	set myself as the parent window for the auto updater!
+	AutoUpdater		*aa = GetGlobalAutoUpdater();
+	if (aa != nullptr)	{
+		aa->setParentWindow(this);
+	}
+	
 }
 void DocWindow::appQuitEvent()	{
 	qDebug() << __PRETTY_FUNCTION__;

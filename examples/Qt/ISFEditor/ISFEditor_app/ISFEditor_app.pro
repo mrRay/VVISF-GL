@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.7.3
+VERSION = 2.9.7-3
 
 
 
@@ -103,7 +103,7 @@ SOURCES += \
 	VideoSource/ISFVideoSource.cpp \
     ../../common/VVGLRenderQThread.cpp \
     misc_ui/QPassiveWheelComboBox.cpp \
-    AutoUpdater/AutoUpdater.cpp
+    AutoUpdater.cpp
 
 
 HEADERS += \
@@ -168,7 +168,7 @@ HEADERS += \
 	VideoSource/ISFVideoSource.h \
     ../../common/VVGLRenderQThread.h \
     misc_ui/QPassiveWheelComboBox.h \
-    AutoUpdater/AutoUpdater.h
+    AutoUpdater.h
 
 
 # platform-specific classes
@@ -243,6 +243,81 @@ RESOURCES += \
 
 
 
+
+
+
+
+HEADERS += \
+	autoupdatercore/adminauthoriser.h \
+	autoupdatercore/updater_p.h \
+	autoupdatercore/updater.h \
+	autoupdatercore/simplescheduler_p.h \
+	autoupdatercore/qtautoupdatercore_global.h
+
+SOURCES += \
+	autoupdatercore/simplescheduler.cpp \
+	autoupdatercore/updater_p.cpp \
+	autoupdatercore/updater.cpp
+
+win32 {
+	QT += winextras
+	LIBS += -lAdvapi32 -lOle32 -lShell32
+} else:mac {
+	LIBS += -framework Security
+} else:unix {
+	LIBS += -lutil
+}
+
+HEADERS += \
+	autoupdatergui/updatebutton_p.h \
+	autoupdatergui/updatebutton.h \
+	autoupdatergui/updatecontroller_p.h \
+	autoupdatergui/updatecontroller.h \
+	autoupdatergui/adminauthorization_p.h \
+	autoupdatergui/progressdialog_p.h \
+	autoupdatergui/updateinfodialog_p.h \
+	autoupdatergui/qtautoupdatergui_global.h
+
+SOURCES += \
+	autoupdatergui/progressdialog.cpp \
+	autoupdatergui/updatebutton.cpp \
+	autoupdatergui/updatecontroller.cpp \
+	autoupdatergui/updateinfodialog.cpp
+
+win32: SOURCES += autoupdatergui/adminauthorization_win.cpp
+else:mac: SOURCES += autoupdatergui/adminauthorization_mac.cpp
+else:unix: SOURCES += autoupdatergui/adminauthorization_x11.cpp
+
+FORMS += \
+	autoupdatergui/progressdialog.ui \
+	autoupdatergui/updatebutton.ui \
+	autoupdatergui/updateinfodialog.ui
+
+RESOURCES += \
+	autoupdatergui/autoupdatergui_resource.qrc
+
+TRANSLATIONS += autoupdatergui/translations/qtautoupdatergui_de.ts \
+	autoupdatergui/translations/qtautoupdatergui_es.ts \
+	autoupdatergui/translations/qtautoupdatergui_fr.ts \
+	autoupdatergui/translations/qtautoupdatergui_template.ts
+
+HEADERS += dialogmaster/dialogmaster.h
+SOURCES += dialogmaster/dialogmaster.cpp
+
+TRANSLATIONS += dialogmaster/dialogmaster_de.ts \
+	dialogmaster/dialogmaster_template.ts
+
+INCLUDEPATH += $$_PRO_FILE_PWD_/autoupdatercore
+INCLUDEPATH += $$_PRO_FILE_PWD_/autoupdatergui
+INCLUDEPATH += $$_PRO_FILE_PWD_/dialogmaster
+
+
+
+
+
+
+
+
 # additions for VVGL lib
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../VVGL/release/ -lVVGL
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../VVGL/debug/ -lVVGL
@@ -269,7 +344,6 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/Syphon
 INCLUDEPATH += $$_PRO_FILE_PWD_/Spout
 INCLUDEPATH += $$_PRO_FILE_PWD_/VideoOutput
 INCLUDEPATH += $$_PRO_FILE_PWD_/ISFConverter
-INCLUDEPATH += $$_PRO_FILE_PWD_/AutoUpdater
 
 
 
@@ -379,6 +453,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 mac {
 	QMAKE_INFO_PLIST = Info.plist
 	
+	# for some reason, mac builds aren't getting cleaned.  i think the app name is missing the ".app" extension
+	QMAKE_CLEAN += $$OUT_PWD/$$TARGET".app";
 	
 	framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
 	
@@ -406,8 +482,8 @@ mac {
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 		
 		# copy the built app to the appropriate 'packages' directory in the ISFEditor_installer project directory
-		QMAKE_POST_LINK += rm -Rf "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data/$$TARGET\.app";
-		QMAKE_POST_LINK += mkdir -v "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data"
+		QMAKE_POST_LINK += rm -Rf "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data";
+		QMAKE_POST_LINK += mkdir -v "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data";
 		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data/$$TARGET\.app";
 	}
 }

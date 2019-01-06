@@ -114,17 +114,20 @@ void FinishLaunching()	{
 		QObject::connect(bufferView, &QOpenGLWidget::frameSwapped, GetISFController(), &ISFController::widgetRedrawSlot);
 	}
 	
-	
+	qDebug() << "about to show the output window...";
 	ow->show();
+	qDebug() << "finished showing the output window...";
 	
-	
-	//	make the auto-updater now, tell it to check for an update
-	AutoUpdater		*aa = GetGlobalAutoUpdater();
-	if (aa == nullptr)
-		cout << "ERR: auto updater nil in main()\n";
-	else	{
-		aa->checkForUpdates();
-	}
+	//	the doc window already created the auto updater- check for an update after a small delay
+	QTimer::singleShot(500, [&]()	{
+		//qDebug() << "checking for update!";
+		AutoUpdater		*aa = GetGlobalAutoUpdater();
+		if (aa == nullptr)
+			cout << "ERR: auto updater nil in main()\n";
+		else	{
+			//aa->checkForUpdates();
+		}
+	});
 }
 
 

@@ -5,7 +5,7 @@
     <Version>2.9.7-3</Version>
     <ReleaseDate>2018-12-31</ReleaseDate>
     <Licenses>
-        <License name="Beer Public License Agreement" file="license.txt" />
+        <License name="BSD 3-clause" file="license.txt" />
     </Licenses>
     <Default>true</Default>
 </Package>
