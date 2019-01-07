@@ -271,6 +271,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionAbout"/>
     <addaction name="actionNew"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
@@ -360,6 +361,11 @@
   <action name="actionCheck_for_Updates">
    <property name="text">
     <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

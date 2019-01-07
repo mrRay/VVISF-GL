@@ -11,6 +11,7 @@ CONFIG(release, debug|release)	{
 	offline_installer_creator.input = INPUT
 	offline_installer_creator.output = my_offline_installer
 	offline_installer_creator.clean_commands = rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
+	offline_installer.creator.commands += rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
 	offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
 	offline_installer_creator.CONFIG += target_predeps no_link combine
 
@@ -22,6 +23,7 @@ CONFIG(release, debug|release)	{
 	repo_creator.input = INPUT
 	repo_creator.output = repo_creator_output
 	repo_creator.clean_commands = rm -Rf "$$PWD/repository";
+	repo_creator.commands += rm -Rf "$$PWD/repository";
 	repo_creator.commands += $$REPOGEN -p $$PWD/packages $$PWD/repository;
 	repo_creator.CONFIG += target_predeps no_link combine
 

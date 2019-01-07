@@ -23,6 +23,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 VERSION = 2.9.7-3
+mac	{
+	ICON = ISFEditorAppIcon.icns
+}
+win32	{
+	#RC_ICONS = ISFEditorAppIcon.ico
+	ICON = ISFEditorAppIcon.ico
+}
+QMAKE_TARGET_COMPANY = Vidvox
+QMAKE_TARGET_DESCRIPTION = Interactive Shader Format editor and viewer
+QMAKE_TARGET_COPYRIGHT = Vidvox, llc. 2019
+
 
 
 
@@ -103,7 +114,8 @@ SOURCES += \
 	VideoSource/ISFVideoSource.cpp \
     ../../common/VVGLRenderQThread.cpp \
     misc_ui/QPassiveWheelComboBox.cpp \
-    AutoUpdater.cpp
+    AutoUpdater.cpp \
+    AboutWindow.cpp
 
 
 HEADERS += \
@@ -168,7 +180,8 @@ HEADERS += \
 	VideoSource/ISFVideoSource.h \
     ../../common/VVGLRenderQThread.h \
     misc_ui/QPassiveWheelComboBox.h \
-    AutoUpdater.h
+    AutoUpdater.h \
+    AboutWindow.h
 
 
 # platform-specific classes
@@ -232,7 +245,8 @@ FORMS += \
 	JSONGUI/JSONGUIInputPoint2DWidget.ui \
 	JSONGUI/JSONGUIPassWidget.ui \
     ISFConverter/GLSLSandboxConverter.ui \
-    ISFConverter/ShadertoyConverter.ui
+    ISFConverter/ShadertoyConverter.ui \
+    AboutWindow.ui
 
 RESOURCES += \
 	misc_ui/SimpleSourceCodeEditor/shaderLanguagefiles.qrc \

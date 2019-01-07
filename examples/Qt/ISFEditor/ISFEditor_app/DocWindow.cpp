@@ -17,6 +17,7 @@
 #include "GLSLSandboxConverter.h"
 #include "ShadertoyConverter.h"
 #include "AutoUpdater.h"
+#include "AboutWindow.h"
 
 
 
@@ -600,6 +601,13 @@ void DocWindow::on_actionCheck_for_Updates_triggered()	{
 	}
 	else	{
 		qDebug() << "ERR: global auto updater nil!";
+	}
+}
+void DocWindow::on_actionAbout_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	AboutWindow		*aw = GetAboutWindow();
+	if (aw != nullptr)	{
+		aw->show();
 	}
 }
 

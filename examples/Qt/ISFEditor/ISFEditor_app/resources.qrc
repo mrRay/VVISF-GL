@@ -6,5 +6,7 @@
         <file>resources/AlphaOverCheckerboard.fs</file>
         <file>resources/SwizzleISF-CbY0CrY1toRGB.fs</file>
         <file>resources/SwizzleISF-BGRAtoRGBA.fs</file>
+        <file>resources/ISFEditorAppIcon.png</file>
+        <file>resources/About.html</file>
     </qresource>
 </RCC>

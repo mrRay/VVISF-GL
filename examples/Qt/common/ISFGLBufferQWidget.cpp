@@ -264,6 +264,7 @@ void ISFGLBufferQWidget::initializeGL()
 			if (fragShaderFile.open(QFile::ReadOnly))	{
 				QTextStream		rStream(&fragShaderFile);
 				fragShaderString = rStream.readAll();
+				fragShaderFile.close();
 			}
 			else
 				fragShaderString = QString("");

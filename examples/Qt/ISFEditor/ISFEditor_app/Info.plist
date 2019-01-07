@@ -7,7 +7,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string>ISFEditorAppIcon.icns</string>
 	<key>CFBundleVersion</key>
 	<string>${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleIdentifier</key>

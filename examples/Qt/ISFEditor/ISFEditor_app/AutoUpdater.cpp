@@ -56,21 +56,6 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 	qDebug() << "making QtAutoUpdater with path to maintenance tool " << tmpPath;
 	_uc = new QtAutoUpdater::UpdateController(tmpPath, inParent);
 	
-	
-//#elif defined(QT_NO_DEBUG)	//	else QT_DEBUG not defined, release build
-//	qDebug() << "AutoUpdater built in RELEASE mode";
-
-
-//	//	no platform-specific code here, the maintenance tool is expected to be part of the install
-//	_uc = new QtAutoUpdater::UpdateController(inParent);
-
-
-//#endif
-	
-	
-	
-	
-	
 	QObject::connect(_uc, &QtAutoUpdater::UpdateController::runningChanged, [&](bool running) {
 		qDebug() << "Running changed:" << running;
 		if (_uc != nullptr)	{
@@ -81,8 +66,6 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 				qDebug() << "\terror is " << u->errorLog();
 			}
 		}
-		//if(!running)
-		//	qApp->quit();
 	});
 	
 #if defined(Q_OS_MAC)
