@@ -4,8 +4,6 @@
     <Description>Install the ISF Editor application.</Description>
     <Version>2.9.7-3</Version>
     <ReleaseDate>2018-12-31</ReleaseDate>
-    <Licenses>
-        <License name="BSD 3-clause" file="license.txt" />
-    </Licenses>
     <Default>true</Default>
+    <SortingPriority>10</SortingPriority>
 </Package>
