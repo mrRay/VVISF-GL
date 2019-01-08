@@ -13,19 +13,17 @@ win32	{
 	
 		offline_installer_creator.input = INPUT
 		offline_installer_creator.output = ISFEditor_installer
-		offline_installer_creator.clean_commands = rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
-		offline_installer_creator.commands += echo "building offline installer...";
-		offline_installer_creator.commands += rm $$shell_quote($$shell_path("$$OUT_PWD/$$offline_installer_creator.output"))
-		offline_installer_creator.commands += $$BINARYCREATOR -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT};
-		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT};
+		offline_installer_creator.clean_commands = rm "$$OUT_PWD/$$offline_installer_creator.output" $$escape_expand(\n)
+		offline_installer_creator.commands += rm $$shell_quote($$shell_path("$$OUT_PWD/$$offline_installer_creator.output")) $$escape_expand(\n)
+		offline_installer_creator.commands += $$BINARYCREATOR -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT} $$escape_expand(\n)
+		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT} $$escape_expand(\n)
 		offline_installer_creator.CONFIG += target_predeps no_link combine
 
 		repo_creator.input = INPUT
 		repo_creator.output = repo_creator_output
-		repo_creator.clean_commands = rm -Rf "$$PWD/repository";
-		repo_creator.commands += echo "building repository...";
-		repo_creator.commands += rm -Rf "$$PWD/repository";
-		repo_creator.commands += $$REPOGEN -p $$PWD/packages $$PWD/repository;
+		repo_creator.clean_commands = rm $$shell_quote($$shell_path("$$PWD/repository")) $$escape_expand(\n)
+		repo_creator.commands += rmdir $$shell_quote($$shell_path("$$PWD/repository")) $$escape_expand(\n)
+		repo_creator.commands += $$REPOGEN -p $$shell_quote($$shell_path($$PWD/packages $$PWD/repository)) $$escape_expand(\n)
 		repo_creator.CONFIG += target_predeps no_link combine
 
 		#QMAKE_EXTRA_COMPILERS += installer_prebuild
