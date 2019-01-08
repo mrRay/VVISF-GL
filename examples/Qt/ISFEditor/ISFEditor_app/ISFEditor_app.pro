@@ -494,11 +494,6 @@ mac {
 		
 		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
 		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
-		
-		# copy the built app to the appropriate 'packages' directory in the ISFEditor_installer project directory
-		#QMAKE_POST_LINK += rm -Rf "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data";
-		#QMAKE_POST_LINK += mkdir -v "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data";
-		#QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data/$$TARGET\.app";
 	}
 }
 win32	{
@@ -535,16 +530,34 @@ win32	{
 #	but for some reason that's not working (control is returning before the copy is finished and the installer is incomplete)
 mac	{
 	CONFIG(release, debug|release)	{
+		
 		# delete the 'data' folder for the editor, make the 'data' folder for the editor again, copy the compiled app into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFEditor.mac/data"
+		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFEditor.mac/data"
 		QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
 		QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
 		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$${PRO_DATA_PATH}/$$TARGET\.app";
+		
 		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer/packages/com.vidvox.ISFFiles.mac/data"
+		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFFiles.mac/data"
 		QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
 		QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
 		QMAKE_POST_LINK += cp -vaRf "$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*" $${PRO_DATA_PATH};
+		
+	}
+}
+win32	{
+	CONFIG(release, debug|release)	{
+		
+		# delete the 'data' folder for the editor, make the 'data' folder for the editor again, copy the compiled app into it
+		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFEditor.win/data"
+		QMAKE_POST_LINK += rmdir $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path("$${PRO_DATA_PATH}""/$${TARGET}")) $$escape_expand(\n)
+		
+		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it
+		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFFiles.win/data"
+		QMAKE_POST_LINK += rmdir $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		
 	}
 }
 
