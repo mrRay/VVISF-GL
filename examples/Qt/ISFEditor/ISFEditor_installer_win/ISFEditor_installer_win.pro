@@ -13,11 +13,9 @@ win32	{
 	
 		offline_installer_creator.input = INPUT
 		offline_installer_creator.output = ISFEditor_installer
-		#offline_installer_creator.clean_commands = rm "$$OUT_PWD/$$offline_installer_creator.output" $$escape_expand(\n)
-		#offline_installer_creator.clean_commands = $$QMAKE_DEL_FILE $$shell_quote($$shell_path("$$OUT_PWD/$$offline_installer_creator.output.exe")) $$escape_expand(\n)
-		#offline_installer_creator.commands += rm $$shell_quote($$shell_path("$$OUT_PWD/$$offline_installer_creator.output")) $$escape_expand(\n)
-		#offline_installer_creator.commands += DEL /F /Q $$shell_quote($$shell_path($$offline_installer_creator.output.exe)) $$escape_expand(\n)
-		offline_installer_creator.commands += DEL /F /Q $$shell_quote($$shell_path($$OUT_PWD/$$offline_installer_creator.output".exe")) $$escape_expand(\n)
+		#	delete the "old" compiled installer app
+		offline_installer_creator.commands += if exist $$shell_quote($$shell_path($$OUT_PWD/$$offline_installer_creator.output".exe")) DEL /F /Q $$shell_quote($$shell_path($$OUT_PWD/$$offline_installer_creator.output".exe")) $$escape_expand(\n)
+		#	create a new installer app from the packages
 		offline_installer_creator.commands += $$BINARYCREATOR -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT} $$escape_expand(\n)
 		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$shell_quote($$shell_path($$PWD/config/config.xml)) -p $$shell_quote($$shell_path($$PWD/packages)) ${QMAKE_FILE_OUT} $$escape_expand(\n)
 		offline_installer_creator.CONFIG += target_predeps no_link combine
@@ -25,17 +23,14 @@ win32	{
 
 		repo_creator.input = INPUT
 		repo_creator.output = repo_creator_output
-		#repo_creator.clean_commands = rm $$shell_quote($$shell_path("$$PWD/repository")) $$escape_expand(\n)
-		#repo_creator.clean_commands = $$QMAKE_DEL_FILE $$shell_quote($$shell_path("$$PWD/repository")) $$escape_expand(\n)
-		#repo_creator.commands += rmdir $$shell_quote($$shell_path("$$PWD/repository")) $$escape_expand(\n)
-		repo_creator.commands += $$QMAKE_DEL_TREE $$shell_quote($$shell_path($$PWD/repository)) $$escape_expand(\n)
-
+		#	delete the "old" repository directory in the source tree
+		repo_creator.commands += if exist $$shell_quote($$shell_path($$PWD/repository)) RMDIR /S /Q $$shell_quote($$shell_path($$PWD/repository)) $$escape_expand(\n)
+		#	create a new repository directory
 		repo_creator.commands += $$QMAKE_MKDIR $$shell_quote($$shell_path($$PWD/repository)) $$escape_expand(\n)
-
+		#	populate the repository directory with the repogen tool
 		repo_creator.commands += $$REPOGEN -p $$shell_quote($$shell_path($$PWD/packages)) $$shell_quote($$shell_path($$PWD/repository)) $$escape_expand(\n)
 		repo_creator.CONFIG += target_predeps no_link combine
 
-		#QMAKE_EXTRA_COMPILERS += installer_prebuild
 		QMAKE_EXTRA_COMPILERS += offline_installer_creator
 		QMAKE_EXTRA_COMPILERS += repo_creator
 

@@ -171,6 +171,11 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//	select a source in the combo box- let's start rendering a built-in ISF source
 	ui->videoSourceComboBox->setCurrentIndex(ui->videoSourceComboBox->findText("Cellular"));
 	ui->videoSourceComboBox->update();
+
+	//	hid the 'load system ISFs' button if we're on windows ("load user ISFs" loads the "sample_ISFs" directory)
+#if defined(Q_OS_WIN)
+	ui->loadUserISFsButton->setVisible(false);
+#endif
 	
 	//	figure out what directory's contents we want to display, and use it to set the base directory
 	QString			defaultDirToLoad;
@@ -179,9 +184,13 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//defaultDirToLoad = QString("~/Documents/VDMX5/VDMX5/supplemental resources/ISF tests+tutorials");
 	defaultDirToLoad.replace("~", QDir::homePath());
 #else
-	defaultDirToLoad = QDir::toNativeSeparators("C:/Users/operator/Desktop/ISF tests+tutorials");
+	//defaultDirToLoad = QDir::toNativeSeparators("C:/Users/operator/Desktop/ISF tests+tutorials");
 	//QString		desktopDir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
-	defaultDirToLoad = QCoreApplication::applicationDirPath() + "/sample_ISFs";
+	//defaultDirToLoad = QCoreApplication::applicationDirPath() + "/sample_ISFs";
+	QDir			tmpDir = QDir::root();
+	tmpDir.cd("ProgramData");
+	tmpDir.cd("ISF");
+	defaultDirToLoad = tmpDir.path();
 #endif
 	QSettings		settings;
 	QVariant		lastUsedPath = settings.value("baseDir");
@@ -225,8 +234,16 @@ void LoadingWindow::loadUserISFsButtonClicked()	{
 }
 void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
-	
+#if defined(Q_OS_WIN)
+	QDir			tmpDir = QDir::root();
+	tmpDir.cd("ProgramData");
+	tmpDir.cd("ISF");
+	if (!tmpDir.exists())
+		return;
+	QString			dirToLoad(tmpDir.path());
+#elif defined(Q_OS_MAC)
 	QString			dirToLoad("/Library/Graphics/ISF");
+#endif
 	setBaseDirectory(dirToLoad);
 	
 }

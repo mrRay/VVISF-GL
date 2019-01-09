@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <DisplayName>ISF Sample Files</DisplayName>
-    <Description>Hundreds of sample ISF generators and filters.  These will be installed in /Library/Graphics/ISF, where they can be accessed by all users and applications on this machine.</Description>
+	<Description>Hundreds of ISF generators and filters.  These will be installed in the root "ProgramDirectory" on the target drive (usually C:\\ProgramData\ISF).</Description>
     <Version>1.0.0-0</Version>
     <ReleaseDate>2018-12-31</ReleaseDate>
     <RequiresAdminRights>true</RequiresAdminRights>
