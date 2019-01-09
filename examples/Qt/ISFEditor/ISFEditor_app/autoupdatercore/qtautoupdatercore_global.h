@@ -3,10 +3,14 @@
 
 #include <QtCore/qglobal.h>
 
+#if 0
 #if defined(QT_BUILD_AUTOUPDATERCORE_LIB)
 #	define Q_AUTOUPDATERCORE_EXPORT Q_DECL_EXPORT
 #else
 #	define Q_AUTOUPDATERCORE_EXPORT Q_DECL_IMPORT
 #endif
+#else
+	#define Q_AUTOUPDATERCORE_EXPORT
+#endif //	0
 
 #endif // QTAUTOUPDATERCORE_GLOBAL_H

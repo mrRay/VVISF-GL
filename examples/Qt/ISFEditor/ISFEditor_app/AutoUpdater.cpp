@@ -5,6 +5,8 @@
 #include <QCoreApplication>
 #include <updater.h>
 
+#include "VVGL.hpp"
+
 
 
 
@@ -49,7 +51,16 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 	}
 #elif defined(Q_OS_WIN)
 	qDebug() << "AutoUpdater built for win";
-	QString			tmpPath = QString("C:/Qt/MaintenanceTool");
+#if defined(QT_DEBUG)
+	QDir			exeDir = QDir("C:/Program Files (x86)/ISF Editor");
+#elif defined(QT_NO_DEBUG)
+	QDir			exeDir = QDir(QCoreApplication::applicationDirPath());
+#endif
+	QString			tmpPath;
+	if (!exeDir.exists())
+		tmpPath = QString("C:/Qt/MaintenanceTool.exe");
+	else
+		tmpPath = exeDir.path() + "/maintenancetool.exe";
 #else
 	//	linux builds will fail to compile somewhere around here.  not sure where Qt is installed, don't have one handy!
 #endif

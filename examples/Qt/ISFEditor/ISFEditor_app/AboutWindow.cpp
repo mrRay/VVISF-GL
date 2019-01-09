@@ -1,6 +1,8 @@
 #include "AboutWindow.h"
 #include "ui_AboutWindow.h"
 
+#include "VVGL.hpp"
+
 
 
 

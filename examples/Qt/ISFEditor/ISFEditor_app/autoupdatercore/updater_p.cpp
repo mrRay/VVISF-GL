@@ -69,7 +69,7 @@ const QString UpdaterPrivate::toSystemExe(QString basePath)
 
 bool UpdaterPrivate::startUpdateCheck()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	if(running)
 		return false;
 	else {
@@ -80,7 +80,7 @@ bool UpdaterPrivate::startUpdateCheck()
 		
 		QFileInfo toolInfo(QCoreApplication::applicationDirPath(), toolPath);
 		mainProcess = new QProcess(this);
-		qDebug() << "\tlaunching process with path " << toolInfo.absoluteFilePath();
+		//qDebug() << "\tlaunching process with path " << toolInfo.absoluteFilePath();
 		mainProcess->setProgram(toolInfo.absoluteFilePath());
 		mainProcess->setArguments({QStringLiteral("--checkupdates")});
 
@@ -195,7 +195,7 @@ QList<Updater::UpdateInfo> UpdaterPrivate::parseResult(const QByteArray &output)
 
 void UpdaterPrivate::updaterReady(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	if(mainProcess) {
 		//	kill the TTL timer when the update process exits naturally
 		if (mainProcessTTL != nullptr)	{
@@ -237,7 +237,7 @@ void UpdaterPrivate::updaterReady(int exitCode, QProcess::ExitStatus exitStatus)
 
 void UpdaterPrivate::updaterError(QProcess::ProcessError error)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	if(mainProcess) {
 		normalExit = false;
 		lastErrorCode = error;

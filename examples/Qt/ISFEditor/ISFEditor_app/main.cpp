@@ -19,6 +19,14 @@ extern "C"
 
 int main(int argc, char *argv[])
 {
+#ifdef _WIN32
+	if (AttachConsole(ATTACH_PARENT_PROCESS))	//	this line displays a console if the app was launched from a console
+	//if (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole())	//	this line creates and attaches a console
+	{
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+	}
+#endif
 	//	we want all the widgets to share contexts, and we need to make a widget to get that shard context (there's no way to tell a widget to use a given context)
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);

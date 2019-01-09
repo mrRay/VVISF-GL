@@ -6,10 +6,10 @@
     <Publisher>Vidvox</Publisher>
     <ProductUrl>https://www.github.com/mrRay/ISFSandbox</ProductUrl>
     <StartMenuDir>ISF</StartMenuDir>
-    <TargetDir>/Applications/ISF Editor</TargetDir>
+	<TargetDir>@ApplicationsDir@/ISF Editor</TargetDir>
     <RemoteRepositories>
     	<Repository>
-    		<Url>https://www.vidvox.net/version/testVsn</Url>
+			<Url>https://www.vidvox.net/version/testVsn-win</Url>
     	</Repository>
     </RemoteRepositories>
 </Installer>

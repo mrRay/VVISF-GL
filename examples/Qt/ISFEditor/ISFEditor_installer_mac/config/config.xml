@@ -9,7 +9,7 @@
     <TargetDir>/Applications/ISF Editor</TargetDir>
     <RemoteRepositories>
     	<Repository>
-    		<Url>https://www.vidvox.net/version/testVsn</Url>
+			<Url>https://www.vidvox.net/version/testVsn-mac</Url>
     	</Repository>
     </RemoteRepositories>
 </Installer>

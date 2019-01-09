@@ -27,8 +27,8 @@ mac	{
 	ICON = ISFEditorAppIcon.icns
 }
 win32	{
-	#RC_ICONS = ISFEditorAppIcon.ico
-	ICON = ISFEditorAppIcon.ico
+	RC_ICONS = ISFEditorAppIcon.ico
+	#ICON = ISFEditorAppIcon.ico
 }
 QMAKE_TARGET_COMPANY = Vidvox
 QMAKE_TARGET_DESCRIPTION = Interactive Shader Format editor and viewer
@@ -548,15 +548,39 @@ mac	{
 win32	{
 	CONFIG(release, debug|release)	{
 		
+
 		# delete the 'data' folder for the editor, make the 'data' folder for the editor again, copy the compiled app into it
 		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFEditor.win/data"
-		QMAKE_POST_LINK += rmdir $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path("$${PRO_DATA_PATH}""/$${TARGET}")) $$escape_expand(\n)
-		
+
+		#QMAKE_POST_LINK += rmdir /S /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_CLEAN += $$shell_quote($$shell_path($${PRO_DATA_PATH}))
+		QMAKE_POST_LINK += $$QMAKE_DEL_TREE $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+
+		#QMAKE_POST_LINK += copy $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += $$QMAKE_DEL_FILE $$shell_quote($$shell_path($${PRO_DATA_PATH}/*.cpp)) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.cpp")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.obj")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.h")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pch")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.res")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.lib")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.exp")) $$escape_expand(\n)
+
+
+
+
 		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it
 		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFFiles.win/data"
-		QMAKE_POST_LINK += rmdir $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += copy $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += rmdir $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += copy $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+
+		QMAKE_POST_LINK += $$QMAKE_DEL_TREE $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		QMAKE_POST_LINK += $$QMAKE_COPY_FILE $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path("$${PRO_DATA_PATH}/")) $$escape_expand(\n)
 		
 	}
 }
