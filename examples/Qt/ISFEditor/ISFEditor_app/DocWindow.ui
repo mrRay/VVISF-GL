@@ -279,6 +279,7 @@
     <addaction name="actionImport_from_GLSLSandbox"/>
     <addaction name="actionImport_from_Shadertoy"/>
     <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -366,6 +367,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>

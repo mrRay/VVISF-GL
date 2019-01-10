@@ -3,6 +3,7 @@
 
 #include <QSyntaxHighlighter>
 #include <QRegularExpression>
+#include <QSettings>
 
 
 
@@ -19,6 +20,7 @@ class Highlighter : public QSyntaxHighlighter
 public:
 	Highlighter(QTextDocument * inParent = nullptr);
 	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
+	void loadColorsFromSettings();
 	
 protected:
 	void highlightBlock(const QString & inText) override;
@@ -39,6 +41,8 @@ private:
 	QRegularExpression			commentSingleExpr;
 	QRegularExpression			commentStartExpr;
 	QRegularExpression			commentEndExpr;
+	
+	//QTextCharFormat		plainTextFmt;
 	
 	QTextCharFormat		variablesFmt;
 	QTextCharFormat		typeAndClassNamesFmt;

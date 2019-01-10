@@ -115,7 +115,8 @@ SOURCES += \
     ../../common/VVGLRenderQThread.cpp \
     misc_ui/QPassiveWheelComboBox.cpp \
     AutoUpdater.cpp \
-    AboutWindow.cpp
+    AboutWindow.cpp \
+    Preferences.cpp
 
 
 HEADERS += \
@@ -181,7 +182,8 @@ HEADERS += \
     ../../common/VVGLRenderQThread.h \
     misc_ui/QPassiveWheelComboBox.h \
     AutoUpdater.h \
-    AboutWindow.h
+    AboutWindow.h \
+    Preferences.h
 
 
 # platform-specific classes
@@ -246,7 +248,8 @@ FORMS += \
 	JSONGUI/JSONGUIPassWidget.ui \
     ISFConverter/GLSLSandboxConverter.ui \
     ISFConverter/ShadertoyConverter.ui \
-    AboutWindow.ui
+    AboutWindow.ui \
+    Preferences.ui
 
 RESOURCES += \
 	misc_ui/SimpleSourceCodeEditor/shaderLanguagefiles.qrc \

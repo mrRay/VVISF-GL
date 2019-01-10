@@ -42,11 +42,14 @@ public:
 	bool contentsNeedToBeSaved();
 	QString fragFilePath();
 	
+	void reloadColorsAndSyntaxFormats();
+	
 public slots:
 	Q_SLOT void on_actionNew_triggered();
 	Q_SLOT void on_actionSave_triggered();
 	Q_SLOT void on_actionImport_from_GLSLSandbox_triggered();
 	Q_SLOT void on_actionImport_from_Shadertoy_triggered();
+	Q_SLOT void on_actionPreferences_triggered();
 	Q_SLOT void on_actionQuit_triggered();
 	
 	Q_SLOT void on_actionFind_triggered();

@@ -37,9 +37,16 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("com.yourcompanyname");
 	QCoreApplication::setApplicationName("ISFEditor");
 	
-	//QSurfaceFormat::setDefaultFormat(VVGL::CreateCompatibilityGLSurfaceFormat());
-	QSurfaceFormat::setDefaultFormat(VVGL::CreateGL4SurfaceFormat());
-	//QSurfaceFormat::setDefaultFormat(VVGL::CreateGL3SurfaceFormat());
+	QSettings			settings;
+	bool				gl4Flag = false;
+	if (settings.contains("GL4"))	{
+		gl4Flag = settings.value("GL4").toBool();
+	}
+	if (gl4Flag)
+		QSurfaceFormat::setDefaultFormat(VVGL::CreateGL4SurfaceFormat());
+	else
+		QSurfaceFormat::setDefaultFormat(VVGL::CreateCompatibilityGLSurfaceFormat());
+	
 	
 	//			from sample code for QtAutoUpdater:
 	//	"Since there is no mainwindow, the various dialogs should not quit the app"

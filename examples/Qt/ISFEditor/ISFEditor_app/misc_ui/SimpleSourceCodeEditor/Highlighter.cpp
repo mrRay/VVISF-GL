@@ -26,7 +26,9 @@ Highlighter::Highlighter(QTextDocument * inParent)
 	commentEndExpr = QRegularExpression("\\*/");
 	
 	//xxxFmt.setFontWeight(QFont::Bold);
-	
+	/*
+	plainTextFmt.setForeground(Qt::black);
+	*/
 	variablesFmt.setForeground(Qt::darkMagenta);
 	typeAndClassNamesFmt.setForeground(Qt::darkGreen);
 	functionsFmt.setForeground(Qt::darkBlue);
@@ -36,6 +38,8 @@ Highlighter::Highlighter(QTextDocument * inParent)
 	numbersFmt.setForeground(Qt::magenta);
 	quotationsFmt.setForeground(Qt::darkRed);
 	commentFmt.setForeground(QColor(255,194,0,255));
+	
+	loadColorsFromSettings();
 }
 void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -43,6 +47,8 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		qDebug() << "\tERR: document is not a JSON object, bailing, " << __PRETTY_FUNCTION__;
 		return;
 	}
+	
+	loadColorsFromSettings();
 	
 	highlightRules.clear();
 	
@@ -154,17 +160,77 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		highlightRules.append(tmpRule);
 	}
 }
+void Highlighter::loadColorsFromSettings()	{
+	QSettings		settings;
+	
+	if (!settings.contains("color_txt_bg"))	{
+		QColor		tmpColor = Qt::white;
+		settings.setValue("color_txt_bg", QVariant(tmpColor));
+	}
+	
+	if (!settings.contains("color_txt_txt"))	{
+		QColor		tmpColor = Qt::black;
+		settings.setValue("color_txt_txt", QVariant(tmpColor));
+	}
+	
+	if (settings.contains("color_txt_var"))
+		variablesFmt.setForeground(settings.value("color_txt_var").value<QColor>());
+	else
+		settings.setValue("color_txt_var", QVariant(variablesFmt.foreground()));
+	
+	if (settings.contains("color_txt_typeClass"))
+		typeAndClassNamesFmt.setForeground(settings.value("color_txt_typeClass").value<QColor>());
+	else
+		settings.setValue("color_txt_typeClass", QVariant(typeAndClassNamesFmt.foreground()));
+	
+	if (settings.contains("color_txt_funcs"))
+		functionsFmt.setForeground(settings.value("color_txt_funcs").value<QColor>());
+	else
+		settings.setValue("color_txt_funcs", QVariant(functionsFmt.foreground()));
+	
+	if (settings.contains("color_txt_sdkFuncs"))
+		sdkFunctionsFmt.setForeground(settings.value("color_txt_sdkFuncs").value<QColor>());
+	else
+		settings.setValue("color_txt_sdkFuncs", QVariant(sdkFunctionsFmt.foreground()));
+	
+	if (settings.contains("color_txt_keywords"))
+		keywordsFmt.setForeground(settings.value("color_txt_keywords").value<QColor>());
+	else
+		settings.setValue("color_txt_keywords", QVariant(keywordsFmt.foreground()));
+	
+	if (settings.contains("color_txt_pragmas"))
+		pragmasFmt.setForeground(settings.value("color_txt_pragmas").value<QColor>());
+	else
+		settings.setValue("color_txt_pragmas", QVariant(pragmasFmt.foreground()));
+	
+	if (settings.contains("color_txt_numbers"))
+		numbersFmt.setForeground(settings.value("color_txt_numbers").value<QColor>());
+	else
+		settings.setValue("color_txt_numbers", QVariant(numbersFmt.foreground()));
+	
+	if (settings.contains("color_txt_quotes"))
+		quotationsFmt.setForeground(settings.value("color_txt_quotes").value<QColor>());
+	else
+		settings.setValue("color_txt_quotes", QVariant(quotationsFmt.foreground()));
+	
+	if (settings.contains("color_txt_comment"))
+		commentFmt.setForeground(settings.value("color_txt_comment").value<QColor>());
+	else
+		settings.setValue("color_txt_comment", QVariant(commentFmt.foreground()));
+}
 
 
 void Highlighter::highlightBlock(const QString & inText)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << ": " << inText;
+	bool			isPlainText = true;
 	//	run through all of the highlight rules, checked the passed string against each
 	foreach (const HighlightRule & tmpRule, highlightRules) {
 		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch		tmpMatch = matchIterator.next();
 			setFormat(tmpMatch.capturedStart(), tmpMatch.capturedLength(), tmpRule.format);
+			isPlainText = false;
 		}
 	}
 	//	set the current block state
@@ -174,6 +240,7 @@ void Highlighter::highlightBlock(const QString & inText)
 	int		singleLineCommentStartIndex = -1;
 	if (inText.contains(commentSingleExpr))	{
 		singleLineCommentStartIndex = commentSingleExpr.match(inText).capturedStart();
+		isPlainText = false;
 	}
 	
 	//	if there isn't an open multi-line comment, look for the beginning of one in the passed text
@@ -199,8 +266,15 @@ void Highlighter::highlightBlock(const QString & inText)
 		}
 		setFormat(startIndex, commentLength, commentFmt);
 		startIndex = inText.indexOf(commentStartExpr, startIndex + commentLength);
+		isPlainText = false;
 	}
 	
+	/*
+	//	if this is plain text...
+	if (isPlainText)	{
+		setFormat(0, inText.length(), plainTextFmt);
+	}
+	*/
 }
 
 

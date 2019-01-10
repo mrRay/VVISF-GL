@@ -4,17 +4,17 @@ CONFIG = ordered
 
 SUBDIRS += \
     VVGL \
-	VVGLTestApp \
+	#VVGLTestApp \
 	VVISF \
-	VVISFTestApp \
-	TexUploadBenchmark \
-	TexDownloadBenchmark \
+	#VVISFTestApp \
+	#TexUploadBenchmark \
+	#TexDownloadBenchmark \
     ISFEditor
 
-TexUploadBenchmark.depends += VVGL
-TexDownloadBenchmark.depends += VVISF
-VVGLTestApp.depends += VVGL
+#TexUploadBenchmark.depends += VVGL
+#TexDownloadBenchmark.depends += VVISF
+#VVGLTestApp.depends += VVGL
 VVISF.depends += VVGL
-VVISFTestApp.depends += VVISF
+#VVISFTestApp.depends += VVISF
 ISFEditor.depends += VVISF
 

@@ -18,6 +18,7 @@
 #include "ShadertoyConverter.h"
 #include "AutoUpdater.h"
 #include "AboutWindow.h"
+#include "Preferences.h"
 
 
 
@@ -42,22 +43,8 @@ DocWindow::DocWindow(QWidget *parent) :
 	
 	ui->setupUi(this);
 	
-	//	tell the source code editors to load their language files
-	QFile		tmpFile(":/shader language files/shader language files/ISF_GLSL_1_5.json");
-	if (tmpFile.open(QFile::ReadOnly))	{
-		QJsonDocument		tmpDoc = QJsonDocument::fromJson(tmpFile.readAll());
-		if (tmpDoc.isEmpty())
-			qDebug() << "\terr: doc was empty";
-		tmpFile.close();
-		
-		ui->fragShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
-		ui->vertShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
-		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
-		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
-		
-	}
-	else
-		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
+	//	reload the colors and syntax documents for all the text views
+	reloadColorsAndSyntaxFormats();
 	
 	//	set up the frag shader editor so tmp files are auto-saved
 	connect(ui->fragShaderEditor, &QPlainTextEdit::textChanged, [&]()	{
@@ -502,6 +489,52 @@ QString DocWindow::fragFilePath()	{
 	QString		returnMe = (_fragFilePath==nullptr) ? QString("") : QString(*_fragFilePath);
 	return returnMe;
 }
+void DocWindow::reloadColorsAndSyntaxFormats()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	//	tell the source code editors to load their language files
+	QFile		tmpFile(":/shader language files/shader language files/ISF_GLSL_1_5.json");
+	if (tmpFile.open(QFile::ReadOnly))	{
+		QJsonDocument		tmpDoc = QJsonDocument::fromJson(tmpFile.readAll());
+		if (tmpDoc.isEmpty())
+			qDebug() << "\terr: doc was empty";
+		tmpFile.close();
+		
+		QSettings		settings;
+		QColor			bgColor; 
+		QColor			txtColor;
+		
+		if (settings.contains("color_txt_txt"))
+			txtColor = settings.value("color_txt_txt").value<QColor>();
+		else
+			txtColor = Qt::black;
+		
+		if (settings.contains("color_txt_bg"))
+			bgColor = settings.value("color_txt_bg").value<QColor>();
+		else
+			bgColor = Qt::white;
+		
+		QString			stylesheetString = "QPlainTextEdit {background-color:" + bgColor.name() + "; color:" + txtColor.name() + ";}";
+		
+		ui->fragShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
+		ui->fragShaderEditor->setStyleSheet(stylesheetString);
+		ui->fragShaderEditor->setPlainText(ui->fragShaderEditor->toPlainText());
+		
+		ui->vertShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
+		ui->vertShaderEditor->setStyleSheet(stylesheetString);
+		ui->vertShaderEditor->setPlainText(ui->vertShaderEditor->toPlainText());
+		
+		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
+		ui->compiledVertShader->setStyleSheet(stylesheetString);
+		ui->compiledVertShader->setPlainText(ui->compiledVertShader->toPlainText());
+		
+		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
+		ui->compiledFragShader->setStyleSheet(stylesheetString);
+		ui->compiledFragShader->setPlainText(ui->compiledFragShader->toPlainText());
+	}
+	else
+		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
+}
 
 
 
@@ -548,6 +581,13 @@ void DocWindow::on_actionImport_from_Shadertoy_triggered()	{
 		}
 	}
 	delete conv;
+}
+void DocWindow::on_actionPreferences_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	Preferences		*p = GetPreferences();
+	if (p != nullptr)	{
+		p->show();
+	}
 }
 void DocWindow::on_actionQuit_triggered()	{
 	qDebug() << __PRETTY_FUNCTION__;
