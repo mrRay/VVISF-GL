@@ -467,8 +467,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 mac {
 	QMAKE_INFO_PLIST = Info.plist
 	
-	# for some reason, mac builds aren't getting cleaned.  i think the app name is missing the ".app" extension
-	QMAKE_CLEAN += $$OUT_PWD/$$TARGET".app";
+	QMAKE_CLEAN += -r -d $$OUT_PWD/$$TARGET".app";
 	
 	framework_dir = $$OUT_PWD/$$TARGET\.app/Contents/Frameworks
 	
