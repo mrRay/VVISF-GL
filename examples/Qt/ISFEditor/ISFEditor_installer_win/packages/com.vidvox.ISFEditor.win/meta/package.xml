@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>The ISF Editor app</DisplayName>
     <Description>Install the ISF Editor application.</Description>
-    <Version>2.9.7-3</Version>
+	<Version>2.9.7-4</Version>
     <ReleaseDate>2018-12-31</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>

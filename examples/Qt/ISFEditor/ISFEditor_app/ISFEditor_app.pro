@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.7-3
+VERSION = 2.9.7-4
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
