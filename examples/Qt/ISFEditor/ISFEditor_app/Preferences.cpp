@@ -42,10 +42,13 @@ void Preferences::colorLabelClicked()	{
 	if (clickedLabel == nullptr)
 		return;
 	QString				clickedName = clickedLabel->objectName();
+	QPalette			tmpPalette = clickedLabel->palette();
+	QColor				tmpColor = tmpPalette.color(clickedLabel->backgroundRole());
 	
 	//	make a color dialog
 	QColorDialog		*colorDialog = new QColorDialog(this);
 	colorDialog->setOptions( QColorDialog::DontUseNativeDialog );
+	colorDialog->setCurrentColor(tmpColor);
 	//colorDialog->setOptions( QColorDialog::NoButtons );
 	colorDialog->setAttribute( Qt::WA_DeleteOnClose );
 	//	open a color picker dialog
