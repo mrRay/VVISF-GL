@@ -6,4 +6,5 @@
     <ReleaseDate>2018-12-31</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>
+	<RequiresAdminRights>true</RequiresAdminRights>
 </Package>

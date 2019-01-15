@@ -24,6 +24,10 @@ Preferences::Preferences(QWidget *parent) :
 	QObject::connect(ui->color_txt_txt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_bg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	
+	QObject::connect(ui->color_txt_linebg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
+	QObject::connect(ui->color_txt_seltxt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
+	QObject::connect(ui->color_txt_selbg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
+	
 	QObject::connect(ui->color_txt_var, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_typeClass, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_funcs, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
@@ -81,6 +85,9 @@ void Preferences::upateLocalUI()	{
 	QStringList		keys = {
 		"color_txt_bg",
 		"color_txt_txt",
+		"color_txt_linebg",
+		"color_txt_seltxt",
+		"color_txt_selbg",
 		"color_txt_var",
 		"color_txt_typeClass",
 		"color_txt_funcs",
@@ -94,52 +101,52 @@ void Preferences::upateLocalUI()	{
 	for (const QString & str : keys)	{
 		QColor		tmpColor;
 		QLabel		*label = nullptr;
+		
 		if (str == "color_txt_bg")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_bg;
 		}
 		else if (str == "color_txt_txt")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_txt;
 		}
+		else if (str == "color_txt_linebg")	{
+			label = ui->color_txt_linebg;
+		}
+		else if (str == "color_txt_seltxt")	{
+			label = ui->color_txt_seltxt;
+		}
+		else if (str == "color_txt_selbg")	{
+			label = ui->color_txt_selbg;
+		}
 		else if (str == "color_txt_var")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_var;
 		}
 		else if (str == "color_txt_typeClass")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_typeClass;
 		}
 		else if (str == "color_txt_funcs")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_funcs;
 		}
 		else if (str == "color_txt_sdkFuncs")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_sdkFuncs;
 		}
 		else if (str == "color_txt_keywords")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_keywords;
 		}
 		else if (str == "color_txt_pragmas")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_pragmas;
 		}
 		else if (str == "color_txt_numbers")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_numbers;
 		}
 		else if (str == "color_txt_quotes")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_quotes;
 		}
 		else if (str == "color_txt_comment")	{
-			tmpColor = settings.value(str).value<QColor>();
 			label = ui->color_txt_comment;
 		}
 		
 		if (label != nullptr)	{
+			tmpColor = settings.value(str).value<QColor>();
 			QPalette		tmpPalette = label->palette();
 			tmpPalette.setColor(label->backgroundRole(), tmpColor);
 			label->setAutoFillBackground(true);

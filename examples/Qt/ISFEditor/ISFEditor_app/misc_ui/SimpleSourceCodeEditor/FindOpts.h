@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QRegularExpression>
+#include <QSettings>
 
 
 
@@ -27,6 +28,25 @@ struct FindOpts	{
 				return false;
 		}
 		return true;
+	}
+	
+	void saveToSettings()	{
+		QSettings		settings;
+		settings.setValue("findOpts_searchString", QVariant(searchString));
+		settings.setValue("findOpts_caseSensitive", QVariant(caseSensitive));
+		settings.setValue("findOpts_entireWord", QVariant(entireWord));
+		settings.setValue("findOpts_regex", QVariant(regex));
+	}
+	void loadFromSettings()	{
+		QSettings		settings;
+		if (settings.contains("findOpts_searchString"))
+			searchString = settings.value("findOpts_searchString").toString();
+		if (settings.contains("findOpts_caseSensitive"))
+			caseSensitive = settings.value("findOpts_caseSensitive").toBool();
+		if (settings.contains("findOpts_entireWord"))
+			entireWord = settings.value("findOpts_entireWord").toBool();
+		if (settings.contains("findOpts_regex"))
+			regex = settings.value("findOpts_regex").toBool();
 	}
 };
 

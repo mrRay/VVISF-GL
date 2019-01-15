@@ -42,6 +42,8 @@ public:
 	//		MULTI_LINE_COMMENT_END_REGEX : string with a regex pattern that matches the close of a multi-line comment
 	//		SINGLE_LINE_COMMENT_REGEX : string with a regex pattern that matches a single-line comment
 	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
+	FindOpts findOpts() { return _findOpts; }
+	void setFindOpts(const FindOpts & n) { _findOpts = n; }
 
 signals:
 	void selectedErrorAtLine(int selectedErrorLineIndex);
@@ -68,6 +70,7 @@ private:
 	QWidget			*lineNumberArea = nullptr;	//	do not explicitly free
 	Highlighter		*highlighter = nullptr;	//	do not explicitly free
 	QCompleter		*completer = nullptr;	//	do not explicitly free
+	QColor			currentLineColor;	//	the color drawn behind the current line (the line with the insertion point)
 	
 	std::recursive_mutex	errLock;
 	QVector<int>			*errLineNumbers = nullptr;	//	must be deleted!
@@ -75,7 +78,7 @@ private:
 	std::recursive_mutex	timestampLock;
 	ulong					lastKeyEventTimestamp = 0;
 	
-	FindOpts		findOpts;	//	last search opts
+	FindOpts		_findOpts;	//	last search opts
 	
 	void updateCompleterUsingTextUnderCursor();
 	void maybeOpenCompleterEvent(const QKeyEvent & inEvent);

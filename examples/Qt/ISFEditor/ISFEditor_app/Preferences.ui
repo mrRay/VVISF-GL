@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>377</height>
+    <height>420</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -79,6 +79,19 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabelClickable" name="color_txt_txt">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="1">
       <widget class="QLabel" name="label_6">
        <property name="text">
@@ -86,70 +99,67 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="label_8">
+     <item row="2" column="0">
+      <widget class="QLabelClickable" name="color_txt_linebg">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
        <property name="text">
-        <string>variable color</string>
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>current line background color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabelClickable" name="color_txt_seltxt">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLabel" name="label_15">
+      <widget class="QLabel" name="label_13">
        <property name="text">
-        <string>type/class color</string>
+        <string>selection text color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabelClickable" name="color_txt_selbg">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLabel" name="label_16">
+      <widget class="QLabel" name="label_11">
        <property name="text">
-        <string>functions color</string>
+        <string>selection background color</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="label_17">
-       <property name="text">
-        <string>SDK functions color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLabel" name="label_18">
-       <property name="text">
-        <string>keywords color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QLabel" name="label_19">
-       <property name="text">
-        <string>pragmas color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLabel" name="label_20">
-       <property name="text">
-        <string>number color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLabel" name="label_23">
-       <property name="text">
-        <string>quotes color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QLabel" name="label_24">
-       <property name="text">
-        <string>comment color</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
+     <item row="5" column="0">
       <widget class="QLabelClickable" name="color_txt_var">
        <property name="minimumSize">
         <size>
@@ -162,46 +172,14 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabelClickable" name="color_txt_funcs">
-       <property name="minimumSize">
-        <size>
-         <width>59</width>
-         <height>16</height>
-        </size>
-       </property>
+     <item row="5" column="1">
+      <widget class="QLabel" name="label_8">
        <property name="text">
-        <string/>
+        <string>variable color</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabelClickable" name="color_txt_numbers">
-       <property name="minimumSize">
-        <size>
-         <width>59</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabelClickable" name="color_txt_sdkFuncs">
-       <property name="minimumSize">
-        <size>
-         <width>59</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
+     <item row="6" column="0">
       <widget class="QLabelClickable" name="color_txt_typeClass">
        <property name="minimumSize">
         <size>
@@ -214,8 +192,15 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabelClickable" name="color_txt_comment">
+     <item row="6" column="1">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>type/class color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabelClickable" name="color_txt_funcs">
        <property name="minimumSize">
         <size>
          <width>59</width>
@@ -227,7 +212,34 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="1">
+      <widget class="QLabel" name="label_16">
+       <property name="text">
+        <string>functions color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabelClickable" name="color_txt_sdkFuncs">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLabel" name="label_17">
+       <property name="text">
+        <string>SDK functions color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
       <widget class="QLabelClickable" name="color_txt_keywords">
        <property name="minimumSize">
         <size>
@@ -240,7 +252,14 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="9" column="1">
+      <widget class="QLabel" name="label_18">
+       <property name="text">
+        <string>keywords color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
       <widget class="QLabelClickable" name="color_txt_pragmas">
        <property name="minimumSize">
         <size>
@@ -253,7 +272,34 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="1">
+      <widget class="QLabel" name="label_19">
+       <property name="text">
+        <string>pragmas color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabelClickable" name="color_txt_numbers">
+       <property name="minimumSize">
+        <size>
+         <width>59</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLabel" name="label_20">
+       <property name="text">
+        <string>number color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
       <widget class="QLabelClickable" name="color_txt_quotes">
        <property name="minimumSize">
         <size>
@@ -266,8 +312,15 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabelClickable" name="color_txt_txt">
+     <item row="12" column="1">
+      <widget class="QLabel" name="label_23">
+       <property name="text">
+        <string>quotes color</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabelClickable" name="color_txt_comment">
        <property name="minimumSize">
         <size>
          <width>59</width>
@@ -276,6 +329,13 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QLabel" name="label_24">
+       <property name="text">
+        <string>comment color</string>
        </property>
       </widget>
      </item>

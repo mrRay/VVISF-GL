@@ -3,6 +3,8 @@
 //#import <VVISF/VVISF.hpp>
 #include "VVISF.hpp"
 
+using namespace VVGL;
+
 
 
 @protocol VideoSourceDelegate

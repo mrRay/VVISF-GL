@@ -53,6 +53,18 @@ SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 #endif
 	setFont(tmpFont);
 	
+	//QFontMetrics		tmpFontMetrics(tmpFont);
+	//setCursorWidth( tmpFontMetrics.averageCharWidth() );
+	setCursorWidth( 2 );
+	
+	QSettings			settings;
+	if (!settings.contains("color_txt_linebg"))	{
+		currentLineColor = QColor(Qt::yellow).lighter(160);
+		settings.setValue("color_txt_linebg", QVariant(currentLineColor));
+	}
+	else
+		currentLineColor = settings.value("color_txt_linebg").value<QColor>();
+	
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	int			tmpDist = fontMetrics().horizontalAdvance(QLatin1Char('9')) * 4;
 #else
@@ -173,10 +185,12 @@ void SimpleSourceCodeEditor::loadSyntaxDefinitionDocument(const QJsonDocument & 
 	}
 }
 void SimpleSourceCodeEditor::openFindDialog()	{
-	FindDialog		*finder = new FindDialog(findOpts, this);
+	_findOpts.loadFromSettings();
+	FindDialog		*finder = new FindDialog(_findOpts, this);
 	//	get the find opts and return code from the dialog, then delete it right away
 	int				returnCode = finder->exec();
-	findOpts = finder->findOpts();
+	_findOpts = finder->findOpts();
+	_findOpts.saveToSettings();
 	delete finder;
 	
 	//	if we didn't get a return code then the dialog was a success and we need to search for something
@@ -192,17 +206,17 @@ void SimpleSourceCodeEditor::findNext()	{
 
 	//	assemble the find flags enum we'll need later
 	QTextDocument::FindFlags		ff = QTextDocument::FindFlags();
-	if (findOpts.caseSensitive)
+	if (_findOpts.caseSensitive)
 		ff |= QTextDocument::FindCaseSensitively;
-	if (findOpts.entireWord)
+	if (_findOpts.entireWord)
 		ff |= QTextDocument::FindWholeWords;
 	
 	//	make the regex options, and then the regex
 	QRegularExpression::PatternOptions	regexOpts = QRegularExpression::NoPatternOption;
-	if (findOpts.caseSensitive)
+	if (_findOpts.caseSensitive)
 		regexOpts |= QRegularExpression::CaseInsensitiveOption;
 	regexOpts |= QRegularExpression::OptimizeOnFirstUsageOption;
-	QRegularExpression		regex(findOpts.searchString, regexOpts);
+	QRegularExpression		regex(_findOpts.searchString, regexOpts);
 	
 	//	get the current cursor- we're going to start searching from here
 	QTextCursor		startCursor = textCursor();
@@ -215,10 +229,10 @@ void SimpleSourceCodeEditor::findNext()	{
 	int				totalBlocks = td->blockCount();
 	
 	//	run the search for the information from the find options
-	if (findOpts.regex)
+	if (_findOpts.regex)
 		resultsCursor = td->find(regex, searchCursor, ff);
 	else
-		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 	
 	//	if we got a non-null cursor then we found something
 	if (!resultsCursor.isNull())	{
@@ -230,10 +244,10 @@ void SimpleSourceCodeEditor::findNext()	{
 	//	...if we're here, we haven't found a result yet- run through the text blocks to the end of the doc, running the search again for each block
 	for (int i=searchCursor.blockNumber()+1; i<totalBlocks; ++i)	{
 		searchCursor.setPosition(td->findBlockByNumber(i).position(), QTextCursor::MoveAnchor);
-		if (findOpts.regex)
+		if (_findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
-			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+			resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		//	if i found the text, select it and return, we're done
 		if (!resultsCursor.isNull())	{
 			setTextCursor(resultsCursor);
@@ -244,10 +258,10 @@ void SimpleSourceCodeEditor::findNext()	{
 	//	...if we're here, we still haven't found a result- loop around to the beginning of the doc and start searching again, stopping when we hit the initial search cursor
 	for (int i=0; i<startCursor.blockNumber(); ++i)	{
 		searchCursor.setPosition(td->findBlockByNumber(i).position(), QTextCursor::MoveAnchor);
-		if (findOpts.regex)
+		if (_findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
-			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+			resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		//	if i found the text, select it and return, we're done
 		if (!resultsCursor.isNull())	{
 			setTextCursor(resultsCursor);
@@ -257,10 +271,10 @@ void SimpleSourceCodeEditor::findNext()	{
 	
 	//	...if we're here, we still haven't found a result- we have almost looped through the entire document by now.  we just need to check the area in the original block prior to 'startCursor'
 	searchCursor.setPosition(startCursor.block().position(), QTextCursor::MoveAnchor);
-	if (findOpts.regex)
+	if (_findOpts.regex)
 		resultsCursor = td->find(regex, searchCursor, ff);
 	else
-		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 	if (!resultsCursor.isNull())	{
 		//	we can only use 'resultsCursor' if its position is prior to the position of the start cursor
 		if (resultsCursor.position() < startCursor.position())	{
@@ -278,19 +292,19 @@ void SimpleSourceCodeEditor::findPrevious()	{
 
 	//	assemble the find flags enum we'll need later
 	QTextDocument::FindFlags		ff = QTextDocument::FindFlags();
-	if (findOpts.caseSensitive)
+	if (_findOpts.caseSensitive)
 		ff |= QTextDocument::FindCaseSensitively;
-	if (findOpts.entireWord)
+	if (_findOpts.entireWord)
 		ff |= QTextDocument::FindWholeWords;
 	//	we're searching backwards, so we need this flag too...
 	ff |= QTextDocument::FindBackward;
 	
 	//	make the regex options, and then the regex
 	QRegularExpression::PatternOptions	regexOpts = QRegularExpression::NoPatternOption;
-	if (findOpts.caseSensitive)
+	if (_findOpts.caseSensitive)
 		regexOpts |= QRegularExpression::CaseInsensitiveOption;
 	regexOpts |= QRegularExpression::OptimizeOnFirstUsageOption;
-	QRegularExpression		regex(findOpts.searchString, regexOpts);
+	QRegularExpression		regex(_findOpts.searchString, regexOpts);
 	
 	//	get the current cursor- we're going to start searching from here
 	QTextCursor		startCursor = textCursor();
@@ -303,10 +317,10 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	int				totalBlocks = td->blockCount();
 	
 	//	run the search for the information from the find options
-	if (findOpts.regex)
+	if (_findOpts.regex)
 		resultsCursor = td->find(regex, searchCursor, ff);
 	else
-		resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+		resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 	
 	//	if we got a non-null cursor result and that result starts on the same char as the start cursor....we have to run the search again.
 	if (!resultsCursor.isNull() && resultsCursor==startCursor)	{
@@ -317,10 +331,10 @@ void SimpleSourceCodeEditor::findPrevious()	{
 		//	else this wasn't the first thing in the block- decrement the cursor and search again
 		else	{
 			searchCursor.setPosition(resultsCursor.selectionStart()-1, QTextCursor::MoveAnchor);
-			if (findOpts.regex)
+			if (_findOpts.regex)
 				resultsCursor = td->find(regex, searchCursor, ff);
 			else
-				resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+				resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		}
 	}
 	
@@ -335,10 +349,10 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	for (int i=searchCursor.blockNumber()-1; i>=0; --i)	{
 		QTextBlock		tmpBlock = td->findBlockByNumber(i);
 		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
-		if (findOpts.regex)
+		if (_findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
-			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+			resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		//	if i found the text, select it and return, we're done
 		if (!resultsCursor.isNull())	{
 			setTextCursor(resultsCursor);
@@ -350,10 +364,10 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	for (int i=totalBlocks-1; i>startCursor.blockNumber(); --i)	{
 		QTextBlock		tmpBlock = td->findBlockByNumber(i);
 		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
-		if (findOpts.regex)
+		if (_findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
-			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+			resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		//	if i found the text, select it and return, we're done
 		if (!resultsCursor.isNull())	{
 			setTextCursor(resultsCursor);
@@ -365,10 +379,10 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	{
 		QTextBlock		tmpBlock = td->findBlockByNumber(startCursor.blockNumber());
 		searchCursor.setPosition(tmpBlock.position()+tmpBlock.length()-1, QTextCursor::MoveAnchor);
-		if (findOpts.regex)
+		if (_findOpts.regex)
 			resultsCursor = td->find(regex, searchCursor, ff);
 		else
-			resultsCursor = td->find(findOpts.searchString, searchCursor, ff);
+			resultsCursor = td->find(_findOpts.searchString, searchCursor, ff);
 		if (!resultsCursor.isNull())	{
 			//	we can only use 'resultsCursor' if its position is prior to the position of the start cursor
 			if (resultsCursor.position() > startCursor.position())	{
@@ -383,7 +397,7 @@ void SimpleSourceCodeEditor::findPrevious()	{
 	}
 }
 void SimpleSourceCodeEditor::setFindStringFromCursor()	{
-	findOpts.searchString = textCursor().selectedText();
+	_findOpts.searchString = textCursor().selectedText();
 }
 
 	
@@ -549,9 +563,9 @@ void SimpleSourceCodeEditor::highlightCurrentLine()
 	if (!isReadOnly())	{
 		QTextEdit::ExtraSelection		tmpSel;
 		
-		QColor			lineColor = QColor(Qt::yellow).lighter(160);
+		//QColor			lineColor = QColor(Qt::yellow).lighter(160);
 		
-		tmpSel.format.setBackground(lineColor);
+		tmpSel.format.setBackground(currentLineColor);
 		tmpSel.format.setProperty(QTextFormat::FullWidthSelection, true);
 		tmpSel.cursor = textCursor();
 		tmpSel.cursor.clearSelection();

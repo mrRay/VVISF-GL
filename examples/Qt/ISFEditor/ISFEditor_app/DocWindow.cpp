@@ -19,6 +19,7 @@
 #include "AutoUpdater.h"
 #include "AboutWindow.h"
 #include "Preferences.h"
+#include "ReportProblemDialog.h"
 
 
 
@@ -503,6 +504,9 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 		QSettings		settings;
 		QColor			bgColor; 
 		QColor			txtColor;
+		QColor			selTxtColor;
+		QColor			selBGColor;
+		QColor			insertColor;
 		
 		if (settings.contains("color_txt_txt"))
 			txtColor = settings.value("color_txt_txt").value<QColor>();
@@ -514,22 +518,58 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 		else
 			bgColor = Qt::white;
 		
-		QString			stylesheetString = "QPlainTextEdit {background-color:" + bgColor.name() + "; color:" + txtColor.name() + ";}";
+		if (settings.contains("color_txt_seltxt"))
+			selTxtColor = settings.value("color_txt_seltxt").value<QColor>();
+		else
+			selTxtColor = Qt::magenta;
+		
+		if (settings.contains("color_txt_selbg"))
+			selBGColor = settings.value("color_txt_selbg").value<QColor>();
+		else
+			selBGColor = Qt::darkGreen;
+		
+		//QString			stylesheetString = "QPlainTextEdit {background-color:" + bgColor.name() + "; color:" + txtColor.name() + ";}";
+		QString			stylesheetString = "QPlainTextEdit {";
+		stylesheetString += " background-color:" + bgColor.name() + ";";
+		stylesheetString += " color:" + txtColor.name() + ";";
+		//stylesheetString += " caret-color:" + txtColor.name() + ";";
+		stylesheetString += " selection-background-color:" + selBGColor.name() + ";";
+		stylesheetString += " selection-color:" + selTxtColor.name() + ";";
+		stylesheetString += "}";
+		
+		QTextCharFormat		fmt;
+		fmt.setForeground(insertColor);
+		
+		QPalette			palette;
+		palette.setColor(QPalette::Window, bgColor);
+		palette.setColor(QPalette::Base, bgColor);
+		palette.setColor(QPalette::WindowText, txtColor);
+		palette.setColor(QPalette::Text, txtColor);
+		palette.setColor(QPalette::Highlight, selBGColor);
+		palette.setColor(QPalette::HighlightedText, selTxtColor);
 		
 		ui->fragShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->fragShaderEditor->setStyleSheet(stylesheetString);
+		//ui->fragShaderEditor->mergeCurrentCharFormat(fmt);
+		//ui->fragShaderEditor->setPalette(palette);
 		ui->fragShaderEditor->setPlainText(ui->fragShaderEditor->toPlainText());
 		
 		ui->vertShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->vertShaderEditor->setStyleSheet(stylesheetString);
+		//ui->vertShaderEditor->mergeCurrentCharFormat(fmt);
+		//ui->vertShaderEditor->setPalette(palette);
 		ui->vertShaderEditor->setPlainText(ui->vertShaderEditor->toPlainText());
 		
 		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledVertShader->setStyleSheet(stylesheetString);
+		//ui->compiledVertShader->mergeCurrentCharFormat(fmt);
+		//ui->compiledVertShader->setPalette(palette);
 		ui->compiledVertShader->setPlainText(ui->compiledVertShader->toPlainText());
 		
 		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledFragShader->setStyleSheet(stylesheetString);
+		//ui->compiledFragShader->mergeCurrentCharFormat(fmt);
+		//ui->compiledFragShader->setPalette(palette);
 		ui->compiledFragShader->setPlainText(ui->compiledFragShader->toPlainText());
 	}
 	else
@@ -618,7 +658,7 @@ void DocWindow::on_actionFind_Next_triggered()	{
 	
 	focusedEd->findNext();
 }
-void DocWindow::on_actionUse_selection_for_search_triggered()	{
+void DocWindow::on_actionUse_selection_for_next_Find_triggered()	{
 	SimpleSourceCodeEditor		*focusedEd = focusedSourceCodeEditor();
 	if (focusedEd == nullptr)
 		return;
@@ -648,6 +688,13 @@ void DocWindow::on_actionAbout_triggered()	{
 	AboutWindow		*aw = GetAboutWindow();
 	if (aw != nullptr)	{
 		aw->show();
+	}
+}
+void DocWindow::on_actionGet_Help_triggered()	{
+	qDebug() << __PRETTY_FUNCTION__;
+	ReportProblemDialog		*rpd = GetReportProblemDialog();
+	if (rpd != nullptr)	{
+		rpd->show();
 	}
 }
 

@@ -55,10 +55,11 @@ public slots:
 	Q_SLOT void on_actionFind_triggered();
 	Q_SLOT void on_actionFind_Previous_triggered();
 	Q_SLOT void on_actionFind_Next_triggered();
-	Q_SLOT void on_actionUse_selection_for_search_triggered();
+	Q_SLOT void on_actionUse_selection_for_next_Find_triggered();
 	
 	Q_SLOT void on_actionCheck_for_Updates_triggered();
 	Q_SLOT void on_actionAbout_triggered();
+	Q_SLOT void on_actionGet_Help_triggered();
 
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;

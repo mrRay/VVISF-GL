@@ -9,7 +9,7 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     if (systemInfo.productType === "windows")    {
-        component.addOperation("CreateShortcut",
+        component.addElevatedOperation("CreateShortcut",
                                "@TargetDir@/ISFEditor.exe",
                                "@StartMenuDir@/ISF Editor.lnk",
                                "description=The ISF Editor");

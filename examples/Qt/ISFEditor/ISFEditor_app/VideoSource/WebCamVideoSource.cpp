@@ -71,7 +71,8 @@ void WebCamVideoSource::start()	{
 	_running=true;
 	
 	ISFController		*isfc = GetISFController();
-	VVGLRenderQThread	*isfRenderThread = (isfc==nullptr) ? nullptr : isfc->renderThread();
+	Q_UNUSED(isfc);
+	//VVGLRenderQThread	*isfRenderThread = (isfc==nullptr) ? nullptr : isfc->renderThread();
 	
 	if (_cam == nullptr && _file.type()==MediaFile::Type_Cam)	{
 		//_cam = new QCamera(_file.cameraInfo(), this);

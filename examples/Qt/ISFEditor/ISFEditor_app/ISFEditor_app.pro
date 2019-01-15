@@ -116,7 +116,8 @@ SOURCES += \
     misc_ui/QPassiveWheelComboBox.cpp \
     AutoUpdater.cpp \
     AboutWindow.cpp \
-    Preferences.cpp
+    Preferences.cpp \
+    ReportProblemDialog.cpp
 
 
 HEADERS += \
@@ -183,7 +184,8 @@ HEADERS += \
     misc_ui/QPassiveWheelComboBox.h \
     AutoUpdater.h \
     AboutWindow.h \
-    Preferences.h
+    Preferences.h \
+    ReportProblemDialog.h
 
 
 # platform-specific classes
@@ -249,7 +251,8 @@ FORMS += \
     ISFConverter/GLSLSandboxConverter.ui \
     ISFConverter/ShadertoyConverter.ui \
     AboutWindow.ui \
-    Preferences.ui
+    Preferences.ui \
+    ReportProblemDialog.ui
 
 RESOURCES += \
 	misc_ui/SimpleSourceCodeEditor/shaderLanguagefiles.qrc \

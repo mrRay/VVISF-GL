@@ -40,6 +40,7 @@ ISFController::ISFController()	{
 	GLContextRef			renderThreadCtx = GetGlobalBufferPool()->context()->newContextSharingMe();
 	_renderThread = new VVGLRenderQThread(renderThreadCtx);
 	_renderThread->setRenderCallback([&](VVGLRenderQThread * inRenderThread){
+		Q_UNUSED(inRenderThread);
 		threadedRenderCallback();
 	});
 	

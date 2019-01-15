@@ -501,7 +501,9 @@ string GLBuffer::getDescriptionString() const	{
 		case GLBuffer::Target_None:		targetChar = 'X'; break;
 		case GLBuffer::Target_RB:		targetChar = 'B'; break;
 		case GLBuffer::Target_2D:		targetChar = '2'; break;
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT)
 		case GLBuffer::Target_Rect:		targetChar = 'R'; break;
+#endif
 		case GLBuffer::Target_Cube:		targetChar = 'C'; break;
 		case GLBuffer::Target_PBOPack:		targetChar = 'P'; break;
 		case GLBuffer::Target_PBOUnpack:		targetChar = 'U'; break;

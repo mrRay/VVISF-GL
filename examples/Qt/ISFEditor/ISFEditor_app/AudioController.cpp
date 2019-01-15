@@ -27,7 +27,8 @@ AudioController::AudioController(QObject *parent) :
 	
 	//	get the ISFController's render thread, which we need to move stuff to
 	ISFController	*isfc = GetISFController();
-	QThread			*rt = (isfc==nullptr) ? nullptr : isfc->renderThread();
+	Q_UNUSED(isfc);
+	//QThread			*rt = (isfc==nullptr) ? nullptr : isfc->renderThread();
 	
 	_audioUploader = CreateGLCPUToTexCopierRef();
 	_audioUploader->setQueueSize(1);
