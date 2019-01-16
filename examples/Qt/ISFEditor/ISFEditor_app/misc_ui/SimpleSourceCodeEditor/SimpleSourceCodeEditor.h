@@ -44,6 +44,8 @@ public:
 	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
 	FindOpts findOpts() { return _findOpts; }
 	void setFindOpts(const FindOpts & n) { _findOpts = n; }
+	void setLineBGColor(const QColor & n) { lineBGColor = n; }
+	void setLocalVariableNames(const QStringList & inStrList);
 
 signals:
 	void selectedErrorAtLine(int selectedErrorLineIndex);
@@ -70,7 +72,7 @@ private:
 	QWidget			*lineNumberArea = nullptr;	//	do not explicitly free
 	Highlighter		*highlighter = nullptr;	//	do not explicitly free
 	QCompleter		*completer = nullptr;	//	do not explicitly free
-	QColor			currentLineColor;	//	the color drawn behind the current line (the line with the insertion point)
+	QColor			lineBGColor;	//	the color drawn behind the current line (the line with the insertion point)
 	
 	std::recursive_mutex	errLock;
 	QVector<int>			*errLineNumbers = nullptr;	//	must be deleted!

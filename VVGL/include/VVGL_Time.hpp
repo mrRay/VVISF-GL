@@ -54,7 +54,10 @@ struct Timestamp	{
 	}
 	//!	Creates a new Timestamp expressed as the quotient of the two passed numbers (the number of frames divided by the number of seconds in which they occur)
 	Timestamp(const int & inFrameCount, const int & inSecondsCount)	{
-		rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
+		if (inSecondsCount == 0)
+			rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(0.0) ) ) );
+		else
+			rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
 	}
 
 	

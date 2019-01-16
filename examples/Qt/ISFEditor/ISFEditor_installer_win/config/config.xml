@@ -9,7 +9,7 @@
 	<TargetDir>@ApplicationsDir@/ISF Editor</TargetDir>
     <RemoteRepositories>
     	<Repository>
-			<Url>https://www.vidvox.net/version/testVsn-win</Url>
+			<Url>https://www.vidvox.net/version/isfeditor_qt_win</Url>
     	</Repository>
     </RemoteRepositories>
 </Installer>

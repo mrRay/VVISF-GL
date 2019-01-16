@@ -13,6 +13,7 @@
 #include <QDir>
 #include <QStandardItemModel>
 #include <QAbstractEventDispatcher>
+#include <QScreen>
 
 #include "DocWindow.h"
 #include "ISFController.h"
@@ -213,6 +214,21 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//QSettings		settings;
 	if (settings.contains("LoadingWindowGeometry"))	{
 		restoreGeometry(settings.value("LoadingWindowGeometry").toByteArray());
+	}
+	else	{
+		QWidget			*window = this->window();
+		if (window != nullptr)	{
+			QRect		winFrame = window->frameGeometry();
+			QRect		contentFrame = window->geometry();
+			QPoint		contentOffset = contentFrame.topLeft() - winFrame.topLeft();
+			QScreen		*screen = QGuiApplication::screenAt(winFrame.center());
+			if (screen != nullptr)	{
+				QRect		screenFrame = screen->geometry();
+				winFrame.moveTopLeft(screenFrame.topLeft());
+				winFrame.translate(contentOffset.x(), contentOffset.y());
+				window->setGeometry(winFrame);
+			}
+		}
 	}
 }
 void LoadingWindow::appQuitEvent()	{

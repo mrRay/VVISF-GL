@@ -29,15 +29,15 @@ Highlighter::Highlighter(QTextDocument * inParent)
 	/*
 	plainTextFmt.setForeground(Qt::black);
 	*/
-	variablesFmt.setForeground(Qt::darkMagenta);
-	typeAndClassNamesFmt.setForeground(Qt::darkGreen);
-	functionsFmt.setForeground(Qt::darkBlue);
-	sdkFunctionsFmt.setForeground(Qt::blue);
-	keywordsFmt.setForeground(Qt::darkYellow);
-	pragmasFmt.setForeground(Qt::green);
-	numbersFmt.setForeground(Qt::magenta);
-	quotationsFmt.setForeground(Qt::darkRed);
-	commentFmt.setForeground(QColor(255,194,0,255));
+	variablesFmt.setForeground(QColor("#aaffff"));
+	typeAndClassNamesFmt.setForeground(QColor("#aa00ff"));
+	functionsFmt.setForeground(QColor("#55aaff"));
+	sdkFunctionsFmt.setForeground(QColor("#55aaff"));
+	keywordsFmt.setForeground(QColor("#ffffff"));
+	pragmasFmt.setForeground(QColor("#00ff00"));
+	numbersFmt.setForeground(QColor("#ff3737"));
+	quotationsFmt.setForeground(QColor("#ff3737"));
+	commentFmt.setForeground(QColor("#ffc737"));
 	
 	loadColorsFromSettings();
 }
@@ -50,7 +50,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 	
 	loadColorsFromSettings();
 	
-	highlightRules.clear();
+	syntaxDocHighlightRules.clear();
 	
 	QJsonObject		tmpDocObj = inDocument.object();
 	HighlightRule	tmpRule;
@@ -72,7 +72,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")\\b");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("TYPE_AND_CLASS_NAMES") && tmpDocObj["TYPE_AND_CLASS_NAMES"].isArray())	{
@@ -92,7 +92,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")\\b");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("FUNCTION_REGEXES") && tmpDocObj["FUNCTION_REGEXES"].isArray())	{
@@ -112,7 +112,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("SDK_FUNCTIONS") && tmpDocObj["SDK_FUNCTIONS"].isArray())	{
@@ -132,7 +132,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")\\b");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("KEYWORDS") && tmpDocObj["KEYWORDS"].isArray())	{
@@ -152,7 +152,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")\\b");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("PRAGMA_REGEXES") && tmpDocObj["PRAGMA_REGEXES"].isArray())	{
@@ -172,7 +172,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("NUMBER_REGEXES") && tmpDocObj["NUMBER_REGEXES"].isArray())	{
@@ -192,7 +192,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	if (tmpDocObj.contains("QUOTATION_REGEXES") && tmpDocObj["QUOTATION_REGEXES"].isArray())	{
@@ -212,7 +212,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		if (tmpIndex > 0)	{
 			tmpStr.append(")");
 			tmpRule.pattern = QRegularExpression(tmpStr);
-			highlightRules.append(tmpRule);
+			syntaxDocHighlightRules.append(tmpRule);
 		}
 	}
 	
@@ -225,7 +225,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -235,7 +235,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -245,7 +245,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -255,7 +255,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -265,7 +265,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(QString("\\b%1\\b").arg(tmpVal.toString()));
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -285,7 +285,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -295,7 +295,7 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 		for (const QJsonValue & tmpVal : tmpArray)	{
 			if (tmpVal.isString())	{
 				tmpRule.pattern = QRegularExpression(tmpVal.toString());
-				highlightRules.append(tmpRule);
+				syntaxDocHighlightRules.append(tmpRule);
 			}
 		}
 	}
@@ -316,29 +316,29 @@ void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)
 	if (tmpDocObj.contains("SINGLE_LINE_COMMENT_REGEX") && tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].isString())	{
 		tmpRule.format = commentFmt;
 		tmpRule.pattern = QRegularExpression(tmpDocObj["SINGLE_LINE_COMMENT_REGEX"].toString());
-		highlightRules.append(tmpRule);
+		syntaxDocHighlightRules.append(tmpRule);
 	}
 }
 void Highlighter::loadColorsFromSettings()	{
 	QSettings		settings;
 	
 	if (!settings.contains("color_txt_bg"))	{
-		QColor		tmpColor = Qt::white;
+		QColor		tmpColor("#1a1a1a");
 		settings.setValue("color_txt_bg", QVariant(tmpColor));
 	}
 	
 	if (!settings.contains("color_txt_txt"))	{
-		QColor		tmpColor = Qt::black;
+		QColor		tmpColor("#b4b4b4");
 		settings.setValue("color_txt_txt", QVariant(tmpColor));
 	}
 	
 	if (!settings.contains("color_txt_seltxt"))	{
-		QColor		tmpColor = Qt::magenta;
+		QColor		tmpColor("#000000");
 		settings.setValue("color_txt_seltxt", QVariant(tmpColor));
 	}
 	
 	if (!settings.contains("color_txt_selbg"))	{
-		QColor		tmpColor = Qt::darkGreen;
+		QColor		tmpColor("#ffff50");
 		settings.setValue("color_txt_selbg", QVariant(tmpColor));
 	}
 	
@@ -387,6 +387,27 @@ void Highlighter::loadColorsFromSettings()	{
 	else
 		settings.setValue("color_txt_comment", QVariant(commentFmt.foreground()));
 }
+void Highlighter::setLocalVariableNames(const QStringList & inStrList)	{
+	
+	localVarHighlightRules.clear();
+	
+	HighlightRule	tmpRule;
+	QString			tmpStr = QString("\\b(");
+	int				tmpIndex = 0;
+	for (const QString & inStr : inStrList)	{
+		if (tmpIndex == 0)
+			tmpStr.append( QString("(%1)").arg(inStr) );
+		else
+			tmpStr.append( QString("|(%1)").arg(inStr) );
+		++tmpIndex;
+	}
+	if (tmpIndex > 0)	{
+		tmpStr.append(")\\b");
+		tmpRule.format = variablesFmt;
+		tmpRule.pattern = QRegularExpression(tmpStr);
+		localVarHighlightRules.append(tmpRule);
+	}
+}
 
 
 void Highlighter::highlightBlock(const QString & inText)
@@ -394,7 +415,15 @@ void Highlighter::highlightBlock(const QString & inText)
 	//qDebug() << __PRETTY_FUNCTION__ << ": " << inText;
 	bool			isPlainText = true;
 	//	run through all of the highlight rules, checked the passed string against each
-	foreach (const HighlightRule & tmpRule, highlightRules) {
+	foreach (const HighlightRule & tmpRule, syntaxDocHighlightRules) {
+		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
+		while (matchIterator.hasNext()) {
+			QRegularExpressionMatch		tmpMatch = matchIterator.next();
+			setFormat(tmpMatch.capturedStart(), tmpMatch.capturedLength(), tmpRule.format);
+			isPlainText = false;
+		}
+	}
+	foreach (const HighlightRule & tmpRule, localVarHighlightRules)	{
 		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch		tmpMatch = matchIterator.next();

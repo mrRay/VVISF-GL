@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
 	//QCoreApplication::setAttribute(Qt::AA_DontCheckOpenGLContextThreadAffinity, true);
 	
 	//	let's set up some basic info about the app so QSettings will be easier to use
-	QCoreApplication::setOrganizationName("yourcompanyname");
-	QCoreApplication::setOrganizationDomain("com.yourcompanyname");
+	QCoreApplication::setOrganizationName("vidvox");
+	//QCoreApplication::setOrganizationDomain("com.vidvox");
 	QCoreApplication::setApplicationName("ISFEditor");
 	
 	QSettings			settings;
@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
 	//	make the auto updater (by default, its parent will be qApp)
 	//GetGlobalAutoUpdater();
 	AutoUpdater		*aa = new AutoUpdater(&a);
+	Q_UNUSED(aa);
 	
 	//	make the main window, which has a GL view in it and will create the GL backend, and then finish launching.
 	MainWindow		w;

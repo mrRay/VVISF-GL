@@ -59,11 +59,11 @@ SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 	
 	QSettings			settings;
 	if (!settings.contains("color_txt_linebg"))	{
-		currentLineColor = QColor(Qt::yellow).lighter(160);
-		settings.setValue("color_txt_linebg", QVariant(currentLineColor));
+		lineBGColor = QColor("#414141");
+		settings.setValue("color_txt_linebg", QVariant(lineBGColor));
 	}
 	else
-		currentLineColor = settings.value("color_txt_linebg").value<QColor>();
+		lineBGColor = settings.value("color_txt_linebg").value<QColor>();
 	
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	int			tmpDist = fontMetrics().horizontalAdvance(QLatin1Char('9')) * 4;
@@ -182,6 +182,11 @@ void SimpleSourceCodeEditor::loadSyntaxDefinitionDocument(const QJsonDocument & 
 	//	pass the doc to the highlighter, which needs to construct a bunch of regex stuff from its contents
 	if (highlighter != nullptr) {
 		highlighter->loadSyntaxDefinitionDocument(inDocument);
+	}
+}
+void SimpleSourceCodeEditor::setLocalVariableNames(const QStringList & inStrList)	{
+	if (highlighter != nullptr)	{
+		highlighter->setLocalVariableNames(inStrList);
 	}
 }
 void SimpleSourceCodeEditor::openFindDialog()	{
@@ -565,7 +570,7 @@ void SimpleSourceCodeEditor::highlightCurrentLine()
 		
 		//QColor			lineColor = QColor(Qt::yellow).lighter(160);
 		
-		tmpSel.format.setBackground(currentLineColor);
+		tmpSel.format.setBackground(lineBGColor);
 		tmpSel.format.setProperty(QTextFormat::FullWidthSelection, true);
 		tmpSel.cursor = textCursor();
 		tmpSel.cursor.clearSelection();

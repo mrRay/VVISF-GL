@@ -113,3 +113,18 @@ mac	{
 	# This adds the @rpath prefix to the lib install name (the lib is expected to be bundled with the app package)
 	QMAKE_SONAME_PREFIX = @rpath
 }
+
+
+CONFIG(debug, debug|release)	{
+	#	intentionally blank
+}
+else	{
+	mac	{
+	}
+	win32	{
+		QMAKE_LFLAGS_RELEASE += /DEBUG
+		QMAKE_CXXFLAGS_RELEASE += /Zi
+		QMAKE_LFLAGS_RELEASE += /OPT:REF
+	}
+}
+

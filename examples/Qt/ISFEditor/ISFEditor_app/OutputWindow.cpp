@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QScreen>
 
 #include "ISFPassTarget.hpp"
 #include "ISFController.h"
@@ -47,6 +48,18 @@ OutputWindow::OutputWindow(QWidget *parent) :
 	QSettings		settings;
 	if (settings.contains("OutputWindowGeometry"))	{
 		restoreGeometry(settings.value("OutputWindowGeometry").toByteArray());
+	}
+	else	{
+		QWidget			*window = this->window();
+		if (window != nullptr)	{
+			QRect		winFrame = window->frameGeometry();
+			QScreen		*screen = QGuiApplication::screenAt(winFrame.center());
+			if (screen != nullptr)	{
+				QRect		screenFrame = screen->geometry();
+				winFrame.moveBottomRight(screenFrame.bottomRight());
+				window->setGeometry(winFrame);
+			}
+		}
 	}
 	
 	//	tell the widget to draw a single frame.  for some reason, GL widgets on os x don't have their internal sizes set properly when they draw their first frame.

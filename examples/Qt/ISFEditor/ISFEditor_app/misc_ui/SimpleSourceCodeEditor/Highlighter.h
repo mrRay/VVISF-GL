@@ -21,6 +21,7 @@ public:
 	Highlighter(QTextDocument * inParent = nullptr);
 	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
 	void loadColorsFromSettings();
+	void setLocalVariableNames(const QStringList & inStrList);
 	
 protected:
 	void highlightBlock(const QString & inText) override;
@@ -37,7 +38,8 @@ private:
 		HBS_OpenComment = 1
 	};
 	
-	QVector<HighlightRule>		highlightRules;
+	QVector<HighlightRule>		syntaxDocHighlightRules;
+	QVector<HighlightRule>		localVarHighlightRules;
 	QRegularExpression			commentSingleExpr;
 	QRegularExpression			commentStartExpr;
 	QRegularExpression			commentEndExpr;

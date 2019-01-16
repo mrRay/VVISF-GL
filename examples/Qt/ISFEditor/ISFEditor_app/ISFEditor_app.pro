@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.7-4
+VERSION = 2.9.7-6
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -492,13 +492,13 @@ mac {
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../fftreal/fftreal.framework $$framework_dir;
 		
-		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
-		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
-		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
-		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
+		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
 		
-		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
-		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
+		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}
 }
 win32	{
@@ -506,6 +506,10 @@ win32	{
 		#	intentionally blank, debug builds don't need any work (build & run works just fine)
 	}
 	else	{
+		QMAKE_LFLAGS_RELEASE += /DEBUG
+		QMAKE_CXXFLAGS_RELEASE += /Zi
+		QMAKE_LFLAGS_RELEASE += /OPT:REF
+
 		MY_DEPLOY_DIR = $$shell_quote($$shell_path("$${OUT_PWD}/release"))
 
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../VVGL/release/VVGL.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
@@ -566,6 +570,7 @@ win32	{
 		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.res")) $$escape_expand(\n)
 		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.lib")) $$escape_expand(\n)
 		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.exp")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pdb")) $$escape_expand(\n)
 
 
 		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it

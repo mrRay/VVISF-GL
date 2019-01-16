@@ -15,7 +15,8 @@ mac	{
 		offline_installer_creator.output = ISFEditor_installer
 		offline_installer_creator.clean_commands = rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
 		offline_installer_creator.commands += rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
-		offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
+		offline_installer_creator.commands += $$BINARYCREATOR -s "KH97KZU7A7" -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
+		#offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
 		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
 		offline_installer_creator.CONFIG += target_predeps no_link combine
 

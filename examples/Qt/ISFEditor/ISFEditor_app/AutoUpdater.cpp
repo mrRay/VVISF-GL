@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QCoreApplication>
+#include <QSettings>
 #include <updater.h>
 
 #include "VVGL.hpp"
@@ -28,7 +29,7 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 
 
 #if defined(Q_OS_MAC)
-	qDebug() << "AutoUpdater built for mac";
+	//qDebug() << "AutoUpdater built for mac";
 	//QString			tmpPath = QString("/Users/testadmin/Qt/MaintenanceTool.app");
 #if defined(QT_DEBUG)
 	QDir			macDir = QDir("/Applications/ISF Editor/maintenancetool.app/Contents/MacOS");
@@ -50,7 +51,7 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 		}
 	}
 #elif defined(Q_OS_WIN)
-	qDebug() << "AutoUpdater built for win";
+	//qDebug() << "AutoUpdater built for win";
 #if defined(QT_DEBUG)
 	QDir			exeDir = QDir("C:/Program Files (x86)/ISF Editor");
 #elif defined(QT_NO_DEBUG)
@@ -64,11 +65,12 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 #else
 	//	linux builds will fail to compile somewhere around here.  not sure where Qt is installed, don't have one handy!
 #endif
-	qDebug() << "making QtAutoUpdater with path to maintenance tool " << tmpPath;
+	//qDebug() << "making QtAutoUpdater with path to maintenance tool " << tmpPath;
 	_uc = new QtAutoUpdater::UpdateController(tmpPath, inParent);
 	
 	QObject::connect(_uc, &QtAutoUpdater::UpdateController::runningChanged, [&](bool running) {
-		qDebug() << "Running changed:" << running;
+		Q_UNUSED(running);
+		//qDebug() << "Running changed:" << running;
 		if (_uc != nullptr)	{
 			QtAutoUpdater::Updater	*u = _uc->updater();
 			if (!u->exitedNormally())	{
@@ -85,8 +87,20 @@ AutoUpdater::AutoUpdater(QObject * inParent) :
 	_uc->setRunAsAdmin(true);
 	*/
 #endif
-	//	start the update check -> AskLevel to give the user maximum control
-	//_uc->start(QtAutoUpdater::UpdateController::AskLevel);
+	QSettings		settings;
+	if (settings.contains("updateCheckDate"))	{
+		QDate			tmpDate = settings.value("updateCheckDate").toDate();
+		QDate			nowDate = QDate::currentDate();
+		if (tmpDate.daysTo(nowDate) >= 7)	{
+			settings.setValue("updateCheckDate", nowDate);
+			//	start the update check -> AskLevel to give the user maximum control
+			_uc->start(QtAutoUpdater::UpdateController::AskLevel);
+		}
+	}
+	//	else there's no update check date- insert one (don't check for an update immediately)
+	else {
+		settings.setValue("updateCheckDate", QDate::currentDate());
+	}
 }
 AutoUpdater::~AutoUpdater()	{
 	qDebug() << __PRETTY_FUNCTION__;

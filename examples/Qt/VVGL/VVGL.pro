@@ -112,3 +112,18 @@ mac	{
 	QMAKE_SONAME_PREFIX = @rpath
 }
 
+
+CONFIG(debug, debug|release)	{
+	#	intentionally blank
+}
+else	{
+	mac	{
+	}
+	win32	{
+		QMAKE_LFLAGS_RELEASE += /DEBUG
+		QMAKE_CXXFLAGS_RELEASE += /Zi
+		QMAKE_LFLAGS_RELEASE += /OPT:REF
+	}
+}
+
+

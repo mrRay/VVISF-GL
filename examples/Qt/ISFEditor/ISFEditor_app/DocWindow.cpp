@@ -9,6 +9,8 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QSettings>
+#include <QScrollBar>
+#include <QScreen>
 
 #include "SimpleSourceCodeEditor.h"
 #include "LoadingWindow.h"
@@ -121,6 +123,22 @@ void DocWindow::updateContentsFromISFController()	{
 	//if (doc != nullptr)
 	//	cout << "doc is " << *doc;
 	
+	//	create an array of the names of the doc's variables and passes
+	QStringList		localVarStrings;
+	if (doc != nullptr)	{
+		for (const ISFAttrRef & inputAttr : doc->inputs())	{
+			QString		attrName = QString::fromStdString( inputAttr->name() );
+			localVarStrings.append(attrName);
+		}
+		for (const string & passName : doc->renderPasses())	{
+			if (passName.length() > 0)	{
+				QString		tmpStr = QString::fromStdString(passName);
+				localVarStrings.append(tmpStr);
+			}
+		}
+	}
+	qDebug() << "\tlocalVarStrings are " << localVarStrings;
+	
 	lock_guard<recursive_mutex>		lock(propLock);
 	
 	//	kill the save timer if it exists
@@ -135,6 +153,12 @@ void DocWindow::updateContentsFromISFController()	{
 	VVDELETE(_fragFilePathContentsOnOpen);
 	VVDELETE(_vertFilePath);
 	VVDELETE(_vertFilePathContentsOnOpen);
+	
+	//	pass the local variable names to the text views displaying source code
+	ui->fragShaderEditor->setLocalVariableNames(localVarStrings);
+	ui->vertShaderEditor->setLocalVariableNames(localVarStrings);
+	ui->compiledFragShader->setLocalVariableNames(localVarStrings);
+	ui->compiledVertShader->setLocalVariableNames(localVarStrings);
 	
 	if (doc != nullptr)	{
 		//	get the frag file path from the doc
@@ -314,11 +338,15 @@ void DocWindow::updateContentsFromISFController()	{
 	}
 	else	{
 		ui->fragShaderEditor->setPlainText(QString(""));
+		ui->fragShaderEditor->setLocalVariableNames(QStringList());
 		ui->vertShaderEditor->setPlainText(QString(""));
+		ui->vertShaderEditor->setLocalVariableNames(QStringList());
 		
 		ui->compilerErrorsTextWidget->setPlainText( "" );
 		ui->compiledFragShader->setPlainText( "" );
+		ui->compiledFragShader->setLocalVariableNames(QStringList());
 		ui->compiledVertShader->setPlainText( "" );
+		ui->compiledVertShader->setLocalVariableNames(QStringList());
 		ui->parsedJSON->setPlainText( "" );
 		
 		ui->jsonGUIWidget->loadDocFromISFController();
@@ -504,6 +532,7 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 		QSettings		settings;
 		QColor			bgColor; 
 		QColor			txtColor;
+		QColor			lineBGColor;
 		QColor			selTxtColor;
 		QColor			selBGColor;
 		QColor			insertColor;
@@ -511,22 +540,27 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 		if (settings.contains("color_txt_txt"))
 			txtColor = settings.value("color_txt_txt").value<QColor>();
 		else
-			txtColor = Qt::black;
+			txtColor = QColor("#b4b4b4");
+		
+		if (settings.contains("color_txt_linebg"))
+			lineBGColor = settings.value("color_txt_linebg").value<QColor>();
+		else
+			lineBGColor = QColor("#414141");
 		
 		if (settings.contains("color_txt_bg"))
 			bgColor = settings.value("color_txt_bg").value<QColor>();
 		else
-			bgColor = Qt::white;
+			bgColor = QColor("#1a1a1a");
 		
 		if (settings.contains("color_txt_seltxt"))
 			selTxtColor = settings.value("color_txt_seltxt").value<QColor>();
 		else
-			selTxtColor = Qt::magenta;
+			selTxtColor = QColor("#000000");
 		
 		if (settings.contains("color_txt_selbg"))
 			selBGColor = settings.value("color_txt_selbg").value<QColor>();
 		else
-			selBGColor = Qt::darkGreen;
+			selBGColor = QColor("#ffff50");
 		
 		//QString			stylesheetString = "QPlainTextEdit {background-color:" + bgColor.name() + "; color:" + txtColor.name() + ";}";
 		QString			stylesheetString = "QPlainTextEdit {";
@@ -547,30 +581,57 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 		palette.setColor(QPalette::Text, txtColor);
 		palette.setColor(QPalette::Highlight, selBGColor);
 		palette.setColor(QPalette::HighlightedText, selTxtColor);
-		
+
+		QScrollBar			*vScroll;
+		int					vScrollVal = 0;
+
+		vScroll = ui->fragShaderEditor->verticalScrollBar();
+		if (vScroll != nullptr)
+			vScrollVal = vScroll->value();
 		ui->fragShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->fragShaderEditor->setStyleSheet(stylesheetString);
+		ui->fragShaderEditor->setLineBGColor(lineBGColor);
 		//ui->fragShaderEditor->mergeCurrentCharFormat(fmt);
 		//ui->fragShaderEditor->setPalette(palette);
 		ui->fragShaderEditor->setPlainText(ui->fragShaderEditor->toPlainText());
+		if (vScroll != nullptr)
+			vScroll->setValue(vScrollVal);
 		
+		vScroll = ui->vertShaderEditor->verticalScrollBar();
+		if (vScroll != nullptr)
+			vScrollVal = vScroll->value();
 		ui->vertShaderEditor->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->vertShaderEditor->setStyleSheet(stylesheetString);
+		ui->vertShaderEditor->setLineBGColor(lineBGColor);
 		//ui->vertShaderEditor->mergeCurrentCharFormat(fmt);
 		//ui->vertShaderEditor->setPalette(palette);
 		ui->vertShaderEditor->setPlainText(ui->vertShaderEditor->toPlainText());
+		if (vScroll != nullptr)
+			vScroll->setValue(vScrollVal);
 		
+		vScroll = ui->compiledVertShader->verticalScrollBar();
+		if (vScroll != nullptr)
+			vScrollVal = vScroll->value();
 		ui->compiledVertShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledVertShader->setStyleSheet(stylesheetString);
+		ui->compiledVertShader->setLineBGColor(lineBGColor);
 		//ui->compiledVertShader->mergeCurrentCharFormat(fmt);
 		//ui->compiledVertShader->setPalette(palette);
 		ui->compiledVertShader->setPlainText(ui->compiledVertShader->toPlainText());
+		if (vScroll != nullptr)
+			vScroll->setValue(vScrollVal);
 		
+		vScroll = ui->compiledFragShader->verticalScrollBar();
+		if (vScroll != nullptr)
+			vScrollVal = vScroll->value();
 		ui->compiledFragShader->loadSyntaxDefinitionDocument(tmpDoc);
 		ui->compiledFragShader->setStyleSheet(stylesheetString);
+		ui->compiledFragShader->setLineBGColor(lineBGColor);
 		//ui->compiledFragShader->mergeCurrentCharFormat(fmt);
 		//ui->compiledFragShader->setPalette(palette);
 		ui->compiledFragShader->setPlainText(ui->compiledFragShader->toPlainText());
+		if (vScroll != nullptr)
+			vScroll->setValue(vScrollVal);
 	}
 	else
 		qDebug() << "ERR: couldn't open shader lang files, " << __PRETTY_FUNCTION__;
@@ -760,6 +821,21 @@ void DocWindow::showEvent(QShowEvent * event)	{
 	QSettings		settings;
 	if (settings.contains("DocWindowGeometry"))	{
 		restoreGeometry(settings.value("DocWindowGeometry").toByteArray());
+	}
+	else	{
+		//QWidget			*window = window();
+		//if (window != nullptr)	{
+			QRect		winFrame = frameGeometry();
+			QRect		contentFrame = geometry();
+			QPoint		contentOffset = contentFrame.topRight() - winFrame.topRight();
+			QScreen		*screen = QGuiApplication::screenAt(winFrame.center());
+			if (screen != nullptr)	{
+				QRect		screenFrame = screen->geometry();
+				winFrame.moveTopRight(screenFrame.topRight());
+				winFrame.translate(contentOffset.x(), contentOffset.y());
+				setGeometry(winFrame);
+			}
+		//}
 	}
 	
 	//	set myself as the parent window for the auto updater!

@@ -49,6 +49,20 @@ win32 {
 
 
 
+CONFIG(debug, debug|release)	{
+	#	intentionally blank
+}
+else	{
+	win32	{
+		QMAKE_LFLAGS_RELEASE += /DEBUG
+		QMAKE_CXXFLAGS_RELEASE += /Zi
+		QMAKE_LFLAGS_RELEASE += /OPT:REF
+	}
+}
+
+
+
+
 # the readme says to specify this flag when compiling in release mode...
 CONFIG(release, release|debug): DEFINES += NDEBUG
 
