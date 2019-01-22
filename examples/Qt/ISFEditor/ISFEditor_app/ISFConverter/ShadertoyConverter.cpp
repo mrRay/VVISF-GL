@@ -26,6 +26,11 @@ ShadertoyConverter::ShadertoyConverter(QWidget *parent) :
 	ui->setupUi(this);
 	//setWindowModality(Qt::ApplicationModal);
 	setWindowModality(Qt::WindowModal);
+#if defined(Q_OS_MAC)
+	ui->destinationLabel->setText("(converted file will be created in ~/Library/Graphics/ISF)");
+#elif defined(Q_OS_WIN)
+	ui->destinationLabel->setText("(converted file will be created in \\ProgramData\\ISF)");
+#endif
 }
 
 ShadertoyConverter::~ShadertoyConverter()
@@ -97,26 +102,47 @@ void ShadertoyConverter::okClicked()	{
 		connect(reply, SIGNAL(finished()), &tmpLoop, SLOT(quit()));
 		tmpLoop.exec();
 		
+		if (!reply->isFinished())	{
+			QMessageBox::warning(GetLoadingWindow(), "", QString("Error: reply isnt really finished!"), QMessageBox::Ok);
+			done(17);
+			return;
+		}
+		if (reply->error() != QNetworkReply::NoError)	{
+			QMessageBox::warning(GetLoadingWindow(), "", QString("Network Error: \"%1\"").arg(reply->error()), QMessageBox::Ok);
+			done(16);
+			return;
+		}
 		if (reply->size() < 1)	{
 			QMessageBox::warning(GetLoadingWindow(), "", QString("Error: download from URL \"%1\" failed").arg(rawURLString), QMessageBox::Ok);
 			done(4);
 			return;
 		}
 		
-		parsedDownload = QJsonDocument::fromJson( reply->readAll() );
+		//qDebug() << "reply size is " << reply->size();
+		QString		tmpString(reply->readAll());
+		//qDebug() << "raw reply string is " << tmpString;
+		parsedDownload = QJsonDocument::fromJson( tmpString.toUtf8() );
+		//qDebug() << "*******************";
+		//qDebug() << "parsedDownload is " << parsedDownload;
+		//qDebug() << "*******************";
 		QJsonArray		tmpArray = parsedDownload.array();
+		//qDebug() << "tmpArray is " << tmpArray;
+		//qDebug() << "*******************";
 		if (tmpArray.size() < 1)	{
 			QMessageBox::warning(GetLoadingWindow(), "", QString("Error: download from URL \"%1\" is of wrong type").arg(rawURLString), QMessageBox::Ok);
 			done(5);
 			return;
 		}
 		QJsonValue		tmpValue = tmpArray.at(0);
+		//qDebug() << "tmpValue is " << tmpValue;
+		//qDebug() << "*******************";
 		if (!tmpValue.isObject())	{
 			QMessageBox::warning(GetLoadingWindow(), "", QString("Error: download from URL \"%1\" is of wrong type").arg(rawURLString), QMessageBox::Ok);
 			done(6);
 			return;
 		}
 		parsedDict = tmpValue.toObject();
+		//qDebug() << "parsedDict is " << parsedDict;
 		
 		reply->deleteLater();
 	}
@@ -603,7 +629,20 @@ void ShadertoyConverter::okClicked()	{
 	
 	
 	//	now i need to figure out a write location/file name.  try to base this off the "name" from shadertoy, appended by the shadertoy username, and then shadertoy ID
+#if defined(Q_OS_MAC)
 	QString			writeFolder = QString("%1/Library/Graphics/ISF").arg(QDir::homePath());
+#elif defined(Q_OS_WIN)
+	QDir			tmpDir = QDir::root();
+	if (!tmpDir.cd("ProgramData"))	{
+		tmpDir.mkdir("ProgramData");
+		tmpDir.cd("ProgramData");
+	}
+	if (!tmpDir.cd("ISF"))	{
+		tmpDir.mkdir("ISF");
+		tmpDir.cd("ISF");
+	}
+	QString			writeFolder = tmpDir.path();
+#endif
 	QString			writeLocation;
 	if (!shadertoyName.isNull())	{
 		writeLocation = QString("%1/%2_%3.fs").arg(writeFolder).arg(shadertoyName.replace("/","_")).arg(shaderIDString);

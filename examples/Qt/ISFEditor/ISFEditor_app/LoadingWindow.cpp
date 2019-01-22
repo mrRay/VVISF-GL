@@ -189,8 +189,14 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	//QString		desktopDir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
 	//defaultDirToLoad = QCoreApplication::applicationDirPath() + "/sample_ISFs";
 	QDir			tmpDir = QDir::root();
-	tmpDir.cd("ProgramData");
-	tmpDir.cd("ISF");
+	if (!tmpDir.cd("ProgramData"))	{
+		tmpDir.mkdir("ProgramData");
+		tmpDir.cd("ProgramData");
+	}
+	if (!tmpDir.cd("ISF"))	{
+		tmpDir.mkdir("ISF");
+		tmpDir.cd("ISF");
+	}
 	defaultDirToLoad = tmpDir.path();
 #endif
 	QSettings		settings;
@@ -252,8 +258,14 @@ void LoadingWindow::loadSystemISFsButtonClicked()	{
 	qDebug() << __PRETTY_FUNCTION__;
 #if defined(Q_OS_WIN)
 	QDir			tmpDir = QDir::root();
-	tmpDir.cd("ProgramData");
-	tmpDir.cd("ISF");
+	if (!tmpDir.cd("ProgramData"))	{
+		tmpDir.mkdir("ProgramData");
+		tmpDir.cd("ProgramData");
+	}
+	if (!tmpDir.cd("ISF"))	{
+		tmpDir.mkdir("ISF");
+		tmpDir.cd("ISF");
+	}
 	if (!tmpDir.exists())
 		return;
 	QString			dirToLoad(tmpDir.path());

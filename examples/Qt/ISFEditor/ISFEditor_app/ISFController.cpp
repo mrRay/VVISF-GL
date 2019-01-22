@@ -137,8 +137,14 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		return;
 	}
 	
+	sceneJSONErrors.clear();
 	sceneVertErrors.clear();
 	sceneFragErrors.clear();
+	
+	
+	
+	
+	
 	
 	
 	//	start watching the file- reload the file if it changes...
@@ -155,12 +161,104 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		sceneIsFilter = false;
 		
 		//	make a doc for the file
-		currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), &(*scene), true);
-		scene->useDoc(currentDoc);
+		//currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), &(*scene), true);
+		//scene->useDoc(currentDoc);
+		scene->useFile(inPathToLoad.toStdString(), true);
+		currentDoc = scene->doc();
 	}
 	catch (ISFErr & exc)	{
 		QString		errString = QString("%1, %2").arg(QString::fromStdString(exc.general)).arg(QString::fromStdString(exc.specific));
 		QMessageBox::warning(GetLoadingWindow(), "", errString, QMessageBox::Ok);
+
+		//	load the doc again- this time, don't throw exceptions (we already caught & displayed any errors)
+		//currentDoc = CreateISFDocRef(inPathToLoad.toStdString(), &(*scene), false);
+		//scene->useDoc(currentDoc);
+		scene->useFile(inPathToLoad.toStdString(), false);
+		currentDoc = scene->doc();
+		
+		
+		
+		
+		//	this block finds the "line number" in the pased string, addes "line delta" to it, and optionally adds both to a vector of syntax errors
+		auto		JSONErrLogLineNumberChanger = [](string * _lineIn, int _lineDelta, vector<pair<int,string>> * _syntaxErrArray)	{
+			//qDebug() << "GLSLErrLogLineNumberChanger()";
+			//	if the passed line was null just return immediately
+			if (_lineIn==nullptr || _lineIn->length()<1)
+				return std::string("");
+			//regex			regex("([0-9]+[\\W])([0-9]+)");
+			regex			regex("(parse error at line[\\s]+)([0-9]+)");
+			smatch			matches;
+			//	if i couldn't find any matches in the passed line or i found the wrong # of matches just return the passed line
+			if (!regex_search(*_lineIn, matches, regex))	{
+				//qDebug() << "\tdidn't find a line number in this line...";
+				return *_lineIn;
+			}
+			if (matches.size() != 3)	{
+				qDebug() << "\tERR: incorrect num elements, cannot correct line nos. in " << __PRETTY_FUNCTION__;
+				return *_lineIn;
+			}
+		
+			//	...if i'm here i captured the vals and i need to construct a new line...
+		
+			string			errString("");
+		
+			//	first, copy everything in the line *before* the regex
+			//errString.append( matches.prefix() );
+			errString.append("JSON error: ");
+			//	now copy the first thing i captured (index 1 in the array)- this is presumably the file number
+			//errString.append(matches[1]);
+			//	the second thing i captured (index 2 in the array) is the line number- modify it, then add it to the string
+			int			tmpInt = stoi(matches[2]) + _lineDelta;
+			errString.append( FmtString("%d", tmpInt) );
+			//	copy everything in the line *after* the regex
+			errString.append( matches.suffix() );
+		
+			//	if we need to record the syntax errors in an array...
+			if (_syntaxErrArray != nullptr)	{
+				//	now make a pair that associates the corrected line number with the corrected line number string, and add it to the array
+				_syntaxErrArray->emplace_back( pair<int,string>(tmpInt, errString) );
+			}
+		
+			//cout << "\terrString is \"" << errString << "\"" << endl;
+			return errString;
+		};
+		
+		
+		//	if there's a json error log, parse it line-by-line, adjusting the line numbers to compensate for changes to the shader
+		map<string,string>		*details = &exc.details;
+		//	if there's a vertex error log, parse it line-by-line, adjusting the line numbers to cmpensate for changes to the shader
+		auto					tmpLogIt = details->find("jsonErrLog");
+		if (tmpLogIt != details->end())	{
+			qDebug() << "\tjson err log...";
+			string		*tmpLog = &tmpLogIt->second;
+			cout << "\tjson err log is " << *tmpLog << endl;
+			
+			//	figure out the difference in line numbers between the json string we parsed and the raw ISF file
+			int					lineDelta = 0;
+			ISFDocRef			tmpDoc = scene->doc();
+			string				*jsonSourceString = (tmpDoc==nullptr) ? nullptr : tmpDoc->jsonSourceString();
+			string				*jsonString = (tmpDoc==nullptr) ? nullptr : tmpDoc->jsonString();
+			if (jsonSourceString!=nullptr && jsonString!=nullptr)	{
+				int			jsonSourceLineCount = NumLines(*jsonSourceString);
+				int			jsonLineCount = NumLines(*jsonString);
+				lineDelta = jsonSourceLineCount - jsonLineCount;
+				cout << "\tjsonSourceLineCount is " << jsonSourceLineCount << ", jsonLineCount is " << jsonLineCount << endl;
+			}
+			
+			//	if there's a mismatch, subtract one from the lineDelta, because we're assuming that one of the extra lines is at the end.  this is stupid.
+			if (lineDelta > 0)
+				--lineDelta;
+			
+			//	run through each line of the log, adjusting the line numbers
+			istringstream		ss(*tmpLog);
+			string				tmpLine;
+			while (getline(ss, tmpLine))	{
+				string		modString = JSONErrLogLineNumberChanger(&tmpLine, lineDelta, &sceneJSONErrors);
+				cout << "\tmod json err log is " << modString << endl;
+			}
+		}
+		
+		
 	}
 	catch (...)	{
 	}
@@ -180,7 +278,6 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 		//QMessageBox::warning(GetLoadingWindow(), "", errString, QMessageBox::Ok);
 		//qDebug() << "\tERR: caught exception rendering first frame, " << __PRETTY_FUNCTION__;
 		
-		
 		//	this block finds the "line number" in the pased string, addes "line delta" to it, and optionally adds both to a vector of syntax errors
 		auto		GLSLErrLogLineNumberChanger = [](string * _lineIn, int _lineDelta, vector<pair<int,string>> * _syntaxErrArray)	{
 			//qDebug() << "GLSLErrLogLineNumberChanger()";
@@ -198,11 +295,11 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 				qDebug() << "\tERR: incorrect num elements, cannot correct line nos. in " << __PRETTY_FUNCTION__;
 				return *_lineIn;
 			}
-			
+		
 			//	...if i'm here i captured the vals and i need to construct a new line...
-			
+		
 			string			errString("");
-			
+		
 			//	first, copy everything in the line *before* the regex
 			errString.append( matches.prefix() );
 			//	now copy the first thing i captured (index 1 in the array)- this is presumably the file number
@@ -212,17 +309,16 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 			errString.append( FmtString("%d", tmpInt) );
 			//	copy everything in the line *after* the regex
 			errString.append( matches.suffix() );
-			
+		
 			//	if we need to record the syntax errors in an array...
 			if (_syntaxErrArray != nullptr)	{
 				//	now make a pair that associates the corrected line number with the corrected line number string, and add it to the array
 				_syntaxErrArray->emplace_back( pair<int,string>(tmpInt, errString) );
 			}
-			
+		
 			//cout << "\terrString is \"" << errString << "\"" << endl;
 			return errString;
 		};
-		
 		
 		string					errString("");
 		map<string,string>		*details = &exc.details;
@@ -282,7 +378,7 @@ void ISFController::loadFile(const QString & inPathToLoad)	{
 			string		*tmpLog = &tmpLogIt->second;
 			//cout << "\tfrag err log is " << *tmpLog << endl;
 			
-			//	figure out the difference in line numbers between the compield frag shader and the raw ISF file
+			//	figure out the difference in line numbers between the compiled frag shader and the raw ISF file
 			int					lineDelta = 0;
 			auto				compiledFragSrcIt = details->find("fragSrc");
 			const string		&compiledFragSrc = compiledFragSrcIt->second;

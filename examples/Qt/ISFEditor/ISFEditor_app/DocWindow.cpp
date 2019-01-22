@@ -235,17 +235,26 @@ void DocWindow::updateContentsFromISFController()	{
 			}
 			//	assemble a vector containing the line numbers with errors
 			QVector<int>		tmpLineNos;
-			auto				fragErrs = GetISFController()->getSceneFragErrors();
-			if (fragErrs.size() > 0)
-				errString.append("Fragment shader errors:\n");
-			for (auto fragErrPair : fragErrs)	{
-				tmpLineNos.append(fragErrPair.first);
-				errString.append( QString::fromStdString(fragErrPair.second) );
+			auto				tmpErrs = GetISFController()->getSceneJSONErrors();
+			if (tmpErrs.size() > 0)
+				errString.append("JSON errors:\n");
+			for (auto tmpErrPair : tmpErrs)	{
+				tmpLineNos.append(tmpErrPair.first);
+				errString.append( QString::fromStdString(tmpErrPair.second) );
 				errString.append("\n");
 			}
-			if (fragErrs.size() > 0)
+			tmpErrs = GetISFController()->getSceneFragErrors();
+			if (tmpErrs.size() > 0)
+				errString.append("Fragment shader errros:\n");
+			for (auto tmpErrPair : tmpErrs)	{
+				tmpLineNos.append(tmpErrPair.first);
+				errString.append( QString::fromStdString(tmpErrPair.second) );
+				errString.append("\n");
+			}
+			
+			if (tmpErrs.size() > 0)
 				errString.append("\n\n");
-			//	give the vector of line numbers for errors to the frag shader editor
+			//	give the vector of line nmbers for errors to the frag shader editor
 			ui->fragShaderEditor->setErrorLineNumbers(tmpLineNos);
 		}
 		
@@ -801,7 +810,7 @@ void DocWindow::showEvent(QShowEvent * event)	{
 #if defined(Q_OS_MAC)
 	tmpFont.setPointSize(12);
 #else
-	tmpFont.setPixelSize(12);
+	tmpFont.setPointSize(9);
 #endif
 	ui->compilerErrorsTextWidget->setFont(tmpFont);
 	

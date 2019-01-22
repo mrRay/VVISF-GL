@@ -1200,6 +1200,18 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	try	{
 		jblob = json::parse(*_jsonString);
 	}
+	catch (const json::parse_error& ex)	{
+		caughtJSONException = true;
+		map<string,string>		tmpErrDict;
+		tmpErrDict.insert( pair<string,string>(string("jsonErrLog"), ex.what()) );
+		if (_throwExcept)	{
+			if (_path != nullptr)
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", *_path, tmpErrDict);
+			else
+				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "", tmpErrDict);
+		}
+	}
+	/*
 	catch (std::invalid_argument&)	{
 		caughtJSONException = true;
 		if (_throwExcept)	{
@@ -1209,7 +1221,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
 		}
 	}
-	catch (const std::exception& /*ex*/) {
+	catch (const std::exception&) {
 		caughtJSONException = true;
 		if (_throwExcept)	{
 			if (_path != nullptr)
@@ -1218,7 +1230,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
 		}
 	}
-	catch (const std::string& /*ex*/) {
+	catch (const std::string&) {
 		caughtJSONException = true;
 		if (_throwExcept)	{
 			if (_path != nullptr)
@@ -1227,6 +1239,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				throw ISFErr(ISFErrType_MalformedJSON, "the JSON blob in this file is malformed.", "");
 		}
 	}
+	*/
 	catch (...) {
 		caughtJSONException = true;
 		if (_throwExcept)	{
@@ -1237,30 +1250,33 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 		}
 	}
 	//	if i caught an exception parsing the basic JSON, we can't do anything further
-	if (caughtJSONException)
+	/*
+	if (caughtJSONException)	{
+		cout << "\terr: caught JSON exception, bailing " << __PRETTY_FUNCTION__ << endl;
 		return;
-	
+	}
+	*/
 	
 	//	parse the description
-	auto			anObj = jblob.value("DESCRIPTION",json());
+	json			anObj = (caughtJSONException) ? json() : jblob.value("DESCRIPTION",json());
 	if (anObj.is_string())	{
 		_description = new string(anObj.get<string>());
 	}
 	
 	//	parse the credit
-	anObj = jblob.value("CREDIT",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("CREDIT",json());
 	if (anObj.is_string())	{
 		_credit = new string(anObj.get<string>());
 	}
 	
 	//	parse the vsn
-	anObj = jblob.value("VSN",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("VSN",json());
 	if (anObj.is_string())	{
 		_vsn = new string(anObj.get<string>());
 	}
 	
 	//	parse the categories
-	anObj = jblob.value("CATEGORIES",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("CATEGORIES",json());
 	if (!anObj.is_null() && anObj.is_array())	{
 		for (auto catIt = anObj.begin(); catIt != anObj.end(); ++catIt)	{
 			json		catValue = catIt.value();
@@ -1270,7 +1286,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	}
 	
 	//	parse the persistent buffers from the JSON dict (ISF v1, deprecated and no longer in use now)
-	anObj = jblob.value("PERSISTENT_BUFFERS",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("PERSISTENT_BUFFERS",json());
 	if (!anObj.is_null())	{
 		//	if the persistent buffers object is an array, check that they're strings and add accordingly
 		if (anObj.type() == json::value_t::array)	{
@@ -1373,7 +1389,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	
 	
 	//	parse the array of imported images
-	anObj = jblob.value("IMPORTED",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("IMPORTED",json());
 	if (anObj != nullptr)	{
 		string			parentDirectory = (_path==nullptr) ? std::string("") : StringByDeletingLastPathComponent(*_path);
 		
@@ -1504,7 +1520,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	}
 	
 	//	parse the PASSES array of dictionaries describing the various passes (which may need temp buffers)
-	anObj = jblob.value("PASSES",json());
+	anObj = (caughtJSONException) ? json() : jblob.value("PASSES",json());
 	if (!anObj.is_null())	{
 		if (!anObj.is_array())	{
 			if (_throwExcept)	{
@@ -1651,7 +1667,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 		_renderPasses.emplace_back("");
 	
 	//	parse the INPUTS from the JSON dict (these form the basis of user interaction)
-	auto			inputsArray = jblob.value("INPUTS",json());
+	auto			inputsArray = (caughtJSONException) ? json() : jblob.value("INPUTS",json());
 	if (inputsArray != nullptr && inputsArray.type()==json::value_t::array)	{
 		ISFValType			newAttribType = ISFValType_None;
 		ISFVal				minVal = ISFNullVal();

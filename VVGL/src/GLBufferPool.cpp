@@ -2126,8 +2126,21 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	desc.texClientStorageFlag = true;
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
+
+	//	this bit copies the image data to a manually-allocated block of memory.  i'm not sure why, but if i don't do this, i get crashes under some circumstances
+	void			*tmpData = malloc(desc.backingLengthForSize(gpuSize));
+	char			*rPtr = static_cast<char*>(pixelData);
+	char			*wPtr = static_cast<char*>(tmpData);
+	int				rLineStride = inImg->bytesPerLine();
+	int				rBytesPerLine = imgSize.width * 32 / 8;
+	for (int i=0; i<imgSize.height; ++i)	{
+		memcpy(wPtr, rPtr, rBytesPerLine);
+		rPtr += rLineStride;
+		wPtr += rBytesPerLine;
+	}
 	
-	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
+	//GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, createInCurrentContext);
+	GLBufferRef		returnMe = inPoolRef->createBufferRef(desc, gpuSize, tmpData, repSize, createInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	returnMe->srcRect = VVGL::Rect(0,0,imgSize.width,imgSize.height);
 	returnMe->backingID = GLBuffer::BackingID_None;
@@ -2136,6 +2149,8 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	returnMe->flipped = true;
 	
 	returnMe->preferDeletion = true;
+
+	free(tmpData);
 	
 	return returnMe;
 }

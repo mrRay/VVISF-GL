@@ -29,6 +29,11 @@ GLSLSandboxConverter::GLSLSandboxConverter(QWidget *parent) :
 	//setWindowModality(Qt::ApplicationModal);
 	setWindowModality(Qt::WindowModal);
 	ui->setupUi(this);
+#if defined(Q_OS_MAC)
+	ui->destinationLabel->setText("(converted file will be created in ~/Library/Graphics/ISF)");
+#elif defined(Q_OS_WIN)
+	ui->destinationLabel->setText("(converted file will be created in \\ProgramData\\ISF)");
+#endif
 }
 
 GLSLSandboxConverter::~GLSLSandboxConverter()
@@ -106,7 +111,20 @@ void GLSLSandboxConverter::okClicked()	{
 	suppEntries.insert(QString("DESCRIPTION"), QJsonValue( QString("Automatically converted from %1").arg(rawURLString) ));
 	QString			convertedShaderSource = convertShaderSource(rawShaderSource, suppEntries);
 	//	export the string to the user-library ISF folder
+#if defined(Q_OS_MAC)
 	QString			exportPath = QString("%1/Library/Graphics/ISF/gs_%2.fs").arg(QDir::homePath()).arg(shaderIDString);
+#elif defined(Q_OS_WIN)
+	QDir			tmpDir = QDir::root();
+	if (!tmpDir.cd("ProgramData"))	{
+		tmpDir.mkdir("ProgramData");
+		tmpDir.cd("ProgramData");
+	}
+	if (!tmpDir.cd("ISF"))	{
+		tmpDir.mkdir("ISF");
+		tmpDir.cd("ISF");
+	}
+	QString			exportPath = QString("%1/gs_%2.fs").arg(tmpDir.path()).arg(shaderIDString);
+#endif
 	//qDebug() << "exportPath is " << exportPath;
 	
 	QFile		wFile(exportPath);

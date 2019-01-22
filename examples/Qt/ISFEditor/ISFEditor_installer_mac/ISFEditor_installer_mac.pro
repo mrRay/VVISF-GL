@@ -15,16 +15,16 @@ mac	{
 		offline_installer_creator.output = ISFEditor_installer
 		offline_installer_creator.clean_commands = rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
 		offline_installer_creator.commands += rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
-		offline_installer_creator.commands += $$BINARYCREATOR -s "KH97KZU7A7" -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
-		#offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
-		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT};
+		offline_installer_creator.commands += $$BINARYCREATOR -s "KH97KZU7A7" -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
+		#offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
+		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
 		offline_installer_creator.CONFIG += target_predeps no_link combine
 
 		repo_creator.input = INPUT
 		repo_creator.output = repo_creator_output
-		repo_creator.clean_commands = rm -Rf "$$PWD/repository";
-		repo_creator.commands += rm -Rf "$$PWD/repository";
-		repo_creator.commands += $$REPOGEN -p $$PWD/packages $$PWD/repository;
+		repo_creator.clean_commands = rm -Rf "$$OUT_PWD/repository";
+		repo_creator.commands += rm -Rf "$$OUT_PWD/repository";
+		repo_creator.commands += $$REPOGEN -p $$OUT_PWD/packages $$OUT_PWD/repository;
 		repo_creator.CONFIG += target_predeps no_link combine
 
 		#QMAKE_EXTRA_COMPILERS += installer_prebuild

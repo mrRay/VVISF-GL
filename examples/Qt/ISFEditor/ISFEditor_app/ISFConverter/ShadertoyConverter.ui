@@ -28,7 +28,7 @@
     <widget class="QLineEdit" name="lineEdit"/>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="destinationLabel">
      <property name="text">
       <string>(converted file will be created in ~/Library/Graphics/ISF)</string>
      </property>

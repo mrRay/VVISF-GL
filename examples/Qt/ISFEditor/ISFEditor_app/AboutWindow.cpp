@@ -24,6 +24,7 @@ AboutWindow::AboutWindow(QWidget *parent) :
 		QTextStream		rStream(&aboutFile);
 		aboutFileString = aboutFile.readAll();
 		aboutFile.close();
+		aboutFileString = aboutFileString.arg(QCoreApplication::instance()->applicationVersion());
 	}
 	else
 		aboutFileString = QString("");

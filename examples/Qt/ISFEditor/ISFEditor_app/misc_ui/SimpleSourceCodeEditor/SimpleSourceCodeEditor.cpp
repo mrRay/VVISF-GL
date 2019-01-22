@@ -49,7 +49,7 @@ SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 #if defined(Q_OS_MAC)
 	tmpFont.setPointSize(12);
 #else
-	tmpFont.setPixelSize(12);
+	tmpFont.setPointSize(9);
 #endif
 	setFont(tmpFont);
 	
@@ -103,6 +103,7 @@ SimpleSourceCodeEditor::~SimpleSourceCodeEditor()
 
 
 void SimpleSourceCodeEditor::setErrorLineNumbers(const QVector<int> & inVect)	{
+	/*
 	{
 		std::lock_guard<std::recursive_mutex>		lock(errLock);
 		if (errLineNumbers != nullptr)
@@ -114,6 +115,8 @@ void SimpleSourceCodeEditor::setErrorLineNumbers(const QVector<int> & inVect)	{
 	}
 	
 	highlightCurrentLine();
+	*/
+	setErrorLineNumbers(&inVect);
 }
 void SimpleSourceCodeEditor::setErrorLineNumbers(const QVector<int> * inVect)	{
 	{
@@ -580,6 +583,8 @@ void SimpleSourceCodeEditor::highlightCurrentLine()
 	
 	//	draw selections behind the error lines
 	{
+		qreal		lineBgLuma = lineBGColor.hslHueF();
+		QColor		lineColor = (lineBgLuma < 0.5) ? QColor(Qt::red).darker(160) : QColor(Qt::red).lighter(160);
 		std::lock_guard<std::recursive_mutex>		lock(errLock);
 		if (errLineNumbers != nullptr)	{
 			for (int i=0; i<errLineNumbers->length(); ++i)	{
@@ -587,7 +592,6 @@ void SimpleSourceCodeEditor::highlightCurrentLine()
 				
 				QTextEdit::ExtraSelection		tmpSel;
 				
-				QColor		lineColor = QColor(Qt::red).lighter(160);
 				
 				tmpSel.format.setBackground(lineColor);
 				tmpSel.format.setProperty(QTextFormat::FullWidthSelection, true);

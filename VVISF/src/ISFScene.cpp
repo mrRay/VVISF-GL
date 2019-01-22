@@ -72,7 +72,7 @@ void ISFScene::useFile() noexcept(false)	{
 		_compiledInputTypeString=nullptr;
 	}
 }
-void ISFScene::useFile(const string & inPath) noexcept(false)	{
+void ISFScene::useFile(const string & inPath, const bool & inThrowExc) noexcept(false)	{
 	//cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{
 		lock_guard<recursive_mutex> rlock(_renderLock);
@@ -80,7 +80,7 @@ void ISFScene::useFile(const string & inPath) noexcept(false)	{
 		if (_doc != nullptr)
 			_doc->setParentScene(nullptr);
 		_doc = nullptr;
-		ISFDocRef			newDoc = make_shared<ISFDoc>(inPath, this);
+		ISFDocRef			newDoc = make_shared<ISFDoc>(inPath, this, inThrowExc);
 		_doc = newDoc;
 		
 		//	reset the timestamper and render frame index
@@ -97,6 +97,9 @@ void ISFScene::useFile(const string & inPath) noexcept(false)	{
 	}
 	catch (ISFErr & exc)	{
 		cout << "ERR: " << __PRETTY_FUNCTION__ << "-> caught exception: " << exc.getTypeString() << ": " << exc.general << ", " << exc.specific << endl;
+		cout << "\texc details are " << exc.details["jsonErrLog"] << endl;
+		for (const auto & detail : exc.details)
+			_errDict.insert(detail);
 		_doc = nullptr;
 		//	reset the timestamper and render frame index
 		//timestamper.reset();

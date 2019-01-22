@@ -36,6 +36,7 @@ public:
 	VVISF::ISFDocRef getCurrentDoc() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return currentDoc; }
 	QString getCompiledVertexShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->vertexShaderString() ); }
 	QString getCompiledFragmentShaderString() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return (scene==nullptr) ? QString() : QString::fromStdString( scene->fragmentShaderString() ); }
+	vector<pair<int,string>> getSceneJSONErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneJSONErrors; }
 	vector<pair<int,string>> getSceneVertErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneVertErrors; }
 	vector<pair<int,string>> getSceneFragErrors() { std::lock_guard<std::recursive_mutex> lockGuard(sceneLock); return sceneFragErrors; }
 	
@@ -58,6 +59,7 @@ private:
 	VVISF::ISFDocRef				currentDoc = nullptr;
 	VVISF::ISFSceneRef				scene = nullptr;	//	this is the main scene doing all the rendering!
 	bool					sceneIsFilter = false;
+	vector<pair<int,string>>		sceneJSONErrors;
 	vector<pair<int,string>>		sceneVertErrors;
 	vector<pair<int,string>>		sceneFragErrors;
 	bool					needToLoadFiles = false;	//	this is how we pass contexts between threads: we check this and move the ctx on the relevant thread.

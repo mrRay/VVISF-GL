@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT		 += core gui widgets opengl multimedia
+QT		 += core gui widgets opengl multimedia network
 
 TARGET = ISFEditor
 TEMPLATE = app
@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.7-6
+VERSION = 2.9.8
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -484,7 +484,7 @@ mac {
 	}
 	# release builds need to have the libs bundled up and macdeployqt executed on the output app package to relink them
 	else	{
-		QMAKE_POST_LINK += echo "****************************";
+
 		QMAKE_POST_LINK += mkdir -pv $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/../../../../external/GLEW/mac_x86_64/libGLEW*.dylib $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../../VVGL/libVVGL*.dylib $$framework_dir;
@@ -501,6 +501,7 @@ mac {
 		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
 	}
 }
+# windows need some assembly for deployment
 win32	{
 	CONFIG(debug, debug|release)	{
 		#	intentionally blank, debug builds don't need any work (build & run works just fine)
@@ -516,10 +517,12 @@ win32	{
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../VVISF/release/VVISF.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../../../external/GLEW/win_x64/glew32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../fftreal/release/fftreal.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/libeay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/ssleay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
 
 		MY_WINDEPLOYQT = $$shell_quote($$shell_path($$[QT_INSTALL_BINS]/windeployqt))
 		MY_TARGET_EXE = $$shell_quote($$shell_path("$${OUT_PWD}/release/$${TARGET}.exe"))
-		QMAKE_POST_LINK += $${MY_WINDEPLOYQT} --compiler-runtime --verbose 3 $${MY_TARGET_EXE} $$escape_expand(\n)
+		QMAKE_POST_LINK += $${MY_WINDEPLOYQT} --compiler-runtime --core --gui --widgets --opengl --multimedia --network --winextras --verbose 3 $${MY_TARGET_EXE} $$escape_expand(\n)
 	}
 }
 #else	{
@@ -539,45 +542,109 @@ win32	{
 #	but for some reason that's not working (control is returning before the copy is finished and the installer is incomplete)
 mac	{
 	CONFIG(release, debug|release)	{
-		
+
+		QMAKE_POST_LINK += echo "****************************";
+
+		PACKAGES_SRC = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages"
+		PACKAGES_DST = "$$OUT_PWD/../ISFEditor_installer_mac/packages"
+		PACKAGES_DST_PARENT = "$$OUT_PWD/../ISFEditor_installer_mac"
+		# make sure the dst parent dir exists, delete the 'packages' folder from the build directory
+		QMAKE_POST_LINK += rm -Rf $$PACKAGES_DST_PARENT;
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$PACKAGES_DST;
+		QMAKE_POST_LINK += rm -Rf $$PACKAGES_DST;
+		# copy the 'packages' folder from the source tree to the build directory
+		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$PACKAGES_SRC $$PACKAGES_DST;
+
+		# first process the isf editor
+		# copy the compiled app into the 'data' folder in the build directory's 'packages'
+		EDITOR_DST_DIR = "$$OUT_PWD/../ISFEditor_installer_mac/packages/com.vidvox.ISFEditor.mac/data"
+		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$${TARGET}.app" "$${EDITOR_DST_DIR}/$${TARGET}.app";
+
+		# now process the isf files we're installing
+		# copy the files from the source tree into the 'data' folder in the build directory's 'packages'
+		FILES_DST_DIR = "$$OUT_PWD/../ISFEditor_installer_mac/packages/com.vidvox.ISFFiles.mac/data"
+		FILES_SRC_DIR = "$$_PRO_FILE_PWD_/../../../ISF-files/ISF"
+		QMAKE_POST_LINK += cp -vaRf "$${FILES_SRC_DIR}/*" "$${FILES_DST_DIR}";
+
+
+
+
+
+
 		# delete the 'data' folder for the editor, make the 'data' folder for the editor again, copy the compiled app into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFEditor.mac/data"
-		QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
-		QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
-		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$${PRO_DATA_PATH}/$$TARGET\.app";
+		#PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFEditor.mac/data"
+		#QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
+		#QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
+		#QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$$TARGET\.app" "$${PRO_DATA_PATH}/$$TARGET\.app";
 		
 		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFFiles.mac/data"
-		QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
-		QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
-		QMAKE_POST_LINK += cp -vaRf "$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*" $${PRO_DATA_PATH};
+		#PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages/com.vidvox.ISFFiles.mac/data"
+		#QMAKE_POST_LINK += rm -Rf $${PRO_DATA_PATH};
+		#QMAKE_POST_LINK += mkdir -v $${PRO_DATA_PATH};
+		#QMAKE_POST_LINK += cp -vaRf "$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*" $${PRO_DATA_PATH};
 		
 	}
 }
 win32	{
 	CONFIG(release, debug|release)	{
+		PACKAGES_SRC = $$shell_quote($$shell_path($$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages))
+		PACKAGES_DST = $$shell_quote($$shell_path($$OUT_PWD/../ISFEditor_installer_win/packages))
+		PACKAGES_DST_PARENT = $$shell_quote($$shell_path($$OUT_PWD/../ISFEditor_installer_win))
+		# make sure the dst parent dir exists, delete the 'packages' folder from the build directory
+		QMAKE_POST_LINK += if exist $$PACKAGES_DST_PARENT RMDIR /S /Q $$PACKAGES_DST_PARENT $$escape_expand(\n)
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$PACKAGES_DST $$escape_expand(\n)
+		QMAKE_POST_LINK += if exist $$PACKAGES_DST RMDIR /S /Q $$PACKAGES_DST $$escape_expand(\n)
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$PACKAGES_DST $$escape_expand(\n)
+		# copy the 'packages' folder from the source tree to the build directory
+		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$PACKAGES_SRC $$PACKAGES_DST $$escape_expand(\n)
+
+		# first process the isf editor
+		# copy the compiled app into the 'data' folder in the build directory's 'packages'
+		EDITOR_DST_DIR = $$shell_quote($$shell_path($$OUT_PWD/../ISFEditor_installer_win/packages/com.vidvox.ISFEditor.win/data))
+		EDITOR_SRC_DIR = $$shell_quote($$shell_path($${MY_DEPLOY_DIR}))
+		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$EDITOR_SRC_DIR $$EDITOR_DST_DIR $$escape_expand(\n)
+		# delete unnecessary files from the destination directory
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.cpp")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.obj")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.h")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.pch")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.res")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.lib")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.exp")) $$escape_expand(\n)
+		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${EDITOR_DST_DIR}/*.pdb")) $$escape_expand(\n)
+
+		# now process the isf files we're installing
+		# copy the files from the source tree into the 'data' folder in the build directory's 'packages'
+		FILES_DST_DIR = $$shell_quote($$shell_path($$OUT_PWD/../ISFEditor_installer_win/packages/com.vidvox.ISFFiles.win/data))
+		FILES_SRC_DIR = $$shell_quote($$shell_path($$_PRO_FILE_PWD_/../../../ISF-files/ISF))
+		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$FILES_SRC_DIR $$FILES_DST_DIR $$escape_expand(\n)
+
+
+
+
+
 		
 		# delete the 'data' folder for the editor, make the 'data' folder for the editor again, copy the compiled app into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFEditor.win/data"
-		QMAKE_POST_LINK += if exist $$shell_quote($$shell_path($${PRO_DATA_PATH})) RMDIR /S /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFEditor.win/data"
+		#QMAKE_POST_LINK += if exist $$shell_quote($$shell_path($${PRO_DATA_PATH})) RMDIR /S /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
 
-		QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.cpp")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.obj")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.h")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pch")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.res")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.lib")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.exp")) $$escape_expand(\n)
-		QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pdb")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$shell_path($${MY_DEPLOY_DIR})) $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.cpp")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.obj")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.h")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pch")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.res")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.lib")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.exp")) $$escape_expand(\n)
+		#QMAKE_POST_LINK += DEL /F /Q $$shell_quote($$shell_path("$${PRO_DATA_PATH}/*.pdb")) $$escape_expand(\n)
 
 
 		# delete the 'data' folder for the files, make the 'data' folder for the files again, copy the files from the repos into it
-		PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFFiles.win/data"
-		QMAKE_POST_LINK += if exist $$shell_quote($$shell_path($${PRO_DATA_PATH})) RMDIR /S /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
-		QMAKE_POST_LINK += $$QMAKE_COPY_FILE $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path("$${PRO_DATA_PATH}/")) $$escape_expand(\n)
+		#PRO_DATA_PATH = "$$_PRO_FILE_PWD_/../ISFEditor_installer_win/packages/com.vidvox.ISFFiles.win/data"
+		#QMAKE_POST_LINK += if exist $$shell_quote($$shell_path($${PRO_DATA_PATH})) RMDIR /S /Q $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += $$QMAKE_MKDIR $$shell_quote($$shell_path($${PRO_DATA_PATH})) $$escape_expand(\n)
+		#QMAKE_POST_LINK += $$QMAKE_COPY_FILE $$shell_quote($$shell_path("$$_PRO_FILE_PWD_/../../../ISF-files/ISF/*")) $$shell_quote($$shell_path("$${PRO_DATA_PATH}/")) $$escape_expand(\n)
 		
 	}
 }
