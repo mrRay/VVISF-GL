@@ -87,7 +87,7 @@ struct Timestamp	{
 	
 	
 	friend inline ostream & operator<<(ostream & os, const Timestamp & rs)	{
-		os << "<Timestamp " << rs.getTimeInSeconds() << ">";
+		os << "<Timestamp " << double(rs.getTimeInSeconds()) << ">";
 		return os;
 	}
 	inline Timestamp operator-(const Timestamp & n) const	{

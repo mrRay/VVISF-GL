@@ -1379,6 +1379,8 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 					if (tmpObj != nullptr && tmpObj.is_number() && tmpObj.get<bool>())	{
 						newTargetBuffer->setFloatFlag(true);
 					}
+					//	don't forget to flag it as a persistent buffer!
+					newTargetBuffer->setPersistentFlag(true);
 					//	add the new persistent buffer (as a render pass) to the array of render passes
 					_persistentPassTargets.push_back(newTargetBuffer);
 				}
@@ -1559,11 +1561,15 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 						else if (persistentObj.is_number())
 							persistentVal = ISFFloatVal(persistentObj.get<double>());
 						//	if there's a valid PERSISTENT flag and it's indicating positive, add the new target buffer as a persistent buffer
-						if (persistentVal.getDoubleVal() > 0.)
+						if (persistentVal.getDoubleVal() > 0.)	{
 							_persistentPassTargets.push_back(targetBuffer);
+							targetBuffer->setPersistentFlag(true);
+						}
 						//	else there's no PERSISTENT flag (or a negative flag) - add the new target buffer as a temporary buffer
-						else
+						else	{
 							_tempPassTargets.push_back(targetBuffer);
+							targetBuffer->setPersistentFlag(false);
+						}
 					}
 				
 					//	update the width/height stuff for the target buffer

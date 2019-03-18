@@ -1151,7 +1151,7 @@ void ISFScene::_renderCleanup()	{
 	//}
 }
 void ISFScene::_render(const GLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,GLBufferRef> * outPassDict)	{
-	//cout << __FUNCTION__ << ", self is " << getFileName() << ", time is " << inTime << endl;
+	//cout << __FUNCTION__ << ", self is " << doc()->name() << ", time is " << inTime << endl;
 	//cout << "\tinSize is " << inSize << ", inTargetBuffer is " << *inTargetBuffer << endl;
 	//if (inTargetBuffer != nullptr)
 	//	cout << "/" << *inTargetBuffer << endl;

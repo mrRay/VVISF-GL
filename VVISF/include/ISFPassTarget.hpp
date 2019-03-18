@@ -48,6 +48,7 @@ class VVISF_EXPORT ISFPassTarget	{
 		double			_heightExpressionVar = 1.0;	//	the expression expects you to maintain static memory for the variables in its symbol table (the memory has to be retained as long as the expression is in use)
 
 		bool			_floatFlag = false;	//	NO by default, if YES makes float texutres
+		bool			_persistentFlag = false;	//	NO by default, if YES this is a persistent buffer (and it needs to be cleared to black on creation)
 		VVGL::GLCachedUniRef	_cachedUnis[4] = { nullptr, nullptr, nullptr, nullptr };
 	public:
 		//	"class method" that creates a buffer ref
@@ -74,6 +75,10 @@ class VVISF_EXPORT ISFPassTarget	{
 		void setFloatFlag(const bool & n);
 		//!	Gets the float flag for this pass- if true, this pass needs to render to a high-bitdepth texture.
 		bool floatFlag() const { return _floatFlag; }
+		//! Sets the persistent flag for this pass- if true, this pass's buffer will be used as an input when rendering the next frame.
+		void setPersistentFlag(const bool & n);
+		//! Gets the persistent flag for this pass- if true, the pass's buffer will be used as an input when rendering the next frame.
+		bool persistentFlag() const { return _persistentFlag; }
 		//!	Deletes any GL resources that might presently be cached by this pass.
 		void clearBuffer();
 		

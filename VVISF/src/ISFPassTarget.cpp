@@ -130,7 +130,10 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 #endif
 				_buffer = (shouldBeFloat) ? CreateRGBAFloatTex(inSize, true, bp) : CreateRGBATex(inSize, true, bp);
 			
-			copier->copyBlackFrameTo(_buffer);
+			//	only copy a black frame to the buffer if it's a persistent buffer (the implication is that as a persistent buffer the content of this frame will matter immediately and it will screw things up if it's anything but a black frame)
+			if (_persistentFlag)	{
+				copier->copyBlackFrameTo(_buffer);
+			}
 		}
 	}
 	//	else there's a buffer...
@@ -286,6 +289,9 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 			_buffer = newBuffer;
 		}
 	}
+}
+void ISFPassTarget::setPersistentFlag(const bool & n)	{
+	_persistentFlag = n;
 }
 
 /*	========================================	*/

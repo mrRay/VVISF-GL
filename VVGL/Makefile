@@ -44,8 +44,8 @@ endif
 
 
 #	the GL_DEBUG flag enables a call to glGetError() after every call to GL
-CPPFLAGS += -DGL_DEBUG
-OBJCPPFLAGS += -DGL_DEBUG
+#CPPFLAGS += -DGL_DEBUG
+#OBJCPPFLAGS += -DGL_DEBUG
 
 
 #	rules that define object files for source files

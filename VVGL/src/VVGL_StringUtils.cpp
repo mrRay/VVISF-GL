@@ -16,7 +16,7 @@ namespace VVGL
 #pragma mark --------------------- string manipulation functions
 
 
-vector<string> PathComponents(const string & n)	{
+vector<string> PathComponents(const string & n) {
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
 	vector<string>		returnMe(0);
@@ -52,6 +52,14 @@ string StringByDeletingLastPathComponent(const string & n)	{
 		return n;
 	return n.substr(0, lastSlashIndex);
 }
+string PathFileExtension(const string & n)	{
+	size_t			extensionIndex = n.find_last_of(".");
+	if (extensionIndex == string::npos || extensionIndex == 0)
+		return n;
+	else if (extensionIndex == (n.length()-1))
+		return n;
+	return n.substr(extensionIndex+1);
+}
 string StringByDeletingExtension(const string & n)	{
 	size_t			extensionIndex = n.find_last_of(".");
 	if (extensionIndex == string::npos)
@@ -67,7 +75,7 @@ string StringByDeletingLastAndAddingFirstSlash(const string & n)	{
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
 	string		returnMe = n;
 	if (hasLast)	{
-		if (tmpLen > 1)	{
+		if (tmpLen > 1) {
 			returnMe.pop_back();
 		}
 	}
@@ -84,7 +92,7 @@ string StringByDeletingLastSlash(const string & n)	{
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
 	string		returnMe = n;
 	if (hasLast)	{
-		if (tmpLen > 1)	{
+		if (tmpLen > 1) {
 			returnMe.pop_back();
 		}
 	}
@@ -92,7 +100,18 @@ string StringByDeletingLastSlash(const string & n)	{
 	//	returnMe.insert(0, 1, '/');
 	return returnMe;
 }
-string FmtString(const char * fmt, ...)	{
+bool CaseInsensitiveCompare(const string & a, const string & b) {
+	unsigned int		sz = a.size();
+	if (b.size() != sz)
+		return false;
+	for (unsigned int i = 0; i < sz; ++i)	{
+		if (tolower(a[i]) != tolower(b[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+string FmtString(const char * fmt, ...) {
 	va_list			args;
 	va_start(args, fmt);
 	int				tmpLen = vsnprintf(nullptr, 0, fmt, args) + 1;

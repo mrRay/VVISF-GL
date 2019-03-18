@@ -177,6 +177,11 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		inline VVGL::Timestamp getTimestamp() { return VVGL::Timestamp()-_baseTime; }
 		//!	Sets the "throwExceptions" member var, which is false by default.  If true, the ISFScene will throw an exception using the ISFErr object to describe the nature and type of the problem.  Exceptions may be thrown if the file is missing, if there's a problem reading it or parsing the JSON, if there's a problem compiling the GLSL source code for the shaders, etc.
 		inline void setThrowExceptions(const bool & n) { _throwExceptions=n; }
+		
+		//!	Sets the base time at which this scene started rendering its ISF.  Internally, ISFScene records the time at which it loaded a file- this is the "zero" time (frame time is passed to ISF shaders, and is commonly used to perform animations).
+		void setBaseTime(const VVGL::Timestamp & inNewBaseTime=VVGL::Timestamp()) { _baseTime = inNewBaseTime; }
+		//!	Returns the base time at which this scene started rendering its ISF.  Render times are calculated using this.
+		VVGL::Timestamp baseTime() { return _baseTime; }
 
 		//virtual void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize=VVGL::Size(640.,480.), const double & inRenderTime=timestamper.nowTime().getTimeInSeconds(), map<string,VVGL::GLBufferRef> * outPassDict=nullptr);
 		
