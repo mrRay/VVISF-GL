@@ -33,6 +33,10 @@ This project is documented, using both Doxygen and traditional inline comments. 
 
 ...Your first stop should probably be to the "Modules" section, which has a series of walkthroughs that introduce the concepts, classes, and workflows for these libs.
 
+# ISF Shaders
+
+The [ISF Files](https://github.com/Vidvox/ISF-Files) repository contains over 200 different opensource video generators and effects written in ISF that can be used with these libraries.
+
 # Building and Using VVGL & VVISF
 
 VVGL and VVISF are intended to be built and used as shared libraries.  Precompiled binaries are not distributed because the expectation is that the binaries you compile of VVGL and VVISF are going to be specific to your use-case (you'll likely be compiling them against a specific SDK/operating system, and even within the same OS/SDK binaries may not be compatible from compiler to compiler).
