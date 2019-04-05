@@ -6,6 +6,18 @@
 
 
 
+#if defined(VVGL_SDK_WIN)
+#ifdef max
+#undef max
+#endif	//	max
+#ifdef min
+#undef min
+#endif	//	min
+#endif	//	VVGL_SDK_WIN
+
+
+
+
 namespace VVGL
 {
 

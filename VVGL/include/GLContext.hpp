@@ -37,6 +37,10 @@
 	#include <QPointer>
 	#include "GLQtCtxWrapper.hpp"
 	class QOpenGLContext;
+#elif defined(VVGL_SDK_WIN)
+	#include <Windows.h>
+	#include <GL/glew.h>
+	#include <GL/wglew.h>
 #endif
 
 #include "VVGL_Base.hpp"
@@ -101,6 +105,22 @@ VVGL_EXPORT QSurfaceFormat CreateGL3SurfaceFormat();
 \brief Creates a surface format describing the OpenGL 4 profile for this platform.
 */
 VVGL_EXPORT QSurfaceFormat CreateGL4SurfaceFormat();
+#elif defined(VVGL_SDK_WIN)
+/*!
+\relatesalso GLContext
+\brief Creates a c-style array of int values that describe the context attributes required to create a compatibility (old GL, driver-dependant) OpenGL context using wglCreateContextAttribsARB(), which is called in GLContext's constructors.
+*/
+VVGL_EXPORT unique_ptr<int[]> AllocCompatibilityContextAttribs();
+/*!
+\relatesalso GLContext
+\brief Creates a c-style array of int values that describe the context attributes required to create a core (GL 4.5) OpenGL context using wglCreateContextAttribsARB(), which is called in GLContext's constructors.
+*/
+VVGL_EXPORT unique_ptr<int[]> AllocGL4ContextAttribs();
+/*!
+\relatesalso GLContext
+\brief Configures the passed device context by calling SetPixelFormat() on it.  Please note that according to the Windows SDK, this function may only be called once per device context!
+*/
+VVGL_EXPORT bool ConfigDeviceContextPixelFormat(const HDC & inDC);
 #endif
 
 
@@ -138,6 +158,15 @@ class VVGL_EXPORT GLContext	{
 		GLQtCtxWrapper		*ctx = nullptr;	//	we have to wrap all the QOpenGL* stuff because if its headers and GLEW's headers are in the same #include paths it breaks compilation
 		QSurfaceFormat		sfcFmt = CreateDefaultSurfaceFormat();
 		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
+#elif defined(VVGL_SDK_WIN)
+		bool				ownsCtx = false;	//	whether or not 'ctx' is owned by this GLContext instance.  if the ctx is owned, it will be released when the owning instance is destroyed
+		bool				ownsDC = false;
+		HGLRC				ctx = NULL;
+		HDC					dc = NULL;
+		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
+		shared_ptr<vector<GLContext*>>		shareGroup = make_shared<vector<GLContext*>>();
+		GLContextWindowBackingRef		windowBacking = nullptr;
+		unique_ptr<int[]>		contextAttribs = nullptr;
 #endif
 		//!	The version of OpenGL this context is using.
 		GLVersion			version = GLVersion_Unknown;
@@ -196,6 +225,25 @@ class VVGL_EXPORT GLContext	{
 		//	this function creates a new QOpenGLContext in the backend sharing the passed context
 		GLContext(const QOpenGLContext * inShareCtx);
 		*/
+#elif defined(VVGL_SDK_WIN)
+		
+		//	creates nothing!  strictly a "wrapper" around the passed GL and device contexts.  weak refs to both, underlying objects must be retained for the lifetime of the returned object!
+		GLContext(const HGLRC & inCtx, const HDC & inDC);
+		//	creates new GL ctx, but does not create a DC- establishes a weak ref to the passed DC, and uses that to render
+		GLContext(const HGLRC & inShareCtx, const HDC & inDC, const int * inCtxAttribs);
+		//	creates a new GL ctx and a new DC using a hidden window that it retains
+		GLContext(const HGLRC & inShareCtx, const int * inCtxAttribs);
+
+		void addContextToShareGroup(GLContext * inCtx) const;
+		void removeContextFromShareGroup(GLContext * inCtx) const;
+		void setShareGroup(const shared_ptr<vector<GLContext*>> & inShareGroup);
+
+		HGLRC context() { return ctx; }
+		HDC deviceContext() { return dc; }
+
+		static unsigned int bootstrapGLEnvironmentIfNecessary();
+		static unsigned int bootstrapGLEnvironment() { return glewInit(); }
+
 #endif
 		//	this function creates a context using the default pixel format
 		GLContext();
@@ -207,11 +255,6 @@ class VVGL_EXPORT GLContext	{
 	public:
 		void generalInit();
 		void calculateVersion();
-		
-		//	returned variable MUST BE FREED
-		//GLContext * allocNewContextSharingMe() const;
-		//	creates a new GL context, but returned variable doesn't have to be freed
-		//GLContext newContextSharingMe() const;
 		
 		//!	Creates and returns a new OpenGL context in the same sharegroup as the receiver.
 		GLContextRef newContextSharingMe() const;
@@ -293,6 +336,29 @@ inline GLContextRef CreateGLContextRefUsing(QSurface * inTargetSurface, QOpenGLC
 \param inSfcFmt The surface format describes what kind of OpenGL environment you want to work with.  The QSurfaceFormat can be created using one of the Create****SurfaceFormat() functions listed in this document.
 */
 inline GLContextRef CreateNewGLContextRef(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
+#elif defined(VVGL_SDK_WIN)
+/*!
+\relatesalso GLContext
+\brief Doesn't create a new OpenGL context- creates a wrapper around the GL context and device context passed in.  Does NOT take ownership of the passed context- when the GLContext instance is deallocated, it will NOT release the underlying contex.  Similarly, user is responsible for ensuring that the underlying HGLRC instance is retained for the lifetime of the returned GLContext instance.
+\param inCtx Must be non-null.  A weak ref is made to this context- the GLContext instance that is created is basically just a wrapper around this context.
+\param inHDC The device context that the GL context will be drawing to (or null)
+*/
+inline GLContextRef CreateGLContextRefUsing(const HGLRC & inCtx, const HDC & inHDC) { return make_shared<GLContext>(inCtx, inHDC); }
+/*!
+\relatesalso GLContext
+\brief Creates a new OpenGL context, but does *not* create a new window/device context (instead, it uses the passed device context).  A weak ref is created to the passed device context, which must exist for the lifetime of the returned context!
+\param inShareCtx When the new OpenGL context is created, it will share this context.  May be NULL.
+\param inHDC The device context that will be used to create the OpenGL context.  Must not be NULL, and must exist for the duration of the returned GLContext instance!
+\param inCtxAttribs The attributes used to create the GL context.
+*/
+inline GLContextRef CreateGLContextRef(const HGLRC & inShareCtx, const HDC & inHDC, const int * inCtxAttribs) { return make_shared<GLContext>(inShareCtx, inHDC, inCtxAttribs); }
+/*!
+\relatesalso GLContext
+\brief Creates a new OpenGL context, which supplies its own backing and device context via a hidden/offscreen window.
+\param inShareCtx When the new OpenGL context is created, it will share this context.  May be NULL.
+\param inCtxAttribs 
+*/
+inline GLContextRef CreateGLContextRef(const HGLRC & inShareCtx, const int * inCtxAttribs) { return make_shared<GLContext>(inShareCtx, inCtxAttribs); }
 #endif
 /*!
 \relatesalso GLContext

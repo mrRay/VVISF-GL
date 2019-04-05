@@ -3,6 +3,14 @@
 
 
 
+#if defined(VVGL_SDK_WIN)
+#undef far
+#undef near
+#endif	//	VVGL_SDK_WIN
+
+
+
+
 namespace VVGL
 {
 
@@ -23,6 +31,10 @@ GLScene::GLScene()	{
 		_context = bp->context()->newContextSharingMe();
 		//cout << "\tcontext is " << *_context << endl;
 	}
+
+#if defined(VVGL_SDK_WIN)
+	_alwaysNeedsReshape = true;
+#endif	//	VVGL_SDK_WIN
 }
 GLScene::GLScene(const GLContextRef & inCtx)	{
 	//_context = new GLContext(inCtx);
@@ -807,10 +819,10 @@ void GLScene::_reshape()	{
 					//	calculate the orthographic projection transform for a viewport with the given size
 					Rect		tmpRect(0., 0., _orthoSize.width, _orthoSize.height);
 					//cout << "\treshaping with orthogonal rect " << tmpRect << endl;
-					float		right = tmpRect.maxX();
-					float		left = tmpRect.minX();
-					float		top = tmpRect.maxY();
-					float		bottom = tmpRect.minY();
+					float		right = static_cast<float>(tmpRect.maxX());
+					float		left = static_cast<float>(tmpRect.minX());
+					float		top = static_cast<float>(tmpRect.maxY());
+					float		bottom = static_cast<float>(tmpRect.minY());
 					float		near = -1.;
 					float		far = 1.;
 					GLfloat		projMatrix[] = {
@@ -834,7 +846,7 @@ void GLScene::_reshape()	{
 #endif
 		}
 		
-		glViewport(0,0,_orthoSize.width,_orthoSize.height);
+		glViewport(0,0,static_cast<GLsizei>(_orthoSize.width),static_cast<GLsizei>(_orthoSize.height));
 		GLERRLOG
 	}
 	
@@ -852,11 +864,11 @@ void GLScene::_renderCleanup()	{
 	//	unbind the render target's attachments
 	if (_renderTarget.fboName() > 0)	{
 		if (_renderTarget.depthName() > 0)	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 0, 0, 0);
 			GLERRLOG
 		}
 		if (_renderTarget.colorName() > 0)	{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 0, 0, 0);
 			GLERRLOG
 		}
 		//	unbind the framebuffer

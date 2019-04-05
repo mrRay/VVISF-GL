@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <chrono>
+#include <functional>
 #include "GLContext.hpp"
 
 
@@ -67,6 +68,8 @@ class VVGL_EXPORT GLBuffer	{
 		#include "GLBuffer_Enums_GLFW.h"
 #elif defined(VVGL_SDK_QT)
 		#include "GLBuffer_Enums_Qt.h"
+#elif defined(VVGL_SDK_WIN)
+		#include "GLBuffer_Enums_Win.h"
 #endif
 		
 		

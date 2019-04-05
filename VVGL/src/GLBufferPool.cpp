@@ -231,6 +231,7 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 		}
 #endif
 		//	enable the tex target, gen the texture, and bind it
+		GLERRLOG
 		glActiveTexture(GL_TEXTURE0);
 		GLERRLOG
 		if (_context->version <= GLVersion_2)	{
@@ -738,7 +739,7 @@ GLBufferRef CreateFBO(const bool & inCreateInCurrentContext, const GLBufferPoolR
 	GLBufferRef	returnMe = inPoolRef->createBufferRef(desc, Size(), nullptr, Size(), inCreateInCurrentContext);
 	returnMe->parentBufferPool = inPoolRef;
 	
-#if defined(VVGL_SDK_QT)
+#if defined(VVGL_SDK_QT) || defined(VVGL_SDK_WIN)
 	returnMe->preferDeletion = true;
 #endif
 	
@@ -1615,7 +1616,7 @@ GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const bool & createIn
 
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 //	these functions are defined in the VVGLBufferPool_CocoaAdditions source file
-#else
+#elif defined(VVGL_SDK_QT)
 GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
 	QImage			*newImg = new QImage( inPath.c_str() );
 	GLBufferRef		returnMe = nullptr;
@@ -1629,7 +1630,14 @@ GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCur
 GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
 	return nullptr;
 }
-#endif	//	#if !VVGL_SDK_MAC && !VVGL_SDK_IOS
+#else
+GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef)	{
+	return nullptr;
+}
+GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
+	return nullptr;
+}
+#endif	//	#if !VVGL_SDK_MAC && !VVGL_SDK_IOS && !VVGL_SDK_QT
 
 
 

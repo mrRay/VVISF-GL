@@ -307,7 +307,7 @@ uint32_t GLBuffer::backingLengthForSize(Size s) const	{
 }
 
 Rect GLBuffer::glReadySrcRect() const	{
-#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT) || defined(VVGL_SDK_WIN)
 	if (this->desc.target == Target_Rect)
 		return srcRect;
 #endif
@@ -501,7 +501,7 @@ string GLBuffer::getDescriptionString() const	{
 		case GLBuffer::Target_None:		targetChar = 'X'; break;
 		case GLBuffer::Target_RB:		targetChar = 'B'; break;
 		case GLBuffer::Target_2D:		targetChar = '2'; break;
-#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_QT) || defined(VVGL_SDK_WIN)
 		case GLBuffer::Target_Rect:		targetChar = 'R'; break;
 #endif
 		case GLBuffer::Target_Cube:		targetChar = 'C'; break;

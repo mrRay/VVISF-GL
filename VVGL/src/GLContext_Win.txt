@@ -1,0 +1,408 @@
+//	this source file is included programmatically in GLContext.cpp, so we don't need to include a header for GLContext here
+
+//	makes absolutely sure that the following is only compiled if we're using the given SDK
+#if defined(VVGL_SDK_WIN)
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <regex>
+#include "GLContextWindowBacking.hpp"
+
+
+
+
+namespace VVGL
+{
+
+
+	using namespace std;
+
+
+
+
+	/*	========================================	*/
+#pragma mark --------------------- constructor/destructor
+
+	
+	GLContext::GLContext(const HGLRC & inCtx, const HDC & inDC) {
+		//cout << __PRETTY_FUNCTION__ << ", wrapper" << endl;
+		ownsCtx = false;
+		ownsDC = false;
+
+		ctx = inCtx;
+		dc = inDC;
+
+		generalInit();
+	}
+	GLContext::GLContext(const HGLRC & inShareCtx, const HDC & inDC, const int * inCtxAttribs) {
+		//cout << __PRETTY_FUNCTION__ << ", wraps DC only" << endl;
+		ownsCtx = true;
+		ownsDC = false;
+		//contextAttribs = make_unique<int>(AllocGL4ContextAttribs());
+		//contextAttribs = make_unique<int*>(new int(3));
+		//int			*tmpPtr = AllocGL4ContextAttribs();
+		//contextAttribs = make_unique<int*>(tmpPtr);
+
+		dc = inDC;
+		if (inCtxAttribs != NULL) {
+			//	copy the ctx attribs we were passed to a unique ptr, which is how it's stored locally
+			size_t			inAttribsSize = 0;
+			const int		*intPtr = inCtxAttribs;
+			while (*intPtr != 0) {
+				++inAttribsSize;
+				++intPtr;
+			}
+			contextAttribs = make_unique<int[]>(inAttribsSize + 1);
+			for (size_t i = 0; i < inAttribsSize; ++i) {
+				contextAttribs[i] = *(inCtxAttribs + i);
+			}
+			//	make the ctx
+			ctx = wglCreateContextAttribsARB(dc, inShareCtx, inCtxAttribs);
+			
+			//GLERRLOG
+		}
+		else {
+			unique_ptr<int[]>		attribs = AllocGL4ContextAttribs();
+			//unique_ptr<int[]>		attribs = AllocCompatibilityContextAttribs();
+			ctx = wglCreateContextAttribsARB(dc, inShareCtx, attribs.get());
+			//int			*attribs = AllocGL4ContextAttribs();
+			//ctx = wglCreateContextAttribsARB(dc, inShareCtx, attribs);
+			//free(attribs);
+			
+			//GLERRLOG
+		}
+		if (ctx == NULL)
+			cout << "ERR: wglCreateContextAttribsARB() failed in " << __PRETTY_FUNCTION__ << endl;
+
+		generalInit();
+	}
+	GLContext::GLContext(const HGLRC & inShareCtx, const int * inCtxAttribs) {
+		//cout << __PRETTY_FUNCTION__ << ", owns all" << endl;
+		ownsCtx = true;
+		ownsDC = true;
+
+		windowBacking = GLContextWindowBacking::CreateWindowBackingRef();
+		dc = windowBacking->dc();
+		//cout << "\tdc is " << static_cast<void*>(windowBacking->dc()) << endl;
+		if (inCtxAttribs != NULL) {
+			//	copy the ctx attribs we were passed to a unique ptr, which is how it's stored locally
+			size_t			inAttribsSize = 0;
+			const int		*intPtr = inCtxAttribs;
+			while (*intPtr != 0) {
+				++inAttribsSize;
+				++intPtr;
+			}
+			contextAttribs = make_unique<int[]>(inAttribsSize + 1);
+			for (size_t i = 0; i < inAttribsSize; ++i) {
+				contextAttribs[i] = *(inCtxAttribs + i);
+			}
+			ctx = wglCreateContextAttribsARB(dc, inShareCtx, inCtxAttribs);
+		}
+		else {
+			unique_ptr<int[]>		attribs = AllocGL4ContextAttribs();
+			//unique_ptr<int[]>		attribs = AllocCompatibilityContextAttribs();
+			ctx = wglCreateContextAttribsARB(dc, inShareCtx, attribs.get());
+			//int			*attribs = AllocGL4ContextAttribs();
+			//ctx = wglCreateContextAttribsARB(dc, inShareCtx, attribs);
+			//free(attribs);
+		}
+		if (ctx == NULL)
+			cout << "ERR: wglCreateContextAttribsARB() failed in " << __PRETTY_FUNCTION__ << endl;
+
+		generalInit();
+	}
+	GLContext::GLContext() {
+		initializedFuncs = false;
+		generalInit();
+	}
+	GLContext::~GLContext() {
+		if (ctx != NULL) {
+			wglMakeCurrent(NULL, NULL);
+			wglDeleteContext(ctx);
+			ctx = NULL;
+		}
+		windowBacking = nullptr;
+
+		initializedFuncs = false;
+		removeContextFromShareGroup(this);
+		windowBacking = nullptr;
+	}
+
+	/*	========================================	*/
+#pragma mark --------------------- factory method
+
+/*
+GLContext * GLContext::allocNewContextSharingMe() const	{
+	return new GLContext(win);
+}
+GLContext GLContext::newContextSharingMe() const	{
+	return GLContext(win);
+}
+*/
+	GLContextRef GLContext::newContextSharingMe() const {
+		//return make_shared<GLContext>(ctx, static_cast<const int*>(NULL));
+
+		//	just make a window-backed context right now, we'll see if this needs optimization or modification later
+		const int		*tmpAttribs = (contextAttribs == nullptr) ? NULL : contextAttribs.get();
+		GLContextRef	returnMe = make_shared<GLContext>(ctx, tmpAttribs);
+		//GLContextRef	returnMe = make_shared<GLContext>(ctx, dc, tmpAttribs);
+		//	add the newly-created ctx to my sharegroup
+		GLContext		*rawCtxPtr = returnMe.get();
+		addContextToShareGroup(rawCtxPtr);
+		return returnMe;
+	}
+
+	/*	========================================	*/
+#pragma mark --------------------- general init/delete
+
+	void GLContext::generalInit() {
+		//glEnable(GL_KHR_debug);
+		//	figure out what version of GL we're working with
+		calculateVersion();
+	}
+
+	/*	========================================	*/
+#pragma mark --------------------- public methods
+
+	void GLContext::addContextToShareGroup(GLContext * inCtx) const {
+		//cout << __PRETTY_FUNCTION__ << ", " << static_cast<void*>(inCtx) << endl;
+
+		if (inCtx == nullptr)
+			return;
+		//	make sure the group doesn't already contain the passed ptr, then add it
+		bool			existing = false;
+		for (auto it = shareGroup->begin(); it != shareGroup->end(); ++it) {
+			if (*it == inCtx) {
+				existing = true;
+				break;
+			}
+		}
+		//	if the ctx doesn't already exist in the group, add it
+		if (!existing)
+			shareGroup->emplace_back(inCtx);
+		//	make sure the passed context knows about this share group!
+		inCtx->setShareGroup(shareGroup);
+	}
+	void GLContext::removeContextFromShareGroup(GLContext * inCtx) const {
+		//cout << __PRETTY_FUNCTION__ << ", " << static_cast<void*>(inCtx) << endl;
+
+		if (inCtx == nullptr)
+			return;
+		//	remove the passed context from the group
+		for (auto it = shareGroup->begin(); it != shareGroup->end(); ) {
+			if (*it == inCtx) {
+				it = shareGroup->erase(it);
+			}
+			else
+				++it;
+		}
+		//	make sure the passed context is no longer using the share group!
+		inCtx->setShareGroup(nullptr);
+	}
+	void GLContext::setShareGroup(const shared_ptr<vector<GLContext*>> & inShareGroup) {
+		if (inShareGroup == nullptr) {
+			shareGroup = make_shared<vector<GLContext*>>();
+		}
+		else
+			shareGroup = inShareGroup;
+	}
+
+
+	unsigned int GLContext::bootstrapGLEnvironmentIfNecessary() {
+		unsigned int		returnMe = GLEW_OK;
+		static bool			necessary = true;
+		if (necessary) {
+			returnMe = glewInit();
+			GLERRLOG
+			necessary = false;
+		}
+		return returnMe;
+	}
+
+
+	void GLContext::makeCurrent() {
+		//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+		if (ctx != NULL) {
+			if (!wglMakeCurrent(dc, ctx)) {
+				cout << "ERR: wglMakeCurrent failed in " << __PRETTY_FUNCTION__ << endl;
+			}
+			else {
+				GLERRLOG
+				if (!initializedFuncs) {
+					glewInit();
+					GLERRLOG
+					initializedFuncs = true;
+				}
+			}
+		}
+	}
+	void GLContext::makeCurrentIfNotCurrent() {
+		//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+		if (ctx != NULL) {
+			if (wglGetCurrentContext() != ctx) {
+				if (!wglMakeCurrent(dc, ctx))	{
+					cout << "ERR: wglMakeCurrent failed in " << __PRETTY_FUNCTION__ << endl;
+				}
+				else {
+					GLERRLOG
+				}
+			}
+
+			if (!initializedFuncs) {
+				glewInit();
+				GLERRLOG
+				initializedFuncs = true;
+			}
+		}
+	}
+	void GLContext::makeCurrentIfNull() {
+		//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+		if (ctx != NULL) {
+			if (wglGetCurrentContext() == NULL) {
+				if (!wglMakeCurrent(dc, ctx)) {
+					cout << "ERR: wglMakeCurrent failed in " << __PRETTY_FUNCTION__ << endl;
+				}
+				else {
+					GLERRLOG
+				}
+			}
+
+			if (!initializedFuncs) {
+				glewInit();
+				GLERRLOG
+				initializedFuncs = true;
+			}
+		}
+	}
+	bool GLContext::sameShareGroupAs(const GLContextRef & inCtx) {
+		cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
+		return false;
+	}
+	GLContext & GLContext::operator=(const GLContext & n) {
+		return *this;
+	}
+	ostream & operator<<(ostream & os, const GLContext & n) {
+		os << &n;
+		return os;
+	}
+	ostream & operator<<(ostream & os, const GLContext * n) {
+		//os << "<GLContext " << (void *)n << ">";
+		os << "<GLContext " << n->ctx << ">";
+		return os;
+	}
+
+
+
+
+	PIXELFORMATDESCRIPTOR CreatePixelFormatForDeviceContext(const HDC & inDC) {
+		PIXELFORMATDESCRIPTOR		returnMe;
+		memset(&returnMe, 0, sizeof(returnMe));
+		if (inDC == NULL)
+			return returnMe;
+
+		const int			pixelAttribs[] = {
+			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+			WGL_SWAP_METHOD_ARB, WGL_SWAP_EXCHANGE_ARB,
+			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+			WGL_COLOR_BITS_ARB, 32,
+			WGL_ALPHA_BITS_ARB, 8,
+			WGL_DEPTH_BITS_ARB, 24,
+			WGL_STENCIL_BITS_ARB, 8,
+			WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+			WGL_SAMPLES_ARB, 4,
+			0
+		};
+		int				pxlFmtID;
+		UINT			numFmts;
+		bool			status = wglChoosePixelFormatARB(inDC, pixelAttribs, NULL, 1, &pxlFmtID, &numFmts);
+		if (!status || numFmts == 0) {
+			cout << "ERR: wglChoosePixelFormatARB() failed in " << __FUNCSIG__ << endl;
+			return returnMe;
+		}
+		//	dump the pixel attribs to the PIXELFORMATDESCRIPTOR we'll be returning
+		DescribePixelFormat(inDC, pxlFmtID, sizeof(returnMe), &returnMe);
+		return returnMe;
+	}
+	unique_ptr<int[]> AllocCompatibilityContextAttribs() {
+		unique_ptr<int[]>		returnMe = make_unique<int[]>(16);
+		returnMe[0] = WGL_CONTEXT_MAJOR_VERSION_ARB;
+		returnMe[1] = 1;
+		returnMe[2] = WGL_CONTEXT_MINOR_VERSION_ARB;
+		returnMe[3] = 0;
+		returnMe[4] = WGL_CONTEXT_PROFILE_MASK_ARB;
+		returnMe[5] = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+		//return returnMe;
+		return std::move(returnMe);
+	}
+	unique_ptr<int[]> AllocGL4ContextAttribs() {
+		unique_ptr<int[]>		returnMe = make_unique<int[]>(16);
+		returnMe[0] = WGL_CONTEXT_MAJOR_VERSION_ARB;
+		returnMe[1] = 4;
+		returnMe[2] = WGL_CONTEXT_MINOR_VERSION_ARB;
+		returnMe[3] = 5;
+		returnMe[4] = WGL_CONTEXT_PROFILE_MASK_ARB;
+		returnMe[5] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+		//return returnMe;
+		return std::move(returnMe);
+	}
+	bool ConfigDeviceContextPixelFormat(const HDC & inDC) {
+		const int			pixelAttribs[] = {
+			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+			//WGL_DRAW_TO_BITMAP_ARB, GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+			WGL_COLOR_BITS_ARB, 32,
+			WGL_ALPHA_BITS_ARB, 8,
+			WGL_DEPTH_BITS_ARB, 24,
+			WGL_STENCIL_BITS_ARB, 8,
+			WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+			WGL_SAMPLES_ARB, 4,
+			0
+		};
+		int				pxlFmtID;
+		UINT			numFmts;
+		bool			status = wglChoosePixelFormatARB(inDC, pixelAttribs, NULL, 1, &pxlFmtID, &numFmts);
+		if (!status || numFmts == 0) {
+			cout << "ERR: wglChoosePixelFormatARB() failed in " << __FUNCSIG__ << endl;
+			return false;
+		}
+		//	dump the pixel format attribute to a PIXELFORMATDESCRIPTOR
+		PIXELFORMATDESCRIPTOR		pxlFmt;
+		DescribePixelFormat(inDC, pxlFmtID, sizeof(pxlFmt), &pxlFmt);
+		SetPixelFormat(inDC, pxlFmtID, &pxlFmt);
+
+		return true;
+	}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif	//	VVGL_SDK_WIN

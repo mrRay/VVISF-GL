@@ -767,7 +767,7 @@ void ISFScene::_renderPrep()	{
 			tmpRect = (tmpBuffer==nullptr) ? VVGL::Rect(0,0,1,1) : tmpBuffer->srcRect;
 			samplerLoc = inAttr->getUniformLocation(2);
 			if (samplerLoc >= 0)	{
-				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
+				glUniform2f(samplerLoc, float(tmpRect.size.width), float(tmpRect.size.height));
 				GLERRLOG
 			}
 		//}
@@ -797,14 +797,14 @@ void ISFScene::_renderPrep()	{
 			tmpRect = (tmpBuffer==nullptr) ? VVGL::Rect(0,0,1,1) : tmpBuffer->glReadySrcRect();
 			samplerLoc = inAttr->getUniformLocation(1);
 			if (samplerLoc >= 0)	{
-				glUniform4f(samplerLoc, tmpRect.origin.x, tmpRect.origin.y, tmpRect.size.width, tmpRect.size.height);
+				glUniform4f(samplerLoc, float(tmpRect.origin.x), float(tmpRect.origin.y), float(tmpRect.size.width), float(tmpRect.size.height));
 				GLERRLOG
 			}
 			//	pass the size to the program
 			tmpRect = (tmpBuffer==nullptr) ? VVGL::Rect(0,0,1,1) : tmpBuffer->srcRect;
 			samplerLoc = inAttr->getUniformLocation(2);
 			if (samplerLoc >= 0)	{
-				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
+				glUniform2f(samplerLoc, float(tmpRect.size.width), float(tmpRect.size.height));
 				GLERRLOG
 			}
 			//	pass the flippedness to the program
@@ -909,14 +909,14 @@ void ISFScene::_renderPrep()	{
 			tmpRect = tmpBuffer->glReadySrcRect();
 			samplerLoc = inTarget->getUniformLocation(1);
 			if (samplerLoc >= 0)	{
-				glUniform4f(samplerLoc, tmpRect.origin.x, tmpRect.origin.y, tmpRect.size.width, tmpRect.size.height);
+				glUniform4f(samplerLoc, float(tmpRect.origin.x), float(tmpRect.origin.y), float(tmpRect.size.width), float(tmpRect.size.height));
 				GLERRLOG
 			}
 			//	pass the size to the program
 			tmpRect = tmpBuffer->srcRect;
 			samplerLoc = inTarget->getUniformLocation(2);
 			if (samplerLoc >= 0)	{
-				glUniform2f(samplerLoc, tmpRect.size.width, tmpRect.size.height);
+				glUniform2f(samplerLoc, float(tmpRect.size.width), float(tmpRect.size.height));
 				GLERRLOG
 			}
 			//	pass the flippedness to the program
@@ -1003,7 +1003,7 @@ void ISFScene::_renderPrep()	{
 					GLERRLOG
 				}
 				else	{
-					glUniform2f(samplerLoc, pointVals[0], pointVals[1]);
+					glUniform2f(samplerLoc, float(pointVals[0]), float(pointVals[1]));
 					GLERRLOG
 				}
 			}
@@ -1021,7 +1021,7 @@ void ISFScene::_renderPrep()	{
 					GLERRLOG
 				}
 				else	{
-					glUniform4f(samplerLoc, colorVals[0], colorVals[1], colorVals[2], colorVals[3]);
+					glUniform4f(samplerLoc, float(colorVals[0]), float(colorVals[1]), float(colorVals[2]), float(colorVals[3]));
 					GLERRLOG
 				}
 			}
@@ -1090,7 +1090,7 @@ void ISFScene::_renderPrep()	{
 	}
 	//	push the standard inputs to the program
 	if (_renderSizeUni.loc >= 0)	{
-		glUniform2f(_renderSizeUni.loc, _orthoSize.width, _orthoSize.height);
+		glUniform2f(_renderSizeUni.loc, float(_orthoSize.width), float(_orthoSize.height));
 		GLERRLOG
 	}
 	if (_passIndexUni.loc >= 0)	{
@@ -1112,7 +1112,7 @@ void ISFScene::_renderPrep()	{
 		timeInSeconds += localTime->tm_sec;
 		timeInSeconds += localTime->tm_min * 60.;
 		timeInSeconds += localTime->tm_hour * 60. * 60.;
-		glUniform4f(_dateUni.loc, localTime->tm_year+1900., localTime->tm_mon+1, localTime->tm_mday, timeInSeconds);
+		glUniform4f(_dateUni.loc, float(localTime->tm_year+1900.), float(localTime->tm_mon+1), float(localTime->tm_mday), float(timeInSeconds));
 		GLERRLOG
 	}
 	if (_renderFrameIndexUni.loc >= 0)	{

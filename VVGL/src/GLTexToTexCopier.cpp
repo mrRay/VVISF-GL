@@ -491,7 +491,7 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 			glUniform1i(_inputImageLoc.loc, 0);
 			GLERRLOG
 		}
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 		//	pass the RECT texture to the program (if there is a RECT texture)
 		glActiveTexture(GL_TEXTURE1);
 		GLERRLOG
@@ -503,7 +503,7 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 			glUniform1i(_inputImageRectLoc.loc, 1);
 			GLERRLOG
 		}
-#endif	//	VVGL_SDK_MAC
+#endif	//	VVGL_SDK_MAC || VVGL_SDK_WIN
 		//	pass an int to the program that indicates whether we're passing a 2D or a RECT texture
 		if (_isRectTexLoc.loc >= 0)	{
 			if (inBufferRef == nullptr)	{
@@ -516,12 +516,12 @@ void GLTexToTexCopier::_drawBuffer(const GLBufferRef & inBufferRef, const Quad<V
 					glUniform1i(_isRectTexLoc.loc, 1);
 					GLERRLOG
 					break;
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 				case GLBuffer::Target_Rect:
 					glUniform1i(_isRectTexLoc.loc, 2);
 					GLERRLOG
 					break;
-#endif	//	VVGL_SDK_MAC
+#endif	//	VVGL_SDK_MAC || VVGL_SDK_WIN
 				default:
 					glUniform1i(_isRectTexLoc.loc, 0);
 					GLERRLOG

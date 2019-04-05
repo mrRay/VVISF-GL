@@ -5,6 +5,8 @@
 
 #if defined(VVGL_SDK_QT)
 #include "VVISF_Qt_global.hpp"
+#elif defined(VVGL_SDK_WIN)
+#include "VVISF_Win_global.hpp"
 #else
 #define VVISF_EXPORT 
 #endif

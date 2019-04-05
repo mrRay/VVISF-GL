@@ -290,7 +290,7 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
@@ -305,7 +305,7 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
@@ -320,7 +320,7 @@ string ISFDoc::generateTextureTypeString()	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 				returnMe.append("2");
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 			else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 				returnMe.append("R");
 #endif
@@ -334,7 +334,7 @@ string ISFDoc::generateTextureTypeString()	{
 		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
@@ -347,7 +347,7 @@ string ISFDoc::generateTextureTypeString()	{
 		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
-#if defined(VVGL_SDK_MAC)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_WIN)
 		else if (tmpBuffer->desc.target==GLBuffer::Target_Rect)
 			returnMe.append("R");
 #endif
@@ -401,7 +401,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	
 	//	put together a new frag shader string from the raw shader source
 	string			newFragShaderSrc = string("");
-	newFragShaderSrc.reserve(1.5 * (fsVarDeclarations.size()+_fragShaderSource->size()));
+	newFragShaderSrc.reserve( uint32_t(1.5 * (fsVarDeclarations.size()+_fragShaderSource->size())) );
 	{
 		//	remove any lines containing #version tags
 		searchString = string("#version");
@@ -781,7 +781,7 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 	
 	//	put together a new vert shader string from the raw shader source
 	string			newVertShaderSrc = string("");
-	newVertShaderSrc.reserve(2.5 * (vsVarDeclarations.size()+_vertShaderSource->size()));
+	newVertShaderSrc.reserve( uint32_t(2.5 * (vsVarDeclarations.size()+_vertShaderSource->size())) );
 	{
 		//	remove any lines containing #version tags
 		searchString = string("#version");

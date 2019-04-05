@@ -21,23 +21,34 @@ vector<string> PathComponents(const string & n) {
 	
 	vector<string>		returnMe(0);
 	//	count the # of the path delineators in the string, reserve space in the vector we're returning
+#if defined(VVGL_SDK_WIN)
+	size_t				delimCount = count(n.begin(), n.end(), '\\') + 1;
+#else
 	size_t				delimCount = count(n.begin(), n.end(), '/') + 1;
+#endif
 	returnMe.reserve(delimCount);
 	//	get the ptr to the string data
 	char				*inString = const_cast<char*>(n.data());
 	//	tokenize the string data, creating strings in the vector we'll be returning
+#if defined(VVGL_SDK_WIN)
+	const char			*delimPtr = "\\";
+#else
 	const char			*delimPtr = "/";
+#endif
 	char				*token = strtok(inString, delimPtr);
 	while (token != nullptr)	{
 		//cout << "\ttoken: " << token << endl;
 		returnMe.push_back(string(token));
 		token = strtok(NULL, delimPtr);
 	}
-	
 	return returnMe;
 }
 string LastPathComponent(const string & n)	{
+#if defined(VVGL_SDK_WIN)
+	size_t		lastSlashIndex = n.find_last_of('\\');
+#else
 	size_t		lastSlashIndex = n.find_last_of('/');
+#endif
 	if (lastSlashIndex == string::npos)
 		return n;
 	else if (lastSlashIndex == (n.length()-1))
@@ -45,7 +56,11 @@ string LastPathComponent(const string & n)	{
 	return n.substr(lastSlashIndex+1);
 }
 string StringByDeletingLastPathComponent(const string & n)	{
+#if defined(VVGL_SDK_WIN)
+	size_t		lastSlashIndex = n.find_last_of('\\');
+#else
 	size_t		lastSlashIndex = n.find_last_of('/');
+#endif
 	if (lastSlashIndex == string::npos)
 		return n;
 	else if (lastSlashIndex == 0)
@@ -71,16 +86,26 @@ string StringByDeletingLastAndAddingFirstSlash(const string & n)	{
 		return string("");
 	
 	int			tmpLen = int(n.size());
+#if defined(VVGL_SDK_WIN)
+	bool		hasFirst = (n[0] == '\\') ? true : false;
+	bool		hasLast = (n[tmpLen - 1] == '\\') ? true : false;
+#else
 	bool		hasFirst = (n[0]=='/') ? true : false;
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
+#endif
 	string		returnMe = n;
 	if (hasLast)	{
 		if (tmpLen > 1) {
 			returnMe.pop_back();
 		}
 	}
-	if (!hasFirst)
+	if (!hasFirst)	{
+#if defined(VVGL_SDK_WIN)
+		returnMe.insert(0, 1, '\\');
+#else
 		returnMe.insert(0, 1, '/');
+#endif
+	}
 	return returnMe;
 }
 string StringByDeletingLastSlash(const string & n)	{
@@ -89,7 +114,11 @@ string StringByDeletingLastSlash(const string & n)	{
 	
 	//bool		hasFirst = (n[0]=='/') ? true : false;
 	int			tmpLen = int(n.size());
+#if defined(VVGL_SDK_WIN)
+	bool		hasLast = (n[tmpLen - 1] == '\\') ? true : false;
+#else
 	bool		hasLast = (n[tmpLen-1]=='/') ? true : false;
+#endif
 	string		returnMe = n;
 	if (hasLast)	{
 		if (tmpLen > 1) {
@@ -101,7 +130,7 @@ string StringByDeletingLastSlash(const string & n)	{
 	return returnMe;
 }
 bool CaseInsensitiveCompare(const string & a, const string & b) {
-	unsigned int		sz = a.size();
+	size_t		sz = a.size();
 	if (b.size() != sz)
 		return false;
 	for (unsigned int i = 0; i < sz; ++i)	{

@@ -10,6 +10,18 @@
 
 
 
+#if defined(VVGL_SDK_WIN) || (defined(VVGL_SDK_QT) && defined(_WIN32))
+#pragma warning( push )
+#pragma warning( disable: 4251 )
+struct VVGL_EXPORT std::chrono::steady_clock;
+//class VVGL_EXPORT std::chrono::microseconds;
+template class VVGL_EXPORT std::chrono::time_point<std::chrono::steady_clock, std::chrono::microseconds>;
+#pragma warning( pop )
+#endif	//	defined(VVGL_SDK_WIN) || (defined(VVGL_SDK_QT) && defined(_WIN32))
+
+
+
+
 namespace VVGL
 {
 

@@ -80,8 +80,8 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		cout << "\tERR: couldnt map PBO in " << __PRETTY_FUNCTION__ << endl;
 	else	{
 		//	copy the data from the cpu buffer to the PBO
-		size_t		cpuBPR = inCPUBuffer->desc.bytesPerRowForWidth(inCPUBuffer->size.width);
-		size_t		pboBPR = inPBOBuffer->desc.bytesPerRowForWidth(inPBOBuffer->size.width);
+		size_t		cpuBPR = inCPUBuffer->desc.bytesPerRowForWidth(static_cast<uint32_t>(inCPUBuffer->size.width));
+		size_t		pboBPR = inPBOBuffer->desc.bytesPerRowForWidth(static_cast<uint32_t>(inPBOBuffer->size.width));
 		uint8_t		*rPtr = (uint8_t*)inCPUBuffer->cpuBackingPtr;
 		uint8_t		*wPtr = (uint8_t*)inPBOBuffer->cpuBackingPtr;
 
@@ -96,7 +96,7 @@ void GLCPUToTexCopier::_beginProcessing(const GLBufferRef & inCPUBuffer, const G
 		}
 		//	else the CPU buffer and the PBO have the same exact number of bytes per row- we can copy their contents in a single call
 		else	{
-			memcpy(wPtr, rPtr, pboBPR * round(inPBOBuffer->size.height));
+			memcpy(wPtr, rPtr, pboBPR * static_cast<size_t>(round(inPBOBuffer->size.height)));
 		}
 		//	unmap the PBO
 		glUnmapBuffer(inPBOBuffer->desc.target);
@@ -143,7 +143,7 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 	GLERRLOG
 	
 	//	set up some pixel transfer modes
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, inCPUBuffer->size.width);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(inCPUBuffer->size.width));
 	GLERRLOG
 #if !defined(Q_OS_WIN)
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
@@ -157,8 +157,8 @@ void GLCPUToTexCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 		0,
 		0,
 		0,
-		inCPUBuffer->srcRect.size.width,
-		inCPUBuffer->srcRect.size.height,
+		static_cast<GLsizei>(inCPUBuffer->srcRect.size.width),
+		static_cast<GLsizei>(inCPUBuffer->srcRect.size.height),
 		inTexBuffer->desc.pixelFormat, 
 		inTexBuffer->desc.pixelType,
 		0);

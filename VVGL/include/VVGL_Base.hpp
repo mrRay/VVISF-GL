@@ -35,6 +35,7 @@ struct GLCachedUni;
 class GLTexToCPUCopier;
 class GLCPUToTexCopier;
 struct Timestamp;
+class GLContextWindowBacking;
 
 //!	Very common- GLBufferRef is a shared pointer around a GLBuffer.
 /*!
@@ -58,6 +59,20 @@ using GLTexToTexCopierRef = shared_ptr<GLTexToTexCopier>;
 \relates VVGL::GLContext
 */
 using GLContextRef = shared_ptr<GLContext>;
+/*!
+\brief A GLContextWeakRef is a weak pointer to a GLContext
+\relates VVGL::GLContext
+*/
+using GLContextWeakRef = weak_ptr<GLContext>;
+
+#if defined(VVGL_SDK_WIN)
+/*!
+\brief A GLContextWindowBackingRef is a shared pointer around a GLContextWindowBacking.
+\relates VVGL::GLContext
+*/
+using GLContextWindowBackingRef = shared_ptr<GLContextWindowBacking>;
+#endif	//	VVGL_SDK_WIN
+
 /*!
 \brief	A GLSceneRef is a shared pointer around a GLScene.
 \relates VVGL::GLScene

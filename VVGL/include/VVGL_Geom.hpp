@@ -411,6 +411,7 @@ struct VertRGBA : public Vertex	{
 */
 template <typename QuadType>
 struct Quad	{
+public:
 	//!	The bottom-left vertex
 	QuadType		bl;
 	//!	The bottom-right vertex
@@ -446,50 +447,50 @@ struct Quad	{
 	}
 	//!	Populates the quad's geometry with the passed rect's geometry
 	inline void populateGeo(const Rect & inRect)	{
-		bl.geo.x = inRect.minX();
-		bl.geo.y = inRect.minY();
+		bl.geo.x = static_cast<float>(inRect.minX());
+		bl.geo.y = static_cast<float>(inRect.minY());
 
-		br.geo.x = inRect.maxX();
-		br.geo.y = inRect.minY();
+		br.geo.x = static_cast<float>(inRect.maxX());
+		br.geo.y = static_cast<float>(inRect.minY());
 
-		tl.geo.x = inRect.minX();
-		tl.geo.y = inRect.maxY();
+		tl.geo.x = static_cast<float>(inRect.minX());
+		tl.geo.y = static_cast<float>(inRect.maxY());
 
-		tr.geo.x = inRect.maxX();
-		tr.geo.y = inRect.maxY();
+		tr.geo.x = static_cast<float>(inRect.maxX());
+		tr.geo.y = static_cast<float>(inRect.maxY());
 	}
 	//!	Populates the quad's texture coordinate data with the passed rect's geometry.
-	inline void populateTex(Rect & inRect, const bool & inFlip)	{
+	inline void populateTex(struct Rect & inRect, const bool & inFlip)	{
 		const Rect		tmpRect = inRect;
 		populateTex(tmpRect, inFlip);
 	}
 	//!	Populates the quad's texture coordinate data with the passed rect's geometry.
 	inline void populateTex(const Rect & inRect, const bool & inFlip)	{
 		if (!inFlip)	{
-			bl.tex.s = inRect.minX();
-			bl.tex.t = inRect.minY();
+			bl.tex.s = static_cast<float>(inRect.minX());
+			bl.tex.t = static_cast<float>(inRect.minY());
 
-			br.tex.s = inRect.maxX();
-			br.tex.t = inRect.minY();
+			br.tex.s = static_cast<float>(inRect.maxX());
+			br.tex.t = static_cast<float>(inRect.minY());
 
-			tl.tex.s = inRect.minX();
-			tl.tex.t = inRect.maxY();
+			tl.tex.s = static_cast<float>(inRect.minX());
+			tl.tex.t = static_cast<float>(inRect.maxY());
 
-			tr.tex.s = inRect.maxX();
-			tr.tex.t = inRect.maxY();
+			tr.tex.s = static_cast<float>(inRect.maxX());
+			tr.tex.t = static_cast<float>(inRect.maxY());
 		}
 		else	{
-			bl.tex.s = inRect.minX();
-			bl.tex.t = inRect.maxY();
+			bl.tex.s = static_cast<float>(inRect.minX());
+			bl.tex.t = static_cast<float>(inRect.maxY());
 
-			br.tex.s = inRect.maxX();
-			br.tex.t = inRect.maxY();
+			br.tex.s = static_cast<float>(inRect.maxX());
+			br.tex.t = static_cast<float>(inRect.maxY());
 
-			tl.tex.s = inRect.minX();
-			tl.tex.t = inRect.minY();
+			tl.tex.s = static_cast<float>(inRect.minX());
+			tl.tex.t = static_cast<float>(inRect.minY());
 
-			tr.tex.s = inRect.maxX();
-			tr.tex.t = inRect.minY();
+			tr.tex.s = static_cast<float>(inRect.maxX());
+			tr.tex.t = static_cast<float>(inRect.minY());
 		}
 	}
 	//!	Populates the quad's RGBA color data with the passed color.

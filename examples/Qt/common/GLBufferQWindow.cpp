@@ -75,7 +75,9 @@ void GLBufferQWindow::_renderNow()	{
 	if (renderedSomething)	{
 		emit renderedAFrame();
 	}
-	GetGlobalBufferPool()->housekeeping();
+	GLBufferPoolRef		bp = GetGlobalBufferPool();
+	if (bp != nullptr)
+		bp->housekeeping();
 }
 
 

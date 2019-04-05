@@ -6,6 +6,7 @@
 
 
 
+
 #if defined(VVGL_SDK_MAC)
 #include "GLContext_Mac.txt"
 #elif defined(VVGL_SDK_GLFW)
@@ -14,6 +15,8 @@
 #include "GLContext_RPI.txt"
 #elif defined(VVGL_SDK_QT)
 #include "GLContext_Qt.txt"
+#elif defined(VVGL_SDK_WIN)
+#include "GLContext_Win.txt"
 #endif
 
 
@@ -32,7 +35,7 @@ using namespace std;
 void GLContext::calculateVersion()	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	version = GLVersion_Unknown;
-#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI) || defined(VVGL_SDK_QT)
+#if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI) || defined(VVGL_SDK_QT) || defined(VVGL_SDK_WIN)
 	if (ctx == nullptr)
 		return;
 #elif defined(VVGL_SDK_GLFW)
@@ -42,7 +45,7 @@ void GLContext::calculateVersion()	{
 	makeCurrentIfNotCurrent();
 	const unsigned char			*versString = glGetString(GL_VERSION);
 	GLERRLOG
-	//cout << "\tversion string is " << versString << endl;
+	//cout << "\traw version string is " << versString << endl;
 	switch (*versString)	{
 	case '2': version = GLVersion_2; break;
 	case '3': version = GLVersion_33; break;
