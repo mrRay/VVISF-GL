@@ -1,5 +1,7 @@
 #include "GLContextWindowBacking.hpp"
 
+#if defined(VVGL_SDK_WIN)
+
 
 
 
@@ -88,3 +90,7 @@ namespace VVGL {
 	};
 
 }
+
+
+
+#endif	//	VVGL_SDK_WIN
