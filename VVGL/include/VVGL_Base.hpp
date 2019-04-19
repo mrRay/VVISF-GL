@@ -21,7 +21,6 @@ namespace VVGL
 {
 
 
-using namespace std;
 
 
 //	some forward declarations used in this header
@@ -40,64 +39,64 @@ class GLContextWindowBacking;
 //!	Very common- GLBufferRef is a shared pointer around a GLBuffer.
 /*!
 \relates VVGL::GLBuffer
-This is the preferred means of working with GLBuffer- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resource will not be duplicated.  Working with a shared_ptr ensures that the underlying class instances will be retained as long as it's in use (and when the class instance is deleted, its corresponding GL resource will either be deleted or pooled).
+This is the preferred means of working with GLBuffer- copying an instance of the GLBuffer class is potentially dangerous, as the underlying GL resource will not be duplicated.  Working with a std::shared_ptr ensures that the underlying class instances will be retained as long as it's in use (and when the class instance is deleted, its corresponding GL resource will either be deleted or pooled).
 */
-using GLBufferRef = shared_ptr<GLBuffer>;
+using GLBufferRef = std::shared_ptr<GLBuffer>;
 /*!
 \brief A GLBufferPoolRef is a shared pointer around a GLBufferPool.
 \relates VVGL::GLBufferPool
 */
-using GLBufferPoolRef = shared_ptr<GLBufferPool>;
+using GLBufferPoolRef = std::shared_ptr<GLBufferPool>;
 /*!
 \brief A GLTexToTexCopierRef is a shared pointer around a GLTexToTexCopier.
 \relates VVGL::GLTexToTexCopier
 */
-using GLTexToTexCopierRef = shared_ptr<GLTexToTexCopier>;
+using GLTexToTexCopierRef = std::shared_ptr<GLTexToTexCopier>;
 
 /*!
 \brief A GLContextRef is a shared pointer around a GLContext.
 \relates VVGL::GLContext
 */
-using GLContextRef = shared_ptr<GLContext>;
+using GLContextRef = std::shared_ptr<GLContext>;
 /*!
 \brief A GLContextWeakRef is a weak pointer to a GLContext
 \relates VVGL::GLContext
 */
-using GLContextWeakRef = weak_ptr<GLContext>;
+using GLContextWeakRef = std::weak_ptr<GLContext>;
 
 #if defined(VVGL_SDK_WIN)
 /*!
 \brief A GLContextWindowBackingRef is a shared pointer around a GLContextWindowBacking.
 \relates VVGL::GLContext
 */
-using GLContextWindowBackingRef = shared_ptr<GLContextWindowBacking>;
+using GLContextWindowBackingRef = std::shared_ptr<GLContextWindowBacking>;
 #endif	//	VVGL_SDK_WIN
 
 /*!
 \brief	A GLSceneRef is a shared pointer around a GLScene.
 \relates VVGL::GLScene
 */
-using GLSceneRef = shared_ptr<GLScene>;
+using GLSceneRef = std::shared_ptr<GLScene>;
 /*!
 \brief	A GLCachedAttribRef is a shared pointer around a GLCachedAttrib.
 \relates VVGL::GLCachedAttrib
 */
-using GLCachedAttribRef = shared_ptr<GLCachedAttrib>;
+using GLCachedAttribRef = std::shared_ptr<GLCachedAttrib>;
 /*!
 \brief	A GLCachedUniRef is a shared pointer around a GLCachedUni.
 \relates VVGL::GLCachedUni
 */
-using GLCachedUniRef = shared_ptr<GLCachedUni>;
+using GLCachedUniRef = std::shared_ptr<GLCachedUni>;
 /*!
 \brief	A GLTexToCPUCopierRef is a shared pointer around a GLTexToCPUCopier.
 \relates VVGL::GLTexToCPUCopier
 */
-using GLTexToCPUCopierRef = shared_ptr<GLTexToCPUCopier>;
+using GLTexToCPUCopierRef = std::shared_ptr<GLTexToCPUCopier>;
 /*!
 \brief	A GLCPUToTexCopierRef is a shared pointer around a GLCPUToTexCopier.
 \relates VVGL::GLCPUToTexCopier
 */
-using GLCPUToTexCopierRef = shared_ptr<GLCPUToTexCopier>;
+using GLCPUToTexCopierRef = std::shared_ptr<GLCPUToTexCopier>;
 
 
 
@@ -119,7 +118,7 @@ enum GLVersion	{
 \ingroup VVGL_BASIC
 \brief Returns a std::string describing the passed GLVersion.
 */
-inline const string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return string("Unknown"); case GLVersion_2: return string("2"); case GLVersion_ES: return string("ES"); case GLVersion_ES2: return string("ES2"); case GLVersion_ES3: return string("ES3"); case GLVersion_33: return string("3.3"); case GLVersion_4: return string("4"); } return string("err"); }
+inline const std::string GLVersionToString(const GLVersion & v)	{ switch (v) { case GLVersion_Unknown: return std::string("Unknown"); case GLVersion_2: return std::string("2"); case GLVersion_ES: return std::string("ES"); case GLVersion_ES2: return std::string("ES2"); case GLVersion_ES3: return std::string("ES3"); case GLVersion_33: return std::string("3.3"); case GLVersion_4: return std::string("4"); } return std::string("err"); }
 
 
 

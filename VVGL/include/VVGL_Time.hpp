@@ -26,10 +26,6 @@ namespace VVGL
 {
 
 
-using namespace std;
-using namespace chrono;
-
-
 
 
 //! Struct describing a timevalue as the quotient of two numbers, a value (64-bit unsigned int) and a scale factor (32-bit int).
@@ -50,7 +46,7 @@ struct Timestamp	{
 	
 	//!	Creates a new Timestamp with the current time
 	Timestamp()	{
-		rawTime = time_point_cast<RawTSDuration>(RawTSClockType::now());
+		rawTime = std::chrono::time_point_cast<RawTSDuration>(RawTSClockType::now());
 	}
 	//!	Creates a new Timestamp with the passed time as a chrono::time_point< chrono::steady_clock, chrono::microseconds> >
 	Timestamp(const RawTSTime & inRawTime)	{
@@ -62,14 +58,14 @@ struct Timestamp	{
 	}
 	//!	Creates a new Timestamp with the passed time in seconds as a double
 	Timestamp(const double & inTimeInSeconds)	{
-		rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration(inTimeInSeconds) ) );
+		rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration(inTimeInSeconds) ) );
 	}
 	//!	Creates a new Timestamp expressed as the quotient of the two passed numbers (the number of frames divided by the number of seconds in which they occur)
 	Timestamp(const int & inFrameCount, const int & inSecondsCount)	{
 		if (inSecondsCount == 0)
-			rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(0.0) ) ) );
+			rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(0.0) ) ) );
 		else
-			rawTime = time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
+			rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
 	}
 
 	
@@ -98,7 +94,7 @@ struct Timestamp	{
 	}
 	
 	
-	friend inline ostream & operator<<(ostream & os, const Timestamp & rs)	{
+	friend inline std::ostream & operator<<(std::ostream & os, const Timestamp & rs)	{
 		os << "<Timestamp " << double(rs.getTimeInSeconds()) << ">";
 		return os;
 	}
@@ -129,7 +125,7 @@ private:
 \brief	A TimestampRef is a shared pointer around a Timestamp struct.
 \relates VVGL::Timestamp
 */
-using TimestampRef = shared_ptr<Timestamp>;
+using TimestampRef = std::shared_ptr<Timestamp>;
 
 
 
@@ -138,7 +134,7 @@ using TimestampRef = shared_ptr<Timestamp>;
 \relatesalso Timestamp
 \brief Creates a new Timestamp instance with the current time, returned as a TimestampRef.
 */
-inline TimestampRef CreateTimestampRef() { return make_shared<Timestamp>(); }
+inline TimestampRef CreateTimestampRef() { return std::make_shared<Timestamp>(); }
 
 
 

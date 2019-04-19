@@ -22,11 +22,6 @@ namespace VVGL
 
 
 
-using namespace std;
-
-
-
-
 //! Uploads CPU-based GLBuffers (Type_CPU) to textures.
 /*!
 \ingroup VVGL_BASIC

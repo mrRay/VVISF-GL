@@ -19,9 +19,6 @@
 namespace VVGL	{
 
 
-using namespace std;
-
-
 
 
 //! Manages drawing in a GLContext, provides a simple interface for orthographic rendering, render-to-texture operations, and loading vert/geo/frag shaders.

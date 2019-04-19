@@ -10,7 +10,6 @@ namespace VVISF
 {
 
 
-using namespace std;
 
 
 /*!
@@ -28,7 +27,7 @@ enum ISFErrType	{
 	ISFErrType_ErrorLoading,
 	//!<	There was an error parsing the JSON blob that defines the ISF file.
 	ISFErrType_ErrorParsingFS,
-	//!<	There was an error compiling the ISF file's GLSL program.  Consult the ISFErr's "details" map for more information.
+	//!<	There was an error compiling the ISF file's GLSL program.  Consult the ISFErr's "details" std::map for more information.
 	ISFErrType_ErrorCompilingGLSL
 };
 
@@ -41,38 +40,38 @@ class VVISF_EXPORT ISFErr	{
 	public:
 		//!	The type of the ISFErr
 		ISFErrType		type;
-		//!	A string that describes the general problem.
-		string		general;
-		//!	A string that describes the problem more specifically.
-		string		specific;
-		//!	A map that offers a more structured way to store more information that describes the error.  Typically used to embed GLSL compiler errors in the ISFErr instance.
-		map<string,string>		details;
+		//!	A std::string that describes the general problem.
+		std::string		general;
+		//!	A std::string that describes the problem more specifically.
+		std::string		specific;
+		//!	A std::map that offers a more structured way to store more information that describes the error.  Typically used to embed GLSL compiler errors in the ISFErr instance.
+		std::map<std::string,std::string>		details;
 	public:
-		ISFErr(const ISFErrType & inType, const char * inGeneral, const char * inSpecific, const map<string,string> & inDetails=map<string,string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
-		ISFErr(const ISFErrType & inType, const char * inGeneral, const string & inSpecific, const map<string,string> & inDetails=map<string,string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
-		ISFErr(const ISFErrType & inType, const string & inGeneral, const char * inSpecific, const map<string,string> & inDetails=map<string,string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
-		ISFErr(const ISFErrType & inType, const string & inGeneral, const string & inSpecific, const map<string,string> & inDetails=map<string,string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
+		ISFErr(const ISFErrType & inType, const char * inGeneral, const char * inSpecific, const std::map<std::string,std::string> & inDetails=std::map<std::string,std::string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
+		ISFErr(const ISFErrType & inType, const char * inGeneral, const std::string & inSpecific, const std::map<std::string,std::string> & inDetails=std::map<std::string,std::string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
+		ISFErr(const ISFErrType & inType, const std::string & inGeneral, const char * inSpecific, const std::map<std::string,std::string> & inDetails=std::map<std::string,std::string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
+		ISFErr(const ISFErrType & inType, const std::string & inGeneral, const std::string & inSpecific, const std::map<std::string,std::string> & inDetails=std::map<std::string,std::string>()) : type(inType), general(inGeneral), specific(inSpecific), details(inDetails) {};
 		
 		ISFErr(const ISFErr & n) = default;
 		ISFErr & operator=(const ISFErr & n) = default;
 		
-		//!	Returns a human-readable string describing the receiver's error.
-		string getTypeString() {
+		//!	Returns a human-readable std::string describing the receiver's error.
+		std::string getTypeString() {
 			switch (type)	{
 			case ISFErrType_Unknown:
-				return string("Unknown");
+				return std::string("Unknown");
 			case ISFErrType_MissingResource:
-				return string("Missing Resource");
+				return std::string("Missing Resource");
 			case ISFErrType_MalformedJSON:
-				return string("JSON error");
+				return std::string("JSON error");
 			case ISFErrType_ErrorLoading:
-				return string("Error loading");
+				return std::string("Error loading");
 			case ISFErrType_ErrorParsingFS:
-				return string("FS Error");
+				return std::string("FS Error");
 			case ISFErrType_ErrorCompilingGLSL:
-				return string("GLSL Error");
+				return std::string("GLSL Error");
 			}
-			return string("");
+			return std::string("");
 		};
 };
 

@@ -14,9 +14,6 @@
 namespace VVGL	{
 
 
-using namespace std;
-
-
 
 
 //! Representation of a GL resource of some sort- most commonly an OpenGL texture, but can also be other kinds of buffers (render buffers, VBOs, EBOs, FBO, etc).
@@ -33,7 +30,7 @@ class VVGL_EXPORT GLBuffer	{
 	
 	public:
 		//!	This defines a callback that is used to release the backing of a GLBuffer, where appropriate.  The GLBuffer being released is the first var, and the GLBuffer's backingContext is the second var.  The backingContext is probably a pointer to an object from another SDK that has been retained, and needs to be released/freed using the appropriate means.
-		using BackingReleaseCallback = function<void(GLBuffer&, void*)>;
+		using BackingReleaseCallback = std::function<void(GLBuffer&, void*)>;
 		
 		
 		//!	Describes the several different kinds of GLBuffers
@@ -192,8 +189,10 @@ class VVGL_EXPORT GLBuffer	{
 	public:
 		//	Every GLBuffer maintains a strong ref to the GLBufferPoolRef that created it, when the buffer is deallocated its underlying GL resources are returned to the pool where they are either released or recycled.
 		GLBufferPoolRef		parentBufferPool = nullptr;
-		//	If this GLBuffer was created by copying another buffer using GLBufferCopy(), the original source buffer is retained here.  If you copy a copy, the original GLBuffer is retained here.
+		//	If this GLBuffer was created by copying another buffer using GLBufferCopy(), the original source buffer is retained here.  If you copy a copy, the original GLBuffer is retained here.  If this is non-null, none of the resources in this buffer will be released when it is destroyed- they will only be released when the final 'copySourceBuffer' instance is destroyed!
 		GLBufferRef			copySourceBuffer = nullptr;
+		//	The 'copySourceBuffer' ivar above is used logically to determine if the backend resources should be released (if it is non-null then any associated backend resources will, by definition, not be freed).  Sometimes, you just want to retain one buffer with another- for example, IOSurface-backed GL textures need to be tracked in pairs, lest the "source" IOSurface get recycled and inadvertently update the other corresponding IOSurface-backed tex.  This is a simple strong relationship- 'associatedBuffer' is destroyed when its owner is destroyed.
+		GLBufferRef			associatedBuffer = nullptr;
 		int					idleCount = 0;
 	
 	
@@ -204,7 +203,7 @@ class VVGL_EXPORT GLBuffer	{
 		GLBuffer(GLBufferPoolRef inParentPool);
 		GLBuffer(const GLBuffer &);
 		virtual ~GLBuffer();
-		friend ostream & operator<<(ostream & os, const GLBuffer & n) { os << n.getDescriptionString(); return os; }
+		friend std::ostream & operator<<(std::ostream & os, const GLBuffer & n) { os << n.getDescriptionString(); return os; }
 		
 		//	copy assignment operators are disabled to prevent accidents
 		GLBuffer& operator=(const GLBuffer&) = delete;
@@ -265,7 +264,7 @@ class VVGL_EXPORT GLBuffer	{
 		bool isContentMatch(GLBuffer & n) const;
 		//void draw(const Rect & dst) const;
 		//!	Returns a std::string that describes some basic properties of the GLBuffer instance
-		string getDescriptionString() const;
+		std::string getDescriptionString() const;
 };
 
 

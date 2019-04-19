@@ -94,8 +94,14 @@ CGLPixelFormatObj CreateGL4PixelFormat()	{
 	return returnMe;
 }
 
+
+
+
 /*	========================================	*/
 #pragma mark --------------------- constructor/destructor
+
+
+
 
 GLContext::GLContext(const CGLContextObj & inCtx, const CGLContextObj & inShareCtx, const CGLPixelFormatObj & inPxlFmt)	{
 	//cout << __PRETTY_FUNCTION__ << endl;

@@ -14,8 +14,15 @@
 //#if defined(VVGL_SDK_MAC)
 //#include <VVGL/VVGL.hpp>
 //#else
-#include "VVGL.hpp"
+//#include "VVGL.hpp"
 //#endif
+#include <memory>
+#include <string>
+#include <map>
+#include <iostream>
+
+#include "VVGL_Base.hpp"
+#include "VVGL_Geom.hpp"
 
 /*!
 \file
@@ -28,7 +35,6 @@ namespace VVISF
 {
 
 
-using namespace std;
 
 
 //	some forward declarations used in this header
@@ -40,17 +46,18 @@ class ISFScene;
 
 
 
+
 /*!
 \brief ISFPassTargetRef is a shared pointer around an ISFPassTarget instance.
 \relates VVISF::ISFPassTarget
 */
-using ISFPassTargetRef = shared_ptr<ISFPassTarget>;
+using ISFPassTargetRef = std::shared_ptr<ISFPassTarget>;
 //! ISFDocRef is a shared pointer around an ISFDoc instance.
 /*!
 \relates VVISF::ISFDoc
 ISFDocRef is the preferred means of working with ISFDoc instances, which can be extremely simple with no overhead or can potentially contain a variety of data values including GL resources (texture, buffers, etc).
 */
-using ISFDocRef = shared_ptr<ISFDoc>;
+using ISFDocRef = std::shared_ptr<ISFDoc>;
 /*!
 \brief ISFAttrRef is a shared pointer around an ISFAttr instance.
 \relates VVISF::ISFAttr
@@ -76,8 +83,8 @@ enum ISFFileType	{
 	ISFFileType_Transition = 4,	//!<	The file is a "transition"- it defines two image-type inputs ("startImage" and "endImage") in addition to a normalized float-type input ("progress"), which is used to "mix" from the start image to the end image.
 	ISFFileType_All = 7	//!<	Convenience enumeration, should always evaluate to "all types simultaneously".
 };
-//!	Returns a string describing the passed ISFFileType
-string ISFFileTypeString(const ISFFileType & n);
+//!	Returns a std::string describing the passed ISFFileType
+std::string ISFFileTypeString(const ISFFileType & n);
 
 
 
@@ -88,16 +95,16 @@ string ISFFileTypeString(const ISFFileType & n);
 \param inType The type of ISFs to scan for.  Set to 0 or ISFFileType_All to return all valid ISFs in the passed folder- anything else will only return ISFs that match the passed type.
 \param inRecursive Whether or not the scan should be recursive.
 */
-shared_ptr<vector<string>> CreateArrayOfISFsForPath(const string & inFolderPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
+std::shared_ptr<std::vector<std::string>> CreateArrayOfISFsForPath(const std::string & inFolderPath, const ISFFileType & inType=ISFFileType_None, const bool & inRecursive=true);
 /*!
 \brief Returns an array of strings/paths to the default ISF files.
 \param inType The type of ISFs to scan for.  Set to 0 or ISFFileType_All to return all valid ISFs in the passed folder- anything else will only return ISFs that match the passed type.
 */
-shared_ptr<vector<string>> CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
+std::shared_ptr<std::vector<std::string>> CreateArrayOfDefaultISFs(const ISFFileType & inType=ISFFileType_None);
 /*!
 Returns 'true' if there is a file at the passed path, and that file appears to contain a valid ISF file.
 */
-bool FileIsProbablyAnISF(const string & pathToFile);
+bool FileIsProbablyAnISF(const std::string & pathToFile);
 
 
 

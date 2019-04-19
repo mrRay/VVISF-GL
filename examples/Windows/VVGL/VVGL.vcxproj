@@ -27,7 +27,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -109,11 +109,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;VVGL_EXPORTS;_WINDOWS;_USRDLL;VVGL_SDK_WIN;VVGL_LIBRARY;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;VVGL_EXPORTS;_WINDOWS;_USRDLL;VVGL_SDK_WIN;VVGL_LIBRARY;_CRT_SECURE_NO_WARNINGS;GL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\external\OpenGL-Win;$(ProjectDir)..\..\..\VVGL\include;$(ProjectDir)..\..\..\external\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4068;4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -183,6 +185,7 @@
     <ClInclude Include="..\..\..\VVGL\include\GLScene.hpp" />
     <ClInclude Include="..\..\..\VVGL\include\GLTexToCPUCopier.hpp" />
     <ClInclude Include="..\..\..\VVGL\include\GLTexToTexCopier.hpp" />
+    <ClInclude Include="..\..\..\VVGL\include\stb\stb_image.h" />
     <ClInclude Include="..\..\..\VVGL\include\VVGL.hpp" />
     <ClInclude Include="..\..\..\VVGL\include\VVGL_Base.hpp" />
     <ClInclude Include="..\..\..\VVGL\include\VVGL_Defines.hpp" />

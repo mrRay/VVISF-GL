@@ -24,7 +24,6 @@ and make this PIMPL idiom to contain and manipulate the underlying Qt GL context
 namespace VVGL	{
 
 
-using namespace std;
 
 
 //	forward declaration for a struct that will hold the Qt GL stuff so their #includes don't conflict with GLEW
@@ -32,7 +31,7 @@ struct GLQtCtxHidden;
 
 
 class GLQtCtxWrapper;
-using GLQtCtxWrapperRef = shared_ptr<GLQtCtxWrapper>;
+using GLQtCtxWrapperRef = std::shared_ptr<GLQtCtxWrapper>;
 
 
 class VVGL_EXPORT GLQtCtxWrapper	{

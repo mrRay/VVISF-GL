@@ -17,11 +17,6 @@
 
 
 
-using namespace std;
-
-
-
-
 namespace VVGL
 {
 

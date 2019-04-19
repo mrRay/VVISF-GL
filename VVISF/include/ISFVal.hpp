@@ -15,7 +15,6 @@ namespace VVISF
 {
 
 
-using namespace std;
 
 
 /*!
@@ -40,7 +39,7 @@ enum ISFValType	{
 \ingroup VVISF_BASIC
 \relatesalso VVISF::ISFValType
 */
-string StringFromISFValType(const ISFValType & n);
+std::string StringFromISFValType(const ISFValType & n);
 /*!
 \brief Returns a true if the passed value type uses an image for its value.
 \ingroup VVISF_BASIC
@@ -129,9 +128,9 @@ struct VVISF_EXPORT ISFVal	{
 		//!	Does nothing if the receiver's value type cannot be represented as an image, otherwise it sets the receiver's image value with the passed buffer.  This buffer will be "retained" for the duration of the receiver's lifetime.
 		void setImageBuffer(const VVGL::GLBufferRef & n);
 		//!	Returns a string describing the type of the receiver.
-		string getTypeString() const;
+		std::string getTypeString() const;
 		//!	Returns a string describing the value of the receiver.
-		string getValString() const;
+		std::string getValString() const;
 		
 		///@}
 		
@@ -167,7 +166,7 @@ struct VVISF_EXPORT ISFVal	{
 		
 		///@}
 		
-		friend ostream & operator<<(ostream & os, const ISFVal & n) { os << VVGL::FmtString("<ISFVal %s/%s>", n.getTypeString().c_str(), n.getValString().c_str()); return os; }
+		friend std::ostream & operator<<(std::ostream & os, const ISFVal & n) { os << VVGL::FmtString("<ISFVal %s/%s>", n.getTypeString().c_str(), n.getValString().c_str()); return os; }
 };
 
 

@@ -103,7 +103,7 @@ class VVGL_EXPORT GLBufferPool	{
 /*!
 \relatesalso GLBufferPool
 \brief This is how you create the global buffer pool.
-\param inPoolCtx The buffer pool that is created will share this context (textures and buffers created by the buffer pool will be compatible with all other GL contexts in the same sharegroup).
+\param inPoolCtx The buffer pool that is created will use this context (textures and buffers created by the buffer pool will be compatible with all other GL contexts in the same sharegroup).
 */
 VVGL_EXPORT GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCtx=nullptr);
 /*!

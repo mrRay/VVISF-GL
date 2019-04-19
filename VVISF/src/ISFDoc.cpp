@@ -1,6 +1,8 @@
 #include "ISFDoc.hpp"
 #include "ISFAttr.hpp"
 
+#include "VVGL.hpp"
+
 #include <iostream>
 #include <fstream>
 

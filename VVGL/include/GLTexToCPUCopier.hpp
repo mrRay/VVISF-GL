@@ -22,11 +22,6 @@ namespace VVGL
 
 
 
-using namespace std;
-
-
-
-
 //!	Downloads texture-based GLBuffers (Type_Tex) to CPU memory.
 /*!
 \ingroup VVGL_BASIC

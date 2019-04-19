@@ -2,6 +2,7 @@
 #define ISFScene_hpp
 
 #include "VVISF_Base.hpp"
+#include "VVGL.hpp"
 #if defined(VVGL_SDK_MAC)
 #import <TargetConditionals.h>
 #endif
@@ -11,9 +12,6 @@
 
 namespace VVISF
 {
-
-
-using namespace std;
 
 
 
@@ -29,7 +27,7 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 	private:
 		bool			_throwExceptions = false;	//	NO by default
 
-		mutex			_propertyLock;	//	locks the below two vars
+		std::mutex		_propertyLock;	//	locks the below two vars
 		//bool			loadingInProgress = false;
 		ISFDocRef		_doc = nullptr;	//	the ISFDoc being used
 
@@ -40,7 +38,7 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		double			_renderTime = 0.;	//	this is the render time that gets passed to the ISF
 		double			_renderTimeDelta = 0.;	//	this is the render time delta (frame duration) which gets passed to the ISF
 		uint32_t		_passIndex = 1;	//	used to store the index of the rendered pass, which gets passed to the shader
-		string			*_compiledInputTypeString = nullptr;	//	a sequence of characters, either "2" or "R" or "C", one character for each input image. describes whether the shader was compiled to work with 2D textures or RECT textures or cube textures.
+		std::string		*_compiledInputTypeString = nullptr;	//	a sequence of characters, either "2" or "R" or "C", one character for each input image. describes whether the shader was compiled to work with 2D textures or RECT textures or cube textures.
 
 		//	access to these vars should be restricted by the '_renderLock' var inherited from GLScene
 		VVGL::GLCachedAttrib	_vertexAttrib = VVGL::GLCachedAttrib("VERTEXDATA");	//	caches the location of the attribute in the compiled GL program for the vertex input
@@ -54,9 +52,9 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		//	access to these vars should be restricted by the '_renderLock' var inherited from GLScene
 		//VVGL::GLBufferRef			geoXYVBO = nullptr;
 #if !defined(VVGL_TARGETENV_GLES)
-		VVGL::GLBufferRef			_vao = nullptr;
+		VVGL::GLBufferRef		_vao = nullptr;
 #endif
-		VVGL::GLBufferRef			_vbo = nullptr;
+		VVGL::GLBufferRef		_vbo = nullptr;
 		VVGL::Quad<VVGL::VertXY>		_vboContents;	//	the VBO owned by VAO is described by this var- we check this, and if there's a delta then we have to upload new data to the VBO
 
 		//	these vars describe some non-default/non-standard options for more unusual situations
@@ -81,11 +79,11 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		//!	Unloads whatever ISF file is currently loaded.
 		void useFile() noexcept(false);
 		//!	Loads the ISF file at the passed path.
-		void useFile(const string & inPath, const bool & inThrowExc=true) noexcept(false);
+		void useFile(const std::string & inPath, const bool & inThrowExc=true) noexcept(false);
 		//!	Starts using the ISF file represented by the passed ISFDoc.
 		void useDoc(ISFDocRef & inDoc);
 		//!	Returns the ISFDoc currently being used by the scene.  Interacting with this doc by setting the value of its inputs will directly affect rendering.
-		inline ISFDocRef doc() { lock_guard<mutex> lock(_propertyLock); return _doc; }
+		inline ISFDocRef doc() { std::lock_guard<std::mutex> lock(_propertyLock); return _doc; }
 		
 		///@}
 		
@@ -113,26 +111,26 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		///@{
 		
 		//!	Locates the attribute/INPUT with the passed name, and sets its current value to the passed GLBuffer.
-		void setBufferForInputNamed(const VVGL::GLBufferRef & inBuffer, const string & inName);
+		void setBufferForInputNamed(const VVGL::GLBufferRef & inBuffer, const std::string & inName);
 		//!	Assumes that the receiver has loaded a filter-type ISF file- locates the attribute/INPUT that corresponds to the image filter input, and sets its current value to the passed GLBuffer.
 		void setFilterInputBuffer(const VVGL::GLBufferRef & inBuffer);
 		//!	Locates the image-type input with the passed name, and sets its current value to the passed GLBuffer.
-		void setBufferForInputImageKey(const VVGL::GLBufferRef & inBuffer, const string & inString);
+		void setBufferForInputImageKey(const VVGL::GLBufferRef & inBuffer, const std::string & inString);
 		//!	Locates the audio-type or audioFFT-type input with the passed name, and sets its current value to the passed GLBuffer.
-		void setBufferForAudioInputKey(const VVGL::GLBufferRef & inBuffer, const string & inString);
+		void setBufferForAudioInputKey(const VVGL::GLBufferRef & inBuffer, const std::string & inString);
 		//!	Locates the image-type input matching the passed string, and gets its current value (a GLBufferRef, or null).
-		VVGL::GLBufferRef getBufferForImageInput(const string & inKey);
+		VVGL::GLBufferRef getBufferForImageInput(const std::string & inKey);
 		//!	Locates the audio-type input matching the passed string, and gets its current value (a GLBufferRef, or null).
-		VVGL::GLBufferRef getBufferForAudioInput(const string & inKey);
+		VVGL::GLBufferRef getBufferForAudioInput(const std::string & inKey);
 		//!	Locates the render pass flagged to render to a persistent buffer with a name that matches the passed string, and gets its current value (a GLBufferRef, or null).
-		VVGL::GLBufferRef getPersistentBufferNamed(const string & inKey);
+		VVGL::GLBufferRef getPersistentBufferNamed(const std::string & inKey);
 		//!	Locates the render pass not flagged to render to a persistent buffer with a name that matches the passed string, and gets its current value (a GLBufferRef, or null).
-		VVGL::GLBufferRef getTempBufferNamed(const string & inKey);
+		VVGL::GLBufferRef getTempBufferNamed(const std::string & inKey);
 		
 		//!	Locates the attribute/INPUT with the passed name, and sets its current value to the passed ISFVal.  Can be used to set the value of inputs that use images to express their values, but there are dedicated functions which are easier to work with because they don't wrap the GLBufferRef up inside an ISFVal.
-		void setValueForInputNamed(const ISFVal & inVal, const string & inName);
+		void setValueForInputNamed(const ISFVal & inVal, const std::string & inName);
 		//!	Locates the attribute/INPUT with the passed name, and gets its current value (an ISFVal).  Attributes whose values are expressed as images vend ISFVal instances which in turn vend GLBufferRef instances.
-		ISFVal valueForInputNamed(const string & inName);
+		ISFVal valueForInputNamed(const std::string & inName);
 		
 		///@}
 		
@@ -147,26 +145,26 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		/*!
 		\brief Creates a buffer of the appropriate type (defaults to 8 bits per channel unless the ISF explicitly requires a floating point texture) and renders into it.
 		\param inSize The size of the frame you want to render.
-		\param outPassDict Either null or a ptr to a valid map instance of the appropriate type- the output of each render pass is stored in this map.
+		\param outPassDict Either null or a ptr to a valid std::map instance of the appropriate type- the output of each render pass is stored in this std::map.
 		\param inPoolRef The buffer pool to use to create GL resources for this frame (defaults to the global buffer pool).
 		*/
-		virtual VVGL::GLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), map<int32_t,VVGL::GLBufferRef> * outPassDict=nullptr, const VVGL::GLBufferPoolRef & inPoolRef=nullptr);
+		virtual VVGL::GLBufferRef createAndRenderABuffer(const VVGL::Size & inSize=VVGL::Size(640.,480.), std::map<int32_t,VVGL::GLBufferRef> * outPassDict=nullptr, const VVGL::GLBufferPoolRef & inPoolRef=nullptr);
 		//virtual VVGL::GLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, const VVGL::GLBufferPoolRef & inPoolRef=nullptr);
 		/*!
 		\brief Creates a buffer of the appropriate type (defaults to 8 bits per channel unless the ISF explicitly requires a floating point texture) and renders into it.
 		\param inSize The size of the frame you want to render.
 		\param inRenderTime The explicit time to use when rendering the frame.
-		\param outPassDict Either null or a ptr to a valid map instance of the appropriate type- the output of each render pass is stored in this map.
+		\param outPassDict Either null or a ptr to a valid std::map instance of the appropriate type- the output of each render pass is stored in this std::map.
 		\param inPoolRef The buffer pool to use to create GL resources for this frame (defaults to the global buffer pool).
 		*/
-		virtual VVGL::GLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, map<int32_t,VVGL::GLBufferRef> * outPassDict=nullptr, const VVGL::GLBufferPoolRef & inPoolRef=nullptr);
+		virtual VVGL::GLBufferRef createAndRenderABuffer(const VVGL::Size & inSize, const double & inRenderTime, std::map<int32_t,VVGL::GLBufferRef> * outPassDict=nullptr, const VVGL::GLBufferPoolRef & inPoolRef=nullptr);
 #pragma clang diagnostic pop
 		///@}
 		
 		
-		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, map<int32_t,VVGL::GLBufferRef> * outPassDict);
+		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime, std::map<int32_t,VVGL::GLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, const double & inRenderTime);
-		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, map<int32_t,VVGL::GLBufferRef> * outPassDict);
+		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize, std::map<int32_t,VVGL::GLBufferRef> * outPassDict);
 		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize);
 		void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer);
 
@@ -183,7 +181,7 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		//!	Returns the base time at which this scene started rendering its ISF.  Render times are calculated using this.
 		VVGL::Timestamp baseTime() { return _baseTime; }
 
-		//virtual void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize=VVGL::Size(640.,480.), const double & inRenderTime=timestamper.nowTime().getTimeInSeconds(), map<string,VVGL::GLBufferRef> * outPassDict=nullptr);
+		//virtual void renderToBuffer(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inRenderSize=VVGL::Size(640.,480.), const double & inRenderTime=timestamper.nowTime().getTimeInSeconds(), std::map<string,VVGL::GLBufferRef> * outPassDict=nullptr);
 		
 		
 		/*!
@@ -192,25 +190,25 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		///!{
 		
 		//!	Locates and returns the attribute/INPUT matching the passed name.
-		ISFAttrRef inputNamed(const string & inName);
-		//!	Returns a vector of ISFAttrRef instances describing all of the attribute/INPUTS.
-		vector<ISFAttrRef> inputs();
-		//!	Returns a vector of ISFAttrRef instances that match the bassed ISFValType.
-		vector<ISFAttrRef> inputsOfType(const ISFValType & inType);
-		//!	Returns a vector of all the image-type INPUTS, represented as ISFAttr instances.
-		vector<ISFAttrRef> imageInputs();
-		//!	Returns a vector of all the audio- and audioFFT-type INPUTS, represented as ISFAttr instances.
-		vector<ISFAttrRef> audioInputs();
-		//!	Returns a vector of all the image-type IMPORTED, represented as ISFAttr instances.
-		vector<ISFAttrRef> imageImports();
+		ISFAttrRef inputNamed(const std::string & inName);
+		//!	Returns a std::vector of ISFAttrRef instances describing all of the attribute/INPUTS.
+		std::vector<ISFAttrRef> inputs();
+		//!	Returns a std::vector of ISFAttrRef instances that match the bassed ISFValType.
+		std::vector<ISFAttrRef> inputsOfType(const ISFValType & inType);
+		//!	Returns a std::vector of all the image-type INPUTS, represented as ISFAttr instances.
+		std::vector<ISFAttrRef> imageInputs();
+		//!	Returns a std::vector of all the audio- and audioFFT-type INPUTS, represented as ISFAttr instances.
+		std::vector<ISFAttrRef> audioInputs();
+		//!	Returns a std::vector of all the image-type IMPORTED, represented as ISFAttr instances.
+		std::vector<ISFAttrRef> imageImports();
 		
 		///@}
 		
 		
 		//!	You probably shouldn't call this method directly on this subclass.
-		virtual void setVertexShaderString(const string & n);
+		virtual void setVertexShaderString(const std::string & n);
 		//!	You probably shouldn't call this method directly on this subclass.
-		virtual void setFragmentShaderString(const string & n);
+		virtual void setFragmentShaderString(const std::string & n);
 
 	protected:
 #if !defined(VVGL_TARGETENV_GLES)
@@ -223,7 +221,7 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		virtual void _renderPrep();
 		virtual void _initialize();
 		virtual void _renderCleanup();
-		virtual void _render(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, map<int32_t,VVGL::GLBufferRef> * outPassDict);
+		virtual void _render(const VVGL::GLBufferRef & inTargetBuffer, const VVGL::Size & inSize, const double & inTime, std::map<int32_t,VVGL::GLBufferRef> * outPassDict);
 
 };
 
@@ -234,12 +232,12 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 \relatedalso ISFScene
 \brief Creates and returns an ISFScene.  The scene makes a new GL context which shares the context of the global buffer pool.
 */
-inline ISFSceneRef CreateISFSceneRef() { return make_shared<ISFScene>(); }
+inline ISFSceneRef CreateISFSceneRef() { return std::make_shared<ISFScene>(); }
 /*!
 \relatedalso ISFScene
 \brief Creates and returns an ISFScene.  The scene uses the passed GL context to do its drawing.
 */
-inline ISFSceneRef CreateISFSceneRefUsing(const VVGL::GLContextRef & inCtx) { return make_shared<ISFScene>(inCtx); }
+inline ISFSceneRef CreateISFSceneRefUsing(const VVGL::GLContextRef & inCtx) { return std::make_shared<ISFScene>(inCtx); }
 
 
 

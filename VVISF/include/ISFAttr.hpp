@@ -14,20 +14,15 @@ namespace VVISF	{
 
 
 
-using namespace std;
-
-
-
-
 /*!
 \brief Describes a single ISF attribute
 \ingroup VVISF_BASIC
 */
 class VVISF_EXPORT ISFAttr	{
 	protected:
-		string			_name;
-		string			_description;
-		string			_label;
+		std::string			_name;
+		std::string			_description;
+		std::string			_label;
 		
 		ISFValType			_type = ISFValType_None;
 		ISFVal				_currentVal = ISFNullVal();
@@ -35,8 +30,8 @@ class VVISF_EXPORT ISFAttr	{
 		ISFVal				_maxVal = ISFNullVal();	//	if it's an audio/audiofft, it's a long-type val.  otherwise, null or an ISFVal subclass of the appropriate type
 		ISFVal				_defaultVal = ISFNullVal();
 		ISFVal				_identityVal = ISFNullVal();
-		vector<string>		_labelArray;	//	only used if it's a LONG. vector containing strings that correspond to the values in "_valArray"
-		vector<int32_t>		_valArray;	//	only used if it's a LONG. vector containing ints with the values that correspond to the accompanying labels
+		std::vector<std::string>	_labelArray;	//	only used if it's a LONG. std::vector containing strings that correspond to the values in "_valArray"
+		std::vector<int32_t>		_valArray;	//	only used if it's a LONG. std::vector containing ints with the values that correspond to the accompanying labels
 		
 		bool				_isFilterInputImage = false;	//	if true, this is an image-type input and is the main input for an image filter
 		bool				_isTransStartImage = false;	//	if true, this is an image-type input and is named "startImage"
@@ -57,27 +52,27 @@ class VVISF_EXPORT ISFAttr	{
 		\param inMaxVal The attribute's max value, or a null value if there is no max val or a max val would be inappropriate
 		\param inDefVal The attribute's default value, or a null value if there is no default val or a default val would be inappropriate
 		\param inIdenVal The attribute's identity value, or a null value if there is no identity val or an identity val would be inappropriate
-		\param inLabels A ptr to a vector containing strings with the attribute's labels, or null if the labels are inappropriate or absent.  The receiver does not assume ownership of the passed ptr.
-		\param inVals A ptr to a vector containing ints with the attribute's values (presuming long-type attribute), or null if the values are inappropriate or absent.  The receiver does not assume ownership of the passed ptr.
+		\param inLabels A ptr to a std::vector containing strings with the attribute's labels, or null if the labels are inappropriate or absent.  The receiver does not assume ownership of the passed ptr.
+		\param inVals A ptr to a std::vector containing ints with the attribute's values (presuming long-type attribute), or null if the values are inappropriate or absent.  The receiver does not assume ownership of the passed ptr.
 		*/
-		ISFAttr(const string & inName,
-			const string & inDesc,
-			const string & inLabel,
+		ISFAttr(const std::string & inName,
+			const std::string & inDesc,
+			const std::string & inLabel,
 			const ISFValType & inType,
 			const ISFVal & inMinVal=ISFNullVal(),
 			const ISFVal & inMaxVal=ISFNullVal(),
 			const ISFVal & inDefVal=ISFNullVal(),
 			const ISFVal & inIdenVal=ISFNullVal(),
-			const vector<string> * inLabels=nullptr,
-			const vector<int32_t> * inVals=nullptr);
+			const std::vector<std::string> * inLabels=nullptr,
+			const std::vector<int32_t> * inVals=nullptr);
 		~ISFAttr();
 		
 		//!	Returns the attribute's name, or null
-		inline string & name() const { return const_cast<string&>(_name); }
+		inline std::string & name() const { return const_cast<std::string&>(_name); }
 		//!	Returns the attribute's description, or null
-		inline string & description() const { return const_cast<string&>(_description); }
+		inline std::string & description() const { return const_cast<std::string&>(_description); }
 		//!	Returns the attribute's label, or null
-		inline string & label() const { return const_cast<string&>(_label); }
+		inline std::string & label() const { return const_cast<std::string&>(_label); }
 		//!	Returns the attribute's value type.
 		inline ISFValType & type() const { return const_cast<ISFValType&>(_type); }
 		//!	Returns the attribute's current value.
@@ -91,7 +86,7 @@ class VVISF_EXPORT ISFAttr	{
 		//!	Returns the receiver's image buffer
 		inline VVGL::GLBufferRef getCurrentImageBuffer() { if (!shouldHaveImageBuffer()) return nullptr; return _currentVal.imageBuffer(); }
 		//!	Sets the receiver's current value with the passed image buffer
-		inline void setCurrentImageBuffer(const VVGL::GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) _currentVal = ISFImageVal(n); else cout << "\terr: tried to set current image buffer in non-image attr (" << _name << ")\n"; /*cout<<"\tcurrentVal is now "<<_currentVal<<endl;*/ }
+		inline void setCurrentImageBuffer(const VVGL::GLBufferRef & n) { /*cout<<__PRETTY_FUNCTION__<<"..."<<*this<<", "<<*n<<endl;*/if (shouldHaveImageBuffer()) _currentVal = ISFImageVal(n); else std::cout << "\terr: tried to set current image buffer in non-image attr (" << _name << ")\n"; /*cout<<"\tcurrentVal is now "<<_currentVal<<endl;*/ }
 		//!	Gets the attribute's min val
 		inline ISFVal & minVal() { return _minVal; }
 		//!	Gets the attribute's max val
@@ -100,10 +95,10 @@ class VVISF_EXPORT ISFAttr	{
 		inline ISFVal & defaultVal() { return _defaultVal; }
 		//!	Gets the attribute's identity val (the value at which this attribute's effects are indistinguishable from its raw input).
 		inline ISFVal & identityVal() { return _identityVal; }
-		//!	Gets the attribute's labels as a vector of string values.  Only used if the attribute is a 'long'.
-		inline vector<string> & labelArray() { return _labelArray; }
-		//!	Gets the attribute's values as a vector of int values.  Only used if the attribute is a 'long'.
-		inline vector<int32_t> & valArray() { return _valArray; }
+		//!	Gets the attribute's labels as a std::vector of std::string values.  Only used if the attribute is a 'long'.
+		inline std::vector<std::string> & labelArray() { return _labelArray; }
+		//!	Gets the attribute's values as a std::vector of int values.  Only used if the attribute is a 'long'.
+		inline std::vector<int32_t> & valArray() { return _valArray; }
 		//!	Returns a true if this attribute is used to send the input image to the filter.
 		inline bool isFilterInputImage() { return _isFilterInputImage; }
 		inline void setIsFilterInputImage(const bool & n) { _isFilterInputImage=n; }
@@ -122,10 +117,10 @@ class VVISF_EXPORT ISFAttr	{
 		inline int32_t getUniformLocation(const int & inIndex) { if (inIndex<0 || inIndex>3) return 0; return _uniformLocation[inIndex]; }
 		//inline bool isNullVal() { return (_type==ISFValType_None); }
 		
-		VVISF_EXPORT friend ostream & operator<<(ostream & os, const ISFAttr & n);
+		VVISF_EXPORT friend std::ostream & operator<<(std::ostream & os, const ISFAttr & n);
 		void lengthyDescription();
-		//!	Returns a human-readable string that briefly describes the attribute.
-		string getAttrDescription();
+		//!	Returns a human-readable std::string that briefly describes the attribute.
+		std::string getAttrDescription();
 };
 
 

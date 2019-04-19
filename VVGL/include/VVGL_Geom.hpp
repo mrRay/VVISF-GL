@@ -15,8 +15,6 @@ namespace VVGL
 {
 
 
-using namespace std;
-
 
 
 /*!
@@ -37,7 +35,7 @@ struct Point	{
 	inline bool operator!=(const Point & n) const { return !(*this==(n)); }
 	inline Point operator+(const Point & n) const { return { this->x + n.x, this->y + n.y }; }
 	inline Point operator-(const Point & n) const { return { this->x - n.x, this->y - n.y }; }
-	friend ostream & operator<<(ostream & os, const Point & n) { os<<"("<<n.x<<", "<<n.y<<")";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const Point & n) { os<<"("<<n.x<<", "<<n.y<<")";return os; }
 };
 /*!
 \brief Basic struct for 2D size
@@ -56,7 +54,7 @@ struct Size	{
 	inline bool operator!=(const Size & n) const { return !(*this==(n)); }
 	inline Size operator+(const Size & n) const { return { this->width + n.width, this->height + n.height }; }
 	inline Size operator-(const Size & n) const { return { this->width - n.width, this->height - n.height }; }
-	friend ostream & operator<<(ostream & os, const Size & n) { os<<"("<<n.width<<"x"<<n.height<<")";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const Size & n) { os<<"("<<n.width<<"x"<<n.height<<")";return os; }
 };
 /*!
 \brief Basic struct for a rectangle using VVGL::Point and VVGL::Size
@@ -96,7 +94,7 @@ struct Rect	{
 	
 	inline bool operator==(const Rect & n) const { return (this->origin.operator==(n.origin) && this->size.operator==(n.size)); }
 	inline bool operator!=(const Rect & n) const { return !(*this==(n)); }
-	friend ostream & operator<<(ostream & os, const Rect & n) { os<<"{"<<n.origin<<","<<n.size<<"}";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const Rect & n) { os<<"{"<<n.origin<<","<<n.size<<"}";return os; }
 };
 
 
@@ -143,7 +141,7 @@ struct VT_XY : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return x; case 1: default: return y; } }
 	inline bool operator== (const VT_XY & n) const { return (this->x==n.x && this->y==n.y); }
 	inline bool operator!= (const VT_XY & n) const { return !(*this==n); }
-	friend ostream & operator<<(ostream & os, const VT_XY & n) { os<<"{"<<n.x<<","<<n.y<<"}";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const VT_XY & n) { os<<"{"<<n.x<<","<<n.y<<"}";return os; }
 	
 	inline void zero() { x=0.; y=0; }
 	inline int numComponents() const { return 2; }
@@ -163,7 +161,7 @@ struct VT_XYZ : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return x; case 1: return y; case 2: default: return z; } }
 	inline bool operator== (const VT_XYZ & n) const { return (this->x==n.x && this->y==n.y && this->z==n.z); }
 	inline bool operator!= (const VT_XYZ & n) const { return !(*this==n); }
-	friend ostream & operator<<(ostream & os, const VT_XYZ & n) { os<<"{"<<n.x<<","<<n.y<<","<<n.z<<"}";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const VT_XYZ & n) { os<<"{"<<n.x<<","<<n.y<<","<<n.z<<"}";return os; }
 	
 	inline void zero() { x=0.; y=0; z=0; }
 	inline int numComponents() const { return 3; }
@@ -182,7 +180,7 @@ struct VT_ST : public VT	{
 	inline float & operator[] (const int index) { switch(index) { case 0: return s; case 1: default: return t; } }
 	inline bool operator== (const VT_ST & n) const { return (this->s==n.s && this->t==n.t); }
 	inline bool operator!= (const VT_ST & n) const { return !(*this==n); }
-	friend ostream & operator<<(ostream & os, const VT_ST & n) { os<<"{"<<n.s<<","<<n.t<<"}";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const VT_ST & n) { os<<"{"<<n.s<<","<<n.t<<"}";return os; }
 	
 	inline void zero() { s=0.; t=0; }
 	inline int numComponents() const { return 2; }
@@ -204,7 +202,7 @@ struct VT_RGBA : public VT	{
 	inline void operator= (const GLColor & n) { r=n.r; g=n.g; b=n.b; a=n.a; };
 	inline bool operator== (const VT_RGBA & n) const { return (this->r==n.r && this->g==n.g && this->b==n.b && this->a==n.a); };
 	inline bool operator!= (const VT_RGBA & n) const { return !(*this==n); };
-	friend ostream & operator<<(ostream & os, const VT_RGBA & n) { os<<"{"<<n.r<<","<<n.g<<","<<n.b<<","<<n.a<<"}";return os; }
+	friend std::ostream & operator<<(std::ostream & os, const VT_RGBA & n) { os<<"{"<<n.r<<","<<n.g<<","<<n.b<<","<<n.a<<"}";return os; }
 	
 	inline void zero() { r=0.; g=0; b=0; a=0; }
 	inline int numComponents() const { return 4; }

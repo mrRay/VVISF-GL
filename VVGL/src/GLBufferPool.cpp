@@ -10,6 +10,9 @@
 #if defined(VVGL_SDK_QT)
 #include <QImage>
 #include <QDebug>
+#elif defined(VVGL_SDK_WIN)
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 #endif
 
 
@@ -680,7 +683,19 @@ GLBufferPoolRef CreateGlobalBufferPool(const GLContext * inShareCtx)	{
 GLBufferPoolRef CreateGlobalBufferPool(const GLContextRef & inPoolCtx)	{
 	//cout << __PRETTY_FUNCTION__ << endl;
 	
-	GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inPoolCtx);
+	GLBufferPoolRef		returnMe = nullptr;
+	if (inPoolCtx == nullptr)	{
+#if defined(VVGL_SDK_MAC)
+		returnMe = make_shared<GLBufferPool>(CreateNewGLContextRef(NULL, CreateDefaultPixelFormat()));
+#elif defined(VVGL_SDK_WIN)
+		returnMe = make_shared<GLBufferPool>(CreateNewGLContextRef(NULL, AllocGL4ContextAttribs().get()));
+#else
+		returnMe = make_shared<GLBufferPool>(CreateNewGLContextRef());
+#endif
+	}
+	else
+		returnMe = make_shared<GLBufferPool>(inPoolCtx);
+	//GLBufferPoolRef		returnMe = make_shared<GLBufferPool>(inPoolCtx);
 	if (_globalBufferPool != nullptr)	{
 		//delete _globalBufferPool;
 		_globalBufferPool = nullptr;
@@ -1385,6 +1400,7 @@ GLBufferRef CreateFromExistingGLTexture(const int32_t & inTexName, const GLBuffe
 	
 	if (inPoolRef != nullptr)
 		inPoolRef->timestampThisBuffer(returnMe);
+	returnMe->parentBufferPool = inPoolRef;
 	
 	return returnMe;
 }
@@ -1628,6 +1644,78 @@ GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCur
 	return returnMe;
 }
 GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/)	{
+	return nullptr;
+}
+#elif defined(VVGL_SDK_WIN)
+GLBufferRef CreateTexFromImage(const string & inPath, const bool & inCreateInCurrentContext, const GLBufferPoolRef & inPoolRef) {
+	//cout << __PRETTY_FUNCTION__ << ", " << inPath << endl;
+	if (inPoolRef == nullptr)
+		return nullptr;
+	int				x, y, n;
+	unsigned char	*pixelData = stbi_load(inPath.c_str(), &x, &y, &n, 4);
+	if (pixelData == nullptr) {
+		cout << "ERR: couldnt load image, " << stbi_failure_reason() << endl;
+		return nullptr;
+	}
+	
+	GLBufferRef		returnMe = nullptr;
+	
+	VVGL::Size		imgSize(x, y);
+	VVGL::Size		repSize = imgSize;
+	VVGL::Size		gpuSize = imgSize;
+
+	GLBuffer::Descriptor		desc;
+	desc.type = GLBuffer::Type_Tex;
+	desc.target = GLBuffer::Target_2D;
+	desc.internalFormat = GLBuffer::IF_RGBA8;
+	desc.pixelFormat = GLBuffer::PF_RGBA;
+	desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
+	desc.cpuBackingType = GLBuffer::Backing_None;
+	desc.gpuBackingType = GLBuffer::Backing_Internal;
+	desc.texRangeFlag = false;
+	desc.texClientStorageFlag = true;
+	desc.msAmount = 0;
+	desc.localSurfaceID = 0;
+	
+	//	this bit copies the image data to a manually-allocated block of memory.  i'm not sure why, but if i don't do this, i get crashes under some circumstances
+	void			*tmpData = malloc(desc.backingLengthForSize(gpuSize));
+	unsigned char			*rPtr = pixelData;
+	char			*wPtr = static_cast<char*>(tmpData);
+	//int				rLineStride = inImg->bytesPerLine();
+	
+	//if (n == 4) {
+		int				rLineStride = imgSize.width * 8 * n / 8;
+		int				rBytesPerLine = imgSize.width * 8 * n / 8;
+		for (int i = 0; i < imgSize.height; ++i) {
+			memcpy(wPtr, rPtr, rBytesPerLine);
+			rPtr += rLineStride;
+			wPtr += rBytesPerLine;
+		}
+	//}
+	//else
+	//	cout << "ERR: number of channels is " << n << " in " << __PRETTY_FUNCTION__ << endl;
+	
+		//cout << "using copied data..." << endl;
+		//cout << "using raw data..." << endl;
+		returnMe = inPoolRef->createBufferRef(desc, gpuSize, pixelData, repSize, inCreateInCurrentContext);
+	if (returnMe != nullptr) {
+		//cout << "using no data..." << endl;
+		returnMe->parentBufferPool = inPoolRef;
+		returnMe->srcRect = VVGL::Rect(0, 0, imgSize.width, imgSize.height);
+		returnMe->backingID = GLBuffer::BackingID_None;
+		returnMe->backingSize = repSize;
+		returnMe->flipped = true;
+
+		returnMe->preferDeletion = true;
+	}
+	
+	//free(tmpData);
+	
+	//stbi_image_free(pixelData);
+	
+	return returnMe;
+}
+GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & /*inPaths*/, const bool & /*inCreateInCurrentContext*/, const GLBufferPoolRef & /*inPoolRef*/) {
 	return nullptr;
 }
 #else

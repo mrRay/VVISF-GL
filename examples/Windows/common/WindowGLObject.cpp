@@ -85,10 +85,10 @@ WindowGLObject::WindowGLObject(const GLContextRef & inShareCtx) {
 
 	//	if we were passed a valid share context, the GL context we create has to share it
 	if (inShareCtx != nullptr)
-		tmpCtx = CreateGLContextRef(inShareCtx->context(), _dc, contextAttribs.get());
+		tmpCtx = CreateNewGLContextRef(inShareCtx->context(), _dc, contextAttribs.get());
 	//	else we were passed a null share ctx- just make a new GL context, it doesn
 	else
-		tmpCtx = CreateGLContextRef(NULL, _dc, contextAttribs.get());
+		tmpCtx = CreateNewGLContextRef(NULL, _dc, contextAttribs.get());
 	
 	//	apply the tmp ctx we just made
 	_ctx = tmpCtx;
