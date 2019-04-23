@@ -104,12 +104,12 @@ class VVGL_EXPORT GLTexToTexCopier : public GLScene	{
 \relatedalso GLTexToTexCopier
 \brief Creates and returns a GLTexToTexCopier.  The scene makes a new GL context which shares the context of the global buffer pool.
 */
-inline GLTexToTexCopierRef CreateGLTexToTexCopierRef() { return make_shared<GLTexToTexCopier>(); }
+inline GLTexToTexCopierRef CreateGLTexToTexCopierRef() { return std::make_shared<GLTexToTexCopier>(); }
 /*!
 \relatedalso GLTexToTexCopier
 \brief Creates and returns a GLTexToTexCopier.  The downloader uses the passed GL context to perform its GL operations.
 */
-inline GLTexToTexCopierRef CreateGLTexToTexCopierRefUsing(const GLContextRef & inCtx) { return make_shared<GLTexToTexCopier>(inCtx); }
+inline GLTexToTexCopierRef CreateGLTexToTexCopierRefUsing(const GLContextRef & inCtx) { return std::make_shared<GLTexToTexCopier>(inCtx); }
 
 
 

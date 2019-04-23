@@ -30,13 +30,13 @@ Offers both immediate download and n-buffered texture downloads for double-/trip
 
 class VVGL_EXPORT GLTexToCPUCopier	{
 	private:
-		recursive_mutex			_queueLock;	//	this should be used to serialize access to all member vars
+		std::recursive_mutex			_queueLock;	//	this should be used to serialize access to all member vars
 		GLContextRef			_queueCtx = nullptr;	//	this is the context used to perform all GL action
 		int						_queueSize = 1;	//	the number of buffers that should be in 'queue' before popping a new buffer off of it (double-buffering is 1)
-		queue<GLBufferRef>		_cpuQueue;	//	queue of CPU-based images
-		queue<GLBufferRef>		_pboQueue;	//	queue of PBOs
-		queue<GLBufferRef>		_texQueue;	//	queue of textures
-		queue<GLBufferRef>		_fboQueue;	//	queue of FBOs.  the fastest texture download pipeline involves attaching the texture to an FBO so we can use glReadPixels() instead of glGetTexImage().
+		std::queue<GLBufferRef>		_cpuQueue;	//	queue of CPU-based images
+		std::queue<GLBufferRef>		_pboQueue;	//	queue of PBOs
+		std::queue<GLBufferRef>		_texQueue;	//	queue of textures
+		std::queue<GLBufferRef>		_fboQueue;	//	queue of FBOs.  the fastest texture download pipeline involves attaching the texture to an FBO so we can use glReadPixels() instead of glGetTexImage().
 		
 		GLBufferPoolRef			_privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
 		
@@ -56,7 +56,7 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 		//!	Sets the size of the queue used for streaming.  Effectively, this is the number of calls it takes for the texture data to "finish downloading" and get returned as a pointer to non-GPU memory.
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
-		inline int queueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
+		inline int queueSize() { std::lock_guard<std::recursive_mutex> lock(_queueLock); return _queueSize; };
 		
 		//! Immediately downloads the passed texture into CPU memory- doesn't use the queues.  Less efficient.  Good for quick single-shot texture downloads.
 		/*!
@@ -87,12 +87,12 @@ class VVGL_EXPORT GLTexToCPUCopier	{
 \relatedalso GLTexToCPUCopier
 \brief Creates and returns a GLTexToCPUCopier.  The scene makes a new GL context which shares the context of the global buffer pool.
 */
-inline GLTexToCPUCopierRef CreateGLTexToCPUCopierRef() { return make_shared<GLTexToCPUCopier>(); }
+inline GLTexToCPUCopierRef CreateGLTexToCPUCopierRef() { return std::make_shared<VVGL::GLTexToCPUCopier>(); }
 /*!
 \relatedalso GLTexToCPUCopier
 \brief Creates and returns a GLTexToCPUCopier.  The downloader uses the passed GL context to perform its GL operations.
 */
-inline GLTexToCPUCopierRef CreateGLTexToCPUCopierRefUsing(const GLContextRef & inCtx) { return make_shared<GLTexToCPUCopier>(inCtx); }
+inline GLTexToCPUCopierRef CreateGLTexToCPUCopierRefUsing(const GLContextRef & inCtx) { return std::make_shared<VVGL::GLTexToCPUCopier>(inCtx); }
 
 
 

@@ -71,7 +71,7 @@ class VVGL_EXPORT GLScene	{
 	
 	//	instance variables
 	protected:
-		recursive_mutex		_renderLock;
+		std::recursive_mutex		_renderLock;
 		GLContextRef		_context = nullptr;
 		
 		bool				_deleted = false;
@@ -100,9 +100,9 @@ class VVGL_EXPORT GLScene	{
 		bool				_clearColorUpdated = false;
 		
 		//	these vars pertain to the program being used by the GL context
-		string				*_vsString = nullptr;
-		string				*_gsString = nullptr;
-		string				*_fsString = nullptr;
+		std::string				*_vsString = nullptr;
+		std::string				*_gsString = nullptr;
+		std::string				*_fsString = nullptr;
 		bool				_vsStringUpdated = false;
 		bool				_gsStringUpdated = false;
 		bool				_fsStringUpdated = false;
@@ -110,9 +110,9 @@ class VVGL_EXPORT GLScene	{
 		uint32_t			_vs = 0;
 		uint32_t			_gs = 0;
 		uint32_t			_fs = 0;
-		mutex				_errLock;
-		mutex				_errDictLock;
-		map<string,string>		_errDict;
+		std::mutex				_errLock;
+		std::mutex				_errDictLock;
+		std::map<std::string,std::string>		_errDict;
 		
 		//	this class- and subclasses of it- often need to create GPU resources.  by default the global buffer pool (GetGlobalBufferPool()) will be used- unless this var is non-null...
 		GLBufferPoolRef		_privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
@@ -219,17 +219,17 @@ class VVGL_EXPORT GLScene	{
 		///@{
 		
 		//!	Sets the vertex shader string.
-		virtual void setVertexShaderString(const string & n);
+		virtual void setVertexShaderString(const std::string & n);
 		//!	Gets the vertex shader string.
-		virtual string vertexShaderString();
+		virtual std::string vertexShaderString();
 		//!	Sets the geometry shader string.
-		virtual void setGeometryShaderString(const string & n);
+		virtual void setGeometryShaderString(const std::string & n);
 		//!	Gets the geometry shader string.
-		virtual string geometryShaderString();
+		virtual std::string geometryShaderString();
 		//!	Sets the fragment shader string.
-		virtual void setFragmentShaderString(const string & n);
+		virtual void setFragmentShaderString(const std::string & n);
 		//!	Gets the fragment shader string.
-		virtual string fragmentShaderString();
+		virtual std::string fragmentShaderString();
 		//!	Gets the program ID.
 		inline uint32_t program() const { return _program; }
 		
@@ -266,12 +266,12 @@ class VVGL_EXPORT GLScene	{
 \relatedalso GLScene
 \brief Creates and returns a GLScene.  The scene makes a new GL context which shares the context of the global buffer pool.
 */
-inline GLSceneRef CreateGLSceneRef() { return make_shared<GLScene>(); }
+inline GLSceneRef CreateGLSceneRef() { return std::make_shared<VVGL::GLScene>(); }
 /*!
 \relatedalso GLScene
 \brief Creates and returns a GLScene.  The scene uses the passed GL context to do its drawing.
 */
-inline GLSceneRef CreateGLSceneRefUsing(const GLContextRef & inCtx) { return make_shared<GLScene>(inCtx); }
+inline GLSceneRef CreateGLSceneRefUsing(const GLContextRef & inCtx) { return std::make_shared<VVGL::GLScene>(inCtx); }
 
 
 

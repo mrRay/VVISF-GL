@@ -12,6 +12,7 @@ namespace VVISF
 
 
 using namespace VVGL;
+using namespace std;
 
 
 /*	========================================	*/

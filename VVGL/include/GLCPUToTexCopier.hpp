@@ -30,12 +30,12 @@ Offers both immediate upload and n-buffered texture uploads for double-/triple-/
 
 class VVGL_EXPORT GLCPUToTexCopier	{
 	private:
-		recursive_mutex			_queueLock;	//	this should be used to serialize access to all member vars
+		std::recursive_mutex			_queueLock;	//	this should be used to serialize access to all member vars
 		GLContextRef			_queueCtx = nullptr;	//	this is the context used to perform all GL action
 		int						_queueSize = 2;	//	the number of buffers that should be in 'queue' before popping a new buffer off of it (double-buffering is 1)
-		queue<GLBufferRef>		_cpuQueue;	//	queue of CPU-based images
-		queue<GLBufferRef>		_pboQueue;	//	queue of PBOs
-		queue<GLBufferRef>		_texQueue;	//	queue of textures
+		std::queue<GLBufferRef>		_cpuQueue;	//	queue of CPU-based images
+		std::queue<GLBufferRef>		_pboQueue;	//	queue of PBOs
+		std::queue<GLBufferRef>		_texQueue;	//	queue of textures
 		bool					_swapBytes = false;
 		GLBufferPoolRef			_privatePool = nullptr;	//	by default this is null and the scene will try to use the global buffer pool to create interim resources (temp/persistent buffers).  if non-null, the scene will use this pool to create interim resources.
 	
@@ -58,10 +58,10 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 		//!	Sets the size of the queue used for streaming.  Effectively, this is the number of calls it takes for the CPU data to "finish uploading" and get returned as a texture.
 		void setQueueSize(const int & inNewQueueSize);
 		//!	Returns the size of the queue used for streaming.
-		inline int queueSize() { lock_guard<recursive_mutex> lock(_queueLock); return _queueSize; };
+		inline int queueSize() { std::lock_guard<std::recursive_mutex> lock(_queueLock); return _queueSize; };
 		
-		void setSwapBytes(const bool & n) { lock_guard<recursive_mutex> lock(_queueLock); _swapBytes=n; }
-		bool swapBytes() { lock_guard<recursive_mutex> lock(_queueLock); return _swapBytes; }
+		void setSwapBytes(const bool & n) { std::lock_guard<std::recursive_mutex> lock(_queueLock); _swapBytes=n; }
+		bool swapBytes() { std::lock_guard<std::recursive_mutex> lock(_queueLock); return _swapBytes; }
 		
 		//!	Immediately uploads the passed CPU-based buffer to a GL texture- doesn't use the queues.  Less efficient.  Good for quick single-shot texture uploads.
 		GLBufferRef uploadCPUToTex(const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext=false);
@@ -96,12 +96,12 @@ class VVGL_EXPORT GLCPUToTexCopier	{
 \relatedalso GLCPUToTexCopier
 \brief Creates and returns a GLCPUToTexCopier.  The scene makes a new GL context which shares the context of the global buffer pool.
 */
-inline GLCPUToTexCopierRef CreateGLCPUToTexCopierRef() { return make_shared<GLCPUToTexCopier>(); }
+inline GLCPUToTexCopierRef CreateGLCPUToTexCopierRef() { return std::make_shared<VVGL::GLCPUToTexCopier>(); }
 /*!
 \relatedalso GLCPUToTexCopier
 \brief Creates and returns a GLCPUToTexCopier.  The downloader uses the passed GL context to perform its GL operations.
 */
-inline GLCPUToTexCopierRef CreateGLCPUToTexCopierRefUsing(const GLContextRef & inCtx) { return make_shared<GLCPUToTexCopier>(inCtx); }
+inline GLCPUToTexCopierRef CreateGLCPUToTexCopierRefUsing(const GLContextRef & inCtx) { return std::make_shared<VVGL::GLCPUToTexCopier>(inCtx); }
 
 
 

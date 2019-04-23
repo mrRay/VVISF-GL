@@ -48,7 +48,7 @@ public:
 	void performRenderCallback() { if (_renderCallback != nullptr) _renderCallback(*this); }
 
 	static GLContextWindowBackingRef CreateWindowBackingRef(const Rect & inRect=Rect(0,0,640,480)){
-		return make_shared<GLContextWindowBacking>(inRect);
+		return std::make_shared<GLContextWindowBacking>(inRect);
 	}
 };
 

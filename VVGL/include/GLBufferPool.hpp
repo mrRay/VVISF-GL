@@ -25,7 +25,7 @@
 namespace VVGL	{
 
 
-using namespace std;
+//using namespace std;
 
 
 
@@ -46,10 +46,10 @@ class VVGL_EXPORT GLBufferPool	{
 	//	vars
 	protected:
 		bool				_deleted = false;
-		mutex				_freeBuffersLock;
-		vector<GLBufferRef>		_freeBuffers;
+		std::mutex				_freeBuffersLock;
+		std::vector<GLBufferRef>		_freeBuffers;
 		
-		recursive_mutex		_contextLock;
+		std::recursive_mutex		_contextLock;
 		GLContextRef		_context = nullptr;	//	this is the context that the buffer pool will use to create/destroy GL resources
 		
 		Timestamp			_baseTime;
@@ -80,19 +80,19 @@ class VVGL_EXPORT GLBufferPool	{
 		inline void timestampThisBuffer(const GLBufferRef & n) const { if (n == nullptr) return; n->contentTimestamp=getTimestamp(); }
 		//!	Returns the GLContextRef used by the buffer pool to create and destroy its GL resources.
 		inline GLContextRef & context() { return _context; }
-		inline recursive_mutex & getContextLock() { return _contextLock; }
+		inline std::recursive_mutex & getContextLock() { return _contextLock; }
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS)
 		inline CGColorSpaceRef colorSpace() const { return _colorSpace; }
 #endif
 		
-		friend ostream & operator<<(ostream & os, const GLBufferPool & n);
+		friend std::ostream & operator<<(std::ostream & os, const GLBufferPool & n);
 		void flush();
 	
 	private:
 		//	Called by GLBuffer when it's being deallocated if the buffer has determined that it is a candidate for recycling
-		void returnBufferToPool(GLBuffer * inBuffer);
+		void returnBufferToPool(VVGL::GLBuffer * inBuffer);
 		//	Called by GLBuffer when it's being deallocated if the buffer has determined that its GL resources need to be released immediately
-		void releaseBufferResources(GLBuffer * inBuffer);
+		void releaseBufferResources(VVGL::GLBuffer * inBuffer);
 		
 		friend GLBuffer::~GLBuffer();
 };
@@ -425,7 +425,7 @@ VVGL_EXPORT GLBufferRef CreateBGRAFloatCPUBackedTex(const Size & size, const boo
 \param createInCurrentContext If true, the GL resource will be created in the current context (assumes that a GL context is active in the current thread).  If false, the GL resource will be created by the GL context owned by the buffer pool.
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
-VVGL_EXPORT GLBufferRef CreateTexFromImage(const string & inPath, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGL_EXPORT GLBufferRef CreateTexFromImage(const std::string & inPath, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Creates and returns an OpenGL cube texture from the images at the passed paths.
@@ -433,7 +433,7 @@ VVGL_EXPORT GLBufferRef CreateTexFromImage(const string & inPath, const bool & c
 \param createInCurrentContext If true, the GL resource will be created in the current context (assumes that a GL context is active in the current thread).  If false, the GL resource will be created by the GL context owned by the buffer pool.
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
-VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const vector<string> & inPaths, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGL_EXPORT GLBufferRef CreateCubeTexFromImagePaths(const std::vector<std::string> & inPaths, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 
 ///@}
 
@@ -631,7 +631,7 @@ VVGL_EXPORT GLBufferRef CreateTexFromCGImageRef(const CGImageRef & n, const bool
 \param createInCurrentContext If true, the GL resource will be created in the current context (assumes that a GL context is active in the current thread).  If false, the GL resource will be created by the GL context owned by the buffer pool.
 \param inPoolRef The pool that the GLBuffer should be created with.  When the GLBuffer is freed, its underlying GL resources will be returned to this pool (where they will be either freed or recycled).
 */
-VVGL_EXPORT GLBufferRef CreateCubeTexFromImages(const vector<CGImageRef> & inImgs, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
+VVGL_EXPORT GLBufferRef CreateCubeTexFromImages(const std::vector<CGImageRef> & inImgs, const bool & createInCurrentContext=false, const GLBufferPoolRef & inPoolRef=GetGlobalBufferPool());
 /*!
 \ingroup VVGL_BUFFERCREATE
 \brief Unpremultiplies the contents of the bitmap in the passed CGContextRef.

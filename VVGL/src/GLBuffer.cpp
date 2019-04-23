@@ -186,6 +186,8 @@ GLBuffer::~GLBuffer()	{
 	setRemoteSurfaceRef(nullptr);
 #endif
 	
+	associatedBuffer = nullptr;
+	
 	parentBufferPool = nullptr;
 	
 }
