@@ -39,7 +39,7 @@ enum ISFValType	{
 \ingroup VVISF_BASIC
 \relatesalso VVISF::ISFValType
 */
-std::string StringFromISFValType(const ISFValType & n);
+VVISF_EXPORT std::string StringFromISFValType(const ISFValType & n);
 /*!
 \brief Returns a true if the passed value type uses an image for its value.
 \ingroup VVISF_BASIC

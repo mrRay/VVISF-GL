@@ -125,7 +125,8 @@ void ISFScene::useDoc(ISFDocRef & inDoc)	{
 	lock_guard<mutex>	plock(_propertyLock);
 	
 	_doc = inDoc;
-	_doc->setParentScene(this);
+	if (_doc != nullptr)
+		_doc->setParentScene(this);
 	
 	//	reset the timestamper and render frame index
 	//timestamper.reset();
