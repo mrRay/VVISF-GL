@@ -1,6 +1,13 @@
 #import "SyphonVVBufferPoolAdditions.h"
 
 
+
+
+using namespace std;
+
+
+
+
 namespace VVGL
 {
 

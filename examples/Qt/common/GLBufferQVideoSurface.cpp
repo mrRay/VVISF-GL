@@ -5,6 +5,11 @@
 
 
 
+using namespace std;
+
+
+
+
 GLBufferQVideoSurface::GLBufferQVideoSurface(QObject * parent) :
 	QAbstractVideoSurface(parent)
 {
