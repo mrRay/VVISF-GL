@@ -33,6 +33,7 @@ else ifeq ($(PLATFORM),Darwin)
 	CXX = clang
 	CPPFLAGS := -Wall -g -arch x86_64 -O3 -std=c++11 -stdlib=libc++ -fPIC 
 	CPPFLAGS += -I./include/ -DVVGL_SDK_MAC
+    CPPFLAGS += -DGL_SILENCE_DEPRECATION
 	OBJCPPFLAGS := $(CPPFLAGS)
 	
 	CPPFLAGS += -x c++
