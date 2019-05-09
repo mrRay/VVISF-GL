@@ -288,6 +288,8 @@ string ISFDoc::generateTextureTypeString()	{
 	lock_guard<recursive_mutex>		lock(_propLock);
 	
 	for (const auto & attribRefIt : _imageInputs)	{
+		if (attribRefIt == nullptr)
+			continue;
 		if (attribRefIt->shouldHaveImageBuffer())	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
@@ -303,6 +305,8 @@ string ISFDoc::generateTextureTypeString()	{
 		}
 	}
 	for (const auto & attribRefIt : _audioInputs)	{
+		if (attribRefIt == nullptr)
+			continue;
 		if (attribRefIt->shouldHaveImageBuffer())	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
@@ -318,6 +322,8 @@ string ISFDoc::generateTextureTypeString()	{
 		}
 	}
 	for (const auto & attribRefIt : _imageImports)	{
+		if (attribRefIt == nullptr)
+			continue;
 		if (attribRefIt->shouldHaveImageBuffer())	{
 			GLBufferRef		tmpBuffer = attribRefIt->getCurrentImageBuffer();
 			if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
@@ -333,6 +339,8 @@ string ISFDoc::generateTextureTypeString()	{
 		}
 	}
 	for (const auto & targetBufIt : _persistentPassTargets)	{
+		if (targetBufIt == nullptr)
+			continue;
 		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");
@@ -346,6 +354,8 @@ string ISFDoc::generateTextureTypeString()	{
 #endif
 	}
 	for (const auto & targetBufIt : _tempPassTargets)	{
+		if (targetBufIt == nullptr)
+			continue;
 		GLBufferRef		tmpBuffer = targetBufIt->buffer();
 		if (tmpBuffer==nullptr || tmpBuffer->desc.target==GLBuffer::Target_2D)
 			returnMe.append("2");

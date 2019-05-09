@@ -695,6 +695,12 @@ void ISFScene::_renderPrep()	{
 		return;
 	}
 	
+	//	need a GL program
+	if (_program <= 0)	{
+		//cout << "\terr: no program, " << __PRETTY_FUNCTION__ << endl;
+		return;
+	}
+	
 	//	set up some vars and some blocks that we're going to use to cache the locations of uniforms in the attributes of the ISFDoc instance, and eventually push those vals to GL
 	GLint				samplerLoc = 0;
 	GLint				textureCount = 0;
@@ -934,6 +940,10 @@ void ISFScene::_renderPrep()	{
 	//	run through the inputs, applying the current values to the program
 	vector<ISFAttrRef> &	inputs = _doc->inputs();
 	for (const auto & attribRef : inputs)	{
+		if (attribRef == nullptr)	{
+			//cout << "\tERR: attrib NULL in " << __PRETTY_FUNCTION__ << endl;
+			continue;
+		}
 		ISFValType			attribType = attribRef->type();
 		ISFVal &			currentVal = attribRef->currentVal();
 		
@@ -1052,6 +1062,11 @@ void ISFScene::_renderPrep()	{
 	//	run through the imported images, applying the current values to the program
 	vector<ISFAttrRef> &	imageImports = _doc->imageImports();
 	for (const auto & attribRef : imageImports)	{
+		if (attribRef == nullptr)	{
+			cout << "\tERR: attrib NULL in " << __PRETTY_FUNCTION__ << endl;
+			continue;
+		}
+		
 		if (attribRef->type() == ISFValType_Cube)	{
 			if (findNewUniforms)
 				setAttrUniformsCubeBlock(attribRef);
@@ -1067,6 +1082,9 @@ void ISFScene::_renderPrep()	{
 	//	run through the persistent buffers, applying the current values to the program
 	const vector<ISFPassTargetRef>	persistentBuffers = _doc->persistentPassTargets();
 	for (const auto & targetRef : persistentBuffers)	{
+		if (targetRef == nullptr)
+			return;
+		
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
 		pushTargetUniformsImageBlock(targetRef);
@@ -1075,6 +1093,9 @@ void ISFScene::_renderPrep()	{
 	//	run through the temp buffers, applying the current values to the program
 	const vector<ISFPassTargetRef>	tempBuffers = _doc->tempPassTargets();
 	for (const auto & targetRef : tempBuffers)	{
+		if (targetRef == nullptr)
+			continue;
+		
 		if (findNewUniforms)
 			setTargetUniformsImageBlock(targetRef);
 		pushTargetUniformsImageBlock(targetRef);
