@@ -494,6 +494,7 @@ void GLScene::_renderPrep()	{
 				glGetShaderiv(_vs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
+				memset(log, 0, sizeof(char) * (length+1));
 				glGetShaderInfoLog(_vs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling vertex shader in " << __PRETTY_FUNCTION__ << endl;
@@ -531,6 +532,7 @@ void GLScene::_renderPrep()	{
 				glGetShaderiv(_gs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
+				memset(log, 0, sizeof(char) * (length+1));
 				glGetShaderInfoLog(_gs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling geo shader in " << __PRETTY_FUNCTION__ << endl;
@@ -568,6 +570,7 @@ void GLScene::_renderPrep()	{
 				glGetShaderiv(_fs, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
 				log = new char[length+1];
+				memset(log, 0, sizeof(char) * (length+1));
 				glGetShaderInfoLog(_fs, length, &length, log);
 				GLERRLOG
 				cout << "\terr compiling fragment shader in " << __PRETTY_FUNCTION__ << endl;
@@ -615,7 +618,9 @@ void GLScene::_renderPrep()	{
 				char			*log;
 				glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &length);
 				GLERRLOG
-				log = new char(length);
+				log = new char[length+1];
+				//log = static_cast<char*>(malloc(sizeof(char) * (length+2)));
+				memset(log, 0, sizeof(char) * (length+1));
 				glGetProgramInfoLog(_program, length, &length, log);
 				GLERRLOG
 				cout << "********************\n";
@@ -649,7 +654,8 @@ void GLScene::_renderPrep()	{
 					_errDict.insert(pair<string,string>(string("linkErrLog"), string(log)));
 				}
 				
-				delete log;
+				delete[] log;
+				//free(log);
 				glDeleteProgram(_program);
 				GLERRLOG
 				_program = 0;
