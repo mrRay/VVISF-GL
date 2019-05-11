@@ -50,7 +50,7 @@ void JSONGUIInputPoint2DWidget::prepareUIItems() {
 	QObject::connect(ui->defaultField, &QLineEdit::editingFinished, [&]()	{
 		//	get text as string, break up to array of strings
 		QString			tmpStr = ui->defaultField->text();
-		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^0-9\\.]+"));
+		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^-0-9\\.]+"));
 		//	run through array of strings, creating an array of doubles
 		QVariantList		tmpDoubleList;
 		for (const QString & listStr : tmpStrList)	{
@@ -77,7 +77,7 @@ void JSONGUIInputPoint2DWidget::prepareUIItems() {
 	QObject::connect(ui->identityField, &QLineEdit::editingFinished, [&]()	{
 		//	get text as string, break up to array of strings
 		QString			tmpStr = ui->identityField->text();
-		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^0-9\\.]+"));
+		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^-0-9\\.]+"));
 		//	run through array of strings, creating an array of doubles
 		QVariantList		tmpDoubleList;
 		for (const QString & listStr : tmpStrList)	{
@@ -103,7 +103,7 @@ void JSONGUIInputPoint2DWidget::prepareUIItems() {
 	QObject::connect(ui->minField, &QLineEdit::editingFinished, [&]()	{
 		//	get text as string, break up to array of strings
 		QString			tmpStr = ui->minField->text();
-		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^0-9\\.]+"));
+		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^-0-9\\.]+"));
 		//	run through array of strings, creating an array of doubles
 		QVariantList		tmpDoubleList;
 		for (const QString & listStr : tmpStrList)	{
@@ -129,7 +129,7 @@ void JSONGUIInputPoint2DWidget::prepareUIItems() {
 	QObject::connect(ui->maxField, &QLineEdit::editingFinished, [&]()	{
 		//	get text as string, break up to array of strings
 		QString			tmpStr = ui->maxField->text();
-		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^0-9\\.]+"));
+		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^-0-9\\.]+"));
 		//	run through array of strings, creating an array of doubles
 		QVariantList		tmpDoubleList;
 		for (const QString & listStr : tmpStrList)	{

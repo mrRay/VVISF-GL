@@ -84,7 +84,7 @@ void JSONGUIInputLongWidget::prepareUIItems() {
 	QObject::connect(ui->valuesField, &QLineEdit::editingFinished, [&]()	{
 		//	get text as string, break up to array of strings
 		QString			tmpStr = ui->valuesField->text();
-		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^0-9\\.]+"));
+		QStringList		tmpStrList = tmpStr.split(QRegularExpression("[^-0-9\\.]+"));
 		//	run through array of strings, converting to int and making a new array of ints
 		QList<int>		tmpIntList;
 		for (const QString & listStr : tmpStrList)	{

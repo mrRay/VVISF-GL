@@ -5,6 +5,10 @@
 #include <QColor>
 #include <QVariant>
 
+#include <QColorDialog>
+#include <QDebug>
+#include <QMessageBox>
+
 #include "DocWindow.h"
 
 
@@ -21,12 +25,15 @@ Preferences::Preferences(QWidget *parent) :
 {
 	ui->setupUi(this);
 	
+	QObject::connect(ui->color_reset_button, &QPushButton::clicked, this, &Preferences::resetDefaultColorsClicked);
 	QObject::connect(ui->color_txt_txt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_bg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	
 	QObject::connect(ui->color_txt_linebg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_seltxt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_selbg, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
+	QObject::connect(ui->color_txt_seltxt_alt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
+	QObject::connect(ui->color_txt_selbg_alt, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	
 	QObject::connect(ui->color_txt_var, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_typeClass, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
@@ -38,7 +45,7 @@ Preferences::Preferences(QWidget *parent) :
 	QObject::connect(ui->color_txt_quotes, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	QObject::connect(ui->color_txt_comment, &QLabelClickable::clicked, this, &Preferences::colorLabelClicked);
 	
-	upateLocalUI();
+	updateLocalUI();
 }
 
 void Preferences::colorLabelClicked()	{
@@ -72,6 +79,48 @@ void Preferences::colorLabelClicked()	{
 	//	open the color dialog
 	colorDialog->open();
 }
+void Preferences::resetDefaultColorsClicked()	{
+	QSettings		settings;
+	QColor			tmpColor;
+	tmpColor = QColor("#1a1a1a");
+	settings.setValue("color_txt_bg", QVariant(tmpColor));
+	tmpColor = QColor("#b4b4b4");
+	settings.setValue("color_txt_txt", QVariant(tmpColor));
+	tmpColor = QColor("#000000");
+	settings.setValue("color_txt_seltxt", QVariant(tmpColor));
+	tmpColor = QColor("#ffff50");
+	settings.setValue("color_txt_selbg", QVariant(tmpColor));
+	
+	tmpColor = QColor("#000000");
+	settings.setValue("color_txt_seltxt_alt", QVariant(tmpColor));
+	tmpColor = QColor("#999950");
+	settings.setValue("color_txt_selbg_alt", QVariant(tmpColor));
+	
+	tmpColor = QColor("#aaffff");
+	settings.setValue("color_txt_var", QVariant(tmpColor));
+	tmpColor = QColor("#aa00ff");
+	settings.setValue("color_txt_typeClass", QVariant(tmpColor));
+	tmpColor = QColor("#55aaff");
+	settings.setValue("color_txt_funcs", QVariant(tmpColor));
+	tmpColor = QColor("#55aaff");
+	settings.setValue("color_txt_sdkFuncs", QVariant(tmpColor));
+	tmpColor = QColor("#ffffff");
+	settings.setValue("color_txt_keywords", QVariant(tmpColor));
+	tmpColor = QColor("#00ff00");
+	settings.setValue("color_txt_pragmas", QVariant(tmpColor));
+	tmpColor = QColor("#ff3737");
+	settings.setValue("color_txt_numbers", QVariant(tmpColor));
+	tmpColor = QColor("#ff3737");
+	settings.setValue("color_txt_quotes", QVariant(tmpColor));
+	tmpColor = QColor("#ffc737");
+	settings.setValue("color_txt_comment", QVariant(tmpColor));
+	//	update my local UI...
+	updateLocalUI();
+	//	the various text views need to update their colors and then redisplay their contents
+	DocWindow		*dw = GetDocWindow();
+	if (dw != nullptr)
+		dw->reloadColorsAndSyntaxFormats();
+}
 Preferences::~Preferences()
 {
 	delete ui;
@@ -79,7 +128,7 @@ Preferences::~Preferences()
 
 
 
-void Preferences::upateLocalUI()	{
+void Preferences::updateLocalUI()	{
 	QSettings		settings;
 	
 	QStringList		keys = {
@@ -88,6 +137,8 @@ void Preferences::upateLocalUI()	{
 		"color_txt_linebg",
 		"color_txt_seltxt",
 		"color_txt_selbg",
+		"color_txt_seltxt_alt",
+		"color_txt_selbg_alt",
 		"color_txt_var",
 		"color_txt_typeClass",
 		"color_txt_funcs",
@@ -116,6 +167,12 @@ void Preferences::upateLocalUI()	{
 		}
 		else if (str == "color_txt_selbg")	{
 			label = ui->color_txt_selbg;
+		}
+		else if (str == "color_txt_seltxt_alt")	{
+			label = ui->color_txt_seltxt_alt;
+		}
+		else if (str == "color_txt_selbg_alt")	{
+			label = ui->color_txt_selbg_alt;
 		}
 		else if (str == "color_txt_var")	{
 			label = ui->color_txt_var;

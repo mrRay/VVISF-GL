@@ -88,6 +88,8 @@ SimpleSourceCodeEditor::SimpleSourceCodeEditor(QWidget * inParent) :
 	connect(completer, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)));
 	connect(this, SIGNAL(selectionChanged()), this, SLOT(closeCompleter()));
 	
+	connect(this, SIGNAL(selectionChanged()), this, SLOT(selectedTextChanged()));
+	
 	setAttribute(Qt::WA_DeleteOnClose);
 }
 SimpleSourceCodeEditor::~SimpleSourceCodeEditor()
@@ -677,6 +679,22 @@ void SimpleSourceCodeEditor::closeCompleter()
 	if (popup == nullptr || !popup->isVisible())
 		return;
 	popup->hide();
+}
+void SimpleSourceCodeEditor::selectedTextChanged()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	
+	//	if the selected text hasn't changed, bail
+	QString		selectedText = textCursor().selectedText();
+	if (lastSelText == selectedText)
+		return;
+	lastSelText = selectedText;
+	
+	//	get the selected text, pass it to the highlighter
+	if (highlighter != nullptr)	{
+		highlighter->setSelectedText(selectedText);
+		//	highlighter needs to re-highlight!
+		highlighter->rehighlight();
+	}
 }
 
 

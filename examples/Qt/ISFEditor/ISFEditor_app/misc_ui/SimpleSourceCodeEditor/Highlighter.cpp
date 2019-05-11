@@ -39,6 +39,9 @@ Highlighter::Highlighter(QTextDocument * inParent)
 	quotationsFmt.setForeground(QColor("#ff3737"));
 	commentFmt.setForeground(QColor("#ffc737"));
 	
+	bgSelTextFmt.setForeground(QColor("#000000"));
+	bgSelTextFmt.setBackground(QColor("#ffff50"));
+	
 	loadColorsFromSettings();
 }
 void Highlighter::loadSyntaxDefinitionDocument(const QJsonDocument & inDocument)	{
@@ -342,50 +345,72 @@ void Highlighter::loadColorsFromSettings()	{
 		settings.setValue("color_txt_selbg", QVariant(tmpColor));
 	}
 	
-	if (settings.contains("color_txt_var"))
-		variablesFmt.setForeground(settings.value("color_txt_var").value<QColor>());
-	else
-		settings.setValue("color_txt_var", QVariant(variablesFmt.foreground()));
+	if (!settings.contains("color_txt_seltxt_alt"))	{
+		QColor		tmpColor("#000000");
+		settings.setValue("color_txt_seltxt_alt", QVariant(tmpColor));
+	}
+	bgSelTextFmt.setForeground(settings.value("color_txt_seltxt_alt").value<QColor>());
 	
-	if (settings.contains("color_txt_typeClass"))
-		typeAndClassNamesFmt.setForeground(settings.value("color_txt_typeClass").value<QColor>());
-	else
-		settings.setValue("color_txt_typeClass", QVariant(typeAndClassNamesFmt.foreground()));
+	if (!settings.contains("color_txt_selbg_alt"))	{
+		QColor		tmpColor("#999950");
+		settings.setValue("color_txt_selbg_alt", QVariant(tmpColor));
+	}
+	bgSelTextFmt.setBackground(settings.value("color_txt_selbg_alt").value<QColor>());
 	
-	if (settings.contains("color_txt_funcs"))
-		functionsFmt.setForeground(settings.value("color_txt_funcs").value<QColor>());
-	else
-		settings.setValue("color_txt_funcs", QVariant(functionsFmt.foreground()));
+	if (!settings.contains("color_txt_var"))	{
+		QColor		tmpColor("#aaffff");
+		settings.setValue("color_txt_var", QVariant(tmpColor));
+	}
+	variablesFmt.setForeground(settings.value("color_txt_var").value<QColor>());
 	
-	if (settings.contains("color_txt_sdkFuncs"))
-		sdkFunctionsFmt.setForeground(settings.value("color_txt_sdkFuncs").value<QColor>());
-	else
-		settings.setValue("color_txt_sdkFuncs", QVariant(sdkFunctionsFmt.foreground()));
+	if (!settings.contains("color_txt_typeClass"))	{
+		QColor		tmpColor("#aa00ff");
+		settings.setValue("color_txt_typeClass", QVariant(tmpColor));
+	}
+	typeAndClassNamesFmt.setForeground(settings.value("color_txt_typeClass").value<QColor>());
 	
-	if (settings.contains("color_txt_keywords"))
-		keywordsFmt.setForeground(settings.value("color_txt_keywords").value<QColor>());
-	else
-		settings.setValue("color_txt_keywords", QVariant(keywordsFmt.foreground()));
+	if (!settings.contains("color_txt_funcs"))	{
+		QColor		tmpColor("#55aaff");
+		settings.setValue("color_txt_funcs", QVariant(tmpColor));
+	}
+	functionsFmt.setForeground(settings.value("color_txt_funcs").value<QColor>());
 	
-	if (settings.contains("color_txt_pragmas"))
-		pragmasFmt.setForeground(settings.value("color_txt_pragmas").value<QColor>());
-	else
-		settings.setValue("color_txt_pragmas", QVariant(pragmasFmt.foreground()));
+	if (!settings.contains("color_txt_sdkFuncs"))	{
+		QColor		tmpColor("#55aaff");
+		settings.setValue("color_txt_sdkFuncs", QVariant(tmpColor));
+	}
+	sdkFunctionsFmt.setForeground(settings.value("color_txt_sdkFuncs").value<QColor>());
 	
-	if (settings.contains("color_txt_numbers"))
-		numbersFmt.setForeground(settings.value("color_txt_numbers").value<QColor>());
-	else
-		settings.setValue("color_txt_numbers", QVariant(numbersFmt.foreground()));
+	if (!settings.contains("color_txt_keywords"))	{
+		QColor		tmpColor("#ffffff");
+		settings.setValue("color_txt_keywords", QVariant(tmpColor));
+	}
+	keywordsFmt.setForeground(settings.value("color_txt_keywords").value<QColor>());
 	
-	if (settings.contains("color_txt_quotes"))
-		quotationsFmt.setForeground(settings.value("color_txt_quotes").value<QColor>());
-	else
-		settings.setValue("color_txt_quotes", QVariant(quotationsFmt.foreground()));
+	if (!settings.contains("color_txt_pragmas"))	{
+		QColor		tmpColor("#00ff00");
+		settings.setValue("color_txt_pragmas", QVariant(tmpColor));
+	}
+	pragmasFmt.setForeground(settings.value("color_txt_pragmas").value<QColor>());
 	
-	if (settings.contains("color_txt_comment"))
-		commentFmt.setForeground(settings.value("color_txt_comment").value<QColor>());
-	else
-		settings.setValue("color_txt_comment", QVariant(commentFmt.foreground()));
+	if (!settings.contains("color_txt_numbers"))	{
+		QColor		tmpColor("#ff3737");
+		settings.setValue("color_txt_numbers", QVariant(tmpColor));
+	}
+	numbersFmt.setForeground(settings.value("color_txt_numbers").value<QColor>());
+	
+	if (!settings.contains("color_txt_quotes"))	{
+		QColor		tmpColor("#ff3737");
+		settings.setValue("color_txt_quotes", QVariant(tmpColor));
+	}
+	quotationsFmt.setForeground(settings.value("color_txt_quotes").value<QColor>());
+	
+	if (!settings.contains("color_txt_comment"))	{
+		QColor		tmpColor("#ffc737");
+		settings.setValue("color_txt_comment", QVariant(tmpColor));
+	}
+	commentFmt.setForeground(settings.value("color_txt_comment").value<QColor>());
+	
 }
 void Highlighter::setLocalVariableNames(const QStringList & inStrList)	{
 	
@@ -407,6 +432,22 @@ void Highlighter::setLocalVariableNames(const QStringList & inStrList)	{
 		tmpRule.pattern = QRegularExpression(tmpStr);
 		localVarHighlightRules.append(tmpRule);
 	}
+}
+void Highlighter::setSelectedText(const QString & inStr)	{
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << inStr;
+	
+	selTextHighlightRules.clear();
+	
+	if (inStr.length() < 1)
+		return;
+	
+	HighlightRule	tmpRule;
+	QString			tmpStr = QString("\\b(");
+	tmpStr.append(inStr);
+	tmpStr.append(")\\b");
+	tmpRule.format = bgSelTextFmt;
+	tmpRule.pattern = QRegularExpression(tmpStr);
+	selTextHighlightRules.append(tmpRule);
 }
 
 
@@ -465,6 +506,16 @@ void Highlighter::highlightBlock(const QString & inText)
 		setFormat(startIndex, commentLength, commentFmt);
 		startIndex = inText.indexOf(commentStartExpr, startIndex + commentLength);
 		isPlainText = false;
+	}
+	
+	//	selected text needs to be highlighted last!
+	foreach (const HighlightRule & tmpRule, selTextHighlightRules)	{
+		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
+		while (matchIterator.hasNext())	{
+			QRegularExpressionMatch		tmpMatch = matchIterator.next();
+			setFormat(tmpMatch.capturedStart(), tmpMatch.capturedLength(), tmpRule.format);
+			isPlainText = false;
+		}
 	}
 	
 	/*

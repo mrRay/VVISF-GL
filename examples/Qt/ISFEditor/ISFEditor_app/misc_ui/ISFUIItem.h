@@ -38,6 +38,7 @@ public:
 
 private slots:
 	void outputWindowMouseUsed(VVGL::Point normMouseEventLoc, VVGL::Point absMouseEventLoc);
+	void longWidgetUsed();
 	void pointWidgetUsed();
 	void interAppVideoCBUsed(int newIndex);
 	void audioCBUsed(int newIndex);
@@ -53,10 +54,14 @@ private:
 	bool			eventNeedsSending = false;
 	QCheckBox		*boolWidget = nullptr;
 	QComboBox		*longCBWidget = nullptr;
-	QDoubleSlider	*sliderWidget = nullptr;
+	QSpinBox		*longFieldWidget = nullptr;
+	QSlider			*longSliderWidget = nullptr;
+	QDoubleSlider	*floatSliderWidget = nullptr;
 	
 	QDoubleSpinBox	*xFieldWidget = nullptr;
 	QDoubleSpinBox	*yFieldWidget = nullptr;
+	QDoubleSlider	*xSliderWidget = nullptr;
+	QDoubleSlider	*ySliderWidget = nullptr;
 	VVGL::Point			pointVal = VVGL::Point(0.0, 0.0);
 	QPushButton		*colorButton = nullptr;
 	QLabel			*colorLabel = nullptr;

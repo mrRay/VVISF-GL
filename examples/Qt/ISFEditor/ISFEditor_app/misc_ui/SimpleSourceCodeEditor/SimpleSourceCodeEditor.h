@@ -67,12 +67,14 @@ private slots:
 	void updateLineNumberArea(const QRect & rect, int dy);
 	void insertCompletion(const QString &completion);
 	void closeCompleter();
+	void selectedTextChanged();
 	
 private:
 	QWidget			*lineNumberArea = nullptr;	//	do not explicitly free
 	Highlighter		*highlighter = nullptr;	//	do not explicitly free
 	QCompleter		*completer = nullptr;	//	do not explicitly free
 	QColor			lineBGColor;	//	the color drawn behind the current line (the line with the insertion point)
+	QString			lastSelText = QString("");
 	
 	std::recursive_mutex	errLock;
 	QVector<int>			*errLineNumbers = nullptr;	//	must be deleted!

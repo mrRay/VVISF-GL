@@ -37,14 +37,19 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 	
-	QLayout		*myLayout = new QHBoxLayout(this);
-	setLayout(myLayout);
-	myLayout = layout();
+	//QLayout		*myLayout = new QHBoxLayout(this);
+	//setLayout(myLayout);
+	//myLayout = layout();
+	QLayout		*myLayout = nullptr;
 	
 	switch (type)	{
 	case ISFValType_None:
 		break;
 	case ISFValType_Event:
+		myLayout = new QHBoxLayout(this);
+		setLayout(myLayout);
+		myLayout = layout();
+		
 		eventWidget = new QPushButton("Button", this);
 		myLayout->addWidget(eventWidget);
 		connect(eventWidget, &QAbstractButton::pressed, [&]()	{
@@ -52,12 +57,117 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 		});
 		break;
 	case ISFValType_Bool:
+		myLayout = new QHBoxLayout(this);
+		setLayout(myLayout);
+		myLayout = layout();
+		
 		boolWidget = new QCheckBox("Toggle", this);
 		boolWidget->setChecked(inAttr->currentVal().getBoolVal());
 		myLayout->addWidget(boolWidget);
 		//connect(boolWidget, SIGNAL(stateChanged(int)), this, SLOT(boolWidgetUsed(int)));
 		break;
 	case ISFValType_Long:
+		{
+			vector<string>		labelArray = inAttr->labelArray();
+			vector<int32_t>		valArray = inAttr->valArray();
+			int					labelArraySize = int(labelArray.size());
+			int					valArraySize = int(valArray.size());
+			long				defaultValAsLong = inAttr->defaultVal().getLongVal();
+			int					defaultValIndex = -1;
+			int					tmpIndex = 0;
+			//	if there's a val array, we're making a combo box no matter what
+			if (valArraySize != 0)	{
+				longCBWidget = new QComboBox(this);
+				longCBWidget->clear();
+				
+				for (auto valIt=valArray.begin(); valIt!=valArray.end(); ++valIt)	{
+					long		tmpLong = *valIt;
+					if (tmpIndex < labelArraySize)	{
+						QString		tmpKey = QString::fromStdString(labelArray[tmpIndex]);
+						longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(tmpLong)));
+					}
+					else	{
+						QString		tmpKey = QString("%1").arg(tmpLong);
+						longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(tmpLong)));
+					}
+					
+					if (tmpLong == defaultValAsLong)
+						defaultValIndex = tmpIndex;
+					++tmpIndex;
+				}
+				
+				//	if we found a default val index, apply it
+				if (defaultValIndex >= 0)
+					longCBWidget->setCurrentIndex(defaultValIndex);
+				
+				//	add the widget to the layout
+				myLayout = new QHBoxLayout(this);
+				setLayout(myLayout);
+				myLayout = layout();
+			
+				myLayout->addWidget(longCBWidget);
+			}
+			//	else use the attribute's min/max vals
+			else	{
+				ISFVal		minVal = inAttr->minVal();
+				ISFVal		maxVal = inAttr->maxVal();
+				int			actualMin = std::min( minVal.getLongVal(), maxVal.getLongVal() );
+				int			actualMax = std::max( minVal.getLongVal(), maxVal.getLongVal() );
+				
+				//	if the delta between the min and max vals is > 10, make a text field + slider.  if <= 10, make a pop-up button.
+				if ((actualMax-actualMin) > 10)	{
+					longFieldWidget = new QSpinBox(this);
+					
+					longFieldWidget->setRange(actualMin, actualMax);
+					
+					longSliderWidget = new QSlider(this);
+					longSliderWidget->setOrientation(Qt::Horizontal);
+					longSliderWidget->setRange(actualMin, actualMax);
+					
+					//	add the widgets to the layout
+					myLayout = new QVBoxLayout(this);
+					setLayout(myLayout);
+					myLayout = layout();
+					
+					myLayout->addWidget(longFieldWidget);
+					myLayout->addWidget(longSliderWidget);
+					
+					//	connect the widgets so the text field/slider update one another!
+					connect( longFieldWidget, SIGNAL(editingFinished()), this, SLOT(longWidgetUsed()) );
+					//connect( longSliderWidget, SIGNAL(sliderMoved()), this, SLOT(longWidgetUsed()) );
+					connect( longSliderWidget, &QSlider::sliderMoved, this, &ISFUIItem::longWidgetUsed );
+				}
+				else	{
+					longCBWidget = new QComboBox(this);
+					longCBWidget->clear();
+					
+					for (int i=std::min(minVal.getLongVal(),maxVal.getLongVal()); i<=std::max(minVal.getLongVal(),maxVal.getLongVal()); ++i)	{
+						QString		tmpKey = QString("%1").arg(i);
+						longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(i)));
+					
+						if (i == defaultValAsLong)
+							defaultValIndex = tmpIndex;
+						++tmpIndex;
+					}
+					
+					//	if we found a default val index, apply it
+					if (defaultValIndex >= 0)	{
+						longCBWidget->setCurrentIndex(defaultValIndex);
+					}
+					
+					//	add the widget to the layout
+					myLayout = new QHBoxLayout(this);
+					setLayout(myLayout);
+					myLayout = layout();
+			
+					myLayout->addWidget(longCBWidget);
+				}
+				
+			}
+			
+			
+		}
+		/*
 		{
 			longCBWidget = new QComboBox(this);
 			longCBWidget->clear();
@@ -103,35 +213,51 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			//	if we found a default val index, apply it
 			if (defaultValIndex >= 0)
 				longCBWidget->setCurrentIndex(defaultValIndex);
+			
 			//	add the widget to the layout
+			myLayout = new QHBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
+			
 			myLayout->addWidget(longCBWidget);
 		}
+		*/
 		break;
 	case ISFValType_Float:
 		{
-			sliderWidget = new QDoubleSlider(this);
+			floatSliderWidget = new QDoubleSlider(this);
 			
-			sliderWidget->setOrientation(Qt::Horizontal);
+			floatSliderWidget->setOrientation(Qt::Horizontal);
 			
 			ISFVal			&tmpVal = inAttr->minVal();
 			if (tmpVal.isFloatVal())
-				sliderWidget->setDoubleMinValue( tmpVal.getDoubleVal() );
+				floatSliderWidget->setDoubleMinValue( tmpVal.getDoubleVal() );
 			
 			tmpVal = inAttr->maxVal();
 			if (tmpVal.isFloatVal())
-				sliderWidget->setDoubleMaxValue( tmpVal.getDoubleVal() );
+				floatSliderWidget->setDoubleMaxValue( tmpVal.getDoubleVal() );
 			
 			tmpVal = inAttr->defaultVal();
 			if (tmpVal.isFloatVal())
-				sliderWidget->setDoubleValue( tmpVal.getDoubleVal() );
+				floatSliderWidget->setDoubleValue( tmpVal.getDoubleVal() );
 			
-			myLayout->addWidget(sliderWidget);
+			//	add the widget to the layout
+			myLayout = new QHBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
+			
+			myLayout->addWidget(floatSliderWidget);
 		}
 		break;
 	case ISFValType_Point2D:
 		{
 			xFieldWidget = new QDoubleSpinBox(this);
 			yFieldWidget = new QDoubleSpinBox(this);
+			
+			xSliderWidget = new QDoubleSlider(this);
+			xSliderWidget->setOrientation(Qt::Horizontal);
+			ySliderWidget = new QDoubleSlider(this);
+			ySliderWidget->setOrientation(Qt::Horizontal);
 		
 			ISFVal		tmpVal = inAttr->currentVal();
 			ISFVal		tmpMin = inAttr->minVal();
@@ -140,23 +266,56 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			if (tmpMin.isPoint2DVal() && tmpMax.isPoint2DVal())	{
 				xFieldWidget->setRange(tmpMin.getPointValByIndex(0), tmpMax.getPointValByIndex(0));
 				yFieldWidget->setRange(tmpMin.getPointValByIndex(1), tmpMax.getPointValByIndex(1));
+				xSliderWidget->setDoubleRange(tmpMin.getPointValByIndex(0), tmpMax.getPointValByIndex(0));
+				ySliderWidget->setDoubleRange(tmpMin.getPointValByIndex(1), tmpMax.getPointValByIndex(1));
 			}
 			else	{
 				//xFieldWidget->setRange(0.0, 1.0);
 				//yFieldWidget->setRange(0.0, 1.0);
 				xFieldWidget->setRange(-16384, 16384);
 				yFieldWidget->setRange(-16384, 16384);
+				xSliderWidget->setDoubleRange(-16384.0, 16384.0);
+				ySliderWidget->setDoubleRange(16384.0, 16384.0);
 			}
 			if (tmpVal.isPoint2DVal())	{
 				xFieldWidget->setValue(tmpVal.getPointValByIndex(0));
 				yFieldWidget->setValue(tmpVal.getPointValByIndex(1));
+				xSliderWidget->setDoubleValue(tmpVal.getPointValByIndex(0));
+				ySliderWidget->setDoubleValue(tmpVal.getPointValByIndex(1));
 			}
+			
+			
+			//	make a vbox layout
+			myLayout = new QVBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
+			
+			//	make an hbox layout- we want the text fields next to one another in this sub layout...
+			QLayout		*subLayout = new QHBoxLayout(this);
+			qobject_cast<QBoxLayout*>(myLayout)->addLayout(subLayout);
+			
+			subLayout->addWidget(xFieldWidget);
+			subLayout->addWidget(yFieldWidget);
+			
+			//	...and we want the sliders below the text fields, in the vbox layout
+			myLayout->addWidget(xSliderWidget);
+			myLayout->addWidget(ySliderWidget);
+			
+			
+			
+			/*
+			//	add the widget to the layout
+			myLayout = new QHBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
 			
 			myLayout->addWidget(xFieldWidget);
 			myLayout->addWidget(yFieldWidget);
-		
+			*/
 			connect( xFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
 			connect( yFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
+			connect( xSliderWidget, &QDoubleSlider::doubleSliderMoved, this, &ISFUIItem::pointWidgetUsed );
+			connect( ySliderWidget, &QDoubleSlider::doubleSliderMoved, this, &ISFUIItem::pointWidgetUsed );
 			connect(GetOutputWindow(), &OutputWindow::outputWindowMouseMoved, this, &ISFUIItem::outputWindowMouseUsed);
 		}
 		break;
@@ -200,8 +359,12 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 				//	open the color dialog
 				colorDialog->open();
 			});
-		
-			//	add the button and label to the layout
+			
+			//	add the widget to the layout
+			myLayout = new QHBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
+			
 			myLayout->addWidget(colorButton);
 			myLayout->addWidget(colorLabel);
 		}
@@ -286,6 +449,10 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			emit interAppSrc->staticSourceUpdated(interAppSrc);
 			
 			//	add the widget to the layout
+			myLayout = new QHBoxLayout(this);
+			setLayout(myLayout);
+			myLayout = layout();
+			
 			myLayout->addWidget(interAppVideoCB);
 			
 		}
@@ -294,6 +461,11 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 	case ISFValType_AudioFFT:
 		audioLabel = new QLabel(this);
 		audioLabel->setText("System's default audio input used!");
+		
+		//	add the widget to the layout
+		myLayout = new QHBoxLayout(this);
+		setLayout(myLayout);
+		myLayout = layout();
 		
 		myLayout->addWidget(audioLabel);
 		break;
@@ -364,21 +536,62 @@ void ISFUIItem::outputWindowMouseUsed(VVGL::Point normMouseEventLoc, VVGL::Point
 		yFieldWidget->blockSignals(false);
 	}
 }
-void ISFUIItem::pointWidgetUsed()	{
-	qDebug() << __PRETTY_FUNCTION__;
+void ISFUIItem::longWidgetUsed()	{
+	//qDebug() << __PRETTY_FUNCTION__;
 	QObject		*rawSender = sender();
 	if (rawSender == nullptr)
 		return;
-	QDoubleSpinBox		*tmpSender = qobject_cast<QDoubleSpinBox*>(rawSender);
+	QSpinBox		*tmpSpinBoxSender = qobject_cast<QSpinBox*>(rawSender);
+	QSlider			*tmpSliderSender = qobject_cast<QSlider*>(rawSender);
 	
-	if (tmpSender == xFieldWidget)	{
+	if (tmpSpinBoxSender == longFieldWidget)	{
+		int			tmpVal = longFieldWidget->value();
+		longSliderWidget->blockSignals(true);
+		longSliderWidget->setValue(tmpVal);
+		longSliderWidget->blockSignals(false);
+	}
+	else if (tmpSliderSender == longSliderWidget)	{
+		int			tmpVal = longSliderWidget->value();
+		longFieldWidget->blockSignals(true);
+		longFieldWidget->setValue(tmpVal);
+		longFieldWidget->blockSignals(false);
+	}
+}
+void ISFUIItem::pointWidgetUsed()	{
+	//qDebug() << __PRETTY_FUNCTION__;
+	QObject		*rawSender = sender();
+	if (rawSender == nullptr)
+		return;
+	QDoubleSpinBox		*tmpSpinBoxSender = qobject_cast<QDoubleSpinBox*>(rawSender);
+	QDoubleSlider		*tmpSliderSender = qobject_cast<QDoubleSlider*>(rawSender);
+	
+	if (tmpSpinBoxSender == xFieldWidget)	{
 		//pointVal.x = newVal;
-		pointVal.x = tmpSender->value();
+		pointVal.x = tmpSpinBoxSender->value();
+		xSliderWidget->blockSignals(true);
+		xSliderWidget->setDoubleValue(pointVal.x);
+		xSliderWidget->blockSignals(false);
 	}
-	else if (tmpSender == yFieldWidget)	{
+	else if (tmpSpinBoxSender == yFieldWidget)	{
 		//pointVal.y = newVal;
-		pointVal.y = tmpSender->value();
+		pointVal.y = tmpSpinBoxSender->value();
+		ySliderWidget->blockSignals(true);
+		ySliderWidget->setDoubleValue(pointVal.y);
+		ySliderWidget->blockSignals(false);
 	}
+	else if (tmpSliderSender == xSliderWidget)	{
+		pointVal.x = tmpSliderSender->doubleValue();
+		xFieldWidget->blockSignals(true);
+		xFieldWidget->setValue(pointVal.x);
+		xFieldWidget->blockSignals(false);
+	}
+	else if (tmpSliderSender == ySliderWidget)	{
+		pointVal.y = tmpSliderSender->doubleValue();
+		yFieldWidget->blockSignals(true);
+		yFieldWidget->setValue(pointVal.y);
+		yFieldWidget->blockSignals(false);
+	}
+	
 }
 void ISFUIItem::interAppVideoCBUsed(int newIndex)	{
 	Q_UNUSED(newIndex);
@@ -410,13 +623,20 @@ ISFVal ISFUIItem::getISFVal()	{
 			return ISFBoolVal(false);
 		return ISFBoolVal(boolWidget->isChecked());
 	case ISFValType_Long:
-		if (longCBWidget == nullptr)
-			return ISFLongVal(0);
-		return ISFLongVal( longCBWidget->currentData().toLongLong() );
+		{
+			if (longCBWidget != nullptr)	{
+				return ISFLongVal( longCBWidget->currentData().toLongLong() );
+			}
+			else if (longSliderWidget != nullptr)	{
+				return ISFLongVal( longSliderWidget->value() );
+			}
+			else
+				return ISFLongVal(0);
+		}
 	case ISFValType_Float:
-		if (sliderWidget == nullptr)
+		if (floatSliderWidget == nullptr)
 			return ISFFloatVal(0.0);
-		return ISFFloatVal( sliderWidget->doubleValue() );
+		return ISFFloatVal( floatSliderWidget->doubleValue() );
 	case ISFValType_Point2D:
 		if (xFieldWidget==nullptr || yFieldWidget==nullptr)
 			return ISFPoint2DVal(0.0, 0.0);

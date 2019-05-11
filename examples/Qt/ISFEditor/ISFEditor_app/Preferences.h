@@ -19,8 +19,9 @@ public:
 	~Preferences();
 	
 public slots:
-	Q_SLOT void upateLocalUI();
+	Q_SLOT void updateLocalUI();
 	Q_SLOT void colorLabelClicked();
+	Q_SLOT void resetDefaultColorsClicked();
 
 private slots:
 	void on_gl4CheckBox_stateChanged(int arg1);

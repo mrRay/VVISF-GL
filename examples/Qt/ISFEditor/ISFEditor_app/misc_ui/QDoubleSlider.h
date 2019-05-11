@@ -45,6 +45,13 @@ public:
 	}
 	
 	
+	void setDoubleRange(const double & inMin, const double & inMax)	{
+		_doubleMinValue = inMin;
+		_doubleMaxValue = inMax;
+		emit doubleRangeChanged(_doubleMinValue, _doubleMaxValue);
+	}
+	
+	
 	double doubleValue()	{
 		double			tmpMin = static_cast<double>(INT_MIN);
 		double			tmpMax = static_cast<double>(INT_MAX);
@@ -65,8 +72,8 @@ public:
 	}
 
 signals:
-	void doubleRangeChanged(double newMin, double newMax);
-	void doubleSliderMoved(double newValue);
+	Q_SIGNAL void doubleRangeChanged(double newMin, double newMax);
+	Q_SIGNAL void doubleSliderMoved(double newValue);
 	
 private:
 	double		_doubleMinValue;

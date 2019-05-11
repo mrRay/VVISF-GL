@@ -32,6 +32,7 @@ FindDialog::FindDialog(const FindOpts & f, QWidget * parent) :
 	_findOpts = f;
 	
 	pushOptsToUI();
+	ui->findEdit->selectAll();
 }
 FindDialog::~FindDialog()
 {

@@ -22,6 +22,7 @@ public:
 	void loadSyntaxDefinitionDocument(const QJsonDocument & inDocument);
 	void loadColorsFromSettings();
 	void setLocalVariableNames(const QStringList & inStrList);
+	void setSelectedText(const QString & inStr);
 	
 protected:
 	void highlightBlock(const QString & inText) override;
@@ -40,6 +41,7 @@ private:
 	
 	QVector<HighlightRule>		syntaxDocHighlightRules;
 	QVector<HighlightRule>		localVarHighlightRules;
+	QVector<HighlightRule>		selTextHighlightRules;
 	QRegularExpression			commentSingleExpr;
 	QRegularExpression			commentStartExpr;
 	QRegularExpression			commentEndExpr;
@@ -55,6 +57,7 @@ private:
 	QTextCharFormat		numbersFmt;
 	QTextCharFormat		quotationsFmt;
 	QTextCharFormat		commentFmt;
+	QTextCharFormat		bgSelTextFmt;
 };
 
 
