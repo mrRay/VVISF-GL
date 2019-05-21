@@ -646,7 +646,7 @@ void ISFController::populateLoadingWindowUI()	{
 	
 	//	run through the scene's inputs- we want to make a UI item for each...
 	vector<ISFAttrRef>		sceneInputs = scene->inputs();
-	for (auto it=sceneInputs.rbegin(); it!=sceneInputs.rend(); ++it)	{
+	for (auto it=sceneInputs.begin(); it!=sceneInputs.end(); ++it)	{
 		ISFAttrRef		attrib = *it;
 		if (attrib == nullptr)
 			continue;
