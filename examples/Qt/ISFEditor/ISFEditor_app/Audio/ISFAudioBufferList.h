@@ -47,8 +47,8 @@ private:
 	
 	void generalInit()	{
 		int			bytesPerSample = _format.sampleSize() / 8;
-		numberOfFrames = _bufferData.size() / bytesPerSample;
-		numberOfChannels = 1;
+		numberOfFrames = (bytesPerSample==0) ? 0 : _bufferData.size() / bytesPerSample;
+		numberOfChannels = (bytesPerSample==0) ? 0 : 1;
 	}
 };
 

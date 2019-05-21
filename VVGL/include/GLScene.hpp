@@ -100,18 +100,19 @@ class VVGL_EXPORT GLScene	{
 		bool				_clearColorUpdated = false;
 		
 		//	these vars pertain to the program being used by the GL context
-		std::string				*_vsString = nullptr;
-		std::string				*_gsString = nullptr;
-		std::string				*_fsString = nullptr;
+		std::string			*_vsString = nullptr;
+		std::string			*_gsString = nullptr;
+		std::string			*_fsString = nullptr;
 		bool				_vsStringUpdated = false;
 		bool				_gsStringUpdated = false;
 		bool				_fsStringUpdated = false;
+		bool				_programReady = false;	//	set to 'true' only if all shaders compiled and the program was able to link successfully
 		uint32_t			_program = 0;	//	0, or the compiled program
 		uint32_t			_vs = 0;
 		uint32_t			_gs = 0;
 		uint32_t			_fs = 0;
-		std::mutex				_errLock;
-		std::mutex				_errDictLock;
+		std::mutex			_errLock;
+		std::mutex			_errDictLock;
 		std::map<std::string,std::string>		_errDict;
 		
 		//	this class- and subclasses of it- often need to create GPU resources.  by default the global buffer pool (GetGlobalBufferPool()) will be used- unless this var is non-null...
@@ -190,6 +191,7 @@ class VVGL_EXPORT GLScene	{
 		void setOrthoFlipped(const bool & n);
 		//!	Gets the value of the _orthoFlipped member variable.  If this is true, the orthographic projection or equivalent will be flipped vertically.
 		bool orthoFlipped() const;
+		
 		///@}
 		
 		
@@ -232,6 +234,10 @@ class VVGL_EXPORT GLScene	{
 		virtual std::string fragmentShaderString();
 		//!	Gets the program ID.
 		inline uint32_t program() const { return _program; }
+		//!	Returns whether or not the program was able to be compiled.  Please note that this value will only be populared after the program has been compiled/linked, which only occurs when a frame gets rendered.
+		inline bool programReady() const { return _programReady; }
+		//!	Under normal circumstances, the scene's shaders/program are only compiled/linked when a frame is rendered.  If compilation is required synchronously, this method can be used to compile/link the program (if necessary)
+		void compileProgramIfNecessary();
 		
 		///@}
 		

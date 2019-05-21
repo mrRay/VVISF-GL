@@ -36,6 +36,8 @@
 
 #define VVMIDX(r) (r.origin.x+(r.size.width/2.0))
 
+using namespace std;
+
 id			_globalAppDelegate = nil;
 
 

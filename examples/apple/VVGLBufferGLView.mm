@@ -9,6 +9,9 @@
 	item = nil;											\
 }}
 
+using namespace std;
+using namespace VVGL;
+
 @interface VVGLBufferGLView()	{
 	
 }

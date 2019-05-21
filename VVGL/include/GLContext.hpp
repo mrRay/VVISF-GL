@@ -184,6 +184,9 @@ class VVGL_EXPORT GLContext	{
 		CGLContextObj sharedContextObj() { return sharedCtx; }
 		//	this function returns the pixel format object
 		CGLPixelFormatObj pixelFormatObj() { return pxlFmt; }
+		
+		//	this function sets the context's current virtual screen- if you want to configure a context to use a specific GPU, this is how.
+		void setCurrentVirtualScreen(const int & n);
 #elif defined(VVGL_SDK_IOS)
 		//	"inCtx" is an EAGLContext! this function doesn't create anything- it just retains the passed ctx
 		GLContext(const void * inEAGLContext);

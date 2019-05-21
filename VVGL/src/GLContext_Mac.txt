@@ -241,6 +241,15 @@ bool GLContext::sameShareGroupAs(const CGLContextObj & inCtx)	{
 		return true;
 	return false;
 }
+
+
+void GLContext::setCurrentVirtualScreen(const int & n)	{
+	CGLError		cglErr = CGLSetVirtualScreen(ctx, n);
+	if (cglErr != kCGLNoError)
+		cout << "ERR: " << cglErr << " in " << __PRETTY_FUNCTION__ << endl;
+}
+
+
 GLContext & GLContext::operator=(const GLContext & n)	{
 	if (ctx != nullptr)	{
 		CGLReleaseContext(ctx);

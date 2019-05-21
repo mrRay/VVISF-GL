@@ -8,6 +8,8 @@
 
 #import "SyphonVVBufferPoolAdditions.h"
 
+using namespace std;
+
 
 
 

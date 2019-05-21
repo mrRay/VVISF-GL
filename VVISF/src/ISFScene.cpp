@@ -73,7 +73,7 @@ void ISFScene::useFile() noexcept(false)	{
 		_compiledInputTypeString=nullptr;
 	}
 }
-void ISFScene::useFile(const string & inPath, const bool & inThrowExc) noexcept(false)	{
+void ISFScene::useFile(const string & inPath, const bool & inThrowExc, const bool & inResetTimer) noexcept(false)	{
 	//cout << __PRETTY_FUNCTION__ << "... " << inPath << endl;
 	try	{
 		lock_guard<recursive_mutex> rlock(_renderLock);
@@ -85,12 +85,14 @@ void ISFScene::useFile(const string & inPath, const bool & inThrowExc) noexcept(
 		_doc = newDoc;
 		
 		//	reset the timestamper and render frame index
-		//timestamper.reset();
-		_baseTime = Timestamp();
-		_renderTime = 0.;
-		_renderTimeDelta = 0.;
-		_renderFrameIndex = 0;
-		_passIndex = 0;
+		if (inResetTimer)	{
+			//timestamper.reset();
+			_baseTime = Timestamp();
+			_renderTime = 0.;
+			_renderTimeDelta = 0.;
+			_renderFrameIndex = 0;
+			_passIndex = 0;
+		}
 		if (_compiledInputTypeString!=nullptr)	{
 			delete _compiledInputTypeString;
 			_compiledInputTypeString=nullptr;
@@ -103,12 +105,14 @@ void ISFScene::useFile(const string & inPath, const bool & inThrowExc) noexcept(
 			_errDict.insert(detail);
 		_doc = nullptr;
 		//	reset the timestamper and render frame index
-		//timestamper.reset();
-		_baseTime = Timestamp();
-		_renderTime = 0.;
-		_renderTimeDelta = 0.;
-		_renderFrameIndex = 0;
-		_passIndex = 0;
+		if (inResetTimer)	{
+			//timestamper.reset();
+			_baseTime = Timestamp();
+			_renderTime = 0.;
+			_renderTimeDelta = 0.;
+			_renderFrameIndex = 0;
+			_passIndex = 0;
+		}
 		if (_compiledInputTypeString!=nullptr)	{
 			delete _compiledInputTypeString;
 			_compiledInputTypeString=nullptr;

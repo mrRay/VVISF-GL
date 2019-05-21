@@ -30,12 +30,15 @@ public:
 	QSpinBox * getHeightSB();
 	inline QString getBaseDirectory() { return baseDirectory; }
 	void setBaseDirectory(const QString & inBaseDir);
+	void selectFile(const QString & inFileToSelect);
 	
 	void on_createNewFile();
 	void on_loadFile(const QString & n);
 	void on_saveFile();
 	
 	void finishedConversionDisplayFile(const QString & n);
+	
+	virtual bool eventFilter(QObject * watched, QEvent * event) override;
 	
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;

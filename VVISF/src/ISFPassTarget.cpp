@@ -97,7 +97,7 @@ void ISFPassTarget::setTargetSize(const VVGL::Size & inSize, const bool & inResi
 	}
 	//	if that didn't work, use the globals...
 	if (bp == nullptr)	{
-		cout << "\tERR: shouldnt be here, falling back to global buffer pool, " << __PRETTY_FUNCTION__ << endl;
+		//cout << "\tERR: shouldnt be here, falling back to global buffer pool, " << __PRETTY_FUNCTION__ << endl;
 		bp = GetGlobalBufferPool();
 	}
 	if (copier == nullptr)	{
@@ -252,7 +252,7 @@ void ISFPassTarget::setFloatFlag(const bool & n)	{
 		}
 		//	if that didn't work, use the globals...
 		if (bp == nullptr)	{
-			cout << "\tERR: shouldnt be here, falling back to global buffer pool, " << __PRETTY_FUNCTION__ << endl;
+			//cout << "\tERR: shouldnt be here, falling back to global buffer pool, " << __PRETTY_FUNCTION__ << endl;
 			bp = GetGlobalBufferPool();
 		}
 		if (copier == nullptr)	{

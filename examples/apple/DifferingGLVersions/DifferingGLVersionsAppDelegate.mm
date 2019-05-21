@@ -14,6 +14,8 @@
 @property (assign,readwrite) VVGL::Quad<VertXYST> lastVBOCoords;
 @end
 
+using namespace std;
+
 
 
 

@@ -7,6 +7,8 @@
 @property (weak) IBOutlet NSWindow *window;
 @end
 
+using namespace std;
+
 
 
 

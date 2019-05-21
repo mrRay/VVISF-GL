@@ -29,6 +29,7 @@
 
 #define VVFMTSTRING(f, ...) ((NSString *)[NSString stringWithFormat:f, ##__VA_ARGS__])
 
+using namespace std;
 using namespace VVISF;
 
 

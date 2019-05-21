@@ -2224,7 +2224,8 @@ GLBufferRef CreateBufferForQImage(QImage * inImg, const bool & createInCurrentCo
 	desc.localSurfaceID = 0;
 
 	//	this bit copies the image data to a manually-allocated block of memory.  i'm not sure why, but if i don't do this, i get crashes under some circumstances
-	void			*tmpData = malloc(desc.backingLengthForSize(gpuSize));
+	uint32_t		backingSize = desc.backingLengthForSize(gpuSize);
+	void			*tmpData = malloc(backingSize);
 	char			*rPtr = static_cast<char*>(pixelData);
 	char			*wPtr = static_cast<char*>(tmpData);
 	int				rLineStride = inImg->bytesPerLine();

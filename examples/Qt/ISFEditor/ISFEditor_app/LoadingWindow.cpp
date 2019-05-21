@@ -70,6 +70,8 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	//	save window position on app quit
 	connect(qApp, &QCoreApplication::aboutToQuit, this, &LoadingWindow::appQuitEvent);
 	
+	//	install an event filter on the QApplication instance to listen for "open document" events.  this will pick up files dragged into windows as well as files dragged onto the dock icon.
+	qApp->installEventFilter(this);
 	
 	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 }
@@ -149,6 +151,63 @@ void LoadingWindow::finishedConversionDisplayFile(const QString & n)	{
 	}
 	else
 		qDebug() << "\tERR: model null in " << __PRETTY_FUNCTION__;
+}
+
+
+
+
+bool LoadingWindow::eventFilter(QObject * watched, QEvent * event)	{
+	
+	QString			fileToOpen("");
+	
+	switch (event->type())	{
+	case QEvent::FileOpen:
+		event->accept();
+		//qDebug() << "Event FileOpen, " << static_cast<QFileOpenEvent*>(event)->file();
+		fileToOpen = static_cast<QFileOpenEvent*>(event)->file();
+		break;
+	case QEvent::DragEnter:
+	case QEvent::DragLeave:
+		event->accept();
+		//qDebug() << "Event DragEnter";
+		break;
+	case QEvent::Drop:
+		{
+			event->accept();
+			const QMimeData		*mimeData = static_cast<QDropEvent *>(event)->mimeData();
+			// If there is one file (not more) we open it
+			if (mimeData->urls().length() == 1) {
+				//QString		fileName = mimeData->urls().first().toLocalFile();
+				fileToOpen = mimeData->urls().first().toLocalFile();
+				//qDebug() << "Event Drop, " << fileName;
+			}
+		}
+		break;
+	
+	default:
+		return false;
+	}
+	
+	LoadingWindow		*lw = GetLoadingWindow();
+	if (fileToOpen.length() > 0 && lw != nullptr)	{
+		QFileInfo		fileInfo(fileToOpen);
+		if (fileInfo.exists())	{
+			if (fileInfo.isDir())	{
+				lw->setBaseDirectory(fileToOpen);
+			}
+			else	{
+				lw->setBaseDirectory(fileInfo.dir().path());
+				lw->selectFile(fileToOpen);
+			}
+		}
+		if (fileInfo.exists() && !fileInfo.isDir())	{
+			
+		}
+	}
+	
+	
+	
+	return true;
 }
 
 
@@ -559,6 +618,36 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 			
 			on_loadFile(selectedPathString);
 		});
+	}
+}
+void LoadingWindow::selectFile(const QString & inFileToSelect)	{
+	qDebug() << __PRETTY_FUNCTION__ << ", " << inFileToSelect;
+	QFileInfo		fileInfo(inFileToSelect);
+	//	if the file doesn't exist, bail
+	if (!fileInfo.exists())
+		return;
+	//	if the file we were told to select is a directory...
+	if (fileInfo.isDir())	{
+		//	update the base directory only if necessary
+		QString			newBaseDir = inFileToSelect;
+		if (newBaseDir == getBaseDirectory())
+			return;
+		setBaseDirectory(newBaseDir);
+	}
+	//	else the file we were told to select isn't a directory (it's a file)
+	else	{
+		//	update the base directory only if necessary
+		QString			newBaseDir = fileInfo.dir().path();
+		if (newBaseDir != getBaseDirectory())
+			setBaseDirectory(newBaseDir);
+		//	get the filter list view's data model, figure out if the index corresponding to the file path
+		QFileSystemModel		*tmpModel = qobject_cast<QFileSystemModel*>(ui->filterListView->model());
+		if (tmpModel != nullptr)	{
+			QModelIndex				tmpIndex = tmpModel->index(inFileToSelect);
+			if (tmpIndex.isValid())	{
+				ui->filterListView->setCurrentIndex(tmpIndex);
+			}
+		}
 	}
 }
 

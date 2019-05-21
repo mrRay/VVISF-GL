@@ -167,61 +167,6 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			
 			
 		}
-		/*
-		{
-			longCBWidget = new QComboBox(this);
-			longCBWidget->clear();
-			
-			vector<string>		labelArray = inAttr->labelArray();
-			vector<int32_t>		valArray = inAttr->valArray();
-			int					labelArraySize = int(labelArray.size());
-			int					valArraySize = int(valArray.size());
-			long				defaultValAsLong = inAttr->defaultVal().getLongVal();
-			int					defaultValIndex = -1;
-			int					tmpIndex = 0;
-			//	if there's a val array, use it to populate the combo box
-			if (valArraySize != 0)	{
-				for (auto valIt=valArray.begin(); valIt!=valArray.end(); ++valIt)	{
-					long		tmpLong = *valIt;
-					if (tmpIndex < labelArraySize)	{
-						QString		tmpKey = QString::fromStdString(labelArray[tmpIndex]);
-						longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(tmpLong)));
-					}
-					else	{
-						QString		tmpKey = QString("%1").arg(tmpLong);
-						longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(tmpLong)));
-					}
-					
-					if (tmpLong == defaultValAsLong)
-						defaultValIndex = tmpIndex;
-					++tmpIndex;
-				}
-			}
-			//	else use the attribute's min/max vals
-			else	{
-				ISFVal		minVal = inAttr->minVal();
-				ISFVal		maxVal = inAttr->maxVal();
-				for (int i=std::min(minVal.getLongVal(),maxVal.getLongVal()); i<=std::max(minVal.getLongVal(),maxVal.getLongVal()); ++i)	{
-					QString		tmpKey = QString("%1").arg(i);
-					longCBWidget->addItem(tmpKey, QVariant(static_cast<qlonglong>(i)));
-					
-					if (i == defaultValAsLong)
-						defaultValIndex = tmpIndex;
-					++tmpIndex;
-				}
-			}
-			//	if we found a default val index, apply it
-			if (defaultValIndex >= 0)
-				longCBWidget->setCurrentIndex(defaultValIndex);
-			
-			//	add the widget to the layout
-			myLayout = new QHBoxLayout(this);
-			setLayout(myLayout);
-			myLayout = layout();
-			
-			myLayout->addWidget(longCBWidget);
-		}
-		*/
 		break;
 	case ISFValType_Float:
 		{
@@ -275,7 +220,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 				xFieldWidget->setRange(-16384, 16384);
 				yFieldWidget->setRange(-16384, 16384);
 				xSliderWidget->setDoubleRange(-16384.0, 16384.0);
-				ySliderWidget->setDoubleRange(16384.0, 16384.0);
+				ySliderWidget->setDoubleRange(-16384.0, 16384.0);
 			}
 			if (tmpVal.isPoint2DVal())	{
 				xFieldWidget->setValue(tmpVal.getPointValByIndex(0));
@@ -316,6 +261,7 @@ ISFUIItem::ISFUIItem(const ISFAttrRef & inAttr, QWidget * inParent) : QGroupBox(
 			connect( yFieldWidget, SIGNAL(editingFinished()), this, SLOT(pointWidgetUsed()) );
 			connect( xSliderWidget, &QDoubleSlider::doubleSliderMoved, this, &ISFUIItem::pointWidgetUsed );
 			connect( ySliderWidget, &QDoubleSlider::doubleSliderMoved, this, &ISFUIItem::pointWidgetUsed );
+			
 			connect(GetOutputWindow(), &OutputWindow::outputWindowMouseMoved, this, &ISFUIItem::outputWindowMouseUsed);
 		}
 		break;

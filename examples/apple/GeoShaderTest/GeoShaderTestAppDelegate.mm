@@ -8,6 +8,8 @@
 @property (assign,readwrite) VVGL::Quad<VVGL::VertXYZRGBA> lastVBOCoords;
 @end
 
+using namespace std;
+
 
 
 

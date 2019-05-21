@@ -9,6 +9,8 @@
 	item = nil;											\
 }}
 
+using namespace std;
+
 @interface ISFVVGLBufferView()	{
 	
 }

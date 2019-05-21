@@ -421,6 +421,21 @@ string GLScene::fragmentShaderString()	{
 		return string("");
 	return string(*_fsString);
 }
+void GLScene::compileProgramIfNecessary()	{
+	//	get a lock, set the current GL context
+	lock_guard<recursive_mutex>		lock(_renderLock);
+	if (_context == nullptr)	{
+		cout << "\terr: bailing, ctx null, " << __PRETTY_FUNCTION__ << endl;
+		return;
+	}
+	_context->makeCurrentIfNotCurrent();
+	
+	//	prep for render
+	_renderPrep();
+	
+	//	cleanup after render
+	_renderCleanup();
+}
 
 
 /*	========================================	*/
@@ -469,6 +484,7 @@ void GLScene::_renderPrep()	{
 			GLERRLOG
 			_fs = 0;
 		}
+		_programReady = false;
 		
 		
 		{
@@ -661,6 +677,7 @@ void GLScene::_renderPrep()	{
 				_program = 0;
 			}
 			else	{
+				_programReady = true;
 				_orthoUni.cacheTheLoc(_program);
 			}
 		}

@@ -408,6 +408,7 @@ void SimpleSourceCodeEditor::findPrevious()	{
 }
 void SimpleSourceCodeEditor::setFindStringFromCursor()	{
 	_findOpts.searchString = textCursor().selectedText();
+	_findOpts.saveToSettings();
 }
 
 	

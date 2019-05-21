@@ -26,5 +26,21 @@
 	<false/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+			<dict>
+					<key>CFBundleTypeExtensions</key>
+					<array>
+						<string>fs</string>
+						<string>org.khronos.glsl-source</string>
+						<string>glsl-src</string>
+						<string>fs</string>
+						<string>frag shader</string>
+					</array>
+					<key>CFBundleTypeRole</key>
+					<string>Editor</string>
+			</dict>
+	</array>
+	
 </dict>
 </plist>

@@ -34,6 +34,8 @@
 #define MUTDICT [NSMutableDictionary dictionaryWithCapacity:0]
 #define MUTARRAY [NSMutableArray arrayWithCapacity:0]
 
+using namespace std;
+
 
 
 

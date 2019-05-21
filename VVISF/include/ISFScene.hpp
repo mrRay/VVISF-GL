@@ -79,7 +79,7 @@ class VVISF_EXPORT ISFScene : public VVGL::GLScene	{
 		//!	Unloads whatever ISF file is currently loaded.
 		void useFile() noexcept(false);
 		//!	Loads the ISF file at the passed path.
-		void useFile(const std::string & inPath, const bool & inThrowExc=true) noexcept(false);
+		void useFile(const std::string & inPath, const bool & inThrowExc=true, const bool & inResetTimer=true) noexcept(false);
 		//!	Starts using the ISF file represented by the passed ISFDoc.
 		void useDoc(ISFDocRef & inDoc);
 		//!	Returns the ISFDoc currently being used by the scene.  Interacting with this doc by setting the value of its inputs will directly affect rendering.

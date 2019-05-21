@@ -13,6 +13,7 @@
 #define MUTARRAY [NSMutableArray arrayWithCapacity:0]
 
 
+using namespace std;
 using namespace VVGL;
 using namespace VVISF;
 
