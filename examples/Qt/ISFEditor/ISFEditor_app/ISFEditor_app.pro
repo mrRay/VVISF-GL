@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.8
+VERSION = 2.9.9
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -548,8 +548,14 @@ mac	{
 		PACKAGES_SRC = "$$_PRO_FILE_PWD_/../ISFEditor_installer_mac/packages"
 		PACKAGES_DST = "$$OUT_PWD/../ISFEditor_installer_mac/packages"
 		PACKAGES_DST_PARENT = "$$OUT_PWD/../ISFEditor_installer_mac"
+
+		QMAKE_POST_LINK += echo "PACKAGES_SRC is $$PACKAGES_SRC";
+		QMAKE_POST_LINK += echo "PACKAGES_DST is $$PACKAGES_DST";
+		QMAKE_POST_LINK += echo "PACKAGES_DST_PARENT is $$PACKAGES_DST_PARENT";
+
 		# make sure the dst parent dir exists, delete the 'packages' folder from the build directory
 		QMAKE_POST_LINK += rm -Rf $$PACKAGES_DST_PARENT;
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$PACKAGES_DST_PARENT;
 		QMAKE_POST_LINK += $$QMAKE_MKDIR $$PACKAGES_DST;
 		QMAKE_POST_LINK += rm -Rf $$PACKAGES_DST;
 		# copy the 'packages' folder from the source tree to the build directory
@@ -558,12 +564,14 @@ mac	{
 		# first process the isf editor
 		# copy the compiled app into the 'data' folder in the build directory's 'packages'
 		EDITOR_DST_DIR = "$$OUT_PWD/../ISFEditor_installer_mac/packages/com.vidvox.ISFEditor.mac/data"
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$EDITOR_DST_DIR;
 		QMAKE_POST_LINK += cp -vaRf "$$OUT_PWD/$${TARGET}.app" "$${EDITOR_DST_DIR}/$${TARGET}.app";
 
 		# now process the isf files we're installing
 		# copy the files from the source tree into the 'data' folder in the build directory's 'packages'
 		FILES_DST_DIR = "$$OUT_PWD/../ISFEditor_installer_mac/packages/com.vidvox.ISFFiles.mac/data"
 		FILES_SRC_DIR = "$$_PRO_FILE_PWD_/../../../ISF-files/ISF"
+		QMAKE_POST_LINK += $$QMAKE_MKDIR $$FILES_DST_DIR;
 		QMAKE_POST_LINK += cp -vaRf "$${FILES_SRC_DIR}/*" "$${FILES_DST_DIR}";
 
 
