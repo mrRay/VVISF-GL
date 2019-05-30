@@ -46,6 +46,9 @@ public:
 	static QSurfaceFormat CreateGL3SurfaceFormat();
 	static QSurfaceFormat CreateGL4SurfaceFormat();
 	static QOpenGLContext * GetCurrentContext();
+	static QOpenGLContext * GetGlobalShareContext();
+	static QSurface * GetGlobalShareSurface();
+	static QSurfaceFormat GetGlobalShareSurfaceFormat();
 	
 	
 	

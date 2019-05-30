@@ -1982,8 +1982,10 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 				}
 				tmpObj = inputDict.value("MIN",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					bool			safeForVal = true;
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
+							safeForVal = false;
 							if (_throwExcept)	{
 								if (_path != nullptr)
 									throw ISFErr(ISFErrType_MalformedJSON, "MIN for point2D input is not a number", *_path);
@@ -1992,12 +1994,15 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 							}
 						}
 					});
-					minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+					if (safeForVal)
+						minVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				tmpObj = inputDict.value("MAX",json());
 				if (tmpObj.is_array() && tmpObj.size()==2)	{
+					bool			safeForVal = true;
 					for_each(tmpObj.begin(), tmpObj.end(), [&](json &n)	{
 						if (!n.is_number())	{
+							safeForVal = false;
 							if (_throwExcept)	{
 								if (_path != nullptr)
 									throw ISFErr(ISFErrType_MalformedJSON, "MAX for point2D input is not a number", *_path);
@@ -2006,7 +2011,8 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 							}
 						}
 					});
-					maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
+					if (safeForVal)
+						maxVal = ISFPoint2DVal(tmpObj[0].get<double>(), tmpObj[1].get<double>());
 				}
 				//	if i'm missing a min or a max val, reset both
 				if ((minVal.type()==ISFValType_None && maxVal.type()!=ISFValType_None)	||

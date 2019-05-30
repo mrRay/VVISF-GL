@@ -210,6 +210,9 @@ class VVGL_EXPORT GLContext	{
 		GLContext(QOpenGLContext * inCtx);
 		
 		static QOpenGLContext * GetCurrentContext();
+		static QOpenGLContext * GetGlobalShareContext();
+		static QSurface * GetGlobalShareSurface();
+		static QSurfaceFormat GetGlobalShareSurfaceFormat();
 		
 		void setSurface(const QSurface * inTargetSurface);
 		void swap();
@@ -338,6 +341,7 @@ inline GLContextRef CreateGLContextRefUsing(QSurface * inTargetSurface, QOpenGLC
 \param inSfcFmt The surface format describes what kind of OpenGL environment you want to work with.  The QSurfaceFormat can be created using one of the Create****SurfaceFormat() functions listed in this document.
 */
 inline GLContextRef CreateNewGLContextRef(QSurface * inTargetSurface, QOpenGLContext * inShareCtx, QSurfaceFormat inSfcFmt=CreateDefaultSurfaceFormat()) { return std::make_shared<GLContext>(inTargetSurface, inShareCtx, true, inSfcFmt); }
+
 #elif defined(VVGL_SDK_WIN)
 /*!
 \relatesalso GLContext

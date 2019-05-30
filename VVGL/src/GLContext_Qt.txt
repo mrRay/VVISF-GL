@@ -46,6 +46,15 @@ QSurfaceFormat CreateGL4SurfaceFormat()	{
 QOpenGLContext * GLContext::GetCurrentContext()	{
 	return GLQtCtxWrapper::GetCurrentContext();
 }
+QOpenGLContext * GLContext::GetGlobalShareContext()	{
+	return GLQtCtxWrapper::GetGlobalShareContext();
+}
+QSurface * GLContext::GetGlobalShareSurface()	{
+	return GLQtCtxWrapper::GetGlobalShareSurface();
+}
+QSurfaceFormat GLContext::GetGlobalShareSurfaceFormat()	{
+	return GLQtCtxWrapper::GetGlobalShareSurfaceFormat();
+}
 
 
 /*	========================================	*/

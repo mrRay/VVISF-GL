@@ -451,6 +451,22 @@ QSurfaceFormat GLQtCtxWrapper::CreateGL4SurfaceFormat()	{
 QOpenGLContext * GLQtCtxWrapper::GetCurrentContext()	{
 	return QOpenGLContext::currentContext();
 }
+QOpenGLContext * GLQtCtxWrapper::GetGlobalShareContext()	{
+	return QOpenGLContext::globalShareContext();
+}
+QSurface * GLQtCtxWrapper::GetGlobalShareSurface()	{
+	QOpenGLContext		*tmpCtx = QOpenGLContext::globalShareContext();
+	return (tmpCtx==nullptr) ? nullptr : tmpCtx->surface();
+}
+QSurfaceFormat GLQtCtxWrapper::GetGlobalShareSurfaceFormat()	{
+	QOpenGLContext		*tmpCtx = QOpenGLContext::globalShareContext();
+	if (tmpCtx == nullptr)
+		return CreateGL4SurfaceFormat();
+	QSurface			*tmpSurface = tmpCtx->surface();
+	if (tmpSurface == nullptr)
+		return CreateGL4SurfaceFormat();
+	return tmpSurface->format();
+}
 
 
 //	creates a new GL context and surface which it "owns", like calling GLQtCtxWrapper(nullptr,nullptr,true);
