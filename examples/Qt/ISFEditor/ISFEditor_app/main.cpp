@@ -4,6 +4,8 @@
 
 #include "OutputWindow.h"
 #include "AutoUpdater.h"
+#include "LoadingWindow.h"
+#include "FileLoadEventFilter.h"
 
 
 
@@ -26,7 +28,9 @@ int main(int argc, char *argv[])
 		freopen("CONOUT$", "w", stdout);
 		freopen("CONOUT$", "w", stderr);
 	}
-#endif
+#endif	//	_WIN32
+	
+	
 	//	we want all the widgets to share contexts, and we need to make a widget to get that shard context (there's no way to tell a widget to use a given context)
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);
@@ -56,6 +60,7 @@ int main(int argc, char *argv[])
 	//	make the qApp
 	QApplication a(argc, argv);
 	
+	
 	//	make the auto updater (by default, its parent will be qApp)
 	//GetGlobalAutoUpdater();
 	AutoUpdater		*aa = new AutoUpdater(&a);
@@ -63,6 +68,17 @@ int main(int argc, char *argv[])
 	
 	//	make the main window, which has a GL view in it and will create the GL backend, and then finish launching.
 	MainWindow		w;
+	
+	
+	//	add an event filter now, so the app will respond to "file open" events from the OS
+	if (qApp == nullptr)
+		qDebug() << "ERR: qApp NULL";
+	else	{
+		qDebug() << "installing event filter!";
+		FileLoadEventFilter		*tmpThing = new FileLoadEventFilter(qApp);
+		qApp->installEventFilter(tmpThing);
+	}
+	
 	
 	//	open the window after a slight delay, we want to give the app a chance to start all the other stuff
 	QTimer::singleShot(500, [&]()	{

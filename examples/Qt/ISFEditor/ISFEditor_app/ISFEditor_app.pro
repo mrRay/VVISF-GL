@@ -61,6 +61,7 @@ SOURCES += \
 	../../common/GLBufferQWidget.cpp \
 	../../common/ISFGLBufferQWidget.cpp \
 	DocWindow.cpp \
+	misc_classes/FileLoadEventFilter.cpp \
 	ISFController.cpp \
 	JSONGUI/JGMCArray.cpp \
 	JSONGUI/JGMObject.cpp \
@@ -125,6 +126,7 @@ HEADERS += \
 	../../common/GLBufferQWidget.h \
 	../../common/ISFGLBufferQWidget.h \
 	DocWindow.h \
+	misc_classes/FileLoadEventFilter.h \
 	ISFController.h \
 	JSONGUI/JGMCArray.h \
 	JSONGUI/JGMDefs.h \

@@ -163,6 +163,21 @@ void OutputWindow::showEvent(QShowEvent * event)	{
 	
 	ui->displayAlphaToggle->setChecked(false);
 }
+void OutputWindow::moveEvent(QMoveEvent * ev)
+{
+	QWidget::moveEvent(ev);
+	
+	double			ltbbm = devicePixelRatio();
+	const QSize	&	tmpQSize = ui->bufferView->size();
+	Size			tmpSize(tmpQSize.width()*ltbbm, tmpQSize.height()*ltbbm);
+	
+	//lock_guard<recursive_mutex>		lock(ctxLock);
+	//scene->setOrthoSize(tmpSize);
+	ISFSceneRef		viewScene = ui->bufferView->getScene();
+	if (viewScene != nullptr)	{
+		viewScene->setSize(tmpSize);
+	}
+}
 /*
 void OutputWindow::showEvent(QShowEvent * event)	{
 	qDebug() << __PRETTY_FUNCTION__;

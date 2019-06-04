@@ -38,8 +38,6 @@ public:
 	
 	void finishedConversionDisplayFile(const QString & n);
 	
-	virtual bool eventFilter(QObject * watched, QEvent * event) override;
-	
 protected:
 	virtual void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
 	virtual void showEvent(QShowEvent * event) Q_DECL_OVERRIDE;

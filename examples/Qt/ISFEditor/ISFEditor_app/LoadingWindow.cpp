@@ -70,8 +70,6 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 	//	save window position on app quit
 	connect(qApp, &QCoreApplication::aboutToQuit, this, &LoadingWindow::appQuitEvent);
 	
-	//	install an event filter on the QApplication instance to listen for "open document" events.  this will pick up files dragged into windows as well as files dragged onto the dock icon.
-	qApp->installEventFilter(this);
 	
 	//qDebug() << "\t" << __PRETTY_FUNCTION__ << " - FINISHED";
 }
@@ -151,63 +149,6 @@ void LoadingWindow::finishedConversionDisplayFile(const QString & n)	{
 	}
 	else
 		qDebug() << "\tERR: model null in " << __PRETTY_FUNCTION__;
-}
-
-
-
-
-bool LoadingWindow::eventFilter(QObject * watched, QEvent * event)	{
-	
-	QString			fileToOpen("");
-	
-	switch (event->type())	{
-	case QEvent::FileOpen:
-		event->accept();
-		//qDebug() << "Event FileOpen, " << static_cast<QFileOpenEvent*>(event)->file();
-		fileToOpen = static_cast<QFileOpenEvent*>(event)->file();
-		break;
-	case QEvent::DragEnter:
-	case QEvent::DragLeave:
-		event->accept();
-		//qDebug() << "Event DragEnter";
-		break;
-	case QEvent::Drop:
-		{
-			event->accept();
-			const QMimeData		*mimeData = static_cast<QDropEvent *>(event)->mimeData();
-			// If there is one file (not more) we open it
-			if (mimeData->urls().length() == 1) {
-				//QString		fileName = mimeData->urls().first().toLocalFile();
-				fileToOpen = mimeData->urls().first().toLocalFile();
-				//qDebug() << "Event Drop, " << fileName;
-			}
-		}
-		break;
-	
-	default:
-		return false;
-	}
-	
-	LoadingWindow		*lw = GetLoadingWindow();
-	if (fileToOpen.length() > 0 && lw != nullptr)	{
-		QFileInfo		fileInfo(fileToOpen);
-		if (fileInfo.exists())	{
-			if (fileInfo.isDir())	{
-				lw->setBaseDirectory(fileToOpen);
-			}
-			else	{
-				lw->setBaseDirectory(fileInfo.dir().path());
-				lw->selectFile(fileToOpen);
-			}
-		}
-		if (fileInfo.exists() && !fileInfo.isDir())	{
-			
-		}
-	}
-	
-	
-	
-	return true;
 }
 
 
