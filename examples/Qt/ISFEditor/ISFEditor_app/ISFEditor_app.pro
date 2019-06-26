@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.9
+VERSION = 2.9.10
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -60,7 +60,6 @@ SOURCES += \
 	../../common/GLBufferQVideoSurface.cpp \
 	../../common/GLBufferQWidget.cpp \
 	../../common/ISFGLBufferQWidget.cpp \
-	../../common/DisplayLinkDriver.mm \
 	DocWindow.cpp \
 	misc_classes/FileLoadEventFilter.cpp \
 	ISFController.cpp \
@@ -126,7 +125,6 @@ HEADERS += \
 	../../common/GLBufferQVideoSurface.h \
 	../../common/GLBufferQWidget.h \
 	../../common/ISFGLBufferQWidget.h \
-	../../common/DisplayLinkDriver.h \
 	DocWindow.h \
 	misc_classes/FileLoadEventFilter.h \
 	ISFController.h \
@@ -196,10 +194,12 @@ HEADERS += \
 mac {
 	SOURCES += ../../common/SyphonVVBufferPoolAdditions.mm \
 		VideoSource/InterAppVideoSource_Mac.mm \
-		VideoOutput/InterAppOutput_Mac.mm
+		VideoOutput/InterAppOutput_Mac.mm \
+		../../common/DisplayLinkDriver.mm
 	HEADERS += ../../common/SyphonVVBufferPoolAdditions.h \
 		VideoSource/InterAppVideoSource_Mac.h \
-		VideoOutput/InterAppOutput_Mac.h
+		VideoOutput/InterAppOutput_Mac.h \
+		../../common/DisplayLinkDriver.h
 }
 win32	{
 	SOURCES += VideoSource/InterAppVideoSource_Win.cpp \

@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>The ISF Editor app</DisplayName>
     <Description>Install the ISF Editor application.</Description>
-	<Version>2.9.9</Version>
-    <ReleaseDate>2019-05-22</ReleaseDate>
+	<Version>2.9.10</Version>
+	<ReleaseDate>2019-06-26</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>
 </Package>
