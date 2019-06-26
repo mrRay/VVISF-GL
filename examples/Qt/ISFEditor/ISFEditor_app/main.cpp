@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
 	if (qApp == nullptr)
 		qDebug() << "ERR: qApp NULL";
 	else	{
-		qDebug() << "installing event filter!";
 		FileLoadEventFilter		*tmpThing = new FileLoadEventFilter(qApp);
 		qApp->installEventFilter(tmpThing);
 	}

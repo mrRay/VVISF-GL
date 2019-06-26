@@ -6,6 +6,10 @@
 #include <mutex>
 #include <QOpenGLWidget>
 
+#ifdef Q_OS_MACOS
+#include "DisplayLinkDriver.h"
+#endif
+
 
 
 
@@ -44,6 +48,9 @@ protected:
 	void _renderNow();
 	
 protected:
+#ifdef Q_OS_MACOS
+	DisplayLinkDriver		displayLinkDriver;	//	calling 'QOpenGLWidget::update' on macs breaks Qt: https://bugreports.qt.io/browse/QTBUG-73209
+#endif
 	std::recursive_mutex	ctxLock;
 	VVGL::GLContextRef		ctx = nullptr;
 	VVISF::ISFSceneRef		scene = nullptr;

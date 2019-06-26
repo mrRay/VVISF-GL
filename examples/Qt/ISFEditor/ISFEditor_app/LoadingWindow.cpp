@@ -85,7 +85,7 @@ QScrollArea * LoadingWindow::getScrollArea()	{
 QSpinBox * LoadingWindow::getWidthSB() { return ui->renderResWidthWidget; }
 QSpinBox * LoadingWindow::getHeightSB() { return ui->renderResHeightWidget; }
 void LoadingWindow::on_createNewFile()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//QThread		*mainThread = QApplication::instance()->thread();
 	//qDebug() << "main thread is currently " << mainThread;
@@ -95,7 +95,7 @@ void LoadingWindow::on_createNewFile()	{
 	QFile			tmpFragShaderFile( QString("%1/ISFTesterTmpFile.fs").arg(QDir::tempPath()) );
 	if (tmpFragShaderFile.open(QIODevice::WriteOnly))	{
 		tmpFilePath = tmpFragShaderFile.fileName();
-		qDebug() << "\ttmpFragShaderFile's path is " << tmpFilePath;
+		//qDebug() << "\ttmpFragShaderFile's path is " << tmpFilePath;
 	
 		QFile			newFileTemplate(":/resources/NewFileTemplate.txt");
 		if (newFileTemplate.open(QFile::ReadOnly))	{
@@ -161,7 +161,7 @@ void LoadingWindow::closeEvent(QCloseEvent * event)	{
 	QWidget::closeEvent(event);
 }
 void LoadingWindow::showEvent(QShowEvent * event)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//Q_UNUSED(event);
 	QWidget::showEvent(event);
@@ -238,7 +238,7 @@ void LoadingWindow::showEvent(QShowEvent * event)	{
 	}
 }
 void LoadingWindow::appQuitEvent()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	QSettings		settings;
 	settings.setValue("LoadingWindowGeometry", saveGeometry());
@@ -367,7 +367,7 @@ void LoadingWindow::newFileSelected(const QItemSelection &selected, const QItemS
 }
 */
 void LoadingWindow::listOfVideoSourcesUpdated(DynamicVideoSource * inSrc)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	if (inSrc == nullptr)	{
 		qDebug() << "ERR: bailing, inSrc null, " << __PRETTY_FUNCTION__;
@@ -484,7 +484,7 @@ void LoadingWindow::videoSourceChanged(int arg1)	{
 
 
 void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
-	qDebug() << __PRETTY_FUNCTION__ << ", " << inBaseDir;
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << inBaseDir;
 	
 	if (qApp->thread() != QThread::currentThread()) qDebug() << "ERR: thread is not main! " << __PRETTY_FUNCTION__;
 	/*

@@ -87,7 +87,7 @@ void ISFController::aboutToQuit()	{
 	std::lock_guard<std::recursive_mutex>		tmpLock(sceneLock);
 }
 void ISFController::loadFile(const QString & inPathToLoad)	{
-	qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
+	//qDebug() << __PRETTY_FUNCTION__ << "... " << inPathToLoad;
 	
 	if (GetGlobalBufferPool() == nullptr)	{
 		qDebug() << "\terr: no global buffer pool, " << __PRETTY_FUNCTION__;
@@ -474,7 +474,7 @@ void ISFController::threadedRenderCallback()	{
 		sceneCtx = scene->context();
 	
 	if (needToLoadFiles)	{
-		qDebug() << "need to load, moving ctx to main thread...";
+		//qDebug() << "need to load, moving ctx to main thread...";
 		//renderThreadCtx->moveToThread(qApp->thread());
 		sceneCtx->moveToThread(qApp->thread());
 		needToLoadFiles = false;
@@ -482,7 +482,7 @@ void ISFController::threadedRenderCallback()	{
 		return;
 	}
 	if (loadingFiles)	{
-		qDebug() << "loading files- killing time, waiting for main thread...";
+		//qDebug() << "loading files- killing time, waiting for main thread...";
 		return;
 	}
 	
@@ -490,7 +490,7 @@ void ISFController::threadedRenderCallback()	{
 	//if (renderThreadCtx==nullptr || renderThreadCtx->contextThread()!=QThread::currentThread())
 	if (sceneCtx==nullptr || sceneCtx->contextThread()!=QThread::currentThread())
 	{
-		cout << "no render ctx or ctx isnt attached to current thread, bailing, " << __PRETTY_FUNCTION__ << endl;
+		//cout << "no render ctx or ctx isnt attached to current thread, bailing, " << __PRETTY_FUNCTION__ << endl;
 		return;
 	}
 
@@ -598,7 +598,7 @@ void ISFController::threadedRenderCallback()	{
 }
 
 void ISFController::populateLoadingWindowUI()	{
-	//qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << __PRETTY_FUNCTION__;
 	
 	if (qApp->thread() != QThread::currentThread()) qDebug() << "ERR: thread is not main! " << __PRETTY_FUNCTION__;
 	
@@ -645,6 +645,7 @@ void ISFController::populateLoadingWindowUI()	{
 		return;
 	
 	//	run through the scene's inputs- we want to make a UI item for each...
+	qDebug() << "loading UI for scene at " << scene->doc()->path().c_str();
 	vector<ISFAttrRef>		sceneInputs = scene->inputs();
 	for (auto it=sceneInputs.begin(); it!=sceneInputs.end(); ++it)	{
 		ISFAttrRef		attrib = *it;

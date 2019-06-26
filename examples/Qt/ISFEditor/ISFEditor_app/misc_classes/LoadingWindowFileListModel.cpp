@@ -17,7 +17,7 @@
 LoadingWindowFileListModel::LoadingWindowFileListModel(QObject * parent) :
 	QFileSystemModel(parent)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	setReadOnly(true);
 	//setReadOnly(false);
 	setFilter(QDir::Files);
@@ -69,7 +69,7 @@ bool LoadingWindowFileListModel::canDropMimeData(const QMimeData *data, Qt::Drop
 }
 bool LoadingWindowFileListModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	if (!canDropMimeData(data, action, row, column, parent))
 		return false;
 	
@@ -79,7 +79,7 @@ bool LoadingWindowFileListModel::dropMimeData(const QMimeData *data, Qt::DropAct
 		QList<QUrl>		urls = data->urls();
 		for (const QUrl & url : urls)	{
 			QString			localPath = url.toLocalFile();
-			qDebug() << "\turl is " << url << ", path is " << localPath;
+			//qDebug() << "\turl is " << url << ", path is " << localPath;
 			QFileInfo		fi(localPath);
 			if (fi.isDir())	{
 				lw->setBaseDirectory(localPath);

@@ -112,7 +112,7 @@ DocWindow::~DocWindow()	{
 
 
 void DocWindow::updateContentsFromISFController()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//ISFSceneRef		scene = GetISFController()->getScene();
 	//ISFDocRef		doc = (scene==nullptr) ? nullptr : scene->doc();
@@ -413,47 +413,56 @@ void DocWindow::saveOpenFile()	{
 					lw->getBaseDirectory(),
 					tr("Text (*.fs)"));
 			}
-			//qDebug() << "\tdestPath is " << pathToSave;
-			QFileInfo		saveFileInfo(pathToSave);
-			QString			noExtPathToSave = QString("%1/%2").arg(saveFileInfo.dir().absolutePath()).arg(saveFileInfo.completeBaseName());
-			//qDebug() << "\tnoExtPathToSave is " << noExtPathToSave;
-			
-			
-			if (fragContentsChanged)	{
-				QString			localWritePath = QString("%1.fs").arg(noExtPathToSave);
-				qDebug() << "\tsaving frag to file " << localWritePath;
-				VVDELETE(_fragFilePath);
-				_fragFilePath = new QString(localWritePath);
-				VVDELETE(_fragFilePathContentsOnOpen)
-				_fragFilePathContentsOnOpen = new QString(currentFragString);
+			qDebug() << "\tpathToSave is " << pathToSave;
+			if (pathToSave.length() < 1)	{
+				//qDebug() << "\tinvalid path, don't save!";
+			}
+			else	{
+				QFileInfo		saveFileInfo(pathToSave);
+				QString			noExtPathToSave = QString("%1/%2").arg(saveFileInfo.dir().absolutePath()).arg(saveFileInfo.completeBaseName());
+				qDebug() << "\tnoExtPathToSave is " << noExtPathToSave;
 				
-				QFile			wFile(localWritePath);
-				if (wFile.open(QIODevice::WriteOnly))	{
-					QTextStream		wStream(&wFile);
-					wStream << currentFragString;
-					wFile.close();
+				if (fragContentsChanged)	{
+					QString			localWritePath = QString("%1.fs").arg(noExtPathToSave);
+					qDebug() << "\tsaving frag to file " << localWritePath;
+					VVDELETE(_fragFilePath);
+					_fragFilePath = new QString(localWritePath);
+					VVDELETE(_fragFilePathContentsOnOpen)
+					_fragFilePathContentsOnOpen = new QString(currentFragString);
+				
+					QFile			wFile(localWritePath);
+					if (wFile.open(QIODevice::WriteOnly))	{
+						QTextStream		wStream(&wFile);
+						wStream << currentFragString;
+						wFile.close();
+						_fragEditsPerformed = false;
+					}
+				}
+				if (vertContentsChanged)	{
+					QString			localWritePath = QString("%1.vs").arg(noExtPathToSave);
+					qDebug() << "\tsaving vert to file " << localWritePath;
+					VVDELETE(_vertFilePath);
+					_vertFilePath = new QString(localWritePath);
+					VVDELETE(_vertFilePathContentsOnOpen)
+					_vertFilePathContentsOnOpen = new QString(currentVertString);
+				
+					QFile			wFile(localWritePath);
+					if (wFile.open(QIODevice::WriteOnly))	{
+						QTextStream		wStream(&wFile);
+						wStream << currentVertString;
+						wFile.close();
+						_vertEditsPerformed = false;
+					}
+				}
+			
+				if (fragContentsChanged || vertContentsChanged)	{
+					if (lw != nullptr)
+						lw->on_loadFile(pathToSave);
 				}
 			}
-			if (vertContentsChanged)	{
-				QString			localWritePath = QString("%1.vs").arg(noExtPathToSave);
-				qDebug() << "\tsaving vert to file " << localWritePath;
-				VVDELETE(_vertFilePath);
-				_vertFilePath = new QString(localWritePath);
-				VVDELETE(_vertFilePathContentsOnOpen)
-				_vertFilePathContentsOnOpen = new QString(currentVertString);
-				
-				QFile			wFile(localWritePath);
-				if (wFile.open(QIODevice::WriteOnly))	{
-					QTextStream		wStream(&wFile);
-					wStream << currentVertString;
-					wFile.close();
-				}
-			}
 			
-			if (fragContentsChanged || vertContentsChanged)	{
-				if (lw != nullptr)
-					lw->on_loadFile(pathToSave);
-			}
+			
+			
 			
 		}
 		//	else the file path is non-nil and not in tmp, so just save it to disk
@@ -655,7 +664,7 @@ void DocWindow::reloadColorsAndSyntaxFormats()	{
 
 
 void DocWindow::on_actionNew_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	LoadingWindow		*lw = GetLoadingWindow();
 	if (lw != nullptr)
 		lw->on_createNewFile();
@@ -665,11 +674,11 @@ void DocWindow::on_actionSave_triggered()	{
 	saveOpenFile();
 }
 void DocWindow::on_actionImport_from_GLSLSandbox_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 
 	GLSLSandboxConverter		*conv = new GLSLSandboxConverter(GetLoadingWindow());
 	int				returnCode = conv->exec();
-	qDebug() << "returnCode is " << returnCode;
+	//qDebug() << "returnCode is " << returnCode;
 	if (!returnCode)	{
 		LoadingWindow		*lw = GetLoadingWindow();
 		if (lw != nullptr)	{
@@ -679,11 +688,11 @@ void DocWindow::on_actionImport_from_GLSLSandbox_triggered()	{
 	delete conv;
 }
 void DocWindow::on_actionImport_from_Shadertoy_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 
 	ShadertoyConverter		*conv = new ShadertoyConverter(GetLoadingWindow());
 	int				returnCode = conv->exec();
-	qDebug() << "returnCode is " << returnCode;
+	//qDebug() << "returnCode is " << returnCode;
 	if (!returnCode)	{
 		LoadingWindow		*lw = GetLoadingWindow();
 		if (lw != nullptr)	{
@@ -693,14 +702,14 @@ void DocWindow::on_actionImport_from_Shadertoy_triggered()	{
 	delete conv;
 }
 void DocWindow::on_actionPreferences_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	Preferences		*p = GetPreferences();
 	if (p != nullptr)	{
 		p->show();
 	}
 }
 void DocWindow::on_actionQuit_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	QCoreApplication::quit();
 }
 
@@ -744,7 +753,7 @@ void DocWindow::on_actionUse_selection_for_next_Find_triggered()	{
 
 
 void DocWindow::on_actionCheck_for_Updates_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	AutoUpdater		*aa = GetGlobalAutoUpdater();
 	if (aa != nullptr)	{
 		aa->checkForUpdates();
@@ -754,14 +763,14 @@ void DocWindow::on_actionCheck_for_Updates_triggered()	{
 	}
 }
 void DocWindow::on_actionAbout_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	AboutWindow		*aw = GetAboutWindow();
 	if (aw != nullptr)	{
 		aw->show();
 	}
 }
 void DocWindow::on_actionGet_Help_triggered()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	ReportProblemDialog		*rpd = GetReportProblemDialog();
 	if (rpd != nullptr)	{
 		rpd->show();
@@ -785,7 +794,7 @@ void DocWindow::closeEvent(QCloseEvent * event)	{
 	QCoreApplication::quit();
 }
 void DocWindow::showEvent(QShowEvent * event)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	//Q_UNUSED(event);
 	QWidget::showEvent(event);
@@ -855,7 +864,7 @@ void DocWindow::showEvent(QShowEvent * event)	{
 	
 }
 void DocWindow::appQuitEvent()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	QSettings		settings;
 	settings.setValue("DocWindowGeometry", saveGeometry());
@@ -884,7 +893,7 @@ SimpleSourceCodeEditor * DocWindow::focusedSourceCodeEditor()	{
 	return focusedEd;
 }
 void DocWindow::tmpSaveTimerSlot()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	QString			currentFragString = ui->fragShaderEditor->toPlainText();
 	QString			currentVertString = ui->vertShaderEditor->toPlainText();

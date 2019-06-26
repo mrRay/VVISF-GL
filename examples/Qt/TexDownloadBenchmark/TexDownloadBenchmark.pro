@@ -34,16 +34,21 @@ DEFINES += VVGL_SDK_QT
 SOURCES += \
 	main.cpp \
 	TexDownloadBenchmarkMainWindow.cpp \
-	../common/GLBufferQWidget.cpp
+	../common/GLBufferQWidget.cpp \
+	../common/DisplayLinkDriver.mm
 
 HEADERS += \
 	TexDownloadBenchmarkMainWindow.h \
-	../common/GLBufferQWidget.h
+	../common/GLBufferQWidget.h \
+	../common/DisplayLinkDriver.h
 
 FORMS += \
         TexDownloadBenchmarkMainWindow.ui
 
 
+mac {
+	LIBS += -framework CoreVideo -framework AppKit
+}
 
 
 # additions for VVGL lib

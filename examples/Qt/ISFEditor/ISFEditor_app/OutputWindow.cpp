@@ -238,7 +238,7 @@ void OutputWindow::widgetDrewItsFirstFrame()	{
 }
 */
 void OutputWindow::aboutToQuit()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	QSettings		settings;
 	settings.setValue("OutputWindowGeometry", saveGeometry());

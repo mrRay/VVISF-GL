@@ -35,15 +35,20 @@ SOURCES += \
 	main.cpp \
 	TexUploadBenchmarkMainWindow.cpp \
 	../common/GLBufferQWidget.cpp \
+	../common/DisplayLinkDriver.mm
 
 HEADERS += \
 	TexUploadBenchmarkMainWindow.h \
 	../common/GLBufferQWidget.h \
+	../common/DisplayLinkDriver.h
 
 FORMS += \
 	TexUploadBenchmarkMainWindow.ui
 
 
+mac {
+	LIBS += -framework CoreVideo -framework AppKit
+}
 
 
 # additions for VVGL lib

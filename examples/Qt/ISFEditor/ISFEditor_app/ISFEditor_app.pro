@@ -60,6 +60,7 @@ SOURCES += \
 	../../common/GLBufferQVideoSurface.cpp \
 	../../common/GLBufferQWidget.cpp \
 	../../common/ISFGLBufferQWidget.cpp \
+	../../common/DisplayLinkDriver.mm \
 	DocWindow.cpp \
 	misc_classes/FileLoadEventFilter.cpp \
 	ISFController.cpp \
@@ -125,6 +126,7 @@ HEADERS += \
 	../../common/GLBufferQVideoSurface.h \
 	../../common/GLBufferQWidget.h \
 	../../common/ISFGLBufferQWidget.h \
+	../../common/DisplayLinkDriver.h \
 	DocWindow.h \
 	misc_classes/FileLoadEventFilter.h \
 	ISFController.h \
@@ -285,7 +287,7 @@ win32 {
 	QT += winextras
 	LIBS += -lAdvapi32 -lOle32 -lShell32
 } else:mac {
-	LIBS += -framework Security
+	LIBS += -framework Security -framework CoreVideo
 } else:unix {
 	LIBS += -lutil
 }

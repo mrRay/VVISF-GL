@@ -61,7 +61,6 @@ void MainWindow::widgetDrewItsFirstFrame()	{
 	
 	//	make the global buffer pool, using a newly-created context that shares the base global context
 	CreateGlobalBufferPool(widgetCtx->newContextSharingMe());
-	cout << "global buffer pool is " << GetGlobalBufferPool() << endl;
 	
 	//	don't tell the widget to start rendering- doing so will cause it to start rendering at 60fps
 	//ui->bufferView->startRendering();
@@ -108,22 +107,24 @@ void FinishLaunching()	{
 	
 	//	connect the output window's buffer view's signal to the ISFController's redraw slot
 	ISFGLBufferQWidget		*bufferView = (ow==nullptr) ? nullptr : ow->bufferView();
-	if (bufferView == nullptr)
-		qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
+	if (bufferView == nullptr)	{
+		//qDebug() << "ERR: bufferView nil in " << __PRETTY_FUNCTION__;
+	}
 	else	{
 		QObject::connect(bufferView, &QOpenGLWidget::frameSwapped, GetISFController(), &ISFController::widgetRedrawSlot);
 	}
 	
-	qDebug() << "about to show the output window...";
+	//qDebug() << "about to show the output window...";
 	ow->show();
-	qDebug() << "finished showing the output window...";
+	//qDebug() << "finished showing the output window...";
 	
 	//	the doc window already created the auto updater- check for an update after a small delay
 	QTimer::singleShot(500, [&]()	{
 		//qDebug() << "checking for update!";
 		AutoUpdater		*aa = GetGlobalAutoUpdater();
-		if (aa == nullptr)
-			cout << "ERR: auto updater nil in main()\n";
+		if (aa == nullptr)	{
+			//cout << "ERR: auto updater nil in main()\n";
+		}
 		else	{
 			//aa->checkForUpdates();
 		}

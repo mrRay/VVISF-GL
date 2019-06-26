@@ -58,7 +58,7 @@ VVGL::GLTexToTexCopierRef VVGLRenderQThread::texCopier()	{
 
 
 void VVGLRenderQThread::start(QThread::Priority inPriority)	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	if (_ctx != nullptr)
 		_ctx->moveToThread(this);
@@ -72,7 +72,7 @@ void VVGLRenderQThread::start(QThread::Priority inPriority)	{
 
 
 void VVGLRenderQThread::run()	{
-	qDebug() << __PRETTY_FUNCTION__;
+	//qDebug() << __PRETTY_FUNCTION__;
 	
 	while (1)	{
 		//qDebug() << "\tentering wait loop...";

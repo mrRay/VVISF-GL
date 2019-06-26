@@ -155,7 +155,7 @@ bool ISFVideoSource::playingBackItem(const MediaFile & n)	{
 	return false;
 }
 void ISFVideoSource::loadFile(const MediaFile & n)	{
-	qDebug() << __PRETTY_FUNCTION__ << ", " << n;
+	//qDebug() << __PRETTY_FUNCTION__ << ", " << n;
 	
 	if (n.type() != MediaFile::Type_ISF)
 		return;

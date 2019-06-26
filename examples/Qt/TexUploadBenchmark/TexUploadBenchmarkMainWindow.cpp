@@ -164,7 +164,7 @@ GLBufferRef TexUploadBenchmarkMainWindow::createTexForWork()
 	desc.msAmount = 0;
 	desc.localSurfaceID = 0;
 	
-	GLBufferRef		returnMe = GetGlobalBufferPool()->createBufferRef(desc, cpuBuffer->srcRect.size, nullptr, Size(), true);
+	GLBufferRef		returnMe = GetGlobalBufferPool()->createBufferRef(desc, cpuBuffer->srcRect.size, nullptr, VVGL::Size(), true);
 	returnMe->parentBufferPool = GetGlobalBufferPool();
 	
 	return returnMe;

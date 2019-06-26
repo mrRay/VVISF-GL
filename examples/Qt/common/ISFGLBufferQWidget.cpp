@@ -20,9 +20,18 @@ using namespace VVISF;
 
 ISFGLBufferQWidget::ISFGLBufferQWidget(QWidget * inParent) :
 	QOpenGLWidget(inParent)
+#ifdef Q_OS_MACOS
+	, displayLinkDriver(inParent)
+#endif
 {
 	//cout << __PRETTY_FUNCTION__ << endl;
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+	
+#ifdef Q_OS_MACOS
+	displayLinkDriver.setDisplayLinkCallback([&]()	{
+		QMetaObject::invokeMethod(this, "update", Qt::AutoConnection);
+	});
+#endif
 }
 ISFGLBufferQWidget::~ISFGLBufferQWidget()
 {
@@ -36,7 +45,9 @@ void ISFGLBufferQWidget::drawBuffer(const GLBufferRef & inBuffer)
 {
 	lock_guard<recursive_mutex>		lock(ctxLock);
 	buffer = inBuffer;
+#ifndef Q_OS_MACOS
 	update();
+#endif
 }
 GLBufferRef ISFGLBufferQWidget::getBuffer()
 {
@@ -78,7 +89,9 @@ void ISFGLBufferQWidget::_renderNow()	{
 	}
 	
 	if (renderAnotherFrame)	{
+#ifndef Q_OS_MACOS
 		update();
+#endif
 	}
 	
 }
@@ -188,7 +201,11 @@ void ISFGLBufferQWidget::startRenderingSlot()
 	//connect(ctxThread, SIGNAL(started()), this, SLOT(requestUpdate()));
 	//connect(ctxThread, &QThread::started, this, &ISFGLBufferQWidget::requestUpdate);
 	//ctxThread->start();
+#ifdef Q_OS_MACOS
+	displayLinkDriver.start();
+#else
 	update();
+#endif
 	//cout << "\tFINISHED- " << __PRETTY_FUNCTION__ << endl;
 }
 void ISFGLBufferQWidget::stopRenderingSlot()
@@ -215,6 +232,9 @@ void ISFGLBufferQWidget::stopRenderingSlot()
 	//ctxThread->quit();
 	//ctxThread->deleteLater();
 	ctxThread = nullptr;
+#ifdef Q_OS_MACOS
+	displayLinkDriver.stop();
+#endif
 	//qDebug()<<"\tctxThread is now "<<ctxThread;
 }
 void ISFGLBufferQWidget::aboutToQuit()	{
@@ -275,11 +295,13 @@ void ISFGLBufferQWidget::initializeGL()
 			
 			//scene->setPerformClear(true);
 			//scene->setClearColor(0., 0., 0., 0.);
-
+			
+			/*
 			if (scene->context()->sameShareGroupAs(GetGlobalBufferPool()->context()))
 				cout << "\tISFGLBufferQWidget is in same sharegroup as buffer pool...\n";
 			else
 				cout << "\tERR: ISFGLBufferQWidget is NOT in same sharegroup as buffer pool!\n";
+			*/
 		}
 		
 		

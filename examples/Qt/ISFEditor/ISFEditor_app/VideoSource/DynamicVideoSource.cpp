@@ -151,7 +151,7 @@ MediaFile::Type DynamicVideoSource::srcType()	{
 
 
 void DynamicVideoSource::loadFile(const MediaFile & n)	{
-	qDebug() << __PRETTY_FUNCTION__ << "... " << n.name();
+	//qDebug() << __PRETTY_FUNCTION__ << "... " << n.name();
 	
 	lock_guard<recursive_mutex>		tmpLock(srcLock);
 	
