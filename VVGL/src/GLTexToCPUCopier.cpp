@@ -132,8 +132,10 @@ void GLTexToCPUCopier::_beginProcessing(const GLBufferRef & /*inCPUBuffer*/, con
 	GLERRLOG
 	
 	//	unbind the FBO
+	/*
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0, 0);
 	GLERRLOG
+	*/
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GLERRLOG
 }

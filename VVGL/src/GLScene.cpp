@@ -886,6 +886,7 @@ void GLScene::_renderCleanup()	{
 	GLERRLOG
 	//	unbind the render target's attachments
 	if (_renderTarget.fboName() > 0)	{
+		/*
 		if (_renderTarget.depthName() > 0)	{
 			glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 0, 0, 0);
 			GLERRLOG
@@ -894,6 +895,7 @@ void GLScene::_renderCleanup()	{
 			glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 0, 0, 0);
 			GLERRLOG
 		}
+		*/
 		//	unbind the framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		GLERRLOG
