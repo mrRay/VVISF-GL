@@ -471,6 +471,22 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		modSrcString.reserve(newFragShaderSrc.capacity());
 		modSrcString.append(*_fragShaderSource);
 		
+
+		//	run through the source, deleting any multi-line comments
+		//{
+			//Range			commentStartRange;
+			//Range			commentEndRange;
+			//commentStartRange = Range(modSrcString.find_first_of("/*"), 2);
+			//commentEndRange = Range(modSrcString.find_first_of("*/"), 2);
+			//while (commentStartRange.loc != string::npos && commentEndRange.loc != string::npos && commentEndRange.loc > commentStartRange.loc)	{
+			//	modSrcString.erase(commentStartRange.min(), commentEndRange.max()-commentStartRange.min());
+			//
+			//	commentStartRange = Range(modSrcString.find_first_of("/*"), 2);
+			//	commentEndRange = Range(modSrcString.find_first_of("*/"), 2);
+			//}
+		//}
+
+		
 		//	find-and-replace vv_FragNormCoord (v1 of the ISF spec) with isf_FragNormCoord (v2 of the ISF spec)
 		searchString = string("vv_FragNormCoord");
 		newString = string("isf_FragNormCoord");
@@ -495,10 +511,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					if (_throwExcept)	{
+						map<string,string>		tmpErrDict;
+						string					tmpErrLog = FmtString("ERROR: 0:%d: IMG_PIXEL has wrong number of arguments",NumLines(string(modSrcString, 0, tmpRange.max()))+1);
+						tmpErrDict.insert( pair<string,string>(string("fragErrLog"), tmpErrLog) );
+						tmpErrDict.insert( pair<string,string>(string("fragSrc"), modSrcString) );
 						if (_path != nullptr)
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path);
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of arguments", *_path, tmpErrDict);
 						else
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of args", "");
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_PIXEL has wrong number of args", "", tmpErrDict);
+					}
+					else	{
+						modSrcString.replace(tmpRange.loc, tmpRange.len, string("ERR_WRONG_NUMBER_ARGS"));
 					}
 				}
 				else	{
@@ -547,10 +570,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=2 && varArrayCount!=3)	{
 					if (_throwExcept)	{
+						map<string,string>		tmpErrDict;
+						string					tmpErrLog = FmtString("ERROR: 0:%d: IMG_NORM_PIXEL has wrong number of arguments",NumLines(string(modSrcString, 0, tmpRange.max()))+1);
+						tmpErrDict.insert( pair<string,string>(string("fragErrLog"), tmpErrLog) );
+						tmpErrDict.insert( pair<string,string>(string("fragSrc"), modSrcString) );
 						if (_path != nullptr)
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path);
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", *_path, tmpErrDict);
 						else
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", "");
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_NORM_PIXEL has wrong number of arguments", "", tmpErrDict);
+					}
+					else	{
+						modSrcString.replace(tmpRange.loc, tmpRange.len, string("ERR_WRONG_NUMBER_ARGS"));
 					}
 				}
 				else	{
@@ -599,10 +629,21 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
 					if (_throwExcept)	{
-						if (_path != nullptr)
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
-						else
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", "");
+						map<string,string>		tmpErrDict;
+						string					tmpErrLog = FmtString("ERROR: 0:%d: IMG_THIS_PIXEL has wrong number of arguments",NumLines(string(modSrcString, 0, tmpRange.max()))+1);
+						tmpErrDict.insert( pair<string,string>(string("fragErrLog"), tmpErrLog) );
+						tmpErrDict.insert( pair<string,string>(string("fragSrc"), modSrcString) );
+						if (_path != nullptr)	{
+							//throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path);
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", *_path, tmpErrDict);
+						}
+						else	{
+							//throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", "");
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_PIXEL has wrong number of arguments", "", tmpErrDict);
+						}
+					}
+					else	{
+						modSrcString.replace(tmpRange.loc, tmpRange.len, string("ERR_WRONG_NUMBER_ARGS"));
 					}
 				}
 				else	{
@@ -670,10 +711,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				size_t				varArrayCount = varArray.size();
 				if (varArrayCount!=1)	{
 					if (_throwExcept)	{
+						map<string,string>		tmpErrDict;
+						string					tmpErrLog = FmtString("ERROR: 0:%d: IMG_THIS_NORM_PIXEL has wrong number of arguments",NumLines(string(modSrcString, 0, tmpRange.max()))+1);
+						tmpErrDict.insert( pair<string,string>(string("fragErrLog"), tmpErrLog) );
+						tmpErrDict.insert( pair<string,string>(string("fragSrc"), modSrcString) );
 						if (_path != nullptr)
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path);
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", *_path, tmpErrDict);
 						else
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", "");
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_THIS_NORM_PIXEL has wrong number of arguments", "", tmpErrDict);
+					}
+					else	{
+						modSrcString.replace(tmpRange.loc, tmpRange.len, string("ERR_WRONG_NUMBER_ARGS"));
 					}
 				}
 				else	{
@@ -740,10 +788,17 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 				size_t			varArrayCount = varArray.size();
 				if (varArrayCount != 1)	{
 					if (_throwExcept)	{
+						map<string,string>		tmpErrDict;
+						string					tmpErrLog = FmtString("ERROR: 0:%d: IMG_SIZE has wrong number of arguments",NumLines(string(modSrcString, 0, tmpRange.max()))+1);
+						tmpErrDict.insert( pair<string,string>(string("fragErrLog"), tmpErrLog) );
+						tmpErrDict.insert( pair<string,string>(string("fragSrc"), modSrcString) );
 						if (_path != nullptr)
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path);
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", *_path, tmpErrDict);
 						else
-							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", "");
+							throw ISFErr(ISFErrType_ErrorParsingFS, "IMG_SIZE has wrong number of arguments", "", tmpErrDict);
+					}
+					else	{
+						modSrcString.replace(tmpRange.loc, tmpRange.len, string("ERR_WRONG_NUMBER_ARGS"));
 					}
 				}
 				else	{
@@ -1184,7 +1239,9 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	//	isolate the JSON blob that should be at the beginning of the file in a comment, save it as one string- save everything else as the raw shader source string
 	auto			openCommentIndex = inRawFile.find("/*");
 	auto			closeCommentIndex = inRawFile.find("*/");
-	if (openCommentIndex == string::npos || closeCommentIndex == string::npos)	{
+	if (openCommentIndex == string::npos	||
+	closeCommentIndex == string::npos		||
+	closeCommentIndex < openCommentIndex)	{
 		if (_throwExcept)	{
 			if (_path != nullptr)
 				throw ISFErr(ISFErrType_MalformedJSON, "ISFDoc missing comment blob", *_path);

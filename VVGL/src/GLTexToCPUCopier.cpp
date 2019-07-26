@@ -212,7 +212,7 @@ void GLTexToCPUCopier::_finishProcessing(const GLBufferRef & inCPUBuffer, const 
 
 
 GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, const GLBufferRef & inCPUBuffer, const bool & createInCurrentContext)	{
-	cout << __PRETTY_FUNCTION__ << "... " << *inTexBuffer << endl;
+	//cout << __PRETTY_FUNCTION__ << "... " << *inTexBuffer << endl;
 	//	bail if there's no texture to download
 	if (inTexBuffer == nullptr)
 		return nullptr;

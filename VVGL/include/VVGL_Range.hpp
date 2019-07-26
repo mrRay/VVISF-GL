@@ -53,6 +53,7 @@ struct Range	{
 	}
 	Range & operator=(const Range & n) { loc=n.loc; len=n.len; return *this; }
 	bool operator==(const Range & n) { return (loc==n.loc && len==n.len); }
+	friend std::ostream & operator<<(std::ostream & os, const Range & n) { os << "{" << n.loc << ":" << n.len << "}"; return os; }
 };
 
 
