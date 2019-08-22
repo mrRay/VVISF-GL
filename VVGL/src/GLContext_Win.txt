@@ -382,6 +382,7 @@ GLContext GLContext::newContextSharingMe() const	{
 		const int			pixelAttribs[] = {
 			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+			//WGL_DRAW_TO_BITMAP_ARB, GL_TRUE,
 			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
 			WGL_SWAP_METHOD_ARB, WGL_SWAP_EXCHANGE_ARB,
 			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
@@ -411,8 +412,13 @@ GLContext GLContext::newContextSharingMe() const	{
 		returnMe[1] = 2;
 		returnMe[2] = WGL_CONTEXT_MINOR_VERSION_ARB;
 		returnMe[3] = 1;
+		//returnMe[4] = WGL_CONTEXT_LAYER_PLANE_ARB;
+		//returnMe[5] = 0;
+		//returnMe[6] = WGL_CONTEXT_FLAGS_ARB;
+		//returnMe[7] = WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 		returnMe[4] = WGL_CONTEXT_PROFILE_MASK_ARB;
 		returnMe[5] = WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+		returnMe[6] = 0;
 		//return returnMe;
 		return std::move(returnMe);
 	}
@@ -422,16 +428,21 @@ GLContext GLContext::newContextSharingMe() const	{
 		returnMe[1] = 4;
 		returnMe[2] = WGL_CONTEXT_MINOR_VERSION_ARB;
 		returnMe[3] = 5;
+		//returnMe[4] = WGL_CONTEXT_LAYER_PLANE_ARB;
+		//returnMe[5] = 0;
+		//returnMe[6] = WGL_CONTEXT_FLAGS_ARB;
+		//returnMe[7] = WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 		returnMe[4] = WGL_CONTEXT_PROFILE_MASK_ARB;
 		returnMe[5] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+		returnMe[6] = 0;
 		//return returnMe;
 		return std::move(returnMe);
 	}
 	bool ConfigDeviceContextPixelFormat(const HDC & inDC) {
 		const int			pixelAttribs[] = {
+			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 			//WGL_DRAW_TO_BITMAP_ARB, GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
 			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,

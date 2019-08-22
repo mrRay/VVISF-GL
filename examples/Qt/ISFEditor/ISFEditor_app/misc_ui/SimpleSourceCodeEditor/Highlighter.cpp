@@ -455,8 +455,8 @@ void Highlighter::highlightBlock(const QString & inText)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << ": " << inText;
 	bool			isPlainText = true;
-	//	run through all of the highlight rules, checked the passed string against each
-	foreach (const HighlightRule & tmpRule, syntaxDocHighlightRules) {
+	//	first run through the local var highlight rules
+	foreach (const HighlightRule & tmpRule, localVarHighlightRules)	{
 		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch		tmpMatch = matchIterator.next();
@@ -464,7 +464,8 @@ void Highlighter::highlightBlock(const QString & inText)
 			isPlainText = false;
 		}
 	}
-	foreach (const HighlightRule & tmpRule, localVarHighlightRules)	{
+	//	run through all of the syntax highlight rules, checked the passed string against each
+	foreach (const HighlightRule & tmpRule, syntaxDocHighlightRules) {
 		QRegularExpressionMatchIterator		matchIterator = tmpRule.pattern.globalMatch(inText);
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch		tmpMatch = matchIterator.next();
@@ -483,28 +484,28 @@ void Highlighter::highlightBlock(const QString & inText)
 	}
 	
 	//	if there isn't an open multi-line comment, look for the beginning of one in the passed text
-	int		startIndex = 0;
+	int		multiLineCommentStartIndex = 0;
 	if (previousBlockState() != HBS_OpenComment)	{
-		startIndex = inText.indexOf(commentStartExpr);
+		multiLineCommentStartIndex = inText.indexOf(commentStartExpr);
 	}
 	//	if the multi-line comment beginning occurred after the single-line comment start, we need to ignore it!
-	if (startIndex>=0 && singleLineCommentStartIndex>=0 && startIndex>singleLineCommentStartIndex)
-		startIndex = -1;
+	if (multiLineCommentStartIndex>=0 && singleLineCommentStartIndex>=0 && multiLineCommentStartIndex>singleLineCommentStartIndex)
+		multiLineCommentStartIndex = -1;
 	
 	//	if we found the beginning of a multi-line comment...
-	while (startIndex >= 0) {
-		QRegularExpressionMatch		tmpMatch = commentEndExpr.match(inText, startIndex);
+	while (multiLineCommentStartIndex >= 0) {
+		QRegularExpressionMatch		tmpMatch = commentEndExpr.match(inText, multiLineCommentStartIndex);
 		int			endIndex = tmpMatch.capturedStart();
 		int			commentLength = 0;
 		if (endIndex == -1) {
 			setCurrentBlockState(HBS_OpenComment);
-			commentLength = inText.length() - startIndex;
+			commentLength = inText.length() - multiLineCommentStartIndex;
 		}
 		else	{
-			commentLength = endIndex - startIndex + tmpMatch.capturedLength();
+			commentLength = endIndex - multiLineCommentStartIndex + tmpMatch.capturedLength();
 		}
-		setFormat(startIndex, commentLength, commentFmt);
-		startIndex = inText.indexOf(commentStartExpr, startIndex + commentLength);
+		setFormat(multiLineCommentStartIndex, commentLength, commentFmt);
+		multiLineCommentStartIndex = inText.indexOf(commentStartExpr, multiLineCommentStartIndex + commentLength);
 		isPlainText = false;
 	}
 	

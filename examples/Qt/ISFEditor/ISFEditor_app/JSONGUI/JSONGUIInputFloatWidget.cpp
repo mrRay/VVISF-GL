@@ -85,7 +85,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	});
 	QObject::disconnect(ui->minCBox, 0, 0, 0);
 	QObject::connect(ui->minCBox, &QCheckBox::clicked, [&](bool checked)	{
-		_input->setValue("MIN", (checked) ? QJsonValue(ui->maxSBox->minimum()-1.0) : QJsonValue::Undefined);
+		_input->setValue("MIN", (checked) ? QJsonValue(ui->maxSBox->value()-1.0) : QJsonValue::Undefined);
 		RecreateJSONAndExport();
 	});
 	//	maximum UI items
@@ -96,7 +96,7 @@ void JSONGUIInputFloatWidget::prepareUIItems() {
 	});
 	QObject::disconnect(ui->maxCBox, 0, 0, 0);
 	QObject::connect(ui->maxCBox, &QCheckBox::clicked, [&](bool checked)	{
-		_input->setValue("MAX", (checked) ? QJsonValue(ui->minSBox->maximum()+1.0) : QJsonValue::Undefined);
+		_input->setValue("MAX", (checked) ? QJsonValue(ui->minSBox->value()+1.0) : QJsonValue::Undefined);
 		RecreateJSONAndExport();
 	});
 	

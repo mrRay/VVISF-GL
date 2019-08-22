@@ -471,22 +471,6 @@ bool ISFDoc::generateShaderSource(string * outFragSrc, string * outVertSrc, GLVe
 		modSrcString.reserve(newFragShaderSrc.capacity());
 		modSrcString.append(*_fragShaderSource);
 		
-
-		//	run through the source, deleting any multi-line comments
-		//{
-			//Range			commentStartRange;
-			//Range			commentEndRange;
-			//commentStartRange = Range(modSrcString.find_first_of("/*"), 2);
-			//commentEndRange = Range(modSrcString.find_first_of("*/"), 2);
-			//while (commentStartRange.loc != string::npos && commentEndRange.loc != string::npos && commentEndRange.loc > commentStartRange.loc)	{
-			//	modSrcString.erase(commentStartRange.min(), commentEndRange.max()-commentStartRange.min());
-			//
-			//	commentStartRange = Range(modSrcString.find_first_of("/*"), 2);
-			//	commentEndRange = Range(modSrcString.find_first_of("*/"), 2);
-			//}
-		//}
-
-		
 		//	find-and-replace vv_FragNormCoord (v1 of the ISF spec) with isf_FragNormCoord (v2 of the ISF spec)
 		searchString = string("vv_FragNormCoord");
 		newString = string("isf_FragNormCoord");
