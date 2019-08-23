@@ -4,7 +4,7 @@
     <Version>1.0.0</Version>
     <Title>ISF Editor Installer</Title>
     <Publisher>Vidvox</Publisher>
-    <ProductUrl>https://www.github.com/mrRay/ISFSandbox</ProductUrl>
+    <ProductUrl>https://www.github.com/mrRay/VVISF-GL</ProductUrl>
     <StartMenuDir>ISF</StartMenuDir>
     <TargetDir>/Applications/ISF Editor</TargetDir>
     <RemoteRepositories>
