@@ -3226,6 +3226,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -3738,7 +3739,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#echo \"DSTROOT is $DSTROOT\"\n\nplistbuddy=/usr/libexec/PlistBuddy\ntemplateplist=\"$PROJECT_DIR/ISFQL_Renderer/com.vidvox.ISFQL-Renderer_TEMPLATE.plist\"\ntargetfile=\"$DSTROOT/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.plist\"\necho \"templateplist is $templateplist\"\necho \"targetfile is $targetfile\"\n\n\n\n# copy the template plist to the LaunchAgents folder- the plugin and launch agent app were installed during their respective build processes\nif [ -f $targetfile ]\nthen\n    echo \"removing existing plist...\"\n    rm \"$targetfile\"\nfi\necho \"copying template plist...\"\ncp -r \"$templateplist\" \"$targetfile\"\n# now use plistbuddy to edit the file- we need to write the INSTALLED PATH of the launch agent to the plist\necho \"customizing plist...\"\n$plistbuddy -c \"delete :ProgramArguments\" $targetfile\n$plistbuddy -c \"add :ProgramArguments array\" $targetfile\n\n\n\n\n# if we're in release mode, finish the plist and then make a pkg\nif [ \"$CONFIGURATION\" = \"Release\" ]\nthen\n    echo \"release mode build- building files then assembling a pkg\"\n    \n    # if we're in release mode then we need to write an absolute path to targetfile\n    $plistbuddy -c \"add :ProgramArguments: string '/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.app/Contents/MacOS/com.vidvox.ISFQL-Renderer'\" $targetfile\n    \n    # make the plist\n    pkgbuild --identifier \"com.vidvox.ISFQL-Renderer\" --info \"$PROJECT_DIR/ISFQL/PackageInfo\" --root \"$DSTROOT\" \"$DSTROOT/../ISF QuickLook Plugin_unsigned.pkg\"\n    productsign --sign \"Developer ID Installer: Vidvox, LLC\" \"$DSTROOT/../ISF QuickLook Plugin_unsigned.pkg\" \"$DSTROOT/../ISF QuickLook Plugin.pkg\"\n# else we're not in release mode- finish the plist, then reload the launch agent\nelse\n    echo \"debug mode build- installing the compiled products in the user library...\"\n    \n    # if we're in debug mode then right now targetfile is a plist in ~/Library/LaunchAgents, and we have to write the full path of the compiled launch agent to it\n    $plistbuddy -c \"add :ProgramArguments: string '$DSTROOT/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.app/Contents/MacOS/com.vidvox.ISFQL-Renderer'\" $targetfile\n    \n    # if there's a global launch agent, try unloading it\n    globalLaunchAgentPlist=\"/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.plist\"\n    if [ -f $globalLaunchAgentPlist ]\n    then\n        echo \"found a global launch agent, unloading it...\"\n        launchctl unload $globalLaunchAgentPlist\n    fi\n    \n    # if there's a local launch agent, reload it\n    if [ -f $targetfile ]\n    then\n        echo \"unloading any old launch agents...\"\n        launchctl unload $targetfile\n        echo \"loading the new launch agent...\"\n        launchctl load $targetfile\n    fi\n    \nfi\n\n";
+			shellScript = "echo \"DSTROOT is $DSTROOT\"\n\nplistbuddy=/usr/libexec/PlistBuddy\ntemplateplist=\"$PROJECT_DIR/ISFQL_Renderer/com.vidvox.ISFQL-Renderer_TEMPLATE.plist\"\ntargetfile=\"$DSTROOT/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.plist\"\necho \"templateplist is $templateplist\"\necho \"targetfile is $targetfile\"\n\n\n\n# copy the template plist to the LaunchAgents folder- the plugin and launch agent app were installed during their respective build processes\nif [ -f $targetfile ]\nthen\n    echo \"removing existing plist...\"\n    rm \"$targetfile\"\nfi\necho \"copying template plist...\"\ncp -r \"$templateplist\" \"$targetfile\"\n# now use plistbuddy to edit the file- we need to write the INSTALLED PATH of the launch agent to the plist\necho \"customizing plist...\"\n$plistbuddy -c \"delete :ProgramArguments\" $targetfile\n$plistbuddy -c \"add :ProgramArguments array\" $targetfile\n\n\n\n\n# if we're in release mode, finish the plist and then make a pkg\nif [ \"$CONFIGURATION\" = \"Release\" ]\nthen\n    echo \"release mode build- building files then assembling a pkg\"\n    \n    # if we're in release mode then we need to write an absolute path to targetfile\n    $plistbuddy -c \"add :ProgramArguments: string '/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.app/Contents/MacOS/com.vidvox.ISFQL-Renderer'\" $targetfile\n    \n    # make the plist\n    pkgbuild --identifier \"com.vidvox.ISFQL-Renderer\" --info \"$PROJECT_DIR/ISFQL/PackageInfo\" --root \"$DSTROOT\" \"$DSTROOT/../ISF QuickLook Plugin_unsigned.pkg\"\n    productsign --sign \"Developer ID Installer: Vidvox, LLC\" \"$DSTROOT/../ISF QuickLook Plugin_unsigned.pkg\" \"$DSTROOT/../ISF QuickLook Plugin.pkg\"\n# else we're not in release mode- finish the plist, then reload the launch agent\nelse\n    echo \"debug mode build- installing the compiled products in the user library...\"\n    \n    # if we're in debug mode then right now targetfile is a plist in ~/Library/LaunchAgents, and we have to write the full path of the compiled launch agent to it\n    $plistbuddy -c \"add :ProgramArguments: string '$DSTROOT/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.app/Contents/MacOS/com.vidvox.ISFQL-Renderer'\" $targetfile\n    \n    # if there's a global launch agent, try unloading it\n    globalLaunchAgentPlist=\"/Library/LaunchAgents/com.vidvox.ISFQL-Renderer.plist\"\n    if [ -f $globalLaunchAgentPlist ]\n    then\n        echo \"found a global launch agent, unloading it...\"\n        launchctl unload $globalLaunchAgentPlist\n    fi\n    \n    # if there's a local launch agent, reload it\n    if [ -f $targetfile ]\n    then\n        echo \"unloading any old launch agents...\"\n        launchctl unload $targetfile\n        echo \"loading the new launch agent...\"\n        launchctl load $targetfile\n    fi\n    \nfi\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -5154,7 +5155,7 @@
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DEVELOPMENT_TEAM = KH97KZU7A7;
-				DSTROOT = "~";
+				DSTROOT = "$(HOME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ISFQL/Info.plist;
 				INSTALL_PATH = /Library/QuickLook;
@@ -5210,7 +5211,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEVELOPMENT_TEAM = KH97KZU7A7;
-				DSTROOT = "~";
+				DSTROOT = "$(HOME)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ISFQL_Renderer/Info.plist;
 				INSTALL_PATH = /Library/LaunchAgents;
