@@ -4,6 +4,8 @@ TEMPLATE = aux
 mac	{
 	# the installer target's contents are only executed during release builds
 	CONFIG(release, debug|release)	{
+		QMAKE_TARGET_BUNDLE_PREFIX = com.vidvox
+		TARGET = ISFEditorInstaller
 
 		BINARYCREATOR = $$dirname(QMAKE_QMAKE)/../../../Tools/QtInstallerFramework/3.0/bin/binarycreator
 		REPOGEN = $$dirname(QMAKE_QMAKE)/../../../Tools/QtInstallerFramework/3.0/bin/repogen
@@ -15,9 +17,12 @@ mac	{
 		offline_installer_creator.output = ISFEditor_installer
 		offline_installer_creator.clean_commands = rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
 		offline_installer_creator.commands += rm -Rf "$$OUT_PWD/$$offline_installer_creator.output\.app";
-		offline_installer_creator.commands += $$BINARYCREATOR -s "KH97KZU7A7" -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
+		#offline_installer_creator.commands += $$BINARYCREATOR -s "KH97KZU7A7" -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
+		offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
 		#offline_installer_creator.commands += $$BINARYCREATOR -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
 		#offline_installer_creator.commands += $$BINARYCREATOR --offline-only -c $$PWD/config/config.xml -p $$OUT_PWD/packages ${QMAKE_FILE_OUT};
+		offline_installer_creator.commands += /usr/libexec/PlistBuddy -c \"Set :CFBundleIdentifier com.vidvox.ISFEditorInstaller\" \"$$OUT_PWD/${QMAKE_FILE_OUT}.app/Contents/Info.plist\";
+		offline_installer_creator.commands += codesign --force --deep --options runtime --sign "KH97KZU7A7" "$$OUT_PWD/${QMAKE_FILE_OUT}.app";
 		offline_installer_creator.CONFIG += target_predeps no_link combine
 
 		repo_creator.input = INPUT

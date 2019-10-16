@@ -167,11 +167,14 @@ QList<MediaFile> InterAppVideoSource_Mac::createListOfStaticMediaFiles()	{
 			//NSLog(@"\t\tserverDict is %@",serverDict);
 			NSString		*tmpAppNameNS = [serverDict objectForKey:SyphonServerDescriptionAppNameKey];
 			QString			tmpAppName([tmpAppNameNS UTF8String]);
+
+			NSString		*tmpServerNameNS = [serverDict objectForKey:SyphonServerDescriptionNameKey];
+			QString			tmpServerName([tmpServerNameNS UTF8String]);
 			
 			NSString		*tmpUUIDNS = [serverDict objectForKey:SyphonServerDescriptionUUIDKey];
 			QString			tmpUUID([tmpUUIDNS UTF8String]);
 			
-			returnMe.append(MediaFile(MediaFile::Type_App, tmpAppName, tmpUUID));
+			returnMe.append(MediaFile(MediaFile::Type_App, tmpAppName+"-"+tmpServerName, tmpUUID));
 		}
 	}
 	

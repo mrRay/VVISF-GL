@@ -6,6 +6,7 @@
 #include "AutoUpdater.h"
 #include "LoadingWindow.h"
 #include "FileLoadEventFilter.h"
+#include "Logging.h"
 
 
 
@@ -29,6 +30,9 @@ int main(int argc, char *argv[])
 		freopen("CONOUT$", "w", stderr);
 	}
 #endif	//	_WIN32
+	
+	//	set up the mac logger
+	ConfigureLogging();
 	
 	
 	//	we want all the widgets to share contexts, and we need to make a widget to get that shard context (there's no way to tell a widget to use a given context)

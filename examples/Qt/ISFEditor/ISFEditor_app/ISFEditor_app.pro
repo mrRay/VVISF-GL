@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.11
+VERSION = 2.9.12
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -83,6 +83,7 @@ SOURCES += \
 	LoadingWindow.cpp \
 	main.cpp \
 	MainWindow.cpp \
+	misc_classes/Logging.cpp \
 	misc_classes/MediaFile.cpp \
 	misc_classes/VideoSourceMenuItem.cpp \
 	misc_ui/ISFUIItem.cpp \
@@ -149,6 +150,7 @@ HEADERS += \
 	JSONScrollWidget.h \
 	LoadingWindow.h \
 	MainWindow.h \
+	misc_classes/Logging.h \
 	misc_classes/MediaFile.h \
 	misc_classes/VideoSourceMenuItem.h \
 	misc_ui/ISFUIItem.h \
@@ -195,10 +197,14 @@ mac {
 	SOURCES += ../../common/SyphonVVBufferPoolAdditions.mm \
 		VideoSource/InterAppVideoSource_Mac.mm \
 		VideoOutput/InterAppOutput_Mac.mm \
+		misc_classes/Logging_Mac.mm \
+		../../common/VVLogger.mm \
 		../../common/DisplayLinkDriver.mm
 	HEADERS += ../../common/SyphonVVBufferPoolAdditions.h \
 		VideoSource/InterAppVideoSource_Mac.h \
 		VideoOutput/InterAppOutput_Mac.h \
+		misc_classes/Logging_Mac.h \
+		../../common/VVLogger.h \
 		../../common/DisplayLinkDriver.h
 }
 win32	{
@@ -212,6 +218,7 @@ win32	{
 		Spout/SpoutReceiver.cpp \
 		Spout/SpoutSDK.cpp \
 		Spout/SpoutSender.cpp \
+		Spout/SpoutSenderMemory.cpp \
 		Spout/SpoutSenderNames.cpp \
 		Spout/SpoutSharedMemory.cpp \
 		VideoSource/SpoutSourcesWatcher.cpp
@@ -227,6 +234,7 @@ win32	{
 		Spout/SpoutReceiver.h \
 		Spout/SpoutSDK.h \
 		Spout/SpoutSender.h \
+		Spout/SpoutSenderMemory.h \
 		Spout/SpoutSenderNames.h \
 		Spout/SpoutSharedMemory.h \
 		VideoSource/SpoutSourcesWatcher.h
@@ -496,13 +504,16 @@ mac {
 		QMAKE_POST_LINK += cp -vaRf $$_PRO_FILE_PWD_/Syphon/Syphon.framework $$framework_dir;
 		QMAKE_POST_LINK += cp -vaRf $$OUT_PWD/../fftreal/fftreal.framework $$framework_dir;
 		
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
-		QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
-		
-		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
-		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/Syphon.framework";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/fftreal.framework";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVGL.1.0.0.dylib";
+		#QMAKE_POST_LINK += codesign -f -s "KH97KZU7A7" "$$framework_dir/libVVISF.1.0.0.dylib";
+
+		#QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app -codesign="KH97KZU7A7";
+		QMAKE_POST_LINK += macdeployqt $$OUT_PWD/$$TARGET\.app;
+
+		QMAKE_POST_LINK += codesign --force --deep --options runtime --sign "KH97KZU7A7" --entitlements $$_PRO_FILE_PWD_/ISFEditor.entitlements $$OUT_PWD/$$TARGET\.app
+		#QMAKE_POST_LINK += codesign --force --deep --options runtime --sign "KH97KZU7A7" $$OUT_PWD/$$TARGET\.app
 	}
 }
 # windows need some assembly for deployment
@@ -521,8 +532,17 @@ win32	{
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../VVISF/release/VVISF.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../../../../external/GLEW/win_x64/glew32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
 		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$OUT_PWD/../fftreal/release/fftreal.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
-		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/libeay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
-		QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/ssleay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+		equals(QT_MAJOR_VERSION, 5)	{
+			lessThan(QT_MINOR_VERSION,13)	{
+				QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/libeay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+				QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/ssleay32.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+			}
+			else	{
+				QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/libcrypto-1_1-x64.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+				QMAKE_POST_LINK += copy $$shell_quote($$shell_path($$_PRO_FILE_PWD_/OpenSSL/libssl-1_1-x64.dll)) $${MY_DEPLOY_DIR} $$escape_expand(\n)
+			}
+		}
+
 
 		MY_WINDEPLOYQT = $$shell_quote($$shell_path($$[QT_INSTALL_BINS]/windeployqt))
 		MY_TARGET_EXE = $$shell_quote($$shell_path("$${OUT_PWD}/release/$${TARGET}.exe"))

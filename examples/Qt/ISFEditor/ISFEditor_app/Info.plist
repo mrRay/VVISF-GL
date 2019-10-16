@@ -26,6 +26,10 @@
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Records from video inputs as per user request</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Records from audio inputs as per user request</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>CFBundleDocumentTypes</key>
