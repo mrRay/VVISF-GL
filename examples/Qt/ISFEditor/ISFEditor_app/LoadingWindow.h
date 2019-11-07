@@ -7,6 +7,8 @@ class QItemSelection;
 class QScrollArea;
 class DynamicVideoSource;
 
+#include "VVISF.hpp"
+
 
 
 
@@ -32,7 +34,7 @@ public:
 	void setBaseDirectory(const QString & inBaseDir);
 	void selectFile(const QString & inFileToSelect);
 	
-	void on_createNewFile();
+	void on_createNewFile(const bool & inShowTypePicker=false, const VVISF::ISFFileType & inFileType=VVISF::ISFFileType_None);
 	void on_loadFile(const QString & n);
 	void on_saveFile();
 	

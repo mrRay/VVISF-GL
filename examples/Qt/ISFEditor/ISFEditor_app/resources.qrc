@@ -8,5 +8,8 @@
         <file>resources/SwizzleISF-BGRAtoRGBA.fs</file>
         <file>resources/ISFEditorAppIcon.png</file>
         <file>resources/About.html</file>
+        <file>resources/NewGeneratorTemplate.txt</file>
+        <file>resources/NewFilterTemplate.txt</file>
+        <file>resources/NewTransitionTemplate.txt</file>
     </qresource>
 </RCC>

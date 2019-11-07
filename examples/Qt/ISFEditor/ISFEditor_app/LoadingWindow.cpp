@@ -14,6 +14,7 @@
 #include <QStandardItemModel>
 #include <QAbstractEventDispatcher>
 #include <QScreen>
+#include <QMessageBox>
 
 #include "DocWindow.h"
 #include "ISFController.h"
@@ -84,8 +85,66 @@ QScrollArea * LoadingWindow::getScrollArea()	{
 }
 QSpinBox * LoadingWindow::getWidthSB() { return ui->renderResWidthWidget; }
 QSpinBox * LoadingWindow::getHeightSB() { return ui->renderResHeightWidget; }
-void LoadingWindow::on_createNewFile()	{
-	//qDebug() << __PRETTY_FUNCTION__;
+void LoadingWindow::on_createNewFile(const bool & inShowTypePicker, const VVISF::ISFFileType & inFileType)	{
+	//qDebug() << __PRETTY_FUNCTION__ << " ... " << inShowTypePicker << ", " << QString(ISFFileTypeString(inFileType).c_str());
+	
+	DocWindow		*dw = GetDocWindow();
+	ISFFileType		fileType = ISFFileType_None;
+	if (inShowTypePicker)	{
+		//	before we show the "new file type" picker, pause the auto-save timer...
+		if (dw != nullptr)
+			dw->pauseAutoSaveTimer();
+		//	figure out what kind of file the user wants to create
+		QMessageBox		*question = new QMessageBox(this);
+		question->addButton("Cancel", QMessageBox::ButtonRole::NoRole);
+		question->addButton("Generator", QMessageBox::ButtonRole::YesRole);
+		question->addButton("Filter", QMessageBox::ButtonRole::YesRole);
+		question->addButton("Transition", QMessageBox::ButtonRole::YesRole);
+		question->setText("What kind of ISF would you like to create?");
+		//question->setDetailedText("This is the detailed text");
+		//question->setWindowTitle("This is the title");
+		question->setWindowModality(Qt::ApplicationModal);
+		int			ret = question->exec();
+		if (ret == 0)
+			return;
+		switch (ret)	{
+		case 1:		fileType = ISFFileType_Source;		break;
+		case 2:		fileType = ISFFileType_Filter;		break;
+		case 3:		fileType = ISFFileType_Transition;	break;
+		default:	fileType = ISFFileType_None;		break;
+		}
+	}
+	//	if there's a passed filetype, use that instead of the value displayed by the file picker
+	if (inFileType != ISFFileType_None)
+		fileType = inFileType;
+	
+	
+	
+	
+	//	check doc window, see if contents need to be saved
+	if (dw != nullptr && dw->contentsNeedToBeSaved())	{
+		//	open a message box asking the user if they want to save the changes to this isf file
+		QMessageBox::StandardButton		reply;
+		reply = QMessageBox::question(
+			this, 
+			"Warning: Unsaved changes", 
+			"Do you want to save your changes to this shader before proceeding?", 
+			QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+		//	if user wants to save the contents...
+		if (reply == QMessageBox::Yes)	{
+			//	call DocWindow::saveOpenFile()
+			if (!dw->saveOpenFile())	{
+				QMessageBox::warning(GetDocWindow(), "", "There was a problem saving the file", QMessageBox::Ok);
+				return;
+			}
+		}
+		else if (reply == QMessageBox::Cancel)	{
+			return;
+		}
+	}
+	
+	
+	
 	
 	//QThread		*mainThread = QApplication::instance()->thread();
 	//qDebug() << "main thread is currently " << mainThread;
@@ -97,16 +156,34 @@ void LoadingWindow::on_createNewFile()	{
 		tmpFilePath = tmpFragShaderFile.fileName();
 		//qDebug() << "\ttmpFragShaderFile's path is " << tmpFilePath;
 	
-		QFile			newFileTemplate(":/resources/NewFileTemplate.txt");
-		if (newFileTemplate.open(QFile::ReadOnly))	{
-			QTextStream		rStream(&newFileTemplate);
+		//QFile			newFileTemplate(":/resources/NewFileTemplate.txt");
+		QFile			*newFileTemplate;
+		switch (fileType)	{
+		case ISFFileType_Source:
+			newFileTemplate = new QFile(":/resources/NewGeneratorTemplate.txt");
+			qDebug() << "\tshould be using file " << newFileTemplate;
+			break;
+		case ISFFileType_Filter:
+			newFileTemplate = new QFile(":/resources/NewFilterTemplate.txt");
+			break;
+		case ISFFileType_Transition:
+			newFileTemplate = new QFile(":/resources/NewTransitionTemplate.txt");
+			break;
+		default:
+			newFileTemplate = new QFile(":/resources/NewFileTemplate.txt");
+			break;
+		}
+		
+		if (newFileTemplate->open(QFile::ReadOnly))	{
+			QTextStream		rStream(newFileTemplate);
 			QString			tmpString = rStream.readAll();
 			
 			QTextStream		wStream(&tmpFragShaderFile);
 			wStream << tmpString;
 		
-			newFileTemplate.close();
+			newFileTemplate->close();
 		}
+		delete newFileTemplate;
 	
 		tmpFragShaderFile.close();
 	}
@@ -556,6 +633,57 @@ void LoadingWindow::setBaseDirectory(const QString & inBaseDir)	{
 			QString			selectedPathString = selectedPath.toString();
 			//GetISFController()->loadFile(selectedPathString);
 			//GetDocWindow()->loadFile(selectedPathString);
+			QString			deselectedPathString("");
+			
+			//	if the selected path string is already on display, bail
+			ISFController		*isfc = GetISFController();
+			if (isfc != nullptr)	{
+				ISFDocRef			currentDoc = isfc->getCurrentDoc();
+				if (currentDoc != nullptr)	{
+					QString				currentDocPath(currentDoc->path().c_str());
+					if (selectedPathString == currentDocPath)
+						return;
+					deselectedPathString = currentDocPath;
+				}
+			}
+			
+			//	check doc window, see if contents need to be saved
+			DocWindow		*dw = GetDocWindow();
+			if (dw != nullptr && dw->contentsNeedToBeSaved())	{
+				//	open a message box asking the user if they want to save the changes to this isf file
+				QMessageBox::StandardButton		reply;
+				reply = QMessageBox::question(
+					this, 
+					"Warning: Unsaved changes", 
+					"Do you want to save your changes to this shader before proceeding?", 
+					QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+				//	if user wants to save the contents...
+				if (reply == QMessageBox::Yes)	{
+					//	call DocWindow::saveOpenFile()
+					if (!dw->saveOpenFile())	{
+						QMessageBox::warning(GetDocWindow(), "", "The file could not be saved", QMessageBox::Ok);
+						//	re-select the currently-selected file
+						QFileSystemModel		*tmpModel = qobject_cast<QFileSystemModel*>(ui->filterListView->model());
+						if (tmpModel != nullptr)	{
+							QModelIndex				tmpIndex = tmpModel->index(deselectedPathString);
+							if (tmpIndex.isValid())
+								ui->filterListView->setCurrentIndex(tmpIndex);
+						}
+						return;
+					}
+				}
+				else if (reply == QMessageBox::Cancel)	{
+					//	re-select the currently-selected file
+					QFileSystemModel		*tmpModel = qobject_cast<QFileSystemModel*>(ui->filterListView->model());
+					if (tmpModel != nullptr)	{
+						QModelIndex				tmpIndex = tmpModel->index(deselectedPathString);
+						if (tmpIndex.isValid())
+							ui->filterListView->setCurrentIndex(tmpIndex);
+					}
+					return;
+				}
+			}
+			
 			
 			on_loadFile(selectedPathString);
 		});

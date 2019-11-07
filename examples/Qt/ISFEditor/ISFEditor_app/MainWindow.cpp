@@ -102,7 +102,7 @@ void FinishLaunching()	{
 	
 	dw->show();
 	lw->show();
-	lw->on_createNewFile();
+	lw->on_createNewFile(false, ISFFileType_Source);
 	
 	
 	//	connect the output window's buffer view's signal to the ISFController's redraw slot

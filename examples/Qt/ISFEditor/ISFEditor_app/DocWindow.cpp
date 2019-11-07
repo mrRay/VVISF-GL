@@ -361,9 +361,10 @@ void DocWindow::updateContentsFromISFController()	{
 		ui->jsonGUIWidget->loadDocFromISFController();
 	}
 }
-void DocWindow::saveOpenFile()	{
+bool DocWindow::saveOpenFile()	{
 	qDebug() << __PRETTY_FUNCTION__;
 	
+	bool			returnMe = false;
 	QString			currentFragString = ui->fragShaderEditor->toPlainText();
 	QString			currentVertString = ui->vertShaderEditor->toPlainText();
 	
@@ -397,7 +398,7 @@ void DocWindow::saveOpenFile()	{
 		
 		if (!fragContentsChanged && !vertContentsChanged)	{
 			qDebug() << "\tbailing- neither frag nor vert shaders changed...";
-			return;
+			return true;
 		}
 		
 		//	if the file path is nil or this is a tmp file, open an alert so the user can supply a name and save location for the file
@@ -436,6 +437,7 @@ void DocWindow::saveOpenFile()	{
 						wStream << currentFragString;
 						wFile.close();
 						_fragEditsPerformed = false;
+						returnMe = true;
 					}
 				}
 				if (vertContentsChanged)	{
@@ -452,6 +454,7 @@ void DocWindow::saveOpenFile()	{
 						wStream << currentVertString;
 						wFile.close();
 						_vertEditsPerformed = false;
+						returnMe = true;
 					}
 				}
 			
@@ -481,6 +484,7 @@ void DocWindow::saveOpenFile()	{
 						wStream << currentFragString;
 						wFile.close();
 						_fragEditsPerformed = false;
+						returnMe = true;
 					}
 					else	{
 						qDebug() << "\tERR: could not open frag file for writing! " << *_fragFilePath;
@@ -499,6 +503,7 @@ void DocWindow::saveOpenFile()	{
 						wStream << currentVertString;
 						wFile.close();
 						_vertEditsPerformed = false;
+						returnMe = true;
 					}
 					else	{
 						qDebug() << "\tERR: could not open vert file for writing! " << *_vertFilePath;
@@ -507,6 +512,8 @@ void DocWindow::saveOpenFile()	{
 			}
 		}
 	}
+	
+	return returnMe;
 }
 void DocWindow::reloadFileFromTableView()	{
 }
@@ -519,12 +526,18 @@ bool DocWindow::contentsNeedToBeSaved()	{
 			if (_fragFilePathContentsOnOpen==nullptr || *_fragFilePathContentsOnOpen!=currentContents)	{
 				returnMe = true;
 			}
+			else if (_fragFilePath != nullptr && _fragFilePath->startsWith(QDir::tempPath()))	{
+				returnMe = true;
+			}
 		}
 	}
 	if (_vertEditsPerformed)	{
 		QString			currentContents = ui->vertShaderEditor->toPlainText();
 		if (currentContents.length() > 0)	{
 			if (_vertFilePathContentsOnOpen==nullptr || *_vertFilePathContentsOnOpen!=currentContents)	{
+				returnMe = true;
+			}
+			else if (_vertFilePath != nullptr && _vertFilePath->startsWith(QDir::tempPath()))	{
 				returnMe = true;
 			}
 		}
@@ -535,6 +548,14 @@ QString DocWindow::fragFilePath()	{
 	lock_guard<recursive_mutex>		lock(propLock);
 	QString		returnMe = (_fragFilePath==nullptr) ? QString("") : QString(*_fragFilePath);
 	return returnMe;
+}
+void DocWindow::pauseAutoSaveTimer()	{
+	lock_guard<recursive_mutex>		lock(propLock);
+	if (_tmpFileSaveTimer != nullptr)	{
+		_tmpFileSaveTimer->stop();
+		delete _tmpFileSaveTimer;
+		_tmpFileSaveTimer = nullptr;
+	}
 }
 void DocWindow::reloadColorsAndSyntaxFormats()	{
 	//qDebug() << __PRETTY_FUNCTION__;
@@ -667,11 +688,13 @@ void DocWindow::on_actionNew_triggered()	{
 	//qDebug() << __PRETTY_FUNCTION__;
 	LoadingWindow		*lw = GetLoadingWindow();
 	if (lw != nullptr)
-		lw->on_createNewFile();
+		lw->on_createNewFile(true);
 }
 void DocWindow::on_actionSave_triggered()	{
 	//qDebug() << __PRETTY_FUNCTION__;
-	saveOpenFile();
+	if (!saveOpenFile())	{
+		QMessageBox::warning(GetDocWindow(), "", "The file could not be saved", QMessageBox::Ok);
+	}
 }
 void DocWindow::on_actionImport_from_GLSLSandbox_triggered()	{
 	//qDebug() << __PRETTY_FUNCTION__;

@@ -1,0 +1,42 @@
+/*{
+	"DESCRIPTION": "",
+	"CREDIT": "",
+	"ISFVSN": "2",
+	"CATEGORIES": [
+		"XXX"
+	],
+	"INPUTS": [
+        {
+            "NAME": "startImage",
+            "TYPE": "image"
+        },
+        {
+            "NAME": "endImage",
+            "TYPE": "image"
+        },
+		{
+			"NAME": "colorInput",
+			"TYPE": "color",
+			"DEFAULT": [
+				0.0,
+				0.0,
+				1.0,
+				1.0
+			]
+		},
+		{
+			"NAME": "floatInput",
+			"TYPE": "float",
+			"DEFAULT": 0.5,
+			"MIN": 0.0,
+			"MAX": 1.0
+		}
+	]
+	
+}*/
+
+void main()	{
+	vec4		startPixel = IMG_THIS_NORM_PIXEL(startImage);
+	vec4		endPixel = IMG_THIS_NORM_PIXEL(endImage);
+	gl_FragColor = colorInput * mix(startPixel, endPixel, floatInput);
+}

@@ -37,10 +37,11 @@ public:
 	
 	void updateContentsFromISFController();
 	
-	void saveOpenFile();
+	bool saveOpenFile();
 	void reloadFileFromTableView();
 	bool contentsNeedToBeSaved();
 	QString fragFilePath();
+	void pauseAutoSaveTimer();
 	
 	void reloadColorsAndSyntaxFormats();
 	
