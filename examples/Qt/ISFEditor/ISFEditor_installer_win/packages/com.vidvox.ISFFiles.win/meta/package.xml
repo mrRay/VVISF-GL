@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>ISF Sample Files</DisplayName>
 	<Description>Hundreds of sample ISF generators and filters.  These will be installed in the root "ProgramDirectory" on the target drive (usually C:\\ProgramData\\ISF).</Description>
-	<Version>1.0.3</Version>
+	<Version>1.0.4</Version>
 	<ReleaseDate>2019-08-22</ReleaseDate>
     <RequiresAdminRights>true</RequiresAdminRights>
     <Script>installscript.js</Script>
