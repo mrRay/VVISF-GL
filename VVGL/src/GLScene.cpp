@@ -4,8 +4,8 @@
 
 
 #if defined(VVGL_SDK_WIN)
-#undef far
-#undef near
+//#undef far
+//#undef near
 #endif	//	VVGL_SDK_WIN
 
 
@@ -846,12 +846,12 @@ void GLScene::_reshape()	{
 					float		left = static_cast<float>(tmpRect.minX());
 					float		top = static_cast<float>(tmpRect.maxY());
 					float		bottom = static_cast<float>(tmpRect.minY());
-					float		near = -1.;
-					float		far = 1.;
+					float		nearVarname = -1.;
+					float		farVarname = 1.;
 					GLfloat		projMatrix[] = {
 						2.f/(right - left), 0., 0., -1.f*(right+left)/(right-left),
 						0.,	2.f/(top-bottom), 0., -1.f*(top+bottom)/(top-bottom),
-						0., 0., -2.f/(far-near), -1.f*(far+near)/(far-near),
+						0., 0., -2.f/(farVarname-nearVarname), -1.f*(farVarname+nearVarname)/(farVarname-nearVarname),
 						0., 0., 0., 1.
 					};
 					//	TODO: right now, flipped isn't supported!
