@@ -11,6 +11,8 @@
 #include "GLContext_Mac.txt"
 #elif defined(VVGL_SDK_GLFW)
 #include "GLContext_GLFW.txt"
+#elif defined(VVGL_SDK_OF)
+#include "GLContext_OF.txt"
 #elif defined(VVGL_SDK_RPI)
 #include "GLContext_RPI.txt"
 #elif defined(VVGL_SDK_QT)
@@ -74,7 +76,7 @@ void GLContext::calculateVersion()	{
 #if defined(VVGL_SDK_MAC) || defined(VVGL_SDK_IOS) || defined(VVGL_SDK_RPI) || defined(VVGL_SDK_QT) || defined(VVGL_SDK_WIN)
 	if (ctx == nullptr)
 		return;
-#elif defined(VVGL_SDK_GLFW)
+#elif defined(VVGL_SDK_GLFW) || defined(VVGL_SDK_OF)
 	if (win == nullptr)
 		return;
 #endif

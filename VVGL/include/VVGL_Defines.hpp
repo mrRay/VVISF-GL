@@ -11,6 +11,7 @@ developers need to define one of these during compilation:
 	VVGL_SDK_IOS
 	VVGL_SDK_RPI
 	VVGL_SDK_GLFW
+	VVGL_SDK_OF
 	VVGL_SDK_QT
 	VVGL_SDK_WIN
 
@@ -37,7 +38,7 @@ to block off function calls that won't compile/link against a given SDK's header
 
 
 //	throw an error with a human-readable explanation if no SDK has been defined yet
-#if !defined(VVGL_SDK_MAC) && !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI) && !defined (VVGL_SDK_GLFW) && !defined(VVGL_SDK_QT) && !defined(VVGL_SDK_WIN)
+#if !defined(VVGL_SDK_MAC) && !defined(VVGL_SDK_IOS) && !defined(VVGL_SDK_RPI) && !defined (VVGL_SDK_GLFW) && !defined(VVGL_SDK_OF) && !defined(VVGL_SDK_QT) && !defined(VVGL_SDK_WIN)
 static_assert(false, "ERR: No SDK defined (eg. VVGL_SDK_XXXX), see VVGL_Defines.hpp for more information.");
 #endif
 
@@ -52,6 +53,9 @@ static_assert(false, "ERR: No SDK defined (eg. VVGL_SDK_XXXX), see VVGL_Defines.
 #elif defined(VVGL_SDK_RPI)
 	#define VVGL_TARGETENV_GLES
 #elif defined(VVGL_SDK_GLFW)
+	#define VVGL_TARGETENV_GL2
+	#define VVGL_TARGETENV_GL3PLUS
+#elif defined(VVGL_SDK_OF)
 	#define VVGL_TARGETENV_GL2
 	#define VVGL_TARGETENV_GL3PLUS
 #elif defined(VVGL_SDK_QT)

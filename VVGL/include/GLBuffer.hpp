@@ -63,6 +63,8 @@ class VVGL_EXPORT GLBuffer	{
 		#include "GLBuffer_Enums_IOS.h"
 #elif defined(VVGL_SDK_GLFW)
 		#include "GLBuffer_Enums_GLFW.h"
+#elif defined(VVGL_SDK_OF)
+		#include "GLBuffer_Enums_OF.h"
 #elif defined(VVGL_SDK_QT)
 		#include "GLBuffer_Enums_Qt.h"
 #elif defined(VVGL_SDK_WIN)

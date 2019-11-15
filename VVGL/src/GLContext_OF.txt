@@ -1,0 +1,126 @@
+//	this source file is included programmatically in GLContext.cpp, so we don't need to include a header for GLContext here
+
+//	makes absolutely sure that the following is only compiled if we're using the given SDK
+#if defined(VVGL_SDK_OF)
+
+#include <iostream>
+//#include <cassert>
+#include <regex>
+
+
+
+
+namespace VVGL
+{
+
+
+using namespace std;
+
+
+
+
+/*	========================================	*/
+#pragma mark --------------------- constructor/destructor
+
+GLContext::GLContext(GLFWwindow * inWindow)	{
+	win = inWindow;
+	initializedFuncs = false;
+	generalInit();
+}
+GLContext::GLContext()	{
+	initializedFuncs = false;
+	generalInit();
+}
+GLContext::~GLContext()	{
+	win = nullptr;
+	initializedFuncs = false;
+}
+
+/*	========================================	*/
+#pragma mark --------------------- factory method
+
+/*
+GLContext * GLContext::allocNewContextSharingMe() const	{
+	return new GLContext(win);
+}
+GLContext GLContext::newContextSharingMe() const	{
+	return GLContext(win);
+}
+*/
+GLContextRef GLContext::newContextSharingMe() const	{
+	return make_shared<GLContext>(win);
+}
+
+/*	========================================	*/
+#pragma mark --------------------- general init/delete
+
+void GLContext::generalInit()	{
+	if (win != nullptr)	{
+	}
+	
+	//	figure out what version of GL we're working with
+	calculateVersion();
+}
+
+/*	========================================	*/
+#pragma mark --------------------- public methods
+
+void GLContext::makeCurrent()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	if (win != nullptr)	{
+		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+void GLContext::makeCurrentIfNotCurrent()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	GLFWwindow		*currentCtx = glfwGetCurrentContext();
+	if (currentCtx != win)	{
+		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+void GLContext::makeCurrentIfNull()	{
+	//cout << __PRETTY_FUNCTION__ << ", ctx is " << ctx << endl;
+	GLFWwindow		*currentCtx = glfwGetCurrentContext();
+	if (currentCtx == nullptr)	{
+		glfwMakeContextCurrent(win);
+		if (!initializedFuncs)	{
+			glewInit();
+			initializedFuncs = true;
+		}
+	}
+}
+bool GLContext::sameShareGroupAs(const GLContextRef & inCtx)	{
+	cout << "ERR: undefined behavior, " << __PRETTY_FUNCTION__ << endl;
+	return false;
+}
+GLContext & GLContext::operator=(const GLContext & n)	{
+	win = n.win;
+	return *this;
+}
+ostream & operator<<(ostream & os, const GLContext & n)	{
+	os << &n;
+	return os;
+}
+ostream & operator<<(ostream & os, const GLContext * n)	{
+	//os << "<GLContext " << (void *)n << ">";
+	os << "<GLContext " << n->win << ">";
+	return os;
+}
+
+
+
+
+}
+
+
+
+
+#endif	//	VVGL_SDK_OF

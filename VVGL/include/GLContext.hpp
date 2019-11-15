@@ -32,6 +32,8 @@
 	//#include <glad/glad.h>
 	#include <GL/glew.h>
 	#include <GLFW/glfw3.h>
+#elif defined(VVGL_SDK_OF)
+	//	include the OF-specific headers for GLEW and GLFW here
 #elif defined(VVGL_SDK_QT)
 	#include <GL/glew.h>
 	#include <QPointer>
@@ -142,7 +144,7 @@ class VVGL_EXPORT GLContext	{
 		CGLPixelFormatObj	pxlFmt = nullptr;
 #elif defined(VVGL_SDK_IOS)
 		void				*ctx = nullptr;	//	really an EAGLContext under iOS
-#elif defined(VVGL_SDK_GLFW)
+#elif defined(VVGL_SDK_GLFW) || defined(VVGL_SDK_OF)
 		GLFWwindow			*win = nullptr;
 		bool				initializedFuncs = false;	//	read some docs that say the GLEW funcs must be initialized once per-context per-thread
 #elif defined(VVGL_SDK_RPI)
@@ -194,7 +196,7 @@ class VVGL_EXPORT GLContext	{
 		//GLContext(const EAGLContext * inCtx);
 		//	this function actually creates a new GL context using the passed sharegroup and rendering API
 		//GLContext(const EAGLSharegroup * inSharegroup, const EAGLRenderingAPI & inRenderAPI);
-#elif defined(VVGL_SDK_GLFW)
+#elif defined(VVGL_SDK_GLFW) || defined(VVGL_SDK_OF)
 		GLContext(GLFWwindow * inWindow);
 #elif defined(VVGL_SDK_RPI)
 		//	this function doesn't create anything- it just obtains a weak ref to the passed EGL vars
@@ -307,7 +309,7 @@ inline GLContextRef CreateNewGLContextRef(const CGLContextObj & inShareCtx, cons
 \brief Doesn't create any GL resources, just makew a new GLContext instance that retains the passed objects.
 */
 inline GLContextRef CreateGLContextRefUsing(const void * inEAGLContext) { return std::make_shared<GLContext>(inEAGLContext); }
-#elif defined(VVGL_SDK_GLFW)
+#elif defined(VVGL_SDK_GLFW) || defined(VVGL_SDK_OF)
 /*!
 \relatesalso GLContext
 \brief Doesn't create any GL resources, just makes a new GLContext instance around the OpenGL context in the passed window.
