@@ -33,6 +33,7 @@
 	#include <GL/glew.h>
 	#include <GLFW/glfw3.h>
 #elif defined(VVGL_SDK_OF)
+	#define GLEW_STATIC
 	//	include the OF-specific headers for GLEW and GLFW here
 #elif defined(VVGL_SDK_QT)
 	#include <GL/glew.h>
