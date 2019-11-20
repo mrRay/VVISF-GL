@@ -36,30 +36,46 @@ JSONGUIBasicInfoWidget::JSONGUIBasicInfoWidget(const JGMTopRef & inTop, QWidget 
 	QJsonValue			tmpVal;
 	QString				tmpString;
 	
-	tmpVal = isfDict["DESCRIPTION"];
-	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	if (isfDict.contains("DESCRIPTION"))	{
+		tmpVal = isfDict["DESCRIPTION"];
+		tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	}
+	else
+		tmpString = QString("");
 	ui->descriptionEdit->setText(tmpString);
 	
-	tmpVal = isfDict["CREDIT"];
-	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	if (isfDict.contains("CREDIT"))	{
+		tmpVal = isfDict["CREDIT"];
+		tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	}
+	else
+		tmpString = QString("");
 	ui->creditEdit->setText(tmpString);
 	
 	tmpString = QString("");
-	tmpVal = isfDict["CATEGORIES"];
-	if (tmpVal.isArray())	{
-		for (const auto & catVal : tmpVal.toArray())	{
-			if (!catVal.isString())
-				continue;
-			if (tmpString.length() < 1)
-				tmpString = catVal.toString();
-			else
-				tmpString.append( QString(", %1").arg(catVal.toString()) );
+	if (isfDict.contains("CATEGORIES"))	{
+		tmpVal = isfDict["CATEGORIES"];
+		if (tmpVal.isArray())	{
+			for (const auto & catVal : tmpVal.toArray())	{
+				if (!catVal.isString())
+					continue;
+				if (tmpString.length() < 1)
+					tmpString = catVal.toString();
+				else
+					tmpString.append( QString(", %1").arg(catVal.toString()) );
+			}
 		}
 	}
+	else
+		tmpString = QString("");
 	ui->categoriesEdit->setText(tmpString);
 	
-	tmpVal = isfDict["VSN"];
-	tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	if (isfDict.contains("VSN"))	{
+		tmpVal = isfDict["VSN"];
+		tmpString = (tmpVal.isString()) ? tmpVal.toString() : QString("");
+	}
+	else
+		tmpString = QString("");
 	ui->vsnEdit->setText(tmpString);
 	
 	connect(ui->descriptionEdit, &QLineEdit::editingFinished, this, &JSONGUIBasicInfoWidget::descriptionFieldUsed);

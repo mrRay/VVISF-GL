@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>ISF Sample Files</DisplayName>
     <Description>Hundreds of sample ISF generators and filters.  These will be installed in /Library/Graphics/ISF, where they can be accessed by all users and applications on this machine.</Description>
-	<Version>1.0.4</Version>
-	<ReleaseDate>2019-08-22</ReleaseDate>
+	<Version>1.0.5</Version>
+	<ReleaseDate>2019-11-20</ReleaseDate>
     <RequiresAdminRights>true</RequiresAdminRights>
     <Script>installscript.js</Script>
     <Default>true</Default>
