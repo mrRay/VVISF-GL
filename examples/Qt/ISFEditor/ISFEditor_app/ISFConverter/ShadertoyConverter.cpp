@@ -631,6 +631,11 @@ void ShadertoyConverter::okClicked()	{
 	//	now i need to figure out a write location/file name.  try to base this off the "name" from shadertoy, appended by the shadertoy username, and then shadertoy ID
 #if defined(Q_OS_MAC)
 	QString			writeFolder = QString("%1/Library/Graphics/ISF").arg(QDir::homePath());
+	if (!QDir(writeFolder).exists())	{
+		if (!QDir().mkdir(writeFolder))	{
+			qDebug() << "err: couldn't create ISF folder at " << writeFolder;
+		}
+	}
 #elif defined(Q_OS_WIN)
 	QDir			tmpDir = QDir::root();
 	if (!tmpDir.cd("ProgramData"))	{
