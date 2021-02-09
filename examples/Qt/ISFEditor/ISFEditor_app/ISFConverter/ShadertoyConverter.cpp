@@ -83,7 +83,7 @@ void ShadertoyConverter::okClicked()	{
 	{
 		QUrl				url(sourceBlobURL);
 		QNetworkRequest		req(url);
-		req.setRawHeader("Accept-Encoding", "gzip,deflate" );
+		//req.setRawHeader("Accept-Encoding", "gzip,deflate" );
 		req.setRawHeader("Accept-Language", QString("en-US,en;q=0.8").toUtf8());
 		//req.setRawHeader("User-Agent", QString("Hello Kitty Internet Thingy").toUtf8());
 		req.setRawHeader("Content-Type", QString("application/x-www-form-urlencoded").toUtf8());
