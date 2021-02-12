@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
-VERSION = 2.9.13
+VERSION = 2.9.14
 mac	{
 	ICON = ISFEditorAppIcon.icns
 }
@@ -32,7 +32,7 @@ win32	{
 }
 QMAKE_TARGET_COMPANY = Vidvox
 QMAKE_TARGET_DESCRIPTION = Interactive Shader Format editor and viewer
-QMAKE_TARGET_COPYRIGHT = Vidvox, llc. 2019
+QMAKE_TARGET_COPYRIGHT = Vidvox, llc. 2021
 
 
 
