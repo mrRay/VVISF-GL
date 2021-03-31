@@ -30,8 +30,12 @@ ifeq ($(PLATFORM),Raspbian GNU/Linux)
 else ifeq ($(shell uname),Linux)
 
 else ifeq ($(PLATFORM),Darwin)
+	# make sure we have an ARCH value even if one wasn't provided by the environment!
+	ARCH ?= x86_64
+	
 	CXX = clang
-	CPPFLAGS := -Wall -g -arch x86_64 -O3 -std=c++11 -stdlib=libc++ -fPIC 
+	CPPFLAGS := -Wall -g -arch $(ARCH) -O3 -std=c++11 -stdlib=libc++ -fPIC
+	CPPFLAGS += -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 	CPPFLAGS += -I./include/ -DVVGL_SDK_MAC
     CPPFLAGS += -DGL_SILENCE_DEPRECATION
 	OBJCPPFLAGS := $(CPPFLAGS)
@@ -39,7 +43,7 @@ else ifeq ($(PLATFORM),Darwin)
 	CPPFLAGS += -x c++
 	OBJCPPFLAGS += -x objective-c++
 	
-	LDFLAGS := -arch x86_64 -lstdc++ -shared -fPIC -lobjc
+	LDFLAGS := -arch $(ARCH) -lstdc++ -shared -fPIC -lobjc
 	LDFLAGS += -framework Foundation -framework ImageIO -framework OpenGL -framework IOSurface -framework CoreGraphics -framework CoreVideo
 endif
 
