@@ -2525,6 +2525,7 @@ void PushTexRangeBufferRAMtoVRAM(const GLBufferRef & inBufferRef, const GLContex
 	case GLBuffer::IF_RGB:
 	case GLBuffer::IF_RGBA:
 	case GLBuffer::IF_RGBA8:
+	case GLBuffer::IF_RGBA16F:
 	case GLBuffer::IF_RGBA32F:
 	case GLBuffer::IF_Depth24:
 		doCompressedUpload = false;
@@ -2706,8 +2707,24 @@ GLBufferRef CreateRGBATexFromIOSurfaceID(const IOSurfaceID & inID, const bool & 
 		returnMe->desc.pixelFormat = GLBuffer::PF_YCbCr_422;
 		returnMe->desc.pixelType = GLBuffer::PT_UShort88;
 		break;
+	case kCVPixelFormatType_64RGBAHalf:	//	half float
+		returnMe->desc.internalFormat = GLBuffer::IF_RGBA16F;
+		returnMe->desc.pixelFormat = GLBuffer::PF_RGBA;
+		returnMe->desc.pixelType = GLBuffer::PT_HalfFloat;
+		break;
 	default:
-		cout << "\tERR: unknown pixel format (" << pixelFormat << ") in " << __PRETTY_FUNCTION__ << endl;
+		{
+			char			charPtr[5];
+			charPtr[4] = 0;
+			VVUnpackFourCC_toChar(pixelFormat,charPtr);
+			//NSLog(@"\t\terr: unrecognized pixel format: %s, in %s",charPtr,__func__);
+			//cout << "\tERR: unknown pixel format (" << pixelFormat << "/" << charPtr << ") in " << __PRETTY_FUNCTION__ << endl;
+			string		tmpStr = FmtString("ERR: unknown pixel format (%d/%s) in %s",pixelFormat,charPtr,__PRETTY_FUNCTION__);
+			cout << tmpStr << endl;
+		}
+		
+		
+		
 		returnMe->desc.internalFormat = GLBuffer::IF_RGBA8;
 		returnMe->desc.pixelFormat = GLBuffer::PF_BGRA;
 		returnMe->desc.pixelType = GLBuffer::PT_UInt_8888_Rev;
