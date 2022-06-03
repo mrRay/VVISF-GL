@@ -1,5 +1,5 @@
 #include "GLScene.hpp"
-
+#include <cstring>
 
 
 

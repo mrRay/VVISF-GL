@@ -1,5 +1,5 @@
 #include "GLCPUToTexCopier.hpp"
-
+#include <cstring>
 
 
 
