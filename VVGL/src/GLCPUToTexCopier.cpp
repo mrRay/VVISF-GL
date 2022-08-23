@@ -221,6 +221,9 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
 				texBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
+			else if	(inCPUBuffer->desc.pixelType == GLBuffer::PT_UShort) {
+				texBuffer = CreateRGBAShortTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
+			}
 			else	{
 				texBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
@@ -276,6 +279,19 @@ GLBufferRef GLCPUToTexCopier::uploadCPUToTex(const GLBufferRef & inCPUBuffer, co
 				createInCurrentContext,
 				bp);
 		}
+		else if (inCPUBuffer->desc.pixelType == GLBuffer::PT_UShort) {
+			pboBuffer = CreateRGBAShortPBO(
+				GLBuffer::Target_PBOUnpack,
+				GL_STREAM_DRAW,
+				cpuBufferDims,
+#if PATHTYPE==0
+				inCPUBuffer->cpuBackingPtr, // this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+				NULL,    //    this will delete-initialize the buffer
+#endif
+				createInCurrentContext,
+				bp);
+}
 		else	{
 			pboBuffer = CreateRGBAPBO(
 				GLBuffer::Target_PBOUnpack,
@@ -377,6 +393,9 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
 				inTexBuffer = CreateRGBAFloatTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
+			else if (inCPUBuffer->desc.pixelType == GLBuffer::PT_UShort)	{
+				inTexBuffer = CreateRGBAShortTex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
+			}
 			else	{
 				inTexBuffer = CreateRGBATex(inCPUBuffer->srcRect.size, createInCurrentContext, bp);
 			}
@@ -443,6 +462,19 @@ GLBufferRef GLCPUToTexCopier::streamCPUToTex(const GLBufferRef & inCPUBuffer, co
 		case GLBuffer::PF_RGBA:
 			if (inCPUBuffer->desc.pixelType == GLBuffer::PT_Float)	{
 				inPBOBuffer = CreateRGBAFloatPBO(
+					GLBuffer::Target_PBOUnpack,
+					GL_STREAM_DRAW,
+					cpuBufferDims,
+#if PATHTYPE==0
+					inCPUBuffer->cpuBackingPtr,	//	this will initialize the buffer with the provided backing
+#elif PATHTYPE==1
+					NULL,	//	this will delete-initialize the buffer
+#endif
+					createInCurrentContext,
+					bp);
+			}
+			else if (inCPUBuffer->desc.pixelType == GLBuffer::PT_UShort)	{
+				inPBOBuffer = CreateRGBAShortPBO(
 					GLBuffer::Target_PBOUnpack,
 					GL_STREAM_DRAW,
 					cpuBufferDims,
