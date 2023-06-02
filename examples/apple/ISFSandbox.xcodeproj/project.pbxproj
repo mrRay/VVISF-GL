@@ -71,7 +71,7 @@
 		1A1DED552320336B0079055A /* VVLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1DED522320336B0079055A /* VVLogger.m */; };
 		1A1DED61232043F80079055A /* PostProc.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A1DED60232043F70079055A /* PostProc.fs */; };
 		1A2311541E2D63C700B0EF84 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A2311531E2D63C700B0EF84 /* main.mm */; };
-		1A2587141ED497AE009FC66A /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1A32CBD220C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A32CBD120C87E73002EDFB9 /* TexDownloadUploadAppDelegate.mm */; };
 		1A32CBD420C87E74002EDFB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD320C87E74002EDFB9 /* Assets.xcassets */; };
 		1A32CBD720C87E74002EDFB9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A32CBD520C87E74002EDFB9 /* MainMenu.xib */; };
@@ -89,7 +89,7 @@
 		1A365CF32090B5EC00771520 /* VVISF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CC12090B35C00771520 /* VVISF.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1A365CF72090B69200771520 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A365CF82090B6A700771520 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A10DDFB2090AD4A00771795 /* VVGL.framework */; };
-		1A365D4F2090BF8900771520 /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1A365D4F2090BF8900771520 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1A37BD1F1F17D410006B2475 /* blueelectricspiral.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A37BD1E1F17D410006B2475 /* blueelectricspiral.fs */; };
 		1A47DFD8200EAA9B00FF206A /* GeoShaderTest_modern.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD5200EAA9B00FF206A /* GeoShaderTest_modern.fs */; };
 		1A47DFD9200EAA9B00FF206A /* GeoShaderTest_modern.gs in Resources */ = {isa = PBXBuildFile; fileRef = 1A47DFD6200EAA9B00FF206A /* GeoShaderTest_modern.gs */; };
@@ -107,7 +107,7 @@
 		1A4EEAAB1F17C91000B6C3F4 /* VVISF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177631E2581B500E978E5 /* VVISF.framework */; };
 		1A4EEAAD1F17C92A00B6C3F4 /* VVISF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177631E2581B500E978E5 /* VVISF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A4EEAAE1F17C92A00B6C3F4 /* VVGL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE177701E2581BB00E978E5 /* VVGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		1A5247AF209104C800F50E12 /* libglfw.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1A5247AF209104C800F50E12 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1A5247B22091054300F50E12 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CFE2090B97800771520 /* VVGL.framework */; };
 		1A5247B82091066500F50E12 /* VVGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365CFE2090B97800771520 /* VVGL.framework */; };
 		1A5247B92091066500F50E12 /* VVISF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A365D102090B98000771520 /* VVISF.framework */; };
@@ -539,7 +539,7 @@
 		1AE5BCF820912372008BF2F5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE5BCF720912372008BF2F5 /* OpenGL.framework */; };
 		1AE5BCF920912384008BF2F5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE5BCF720912372008BF2F5 /* OpenGL.framework */; };
 		1AE5BCFA209123D3008BF2F5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE5BCF720912372008BF2F5 /* OpenGL.framework */; };
-		1AE5DE022090A90A00CE6365 /* libglfw.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.dylib */; };
+		1AE5DE022090A90A00CE6365 /* libglfw.3.2.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */; };
 		1AE7D45F1F27C91000767432 /* AlphaOverCheckerboard.fs in Resources */ = {isa = PBXBuildFile; fileRef = 1AE7D45C1F27C91000767432 /* AlphaOverCheckerboard.fs */; };
 		1AE7D4601F27C91000767432 /* ISF QuickLook Plugin.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 1AE7D45D1F27C91000767432 /* ISF QuickLook Plugin.pkg */; };
 		1AE7D4611F27C91000767432 /* Vidvox ISF resources.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 1AE7D45E1F27C91000767432 /* Vidvox ISF resources.pkg */; };
@@ -1105,7 +1105,7 @@
 			files = (
 				1A5247BA2091068300F50E12 /* VVGL.framework in Embed Frameworks */,
 				1A5247BB2091068300F50E12 /* VVISF.framework in Embed Frameworks */,
-				1AE5DE022090A90A00CE6365 /* libglfw.dylib in Embed Frameworks */,
+				1AE5DE022090A90A00CE6365 /* libglfw.3.2.dylib in Embed Frameworks */,
 				1AC2A3672091280E00228669 /* libGLEW.2.1.0.dylib in Embed Frameworks */,
 				1AC2A3682091281100228669 /* libGLEW.2.1.dylib in Embed Frameworks */,
 				1AC2A3692091281400228669 /* libGLEW.dylib in Embed Frameworks */,
@@ -1577,7 +1577,7 @@
 				1AC2A360209127B500228669 /* libGLEW.dylib in Frameworks */,
 				1A5247B82091066500F50E12 /* VVGL.framework in Frameworks */,
 				1A5247B92091066500F50E12 /* VVISF.framework in Frameworks */,
-				1A2587141ED497AE009FC66A /* libglfw.dylib in Frameworks */,
+				1A2587141ED497AE009FC66A /* libglfw.3.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1604,7 +1604,7 @@
 			files = (
 				1AE5BCF820912372008BF2F5 /* OpenGL.framework in Frameworks */,
 				1AC2A35E209127B500228669 /* libGLEW.dylib in Frameworks */,
-				1A365D4F2090BF8900771520 /* libglfw.dylib in Frameworks */,
+				1A365D4F2090BF8900771520 /* libglfw.3.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1615,7 +1615,7 @@
 				1AE5BCF920912384008BF2F5 /* OpenGL.framework in Frameworks */,
 				1AC2A35F209127B500228669 /* libGLEW.dylib in Frameworks */,
 				1A5247B22091054300F50E12 /* VVGL.framework in Frameworks */,
-				1A5247AF209104C800F50E12 /* libglfw.dylib in Frameworks */,
+				1A5247AF209104C800F50E12 /* libglfw.3.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1795,32 +1795,32 @@
 		1A2586C01ED49470009FC66A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1A2586E11ED49470009FC66A /* libglfw.dylib */,
-				1A2586E31ED49470009FC66A /* boing */,
-				1A2586E51ED49470009FC66A /* gears */,
-				1A2586E71ED49470009FC66A /* heightmap */,
-				1A2586E91ED49470009FC66A /* particles */,
-				1A2586EB1ED49470009FC66A /* simple */,
-				1A2586ED1ED49470009FC66A /* splitview */,
-				1A2586EF1ED49470009FC66A /* wave */,
+				1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */,
+				1A2586E31ED49470009FC66A /* boing.app */,
+				1A2586E51ED49470009FC66A /* gears.app */,
+				1A2586E71ED49470009FC66A /* heightmap.app */,
+				1A2586E91ED49470009FC66A /* particles.app */,
+				1A2586EB1ED49470009FC66A /* simple.app */,
+				1A2586ED1ED49470009FC66A /* splitview.app */,
+				1A2586EF1ED49470009FC66A /* wave.app */,
 				1A2586F11ED49470009FC66A /* clipboard */,
 				1A2586F31ED49470009FC66A /* cursor */,
-				1A2586F51ED49470009FC66A /* empty */,
+				1A2586F51ED49470009FC66A /* empty.app */,
 				1A2586F71ED49470009FC66A /* events */,
 				1A2586F91ED49470009FC66A /* gamma */,
 				1A2586FB1ED49470009FC66A /* glfwinfo */,
-				1A2586FD1ED49470009FC66A /* icon */,
+				1A2586FD1ED49470009FC66A /* icon.app */,
 				1A2586FF1ED49470009FC66A /* iconify */,
 				1A2587011ED49470009FC66A /* joysticks */,
 				1A2587031ED49470009FC66A /* monitors */,
 				1A2587051ED49470009FC66A /* msaa */,
 				1A2587071ED49470009FC66A /* reopen */,
-				1A2587091ED49470009FC66A /* sharing */,
-				1A25870B1ED49470009FC66A /* tearing */,
-				1A25870D1ED49470009FC66A /* threads */,
-				1A25870F1ED49470009FC66A /* timeout */,
-				1A2587111ED49470009FC66A /* title */,
-				1A2587131ED49470009FC66A /* windows */,
+				1A2587091ED49470009FC66A /* sharing.app */,
+				1A25870B1ED49470009FC66A /* tearing.app */,
+				1A25870D1ED49470009FC66A /* threads.app */,
+				1A25870F1ED49470009FC66A /* timeout.app */,
+				1A2587111ED49470009FC66A /* title.app */,
+				1A2587131ED49470009FC66A /* windows.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3128,7 +3128,7 @@
 		1AB0491A1DFDFE2500A59A85 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1340;
 				ORGANIZATIONNAME = vidvox;
 				TargetAttributes = {
 					1A023C8E1F2011AD004FFB3A = {
@@ -3216,10 +3216,9 @@
 			};
 			buildConfigurationList = 1AB0491D1DFDFE2500A59A85 /* Build configuration list for PBXProject "ISFSandbox" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -3260,66 +3259,58 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		1A2586E11ED49470009FC66A /* libglfw.dylib */ = {
+		1A2586E11ED49470009FC66A /* libglfw.3.2.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
-			name = libglfw.dylib;
 			path = libglfw.3.2.dylib;
 			remoteRef = 1A2586E01ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586E31ED49470009FC66A /* boing */ = {
+		1A2586E31ED49470009FC66A /* boing.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = boing;
+			fileType = wrapper.application;
 			path = boing.app;
 			remoteRef = 1A2586E21ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586E51ED49470009FC66A /* gears */ = {
+		1A2586E51ED49470009FC66A /* gears.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = gears;
+			fileType = wrapper.application;
 			path = gears.app;
 			remoteRef = 1A2586E41ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586E71ED49470009FC66A /* heightmap */ = {
+		1A2586E71ED49470009FC66A /* heightmap.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = heightmap;
+			fileType = wrapper.application;
 			path = heightmap.app;
 			remoteRef = 1A2586E61ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586E91ED49470009FC66A /* particles */ = {
+		1A2586E91ED49470009FC66A /* particles.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = particles;
+			fileType = wrapper.application;
 			path = particles.app;
 			remoteRef = 1A2586E81ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586EB1ED49470009FC66A /* simple */ = {
+		1A2586EB1ED49470009FC66A /* simple.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = simple;
+			fileType = wrapper.application;
 			path = simple.app;
 			remoteRef = 1A2586EA1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586ED1ED49470009FC66A /* splitview */ = {
+		1A2586ED1ED49470009FC66A /* splitview.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = splitview;
+			fileType = wrapper.application;
 			path = splitview.app;
 			remoteRef = 1A2586EC1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586EF1ED49470009FC66A /* wave */ = {
+		1A2586EF1ED49470009FC66A /* wave.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = wave;
+			fileType = wrapper.application;
 			path = wave.app;
 			remoteRef = 1A2586EE1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -3338,10 +3329,9 @@
 			remoteRef = 1A2586F21ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586F51ED49470009FC66A /* empty */ = {
+		1A2586F51ED49470009FC66A /* empty.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = empty;
+			fileType = wrapper.application;
 			path = empty.app;
 			remoteRef = 1A2586F41ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -3367,10 +3357,9 @@
 			remoteRef = 1A2586FA1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2586FD1ED49470009FC66A /* icon */ = {
+		1A2586FD1ED49470009FC66A /* icon.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = icon;
+			fileType = wrapper.application;
 			path = icon.app;
 			remoteRef = 1A2586FC1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -3410,50 +3399,44 @@
 			remoteRef = 1A2587061ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2587091ED49470009FC66A /* sharing */ = {
+		1A2587091ED49470009FC66A /* sharing.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = sharing;
+			fileType = wrapper.application;
 			path = sharing.app;
 			remoteRef = 1A2587081ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A25870B1ED49470009FC66A /* tearing */ = {
+		1A25870B1ED49470009FC66A /* tearing.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = tearing;
+			fileType = wrapper.application;
 			path = tearing.app;
 			remoteRef = 1A25870A1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A25870D1ED49470009FC66A /* threads */ = {
+		1A25870D1ED49470009FC66A /* threads.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = threads;
+			fileType = wrapper.application;
 			path = threads.app;
 			remoteRef = 1A25870C1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A25870F1ED49470009FC66A /* timeout */ = {
+		1A25870F1ED49470009FC66A /* timeout.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = timeout;
+			fileType = wrapper.application;
 			path = timeout.app;
 			remoteRef = 1A25870E1ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2587111ED49470009FC66A /* title */ = {
+		1A2587111ED49470009FC66A /* title.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = title;
+			fileType = wrapper.application;
 			path = title.app;
 			remoteRef = 1A2587101ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1A2587131ED49470009FC66A /* windows */ = {
+		1A2587131ED49470009FC66A /* windows.app */ = {
 			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			name = windows;
+			fileType = wrapper.application;
 			path = windows.app;
 			remoteRef = 1A2587121ED49470009FC66A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -4380,7 +4363,6 @@
 				INFOPLIST_FILE = VVGL_Mac/Info.plist;
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
 				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
@@ -4419,7 +4401,6 @@
 				INFOPLIST_FILE = VVGL_Mac/Info.plist;
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVGL_map.modulemap;
 				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVGL;
@@ -4548,7 +4529,6 @@
 				INFOPLIST_FILE = VVISF_Mac/Info.plist;
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
 				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
@@ -4587,7 +4567,6 @@
 				INFOPLIST_FILE = VVISF_Mac/Info.plist;
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MODULEMAP_FILE = VVISF_map.modulemap;
 				OTHER_CFLAGS = "-DVVGL_SDK_MAC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vidvox.VVISF;
@@ -5029,6 +5008,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -5074,11 +5054,11 @@
 					"$(PROJECT_DIR)/../../VVISF/include",
 					"$(PROJECT_DIR)/../../VVGL/include",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				SDKROOT = macosx10.13;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -5086,6 +5066,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -5126,10 +5107,10 @@
 					"$(PROJECT_DIR)/../../VVISF/include",
 					"$(PROJECT_DIR)/../../VVGL/include",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "";
-				SDKROOT = macosx10.13;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
