@@ -61,12 +61,19 @@ struct Timestamp	{
 		rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration(inTimeInSeconds) ) );
 	}
 	//!	Creates a new Timestamp expressed as the quotient of the two passed numbers (the number of frames divided by the number of seconds in which they occur)
-	Timestamp(const int & inFrameCount, const int & inSecondsCount)	{
+	Timestamp(const double & inFrameCount, const double & inSecondsCount)	{
 		if (inSecondsCount == 0)
 			rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(0.0) ) ) );
 		else
-			rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
+			rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( inFrameCount/inSecondsCount ) ) );
 	}
+	//!	Creates a new Timestamp expressed as the quotient of the two passed numbers (the number of frames divided by the number of seconds in which they occur)
+	//Timestamp(const int & inFrameCount, const int & inSecondsCount)	{
+	//	if (inSecondsCount == 0)
+	//		rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(0.0) ) ) );
+	//	else
+	//		rawTime = std::chrono::time_point_cast<RawTSDuration>( DoubleTimeTime( DoubleTimeDuration( double(inFrameCount)/double(inSecondsCount) ) ) );
+	//}
 
 	
 	//!	Calculates the frame index of the receiver with the passed FPS, expressed as the quotient of two integers.

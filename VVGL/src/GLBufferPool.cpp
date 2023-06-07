@@ -215,7 +215,10 @@ GLBufferRef GLBufferPool::createBufferRef(const GLBuffer::Descriptor & d, const 
 #if defined(VVGL_SDK_MAC)
 		//	if necessary, create an iosurface ref
 		if (newBufferDesc.localSurfaceID != 0)	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 			void				*keys[] = { (void *)kIOSurfaceIsGlobal, (void *)kIOSurfaceWidth, (void *)kIOSurfaceHeight, (void *)kIOSurfaceBytesPerElement, (void *)kIOSurfacePixelFormat };
+#pragma clang diagnostic pop
 			uint32_t			tmpBytesPerElement = bytesPerRow/s.width;
 			void				*vals[] = { (void *)kCFBooleanTrue, (void *)CFNumberCreate(NULL,kCFNumberFloat64Type,&s.width), (void *)CFNumberCreate(NULL,kCFNumberFloat64Type,&s.height), (void *)CFNumberCreate(NULL,kCFNumberSInt32Type,&tmpBytesPerElement), (void *)CFNumberCreate(NULL,kCFNumberSInt32Type,&pixelFormat) };
 			CFDictionaryRef		props = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&vals, 5, NULL, NULL);

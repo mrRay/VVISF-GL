@@ -68,7 +68,7 @@ GLBufferRef CreateBufferForNSImage(NSImage * inImg, const bool & createInCurrent
 		[inImg
 			drawInRect:bitmapRect
 			fromRect:origImageRect
-			operation:NSCompositeCopy
+			operation:NSCompositingOperationCopy
 			fraction:1.0];
 		
 		//	flush the graphics

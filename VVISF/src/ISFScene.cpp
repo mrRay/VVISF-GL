@@ -1,6 +1,7 @@
 #include "ISFScene.hpp"
 #include "ISFDoc.hpp"
 #include "ISFPassTarget.hpp"
+#include <cstdio>
 
 
 
@@ -727,7 +728,7 @@ void ISFScene::_renderPrep()	{
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 		
-		sprintf(tmpCString,"_%s_imgSize",tmpAttrName);
+		snprintf(tmpCString,64,"_%s_imgSize",tmpAttrName);
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(2, samplerLoc);
@@ -739,17 +740,17 @@ void ISFScene::_renderPrep()	{
 		GLERRLOG
 		inAttr->setUniformLocation(0, samplerLoc);
 		
-		sprintf(tmpCString,"_%s_imgRect",tmpAttrName);
+		snprintf(tmpCString,64,"_%s_imgRect",tmpAttrName);
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(1, samplerLoc);
 		
-		sprintf(tmpCString,"_%s_imgSize",tmpAttrName);
+		snprintf(tmpCString,64,"_%s_imgSize",tmpAttrName);
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(2, samplerLoc);
 		
-		sprintf(tmpCString,"_%s_flip",tmpAttrName);
+		snprintf(tmpCString,64,"_%s_flip",tmpAttrName);
 		samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		GLERRLOG
 		inAttr->setUniformLocation(3, samplerLoc);
@@ -835,7 +836,7 @@ void ISFScene::_renderPrep()	{
 		//if (samplerLoc >= 0)
 		//	inTarget->setUniformLocation(0, samplerLoc);
 		//
-		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
+		//snprintf(tmpCString,64,"_%s_imgSize",tmpTargetName);
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//if (samplerLoc >= 0)
@@ -851,17 +852,17 @@ void ISFScene::_renderPrep()	{
 		//GLERRLOG
 		//inTarget->setUniformLocation(0, samplerLoc);
 		//
-		//sprintf(tmpCString,"_%s_imgRect",tmpTargetName);
+		//snprintf(tmpCString,64,"_%s_imgRect",tmpTargetName);
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(1, samplerLoc);
 		//
-		//sprintf(tmpCString,"_%s_imgSize",tmpTargetName);
+		//snprintf(tmpCString,64,"_%s_imgSize",tmpTargetName);
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(2, samplerLoc);
 		//
-		//sprintf(tmpCString,"_%s_flip",tmpTargetName);
+		//snprintf(tmpCString,64,"_%s_flip",tmpTargetName);
 		//samplerLoc = (_program<=0) ? -1 : glGetUniformLocation(_program, tmpCString);
 		//GLERRLOG
 		//inTarget->setUniformLocation(3, samplerLoc);
