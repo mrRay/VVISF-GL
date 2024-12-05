@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "ISFPassTarget.hpp"
 #include "ISFScene.hpp"
@@ -1241,7 +1242,7 @@ void ISFDoc::_initWithRawFragShaderString(const string & inRawFile)	{
 	while (*tmpIt!='\n' && *tmpIt!='\r')
 		++tmpIt;
 	++tmpIt;
-	auto			closeCommentLineEnd = tmpIt - inRawFile.begin();
+	auto			closeCommentLineEnd = std::min( long(tmpIt - inRawFile.begin()), long(inRawFile.size()-1) );
 	
 	_jsonSourceString = new string(inRawFile, 0, closeCommentLineEnd);
 	_jsonString = new string(inRawFile, openCommentIndex+2, closeCommentIndex - (openCommentIndex+2) );
