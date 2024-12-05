@@ -55,6 +55,22 @@ uint32_t GLBuffer::Descriptor::bytesPerRowForWidth(const uint32_t & w) const	{
 		}
 		break;
 #endif
+	case PT_UShort:
+		switch (this->internalFormat) {
+		case IF_R:
+			bytesPerRow = 16 * 1 * w / 8;
+			break;
+		case IF_RGB:
+			bytesPerRow = 16 * 3 * w / 8;
+			break;
+		case IF_RGBA:
+		case IF_RGBA16:
+			bytesPerRow = 16 * 4 * w / 8;
+			break;
+		default:
+			break;
+		}
+		break;
 	case PT_UByte:
 		switch (this->internalFormat)	{
 #if !defined(VVGL_SDK_RPI)

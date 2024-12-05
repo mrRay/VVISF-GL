@@ -14,6 +14,7 @@ enum InternalFormat	{
 	IF_RGB = GL_RGB,
 	IF_RGBA = GL_RGBA,
 	IF_RGBA8 = GL_RGBA8,
+	IF_RGBA16 = GL_RGBA16,
 	IF_RGBA32F = GL_RGBA32F,	//!<	four channel, 32 bit per channel
 	IF_RGBA16F = GL_RGBA16F,
 	IF_Depth24 = GL_DEPTH_COMPONENT24,
@@ -34,6 +35,7 @@ enum PixelType	{
 	PT_Float = GL_FLOAT,
 	PT_UByte = GL_UNSIGNED_BYTE,
 	PT_UInt_8888_Rev = GL_UNSIGNED_INT_8_8_8_8_REV,
+	PT_UShort = GL_UNSIGNED_SHORT,
 	PT_HalfFloat = GL_HALF_FLOAT,
 	PT_UShort88 = GL_UNSIGNED_SHORT_8_8_APPLE
 };

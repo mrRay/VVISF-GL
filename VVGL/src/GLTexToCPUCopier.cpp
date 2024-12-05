@@ -232,7 +232,13 @@ GLBufferRef GLTexToCPUCopier::downloadTexToCPU(const GLBufferRef & inTexBuffer, 
 	GLBufferRef			inPBOBuffer = nullptr;
 	switch (inTexBuffer->desc.pixelFormat)	{
 	case GLBuffer::PF_RGBA:
-		inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
+		if (inTexBuffer->desc.pixelType == GLBuffer::PT_Float)	{
+			inPBOBuffer = CreateRGBAFloatPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
+		} else if (inTexBuffer->desc.pixelType == GLBuffer::PT_UShort) {
+			inPBOBuffer = CreateRGBAShortPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
+		} else {
+			inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
+		}
 		break;
 	case GLBuffer::PF_BGRA:
 		inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, inTexBuffer->size, nullptr, createInCurrentContext, bp);
@@ -291,7 +297,13 @@ GLBufferRef GLTexToCPUCopier::streamTexToCPU(const GLBufferRef & inTexBuffer, co
 		tmpFBO = CreateFBO(createInCurrentContext, bp);
 		switch (inTexBuffer->desc.pixelFormat)	{
 		case GLBuffer::PF_RGBA:
-			inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
+			if (inTexBuffer->desc.pixelType == GLBuffer::PT_Float) {
+				inPBOBuffer = CreateRGBAFloatPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
+			}else if (inTexBuffer->desc.pixelType == GLBuffer::PT_UShort) {
+				inPBOBuffer = CreateRGBAShortPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
+			} else {
+				inPBOBuffer = CreateRGBAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
+			}
 			break;
 		case GLBuffer::PF_BGRA:
 			inPBOBuffer = CreateBGRAPBO(GLBuffer::Target_PBOPack, GL_DYNAMIC_READ, texBufferDims, nullptr, createInCurrentContext, bp);
